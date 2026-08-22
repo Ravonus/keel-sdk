@@ -89,8 +89,24 @@ jobs:
         working-directory: keel-sdk
         run: node packages/builder/dist/cli.js module verify --all --root ../keel-modules
 
-      # The suite includes the reproduction tests, which fetch keel-modules from
-      # GitHub at its current commit and rebuild it, plus the tamper drills.
-      - name: Full test suite
+      # The module chain's own tests: the tamper drills, the candidate flow, the
+      # registration split, and the reproduction tests that fetch keel-modules
+      # from GitHub at its current commit and rebuild it.
+      #
+      # Not `scripts/test.mjs`. The full suite includes tests that read a
+      # sibling keel-contracts checkout, and that repository is private, so a
+      # workflow in a public repository cannot check it out without putting a
+      # token in every fork. Running the whole suite here would mean either that
+      # token or a permanently red job. Those tests still run locally, where the
+      # sibling exists; what belongs in THIS workflow is the module chain, and
+      # all of it runs.
+      - name: Module test suite
         working-directory: keel-sdk
-        run: node scripts/test.mjs
+        run: |
+          node --test \
+            tests/keel-build-recipe.test.mjs \
+            tests/builder-module-pipeline.test.mjs \
+            tests/builder-module-workspace.test.mjs \
+            tests/keel-module-assurance.test.mjs \
+            tests/keel-module-registration.test.mjs \
+            tests/keel-modules-reproduction.test.mjs
