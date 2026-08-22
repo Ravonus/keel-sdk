@@ -43,6 +43,8 @@ import type { ObjectUploadPlan } from "./types.js";
 const require = createRequire(import.meta.url);
 
 export const KEEL_MODULE_MANIFEST_PROTOCOL = "keel-module-manifest@1" as const;
+/** The manifest schema the keel-modules workspace repo uses. Same file name, older shape. */
+export const KEEL_JSMODULE_SCHEMA = "keel.jsmodule@1" as const;
 export const KEEL_MODULE_MANIFEST_FILE = "keel.module.json" as const;
 
 const MODULE_NAME = /^[a-z][a-z0-9-]{0,63}$/u;
@@ -79,17 +81,47 @@ function textField(value: unknown, label: string, maximum = 512): string {
   return value;
 }
 
+function safeEntry(entry: string): string {
+  if (entry.startsWith("/") || entry.split("/").some((part) => part.length === 0 || part === "." || part === "..")) {
+    fail(`${KEEL_MODULE_MANIFEST_FILE}: entry must be a safe relative path.`);
+  }
+  return entry;
+}
+
+/**
+ * The `keel.jsmodule@1` manifest (id, entry, license, summary) normalized to
+ * the pipeline's manifest shape. It carries no version or repository, so the
+ * version defaults and the repository stays the placeholder, which the build
+ * already treats as "omit from the receipt until it is real".
+ */
+function parseKeelJsModuleManifest(input: Record<string, unknown>): KeelModuleManifest {
+  const allowed = new Set(["schema", "id", "version", "entry", "license", "summary"]);
+  for (const key of Object.keys(input)) if (!allowed.has(key)) fail(`${KEEL_MODULE_MANIFEST_FILE}: "${key}" is not supported in ${KEEL_JSMODULE_SCHEMA}.`);
+  const name = moduleName(textField(input.id, "id", 64));
+  return {
+    protocol: KEEL_MODULE_MANIFEST_PROTOCOL,
+    name,
+    version: input.version === undefined ? "0.1.0" : textField(input.version, "version", 64),
+    description: textField(input.summary, "summary", 512),
+    entry: safeEntry(textField(input.entry, "entry", 256)),
+    license: textField(input.license, "license", 64),
+    sourceRepository: {
+      url: REPOSITORY_PLACEHOLDER_URL,
+      revision: REPOSITORY_PLACEHOLDER_REVISION,
+      path: ".",
+    },
+  };
+}
+
 export function parseKeelModuleManifest(value: unknown): KeelModuleManifest {
   if (value === null || typeof value !== "object" || Array.isArray(value)) fail(`${KEEL_MODULE_MANIFEST_FILE} must be a JSON object.`);
   const input = value as Record<string, unknown>;
+  if (input.schema === KEEL_JSMODULE_SCHEMA) return parseKeelJsModuleManifest(input);
   const allowed = new Set(["protocol", "name", "version", "description", "entry", "license", "sourceRepository"]);
   for (const key of Object.keys(input)) if (!allowed.has(key)) fail(`${KEEL_MODULE_MANIFEST_FILE}: "${key}" is not supported.`);
   if (input.protocol !== KEEL_MODULE_MANIFEST_PROTOCOL) fail(`${KEEL_MODULE_MANIFEST_FILE}: protocol must be ${KEEL_MODULE_MANIFEST_PROTOCOL}.`);
   const name = moduleName(textField(input.name, "name", 64));
-  const entry = textField(input.entry, "entry", 256);
-  if (entry.startsWith("/") || entry.split("/").some((part) => part.length === 0 || part === "." || part === "..")) {
-    fail(`${KEEL_MODULE_MANIFEST_FILE}: entry must be a safe relative path.`);
-  }
+  const entry = safeEntry(textField(input.entry, "entry", 256));
   const repositoryValue = input.sourceRepository;
   if (repositoryValue === null || typeof repositoryValue !== "object" || Array.isArray(repositoryValue)) {
     fail(`${KEEL_MODULE_MANIFEST_FILE}: sourceRepository must be an object with url, revision, and path.`);
@@ -306,15 +338,41 @@ function realRepository(manifest: KeelModuleManifest): KeelModuleManifest["sourc
   return manifest.sourceRepository;
 }
 
-export async function buildKeelModule(directory: string): Promise<BuildKeelModuleResult> {
+export interface BuildKeelModuleOptions {
+  /** Skip the terser compact stage and emit a keel-build-recipe@1 as before. */
+  readonly compact?: boolean;
+  /** Keep legal comments (`/*!`, `@license`, `@preserve`) in the shipped bytes. */
+  readonly keepComments?: boolean;
+  /** A file whose contents become a leading `/*!` banner in the shipped bytes. */
+  readonly stampPath?: string;
+}
+
+export async function buildKeelModule(directory: string, buildOptions: BuildKeelModuleOptions = {}): Promise<BuildKeelModuleResult> {
   const root = path.resolve(directory);
   const manifest = await readKeelModuleManifest(root);
   runStrictTypecheck(root);
+  const compact = buildOptions.compact !== false;
+  const keepComments = buildOptions.keepComments === true;
+  if (!compact && (keepComments || buildOptions.stampPath !== undefined)) {
+    fail("--keep-comments and --stamp belong to the compact stage; they cannot be combined with --no-compact.");
+  }
+  const stampPath = buildOptions.stampPath === undefined
+    ? undefined
+    : path.relative(root, path.resolve(buildOptions.stampPath)).split(path.sep).join("/");
+  if (stampPath !== undefined && stampPath.startsWith("..")) {
+    fail("--stamp must name a file inside the module directory, so the recipe can pin it.");
+  }
   const built = await createKeelBuildRecipe({
     root,
     entry: manifest.entry,
-    options: KEEL_MODULE_BUILD_OPTIONS,
+    options: {
+      ...KEEL_MODULE_BUILD_OPTIONS,
+      // Authors mark comments they want on chain as legal comments; esbuild
+      // must carry them through for the compact stage to be able to keep them.
+      legalComments: keepComments ? "inline" : "none",
+    },
     mediaType: "text/javascript",
+    ...(compact ? { compact: { keepComments, ...(stampPath === undefined ? {} : { stamp: stampPath }) } } : {}),
   });
   // The readable source the receipt points a holder at is the resolved module
   // graph the recipe pinned, in recipe order, so no imported file escapes the

@@ -2,6 +2,7 @@ declare const process: {
   pid: number;
   kill(pid: number, signal?: number | string): boolean;
   argv: string[];
+  execPath: string;
   cwd(): string;
   exit(code?: number): never;
   exitCode?: number;
@@ -28,7 +29,7 @@ declare module "node:fs/promises" {
   export function mkdtemp(prefix: string): Promise<string>;
   export function realpath(path: string | URL): Promise<string>;
   export function rename(oldPath: string | URL, newPath: string | URL): Promise<void>;
-  export function stat(path: string | URL): Promise<{ isFile(): boolean; isDirectory(): boolean; size: number }>;
+  export function stat(path: string | URL): Promise<{ isFile(): boolean; isDirectory(): boolean; size: number; mtimeMs: number }>;
   export function readdir(path: string | URL, options: { withFileTypes: true }): Promise<Array<{ name: string; isFile(): boolean; isDirectory(): boolean; isSymbolicLink(): boolean }>>;
   export function readdir(path: string | URL, options?: { withFileTypes?: false }): Promise<string[]>;
   export function access(path: string | URL): Promise<void>;
@@ -87,6 +88,15 @@ declare module "node:zlib" {
   export function deflate(data: Uint8Array, options: unknown, callback: (error: Error | null, result: Buffer) => void): void;
   export function inflate(data: Uint8Array, callback: (error: Error | null, result: Buffer) => void): void;
   export const constants: Record<string, number>;
+}
+
+declare module "node:child_process" {
+  export function execFile(
+    file: string,
+    args: readonly string[],
+    options: { cwd?: string; maxBuffer?: number; timeout?: number; env?: Record<string, string | undefined> },
+    callback: (error: Error | null, stdout: string, stderr: string) => void,
+  ): unknown;
 }
 
 declare module "node:util" {

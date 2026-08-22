@@ -6,6 +6,7 @@ import type { Hex, Integrity } from "./types.js";
 export const KEEL_SOURCE_ANALYSIS_PROTOCOL = "keel-source-analysis@1" as const;
 export const KEEL_SOURCE_RECEIPT_PROTOCOL = "keel-source-receipt@1" as const;
 export const KEEL_SOURCE_BUILD_VERIFICATION_PROTOCOL = "keel-source-build-verification@1" as const;
+export const KEEL_SOURCE_BEHAVIOR_VERIFICATION_PROTOCOL = "keel-source-behavior-verification@1" as const;
 export const KEEL_SOURCE_ANALYZER_VERSION = "1.0.0" as const;
 
 export type SourceReadabilityClass =
@@ -38,6 +39,28 @@ export interface SourceReadabilityReport {
   readonly reasons: readonly string[];
 }
 
+/** One executed test vector: its name, and the digest of the observed value. */
+export interface KeelBehaviorVectorEvidence {
+  readonly name: string;
+  /** SHA-256 of the canonical JSON of the value both builds produced. */
+  readonly valueDigest: Hex;
+}
+
+/**
+ * Evidence that a candidate's observable behavior matched the readable source
+ * build on every recorded test vector. This is weaker than a reproducible
+ * build and the receipt never pretends otherwise: vectors witness behavior on
+ * the inputs somebody thought to write down, while a rebuild witnesses every
+ * byte. Trust order: reproducible-build > behaviorally-verified.
+ */
+export interface KeelBehaviorVerification {
+  readonly protocol: typeof KEEL_SOURCE_BEHAVIOR_VERIFICATION_PROTOCOL;
+  readonly verifier: { readonly name: string; readonly version: string };
+  /** SHA-256 of the exact vectors file that was executed. */
+  readonly vectorsDigest: Hex;
+  readonly vectors: readonly KeelBehaviorVectorEvidence[];
+}
+
 export interface KeelSourceReceipt {
   readonly protocol: typeof KEEL_SOURCE_RECEIPT_PROTOCOL;
   readonly source: Integrity;
@@ -57,7 +80,14 @@ export interface KeelSourceReceipt {
     readonly buildRecipeDigest: Hex;
     readonly rebuiltOutput: Integrity;
   };
-  readonly disposition: "queued" | "exact-source-output" | "reproducible-build";
+  /** Present only when disposition is "behaviorally-verified". */
+  readonly behavior?: KeelBehaviorVerification;
+  /**
+   * Trust order, strongest first: exact-source-output and reproducible-build
+   * (byte proofs), then behaviorally-verified (vector-witnessed behavior only),
+   * then queued. A behaviorally-verified receipt never claims a rebuild.
+   */
+  readonly disposition: "queued" | "exact-source-output" | "reproducible-build" | "behaviorally-verified";
 }
 
 const TEXT_MEDIA = /^(?:text\/|application\/(?:javascript|json|typescript|xml|wasm-text))/iu;
@@ -231,5 +261,74 @@ export async function verifySourceBuild(input: {
       rebuiltOutput,
     },
     disposition: "reproducible-build",
+  };
+}
+
+const HEX_DIGEST = /^0x[0-9a-f]{64}$/u;
+
+/**
+ * Records the result after every recorded test vector produced the same value
+ * against the readable source build and against a candidate's bytes.
+ *
+ * This is the honest disposition for an externally-minified candidate (a human
+ * or an agent produced the bytes, so no deterministic recipe can rebuild them).
+ * It requires the executed evidence: the digest of the vectors file and a
+ * value digest per vector. It never claims "reproducible-build"; a rebuild
+ * proves every byte, vectors prove only the behaviors somebody wrote down.
+ * When the candidate bytes are the source bytes it degenerates to the stronger
+ * "exact-source-output".
+ */
+export async function verifySourceBehavior(input: {
+  readonly sourceBytes: Uint8Array;
+  readonly outputBytes: Uint8Array;
+  readonly mediaType: string;
+  readonly repository?: { readonly url: string; readonly revision: string; readonly path: string };
+  readonly verifier: { readonly name: string; readonly version: string };
+  readonly vectorsDigest: Hex;
+  readonly vectors: readonly KeelBehaviorVectorEvidence[];
+}): Promise<KeelSourceReceipt> {
+  if (input.vectors.length === 0) {
+    throw new TypeError("Behavioral verification requires at least one executed test vector.");
+  }
+  if (!HEX_DIGEST.test(input.vectorsDigest)) {
+    throw new TypeError("vectorsDigest must be a lower-case SHA-256 digest.");
+  }
+  for (const vector of input.vectors) {
+    if (typeof vector.name !== "string" || vector.name.length === 0 || vector.name.length > 256) {
+      throw new TypeError("Every vector evidence entry needs a name of 1 through 256 characters.");
+    }
+    if (!HEX_DIGEST.test(vector.valueDigest)) {
+      throw new TypeError(`Vector "${vector.name}" needs a lower-case SHA-256 value digest.`);
+    }
+  }
+  const sourceText = TEXT_MEDIA.test(input.mediaType)
+    ? new TextDecoder("utf-8", { fatal: true }).decode(input.sourceBytes)
+    : "";
+  const report = analyzeSourceReadability(sourceText, input.mediaType);
+  const [source, output, reportIntegrity] = await Promise.all([
+    createIntegrity(input.sourceBytes),
+    createIntegrity(input.outputBytes),
+    createIntegrity(utf8ToBytes(canonicalJson(report))),
+  ]);
+  const base = {
+    protocol: KEEL_SOURCE_RECEIPT_PROTOCOL,
+    source,
+    output,
+    report,
+    reportDigest: reportIntegrity.digest,
+    ...(input.repository === undefined ? {} : { repository: input.repository }),
+  } as const;
+  if (sameIntegrity(source, output)) {
+    return { ...base, disposition: "exact-source-output" };
+  }
+  return {
+    ...base,
+    behavior: {
+      protocol: KEEL_SOURCE_BEHAVIOR_VERIFICATION_PROTOCOL,
+      verifier: input.verifier,
+      vectorsDigest: input.vectorsDigest,
+      vectors: input.vectors,
+    },
+    disposition: "behaviorally-verified",
   };
 }

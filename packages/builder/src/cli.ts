@@ -5,6 +5,8 @@ import { canonicalJson, createSourceReceipt, parseArtifactManifest, validateMani
 import { createUploadPlan } from "./plan.js";
 import { lockModuleSnapshotFile, moduleSpecifierFromFlags, resolveModuleSnapshotFile } from "./module-cli.js";
 import { buildKeelModule, initKeelModule, planKeelModule } from "./module-pipeline.js";
+import { testKeelModule, verifyKeelModuleCandidate } from "./module-testing.js";
+import { buildKeelWorkspace, indexKeelWorkspace, testKeelWorkspace } from "./module-workspace.js";
 import { analyzeCost } from "./cost-analysis.js";
 import { analyzeMedia, runMediaPipeline, verifyBuiltArtifact } from "./pipeline.js";
 import { createRecursiveUploadPlan } from "./recursive-plan.js";
@@ -75,7 +77,12 @@ function usage(): string {
 
 Commands:
   keel module init <dir> [--name <name>]
-  keel module build <dir> [--json]
+  keel module build <dir> [--keep-comments] [--stamp <file>] [--no-compact] [--json]
+  keel module build --all [--root <workspace>] [--keep-comments] [--stamp <file>] [--json]
+  keel module test <dir> [--json]
+  keel module test --all [--root <workspace>] [--json]
+  keel module compact <dir> --candidate <file> [--json]
+  keel module index [--root <workspace>] [--repository <url>] [--json]
   keel module plan <dir> [--chain-id 11155111] [--address <0x...>] [--json]
   keel analyze <input> [--media-type <type>] [--json]
   keel build <input> --out <directory> --created-at <ISO date> [--name <name>] [--description <text>]
@@ -127,23 +134,90 @@ async function main(): Promise<void> {
     }
 
     case "module": {
-      const verb = required(args.positional[0], "module requires a subcommand: init, build, or plan.");
-      const directory = required(args.positional[1], `module ${verb} requires a module directory.`);
+      const verb = required(args.positional[0], "module requires a subcommand: init, build, test, compact, index, or plan.");
+      const all = args.flags.all === true && (verb === "build" || verb === "test");
+      const workspaceRoot = flag(args, "root") ?? process.cwd();
+      const directory = verb === "index" || all ? undefined : required(args.positional[1], `module ${verb} requires a module directory (or --all).`);
       if (verb === "init") {
         const name = flag(args, "name");
-        const result = await initKeelModule(directory, name === undefined ? {} : { name });
+        const result = await initKeelModule(directory as string, name === undefined ? {} : { name });
         output(result, args.flags.json === true, `Scaffolded ${result.manifest.name} in ${result.directory}: ${result.files.join(", ")}.`);
         return;
       }
       if (verb === "build") {
-        const result = await buildKeelModule(directory);
+        const stampPath = flag(args, "stamp");
+        const buildOptions = {
+          ...(args.flags["no-compact"] === true ? { compact: false } : {}),
+          ...(args.flags["keep-comments"] === true ? { keepComments: true } : {}),
+          ...(stampPath === undefined ? {} : { stampPath }),
+        };
+        if (all) {
+          const results = await buildKeelWorkspace(workspaceRoot, buildOptions);
+          output(
+            results,
+            args.flags.json === true,
+            results
+              .map((entry) => `Built ${entry.module.workspacePath} (${entry.build.outputIntegrity.byteLength} bytes; ${entry.build.receipt.disposition}).`)
+              .join("\n"),
+          );
+          return;
+        }
+        const result = await buildKeelModule(directory as string, buildOptions);
+        const compactLine = result.recipe.compact === undefined
+          ? ""
+          : `compact winner: ${result.recipe.compact.winner} (esbuild ${result.recipe.compact.candidateBytes.esbuild} bytes, terser ${result.recipe.compact.candidateBytes.terser} bytes)\n`;
         output(
           result,
           args.flags.json === true,
           `Built ${result.outputPath} (${result.outputIntegrity.byteLength} bytes; ${result.receipt.disposition}).\n` +
+          compactLine +
           `source digest:  ${result.receipt.source.digest}\n` +
           `output digest:  ${result.receipt.output.digest}\n` +
           `receipt digest: ${result.receiptDigest}`,
+        );
+        return;
+      }
+      if (verb === "test") {
+        if (all) {
+          const results = await testKeelWorkspace(workspaceRoot);
+          const lines = results.map((entry) => entry.test === undefined
+            ? `${entry.module.workspacePath}: skipped (no ${"test/vectors.mjs"})`
+            : `${entry.module.workspacePath}: ${entry.test.passed ? "passed" : "FAILED"} (${entry.test.vectors.length} vectors)`);
+          const failed = results.some((entry) => entry.test !== undefined && !entry.test.passed);
+          output(results, args.flags.json === true, lines.join("\n"));
+          if (failed) process.exitCode = 1;
+          return;
+        }
+        const result = await testKeelModule(directory as string);
+        output(
+          result,
+          args.flags.json === true,
+          `${result.manifest.name}: ${result.passed ? "passed" : "FAILED"}; shipped bytes match the readable source on ` +
+          `${result.vectors.filter((vector) => vector.matchesSource).length}/${result.vectors.length} vectors.`,
+        );
+        if (!result.passed) process.exitCode = 1;
+        return;
+      }
+      if (verb === "compact") {
+        const candidate = required(flag(args, "candidate"), "module compact requires --candidate <file>.");
+        const result = await verifyKeelModuleCandidate(directory as string, candidate);
+        output(
+          result,
+          args.flags.json === true,
+          `Candidate ${result.candidatePath} (${result.candidateByteLength} bytes) matched the readable source on all ` +
+          `${result.vectors.length} vectors.\nWrote ${result.receiptPath} (${result.receipt.disposition}; receipt digest ${result.receiptDigest}).\n` +
+          `Trust order reminder: reproducible-build > behaviorally-verified.`,
+        );
+        return;
+      }
+      if (verb === "index") {
+        const repositoryUrl = flag(args, "repository");
+        const result = await indexKeelWorkspace(workspaceRoot, repositoryUrl === undefined ? {} : { repositoryUrl });
+        output(
+          result,
+          args.flags.json === true,
+          `Wrote ${result.catalogPath}: ${result.catalog.modules.length} modules, ` +
+          `${result.catalog.modules.filter((entry) => entry.verified).length} verified.`,
         );
         return;
       }
@@ -153,7 +227,7 @@ async function main(): Promise<void> {
         if (chainId !== undefined && (!Number.isSafeInteger(chainId) || chainId <= 0)) throw new RangeError("--chain-id must be a positive safe integer.");
         const address = flag(args, "address");
         if (address !== undefined && !/^0x[0-9a-f]{40}$/u.test(address)) throw new TypeError("--address must be a lower-case 20-byte Ethereum address.");
-        const result = await planKeelModule(directory, {
+        const result = await planKeelModule(directory as string, {
           ...(chainId === undefined ? {} : { chainId }),
           ...(address === undefined ? {} : { address: address as `0x${string}` }),
         });
@@ -164,7 +238,7 @@ async function main(): Promise<void> {
         );
         return;
       }
-      throw new TypeError(`Unknown module subcommand ${verb}. Use init, build, or plan.`);
+      throw new TypeError(`Unknown module subcommand ${verb}. Use init, build, test, compact, index, or plan.`);
     }
 
     case "analyze": {

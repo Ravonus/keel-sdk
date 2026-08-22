@@ -32,6 +32,7 @@ run("node", [
   "tests/builder-pipeline.test.mjs",
   "tests/builder-module-resolver.test.mjs",
   "tests/builder-module-pipeline.test.mjs",
+  "tests/builder-module-workspace.test.mjs",
   "tests/builder-cost-analysis.test.mjs",
   "tests/mcp.test.mjs",
   "tests/sprite-codex.test.mjs",

@@ -43,9 +43,17 @@ import { createIntegrity } from "./integrity.js";
 import type { Hex, Integrity } from "./types.js";
 
 export const KEEL_BUILD_RECIPE_PROTOCOL = "keel-build-recipe@1" as const;
+export const KEEL_BUILD_RECIPE_PROTOCOL_V2 = "keel-build-recipe@2" as const;
+
+export type KeelBuildRecipeProtocol =
+  | typeof KEEL_BUILD_RECIPE_PROTOCOL
+  | typeof KEEL_BUILD_RECIPE_PROTOCOL_V2;
 
 /** Bundlers whose output this protocol is prepared to reproduce. */
 export type KeelBuildTool = "esbuild";
+
+/** Compactors whose output this protocol is prepared to reproduce. */
+export type KeelCompactTool = "terser";
 
 export interface KeelBuildToolIdentity {
   readonly name: KeelBuildTool;
@@ -79,14 +87,50 @@ export interface KeelBuildInput {
   readonly integrity: Integrity;
 }
 
+/**
+ * The options of the compact stage that change output bytes. A closed set for
+ * the same reason `KeelBuildOptions` is: an option the digest does not cover
+ * is an option a reproduction cannot be held to.
+ */
+export interface KeelCompactOptions {
+  /** Compression passes. At least 2; more passes converge, they do not wander. */
+  readonly passes: number;
+  readonly mangle: boolean;
+  /** Preserve legal comments (`/*!` and `@license`/`@preserve`) in shipped bytes. */
+  readonly keepComments: boolean;
+}
+
+/** A banner file injected verbatim into the shipped bytes, named like an input. */
+export interface KeelCompactStamp {
+  readonly path: string;
+  readonly integrity: Integrity;
+}
+
+/**
+ * The compact stage of a `keel-build-recipe@2`: the bundler's output is run
+ * through a second minifier, and the smaller of the two candidates ships. Both
+ * candidate sizes and the winner are recorded so the choice is auditable, and
+ * the tool version is exact so the stage reproduces byte for byte.
+ */
+export interface KeelBuildCompact {
+  readonly tool: { readonly name: KeelCompactTool; readonly version: string };
+  readonly options: KeelCompactOptions;
+  readonly stamp?: KeelCompactStamp;
+  readonly winner: "esbuild" | "terser";
+  /** Candidate sizes before any stamp banner, so the comparison is honest. */
+  readonly candidateBytes: { readonly esbuild: number; readonly terser: number };
+}
+
 export interface KeelBuildRecipe {
-  readonly protocol: typeof KEEL_BUILD_RECIPE_PROTOCOL;
+  readonly protocol: KeelBuildRecipeProtocol;
   readonly tool: KeelBuildToolIdentity;
   /** Entry point, relative to the recipe root. */
   readonly entry: string;
   /** The resolved graph, sorted by path. Not a directory listing. */
   readonly inputs: readonly KeelBuildInput[];
   readonly options: KeelBuildOptions;
+  /** Present only on `keel-build-recipe@2`. `@1` records remain valid as-is. */
+  readonly compact?: KeelBuildCompact;
   readonly output: {
     readonly mediaType: string;
     readonly integrity: Integrity;
@@ -120,9 +164,46 @@ function assertPath(value: unknown, label: string): string {
   return value;
 }
 
+function assertValidCompact(compact: KeelBuildCompact): void {
+  if (compact === null || typeof compact !== "object") throw new TypeError("recipe.compact must be an object.");
+  if (compact.tool?.name !== "terser") throw new TypeError("recipe.compact.tool.name is not a supported compactor.");
+  if (typeof compact.tool.version !== "string" || !SEMVER_ISH.test(compact.tool.version)) {
+    throw new TypeError("recipe.compact.tool.version must be an exact version.");
+  }
+  const options = compact.options;
+  if (options === null || typeof options !== "object") throw new TypeError("recipe.compact.options is required.");
+  if (!Number.isSafeInteger(options.passes) || options.passes < 2 || options.passes > 16) {
+    throw new TypeError("recipe.compact.options.passes must be an integer from 2 through 16.");
+  }
+  if (typeof options.mangle !== "boolean" || typeof options.keepComments !== "boolean") {
+    throw new TypeError("recipe.compact.options.mangle and .keepComments must be booleans.");
+  }
+  if (compact.stamp !== undefined) {
+    assertPath(compact.stamp.path, "recipe.compact.stamp.path");
+    assertIntegrity(compact.stamp.integrity, "recipe.compact.stamp.integrity");
+  }
+  if (compact.winner !== "esbuild" && compact.winner !== "terser") {
+    throw new TypeError("recipe.compact.winner must be esbuild or terser.");
+  }
+  const sizes = compact.candidateBytes;
+  if (
+    sizes === null || typeof sizes !== "object" ||
+    !Number.isSafeInteger(sizes.esbuild) || sizes.esbuild <= 0 ||
+    !Number.isSafeInteger(sizes.terser) || sizes.terser <= 0
+  ) {
+    throw new TypeError("recipe.compact.candidateBytes must record both candidate sizes.");
+  }
+}
+
 export function assertValidKeelBuildRecipe(recipe: KeelBuildRecipe): KeelBuildRecipe {
-  if (recipe?.protocol !== KEEL_BUILD_RECIPE_PROTOCOL) {
-    throw new TypeError("recipe.protocol must be keel-build-recipe@1.");
+  if (recipe?.protocol !== KEEL_BUILD_RECIPE_PROTOCOL && recipe?.protocol !== KEEL_BUILD_RECIPE_PROTOCOL_V2) {
+    throw new TypeError("recipe.protocol must be keel-build-recipe@1 or keel-build-recipe@2.");
+  }
+  if (recipe.compact !== undefined) {
+    if (recipe.protocol !== KEEL_BUILD_RECIPE_PROTOCOL_V2) {
+      throw new TypeError("recipe.compact requires keel-build-recipe@2.");
+    }
+    assertValidCompact(recipe.compact);
   }
   if (recipe.tool?.name !== "esbuild") throw new TypeError("recipe.tool.name is not a supported build tool.");
   if (typeof recipe.tool.version !== "string" || !SEMVER_ISH.test(recipe.tool.version)) {
@@ -213,6 +294,36 @@ export function diffKeelBuildRecipes(
   }
   for (const path of actualByPath.keys()) {
     if (!expectedByPath.has(path)) issues.push(`input added: ${path}`);
+  }
+  if (expected.protocol !== actual.protocol) {
+    issues.push(`options: recipe protocol ${expected.protocol} vs ${actual.protocol}`);
+  }
+  if (expected.compact !== undefined || actual.compact !== undefined) {
+    const expectedCompact = expected.compact;
+    const actualCompact = actual.compact;
+    if (expectedCompact === undefined || actualCompact === undefined) {
+      issues.push("options: one recipe has a compact stage and the other does not");
+    } else {
+      if (expectedCompact.tool.name !== actualCompact.tool.name || expectedCompact.tool.version !== actualCompact.tool.version) {
+        issues.push(
+          `tool: recipe compact stage used ${expectedCompact.tool.name}@${expectedCompact.tool.version}, this environment has ${actualCompact.tool.name}@${actualCompact.tool.version}`,
+        );
+      }
+      if (canonicalJson(expectedCompact.options) !== canonicalJson(actualCompact.options)) {
+        issues.push("options: compact options differ from the recipe");
+      }
+      if ((expectedCompact.stamp?.path) !== (actualCompact.stamp?.path)) {
+        issues.push("options: compact stamp declaration differs from the recipe");
+      } else if (expectedCompact.stamp !== undefined && actualCompact.stamp !== undefined &&
+                 expectedCompact.stamp.integrity.digest !== actualCompact.stamp.integrity.digest) {
+        issues.push(`input changed: ${expectedCompact.stamp.path}`);
+      }
+      if (expectedCompact.winner !== actualCompact.winner ||
+          expectedCompact.candidateBytes.esbuild !== actualCompact.candidateBytes.esbuild ||
+          expectedCompact.candidateBytes.terser !== actualCompact.candidateBytes.terser) {
+        issues.push("output: compact stage produced different candidates than the recipe records");
+      }
+    }
   }
   if (expected.output.integrity.digest !== actual.output.integrity.digest) {
     issues.push("output: rebuilt bytes differ from the recipe's declared output");

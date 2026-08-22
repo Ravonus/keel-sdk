@@ -25,7 +25,8 @@
   "license": "MIT",
   "dependencies": {
     "@keel/protocol": "workspace:*",
-    "@keel/sdk": "workspace:*"
+    "@keel/sdk": "workspace:*",
+    "terser": "5.44.0"
   },
   "optionalDependencies": {
     "sharp": "^0.34.4"

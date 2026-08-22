@@ -10,4 +10,6 @@ export * from "./module-receipt.js";
 export * from "./build-recipe.js";
 export * from "./module-verification.js";
 export * from "./module-pipeline.js";
+export * from "./module-testing.js";
+export * from "./module-workspace.js";
 export * from "./cost-analysis.js";

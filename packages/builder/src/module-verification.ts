@@ -48,7 +48,7 @@ import {
   type KeelSourceOrigin,
   type KeelSourceReceipt,
 } from "@keel/protocol";
-import { createKeelBuildRecipe, createKeelModuleSourceReceipt, type KeelBuildVerification } from "./build-recipe.js";
+import { createKeelBuildRecipe, createKeelModuleSourceReceipt, type KeelBuildVerification, type KeelCompactRequest } from "./build-recipe.js";
 
 /** Forges an archive may be fetched from. Same shape as the RPC host list: a
  *  governed set, not whatever URL an submission happens to contain. */
@@ -67,6 +67,10 @@ export interface VerifyKeelModuleOptions {
   /** The readable file a holder is pointed at. Defaults to `entry`. */
   readonly sourcePath?: string;
   readonly options?: KeelBuildOptions;
+  /** Present when the published bytes were built with the compact stage; the
+   *  reproduction then repeats it (same terser pinning, same stamp file from
+   *  inside the archive) so the exact shipped bytes come back. */
+  readonly compact?: KeelCompactRequest;
   readonly mediaType?: string;
   /** Forges permitted to serve archives. */
   readonly sourceHosts?: readonly string[];
@@ -231,6 +235,7 @@ export async function verifyKeelModuleFromOrigin(
       root,
       entry: options.entry,
       ...(options.options === undefined ? {} : { options: options.options }),
+      ...(options.compact === undefined ? {} : { compact: options.compact }),
       ...(options.mediaType === undefined ? {} : { mediaType: options.mediaType }),
     });
     const sourcePath = options.sourcePath ?? options.entry;

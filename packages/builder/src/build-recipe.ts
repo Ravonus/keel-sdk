@@ -26,8 +26,10 @@
  */
 
 import { readFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { build, version as esbuildVersion } from "esbuild";
+import { minify as terserMinify } from "terser";
 import {
   assertValidKeelBuildRecipe,
   createIntegrity,
@@ -35,12 +37,19 @@ import {
   keelBuildRecipeDigest,
   verifySourceBuild,
   KEEL_BUILD_RECIPE_PROTOCOL,
+  KEEL_BUILD_RECIPE_PROTOCOL_V2,
   type Hex,
   type Integrity,
+  type KeelBuildCompact,
   type KeelBuildOptions,
   type KeelBuildRecipe,
+  type KeelCompactOptions,
   type KeelSourceReceipt,
 } from "@keel/protocol";
+
+const require = createRequire(import.meta.url);
+/** Pinned by the builder's package.json; recorded exactly in every @2 recipe. */
+const terserVersion = (require("terser/package.json") as { readonly version: string }).version;
 
 /**
  * Defaults chosen for bytes that go on chain and run in a sandboxed frame.
@@ -57,6 +66,18 @@ export const KEEL_MODULE_BUILD_OPTIONS: KeelBuildOptions = Object.freeze({
   charset: "ascii",
 });
 
+/**
+ * What the caller may ask of the compact stage. Everything else about it,
+ * passes, mangling, and the terser version, is fixed by the toolchain, because a
+ * knob that changes bytes is a knob that has to live in the digest.
+ */
+export interface KeelCompactRequest {
+  /** Keep legal comments (`/*!`, `@license`, `@preserve`) in the shipped bytes. */
+  readonly keepComments?: boolean;
+  /** A banner file (root-relative) injected as a leading comment, verbatim. */
+  readonly stamp?: string;
+}
+
 export interface CreateKeelBuildRecipeOptions {
   /** Everything is named relative to this, so a recipe is machine-independent. */
   readonly root: string;
@@ -64,6 +85,8 @@ export interface CreateKeelBuildRecipeOptions {
   readonly entry: string;
   readonly options?: KeelBuildOptions;
   readonly mediaType?: string;
+  /** Present: run the compact stage and emit a keel-build-recipe@2. Absent: @1, exactly as before. */
+  readonly compact?: KeelCompactRequest;
 }
 
 export interface KeelBuildResult {
@@ -132,6 +155,83 @@ async function runBuild(
   return { bytes: new Uint8Array(output.contents), inputs: Object.keys(result.metafile?.inputs ?? {}).sort() };
 }
 
+/**
+ * The compact stage's fixed dial positions. Aggressive but deterministic:
+ * terser's output is a pure function of input, options, and version, and
+ * nothing time-, path-, or randomness-dependent is enabled here.
+ */
+export const KEEL_COMPACT_PASSES = 3;
+
+async function runTerser(bytes: Uint8Array, options: KeelCompactOptions): Promise<Uint8Array> {
+  const result = await terserMinify(new TextDecoder("utf-8", { fatal: true }).decode(bytes), {
+    module: true,
+    ecma: 2020,
+    compress: { passes: options.passes },
+    mangle: options.mangle,
+    // ascii_only matches the esbuild charset so a transport cannot mangle either candidate.
+    format: { comments: options.keepComments ? "some" : false, ascii_only: true },
+  });
+  if (result.code === undefined) throw new Error("terser produced no output.");
+  return new TextEncoder().encode(result.code);
+}
+
+/**
+ * The banner is framed as a legal comment so every tool downstream leaves it
+ * alone. The stamp's own bytes must not contain the terminator, or the art
+ * would truncate itself.
+ */
+function stampBanner(stampPath: string, stampBytes: Uint8Array): Uint8Array {
+  const text = new TextDecoder("utf-8", { fatal: true }).decode(stampBytes);
+  if (text.includes("*/")) throw new Error(`Stamp ${stampPath} contains "*/", which would terminate its own banner.`);
+  const body = text.replace(/\s+$/u, "");
+  return new TextEncoder().encode(`/*!\n${body}\n*/\n`);
+}
+
+interface CompactStageResult {
+  readonly compact: KeelBuildCompact;
+  readonly shippedBytes: Uint8Array;
+}
+
+/**
+ * Run terser over the esbuild output and ship whichever candidate is smaller
+ * (ties go to esbuild: fewer moving parts for the same bytes). Both sizes and
+ * the winner are recorded, and the optional stamp banner is applied after the
+ * choice so it cannot tilt the comparison.
+ */
+async function runCompactStage(
+  root: string,
+  esbuildBytes: Uint8Array,
+  options: KeelCompactOptions,
+  stampPath: string | undefined,
+): Promise<CompactStageResult> {
+  const terserBytes = await runTerser(esbuildBytes, options);
+  const winner = terserBytes.byteLength < esbuildBytes.byteLength ? "terser" : "esbuild";
+  const winnerBytes = winner === "terser" ? terserBytes : esbuildBytes;
+  let stamp: KeelBuildCompact["stamp"];
+  let shippedBytes = winnerBytes;
+  if (stampPath !== undefined) {
+    const stampRelative = relative(root, path.resolve(root, stampPath));
+    if (stampRelative.startsWith("..")) throw new Error(`Stamp ${stampPath} must live inside the recipe root.`);
+    const stampBytes = new Uint8Array(await readFile(path.resolve(root, stampRelative)));
+    stamp = { path: stampRelative, integrity: await createIntegrity(stampBytes) };
+    const banner = stampBanner(stampRelative, stampBytes);
+    const combined = new Uint8Array(banner.byteLength + winnerBytes.byteLength);
+    combined.set(banner, 0);
+    combined.set(winnerBytes, banner.byteLength);
+    shippedBytes = combined;
+  }
+  return {
+    compact: {
+      tool: { name: "terser", version: terserVersion },
+      options,
+      ...(stamp === undefined ? {} : { stamp }),
+      winner,
+      candidateBytes: { esbuild: esbuildBytes.byteLength, terser: terserBytes.byteLength },
+    },
+    shippedBytes,
+  };
+}
+
 export async function createKeelBuildRecipe(
   options: CreateKeelBuildRecipeOptions,
 ): Promise<KeelBuildResult> {
@@ -146,17 +246,30 @@ export async function createKeelBuildRecipe(
       integrity: await createIntegrity(new Uint8Array(await readFile(path.resolve(root, input)))),
     })),
   );
-  const outputIntegrity = await createIntegrity(bytes);
+  let compactSection: KeelBuildCompact | undefined;
+  let outputBytes = bytes;
+  if (options.compact !== undefined) {
+    const compactOptions: KeelCompactOptions = {
+      passes: KEEL_COMPACT_PASSES,
+      mangle: true,
+      keepComments: options.compact.keepComments === true,
+    };
+    const staged = await runCompactStage(root, bytes, compactOptions, options.compact.stamp);
+    compactSection = staged.compact;
+    outputBytes = staged.shippedBytes;
+  }
+  const outputIntegrity = await createIntegrity(outputBytes);
   const recipe: KeelBuildRecipe = {
-    protocol: KEEL_BUILD_RECIPE_PROTOCOL,
+    protocol: compactSection === undefined ? KEEL_BUILD_RECIPE_PROTOCOL : KEEL_BUILD_RECIPE_PROTOCOL_V2,
     tool: { name: "esbuild", version: esbuildVersion },
     entry,
     inputs: graph.sort((left, right) => (left.path < right.path ? -1 : 1)),
     options: buildOptions,
+    ...(compactSection === undefined ? {} : { compact: compactSection }),
     output: { mediaType: options.mediaType ?? "text/javascript", integrity: outputIntegrity },
   };
   assertValidKeelBuildRecipe(recipe);
-  return { recipe, recipeDigest: await keelBuildRecipeDigest(recipe), outputBytes: bytes, outputIntegrity };
+  return { recipe, recipeDigest: await keelBuildRecipeDigest(recipe), outputBytes, outputIntegrity };
 }
 
 export type KeelBuildVerdict = "reproduced" | "source-changed" | "environment-changed" | "output-differs";
@@ -199,16 +312,27 @@ export async function verifyKeelBuildRecipe(
       integrity: await createIntegrity(new Uint8Array(await readFile(path.resolve(root, input)))),
     })),
   );
-  const rebuiltOutput = await createIntegrity(bytes);
+  // A @2 recipe's output commitment covers the compact stage, so the rebuild
+  // repeats it: same options, this environment's terser, the stamp re-read
+  // from the tree. Divergence then names the stage that caused it.
+  let rebuiltBytes = bytes;
+  let actualCompact: KeelBuildCompact | undefined;
+  if (recipe.compact !== undefined) {
+    const staged = await runCompactStage(root, bytes, recipe.compact.options, recipe.compact.stamp?.path);
+    rebuiltBytes = staged.shippedBytes;
+    actualCompact = staged.compact;
+  }
+  const rebuiltOutput = await createIntegrity(rebuiltBytes);
   const actual: KeelBuildRecipe = {
     ...recipe,
     tool: { name: "esbuild", version: esbuildVersion },
     inputs: graph.sort((left, right) => (left.path < right.path ? -1 : 1)),
+    ...(actualCompact === undefined ? {} : { compact: actualCompact }),
     output: { mediaType: recipe.output.mediaType, integrity: rebuiltOutput },
   };
   const issues = diffKeelBuildRecipes(recipe, actual);
   if (issues.length === 0) {
-    return { verdict: "reproduced", reproduced: true, recipeDigest, rebuiltOutput, rebuiltBytes: bytes, issues };
+    return { verdict: "reproduced", reproduced: true, recipeDigest, rebuiltOutput, rebuiltBytes: rebuiltBytes, issues };
   }
   // Ordered by what a reader should look at first: their checkout, then their
   // toolchain, then the genuinely interesting case where neither explains it.
@@ -217,7 +341,7 @@ export async function verifyKeelBuildRecipe(
     : issues.some((issue: string) => issue.startsWith("tool:") || issue.startsWith("options:"))
       ? "environment-changed"
       : "output-differs";
-  return { verdict, reproduced: false, recipeDigest, rebuiltOutput, rebuiltBytes: bytes, issues };
+  return { verdict, reproduced: false, recipeDigest, rebuiltOutput, rebuiltBytes: rebuiltBytes, issues };
 }
 
 export interface KeelModuleSourceReceiptOptions {
