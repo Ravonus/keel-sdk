@@ -12,21 +12,21 @@
  * allocation, and the historical named Sonant-X JSON format used by OCA.
  */
 
-export const KEEL_SOUND_BITS_CODEC = "oca-sonant-bits@1" as const;
-export const KEEL_SPRITE_SOUND_SCHEMA = "oca-sprite-sounds@1" as const;
+export const KEEL_SOUND_BITS_CODEC = "keel-sonant-bits@1" as const;
+export const KEEL_SPRITE_SOUND_SCHEMA = "keel-sprite-sounds@1" as const;
 export const SONANT_LEGACY_JSON_CODEC = "sonant-x-legacy-json@1" as const;
-export const KEEL_SPRITE_BITS_CODEC = "oca-sprite-bit-atlas@1" as const;
-export const KEEL_GRID_SPRITE_CODEC = "oca-grid-sprite-sheet@1" as const;
-export const KEEL_MATERIAL_BITS_CODEC = "oca-material-bits@1" as const;
+export const KEEL_SPRITE_BITS_CODEC = "keel-sprite-bit-atlas@1" as const;
+export const KEEL_GRID_SPRITE_CODEC = "keel-grid-sprite-sheet@1" as const;
+export const KEEL_MATERIAL_BITS_CODEC = "keel-material-bits@1" as const;
 export const KEEL_ATLAS_MATERIAL_BITS_CODEC =
-  "oca-atlas-material-map@1" as const;
-export const KEEL_TRAIT_BITS_CODEC = "oca-trait-catalog-bits@2" as const;
+  "keel-atlas-material-map@1" as const;
+export const KEEL_TRAIT_BITS_CODEC = "keel-trait-catalog-bits@2" as const;
 /** Append-only trait catalog. Options carry their introduction epoch so a
  * token can always resolve against the catalog revision it was minted with. */
 export const KEEL_APPEND_ONLY_TRAIT_BITS_CODEC =
-  "oca-trait-catalog-bits@3" as const;
+  "keel-trait-catalog-bits@3" as const;
 export const KEEL_CHARACTER_METADATA_BITS_CODEC =
-  "oca-character-metadata-bits@1" as const;
+  "keel-character-metadata-bits@1" as const;
 
 export interface KeelContentReader {
   readonly protocol: string;
@@ -1025,7 +1025,7 @@ export interface SpriteAtlas {
   readonly codec:
     | typeof KEEL_SPRITE_BITS_CODEC
     | typeof KEEL_GRID_SPRITE_CODEC
-    | "oca-json-sprite-atlas@1";
+    | "keel-json-sprite-atlas@1";
   readonly frames: readonly SpriteFrame[];
 }
 
@@ -1449,7 +1449,7 @@ export function parseSpriteAtlasJson(value: unknown): SpriteAtlas {
   }
   if (frames.length === 0 || frames.length > 4096)
     throw new RangeError("Sprite atlas must contain 1 through 4096 frames.");
-  return { codec: "oca-json-sprite-atlas@1", frames };
+  return { codec: "keel-json-sprite-atlas@1", frames };
 }
 
 /** Encode frame rectangles as a compact varint bit atlas for on-chain use. */

@@ -60,8 +60,8 @@ async function flatPlan(content = "hello", chunkSize = content.length, compressi
   const sourceIntegrity = await createIntegrity(source);
   return {
     plan: {
-      schema: "oca-upload-plan@2",
-      indexEncoding: "oca-object-index@1",
+      schema: "keel-upload-plan@2",
+      indexEncoding: "keel-object-index@1",
       objectName: "hello",
       mediaType: "text/plain",
       originalByteLength: source.byteLength,
@@ -86,7 +86,7 @@ test("Ethereum adapter verifies bytes and emits deterministic unsigned KeelHold 
   assert.equal(first.operations.length, 2);
   assert.equal(first.operations[0].kind, "castSlugs");
   assert.equal(first.operations[1].kind, "weldObject");
-  assert.equal(first.operations[0].operationId, "op-ca6fca0ad918-00000");
+  assert.equal(first.operations[0].operationId, "op-a61a3e644e8e-00000");
   assert.match(first.operations[0].data, /^0x0d1ff9e2/u);
   assert.match(first.operations[1].data, /^0xb17463a8/u);
   assert.equal(first.operations[1].objectId.length, 66);
@@ -103,7 +103,7 @@ test("Ethereum adapter batches at three chunks and binds the canonical source pl
     planChunks.push({ index, offset: index, byteLength: 1, integrity: await createIntegrity(value), file });
   }
   const plan = {
-    schema: "oca-upload-plan@2", indexEncoding: "oca-object-index@1", objectName: "abcd", mediaType: "text/plain",
+    schema: "keel-upload-plan@2", indexEncoding: "keel-object-index@1", objectName: "abcd", mediaType: "text/plain",
     originalByteLength: 4, storedByteLength: 4, compression: "none", integrity: await createIntegrity(source), maxChildren: 128, chunks: planChunks,
   };
   const result = await prepareEthereumKeelHoldOperations({ plan, chunks, target, codecs });
@@ -194,7 +194,7 @@ test("Ethereum adapter derives nested composite IDs with accumulated stored leng
   objects.push({ id: "node-002-00000", kind: "composite", level: 2, byteOffset: 0, byteLength: 3, mediaType: "text/plain", integrity: await createIntegrity(abc), parts: ["node-001-00000", "leaf-00002"] });
   objects.push({ id: "node-001-00000", kind: "composite", level: 1, byteOffset: 0, byteLength: 2, mediaType: "text/plain", integrity: await createIntegrity(ab), parts: ["leaf-00000", "leaf-00001"] });
   const plan = {
-    schema: "oca-recursive-upload-plan@2", indexEncoding: "oca-object-index@1", objectName: "nested", mediaType: "text/plain",
+    schema: "keel-recursive-upload-plan@2", indexEncoding: "keel-object-index@1", objectName: "nested", mediaType: "text/plain",
     byteLength: 3, integrity: await createIntegrity(abc), root: "node-002-00000", treeDepth: 2, leafDecodedBytes: 4096,
     maxChunkBytes: 23000, maxPartsPerComposite: 2, maxChildren: 128, objects,
   };
@@ -212,8 +212,8 @@ test("Viem codec wiring matches the KeelHold golden calldata and IDs", async () 
   const bytes = Uint8Array.from([0x00, 0x01, 0x02, 0xff]);
   const committed = await createIntegrity(bytes);
   const plan = {
-    schema: "oca-upload-plan@2",
-    indexEncoding: "oca-object-index@1",
+    schema: "keel-upload-plan@2",
+    indexEncoding: "keel-object-index@1",
     objectName: "golden",
     mediaType: "text/plain",
     originalByteLength: 4,
@@ -250,8 +250,8 @@ test("Ethereum adapter enforces contract media and recursive root invariants", a
   const bytes = utf8ToBytes("x");
   const committed = await createIntegrity(bytes);
   const recursive = {
-    schema: "oca-recursive-upload-plan@2",
-    indexEncoding: "oca-object-index@1",
+    schema: "keel-recursive-upload-plan@2",
+    indexEncoding: "keel-object-index@1",
     objectName: "root",
     mediaType: "text/plain",
     byteLength: 1,

@@ -1,5 +1,5 @@
 {
-  "codec": "oca-json-sprite-atlas@1",
+  "codec": "keel-json-sprite-atlas@1",
   "image": {
     "width": 128,
     "height": 16

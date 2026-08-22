@@ -129,7 +129,7 @@ A few identifiers are **format magic, not branding**, and deliberately keep
 their old spelling until the format itself revs — changing them would orphan
 every manifest and descriptor already published on chain:
 
-- `oca-manifest@2` — the manifest format id (becomes `keel-manifest@3` at the
+- `keel-manifest@2` — the manifest format id (becomes `keel-manifest@3` at the
   next format bump, not before)
 - `oca://` — the virtual route scheme inside the sandbox
 - `oca.per-token-mint-data.v1` and similar already-deployed hash domains

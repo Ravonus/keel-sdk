@@ -698,18 +698,18 @@ function allowCollectionVerificationFixtureQuery(hostname, explicitTestMode) {
  * It is adapted here to use a per-render deterministic noise seed, bounded
  * allocation, and the historical named Sonant-X JSON format used by OCA.
  */
-const KEEL_SOUND_BITS_CODEC = "oca-sonant-bits@1";
-const KEEL_SPRITE_SOUND_SCHEMA = "oca-sprite-sounds@1";
+const KEEL_SOUND_BITS_CODEC = "keel-sonant-bits@1";
+const KEEL_SPRITE_SOUND_SCHEMA = "keel-sprite-sounds@1";
 const SONANT_LEGACY_JSON_CODEC = "sonant-x-legacy-json@1";
-const KEEL_SPRITE_BITS_CODEC = "oca-sprite-bit-atlas@1";
-const KEEL_GRID_SPRITE_CODEC = "oca-grid-sprite-sheet@1";
-const KEEL_MATERIAL_BITS_CODEC = "oca-material-bits@1";
-const KEEL_ATLAS_MATERIAL_BITS_CODEC = "oca-atlas-material-map@1";
-const KEEL_TRAIT_BITS_CODEC = "oca-trait-catalog-bits@2";
+const KEEL_SPRITE_BITS_CODEC = "keel-sprite-bit-atlas@1";
+const KEEL_GRID_SPRITE_CODEC = "keel-grid-sprite-sheet@1";
+const KEEL_MATERIAL_BITS_CODEC = "keel-material-bits@1";
+const KEEL_ATLAS_MATERIAL_BITS_CODEC = "keel-atlas-material-map@1";
+const KEEL_TRAIT_BITS_CODEC = "keel-trait-catalog-bits@2";
 /** Append-only trait catalog. Options carry their introduction epoch so a
  * token can always resolve against the catalog revision it was minted with. */
-const KEEL_APPEND_ONLY_TRAIT_BITS_CODEC = "oca-trait-catalog-bits@3";
-const KEEL_CHARACTER_METADATA_BITS_CODEC = "oca-character-metadata-bits@1";
+const KEEL_APPEND_ONLY_TRAIT_BITS_CODEC = "keel-trait-catalog-bits@3";
+const KEEL_CHARACTER_METADATA_BITS_CODEC = "keel-character-metadata-bits@1";
 const SONANT_FIELDS = [
     "osc1_oct",
     "osc1_det",
@@ -1688,7 +1688,7 @@ function parseSpriteAtlasJson(value) {
     }
     if (frames.length === 0 || frames.length > 4096)
         throw new RangeError("Sprite atlas must contain 1 through 4096 frames.");
-    return { codec: "oca-json-sprite-atlas@1", frames };
+    return { codec: "keel-json-sprite-atlas@1", frames };
 }
 /** Encode frame rectangles as a compact varint bit atlas for on-chain use. */
 function encodeSpriteBitAtlas(value) {
@@ -3480,10 +3480,10 @@ const weaponBuild = Object.fromEntries(weaponSpec.attributes.map((attribute, ind
   attribute.options[attributeBytes[(9 + index) % attributeBytes.length] % attribute.options.length],
 ]));
 const weaponSoundCatalog = await Promise.resolve({
-  "schema": "oca-sprite-sounds@1",
+  "schema": "keel-sprite-sounds@1",
   "storage": "keel-object-revision",
   "library": {
-    "codec": "oca-sonant-bits@1",
+    "codec": "keel-sonant-bits@1",
     "reader": "createAudioReader",
     "rule": "Sprite assets pin this sound profile as an exact Keel object revision. Sounds are synthesis parameters, not recorded samples."
   },
@@ -3495,7 +3495,7 @@ const weaponSoundCatalog = await Promise.resolve({
       "events": [{
         "eventId": "attack",
         "retriggerMs": 800,
-        "variations": [{ "soundId": "gyro-saw-attack", "resourceId": "gyro-saw-attack.ocas", "codec": "oca-sonant-bits@1", "weight": 1, "gain": 0.34, "rate": 1 }]
+        "variations": [{ "soundId": "gyro-saw-attack", "resourceId": "gyro-saw-attack.ocas", "codec": "keel-sonant-bits@1", "weight": 1, "gain": 0.34, "rate": 1 }]
       }]
     },
     {
@@ -3505,7 +3505,7 @@ const weaponSoundCatalog = await Promise.resolve({
       "events": [{
         "eventId": "attack",
         "retriggerMs": 650,
-        "variations": [{ "soundId": "rift-fork-attack", "resourceId": "rift-fork-attack.ocas", "codec": "oca-sonant-bits@1", "weight": 1, "gain": 0.3, "rate": 1 }]
+        "variations": [{ "soundId": "rift-fork-attack", "resourceId": "rift-fork-attack.ocas", "codec": "keel-sonant-bits@1", "weight": 1, "gain": 0.3, "rate": 1 }]
       }]
     },
     {
@@ -3515,7 +3515,7 @@ const weaponSoundCatalog = await Promise.resolve({
       "events": [{
         "eventId": "attack",
         "retriggerMs": 650,
-        "variations": [{ "soundId": "aegis-star-attack", "resourceId": "aegis-star-attack.ocas", "codec": "oca-sonant-bits@1", "weight": 1, "gain": 0.28, "rate": 1 }]
+        "variations": [{ "soundId": "aegis-star-attack", "resourceId": "aegis-star-attack.ocas", "codec": "keel-sonant-bits@1", "weight": 1, "gain": 0.28, "rate": 1 }]
       }]
     },
     {
@@ -3525,7 +3525,7 @@ const weaponSoundCatalog = await Promise.resolve({
       "events": [{
         "eventId": "attack",
         "retriggerMs": 140,
-        "variations": [{ "soundId": "needle-array-attack", "resourceId": "needle-array-attack.ocas", "codec": "oca-sonant-bits@1", "weight": 1, "gain": 0.21, "rate": 1.08 }]
+        "variations": [{ "soundId": "needle-array-attack", "resourceId": "needle-array-attack.ocas", "codec": "keel-sonant-bits@1", "weight": 1, "gain": 0.21, "rate": 1.08 }]
       }]
     }
   ]
@@ -3545,7 +3545,7 @@ let audioReader;
 let weaponSoundBuffer;
 let weaponSoundBoot;
 const soundContent = Object.freeze({
-  protocol: "oca-content-gateway@1",
+  protocol: "keel-content-gateway@1",
   manifestId: "vault-character-showcase-sounds-v1",
   bytes(resourceId) {
     if (resourceId !== weaponSoundVariation?.resourceId) throw new Error(`Unknown weapon sound resource ${resourceId}`);

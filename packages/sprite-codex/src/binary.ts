@@ -1,4 +1,4 @@
-import { DEFAULT_SPRITE_CODEX_LIMITS, type CodexMetadata, type SpriteCodexLimits } from "./types.js";
+import { DEFAULT_SPRITE_CODEX_LIMITS, SPRITE_CODEX_SCHEMA, SPRITE_CODEX_SCHEMA_KEEL, type CodexMetadata, type SpriteCodexLimits } from "./types.js";
 
 const MAGIC = new Uint8Array([0x53, 0x43, 0x58, 0x31]); // SCX1
 const textEncoder = new TextEncoder();
@@ -97,7 +97,10 @@ function digest(value: unknown, label: string): asserts value is string {
 }
 
 function validateMetadata(metadata: CodexMetadata, masks: Uint8Array, limits: SpriteCodexLimits): void {
-  if (metadata.schema !== "oca-sprite-codex@1") throw new Error("unsupported sprite codex schema");
+  // Accepts both spellings so a bundle emitted after the rename loads too.
+  if (metadata.schema !== SPRITE_CODEX_SCHEMA && metadata.schema !== SPRITE_CODEX_SCHEMA_KEEL) {
+    throw new Error("unsupported sprite codex schema");
+  }
   if (typeof metadata.id !== "string" || metadata.id.length === 0 || metadata.id.length > 256) throw new Error("invalid codex id");
   integer(metadata.frame?.width, "frame.width", 1);
   integer(metadata.frame?.height, "frame.height", 1);

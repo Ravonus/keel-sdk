@@ -105,7 +105,7 @@ test("image wrapper emits a deterministic v2 verified-only manifest and can omit
       imageProcessor,
     });
     assert.equal(output.originalPath, undefined);
-    assert.equal(output.manifest.schema, "oca-manifest@2");
+    assert.equal(output.manifest.schema, "keel-manifest@2");
     assert.equal(output.manifest.canonicalization, "RFC8785");
     assert.equal(output.manifest.runtime.content.mode, "verified-only");
     assert.equal(output.manifest.runtime.determinism.mode, "replay");

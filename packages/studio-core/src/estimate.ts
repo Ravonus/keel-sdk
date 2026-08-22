@@ -57,7 +57,7 @@ export function estimateArtifactDeployment(
   const manifestBytes = utf8ToBytes(canonicalJson(artifact.manifest));
   resources.push(estimateResource("manifest.json", manifestBytes.byteLength, manifestBytes.byteLength, chunkBytes, maxChildren));
   return {
-    schema: "oca-studio-deployment-estimate@1",
+    schema: "keel-studio-deployment-estimate@1",
     chunkBytes,
     maxChildren,
     resources,

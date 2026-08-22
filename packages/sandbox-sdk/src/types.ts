@@ -21,7 +21,7 @@ export interface SandboxDiagnostic {
 }
 
 export interface SandboxInspectionReport {
-  readonly schema: "oca-sandbox-report@1";
+  readonly schema: "keel-sandbox-report@1";
   readonly valid: boolean;
   readonly manifestId: string;
   readonly revision: number;

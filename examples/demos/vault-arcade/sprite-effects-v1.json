@@ -1,5 +1,5 @@
 {
-  "schema": "oca-sprite-effect-catalog@1",
+  "schema": "keel-sprite-effect-catalog@1",
   "storage": "keel-object-revision",
   "profiles": [
     { "effectProfileId": 0, "id": "none", "effects": [] },

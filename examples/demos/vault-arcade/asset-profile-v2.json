@@ -14,7 +14,7 @@
   "universalQuality": 50,
   "optionalAlternateCodec": "image/avif",
   "optionalAlternateQuality": 50,
-  "traitCodec": "oca-trait-catalog-bits@3",
+  "traitCodec": "keel-trait-catalog-bits@3",
   "loading": "selected-options-only",
   "packageRule": "One selected full-motion package per visual attribute. Every equipped visual attribute covers all 30 frames in all 4 directions (120 cells); nine attributes resolve 1080 cells.",
   "fullMotionProxy48": {

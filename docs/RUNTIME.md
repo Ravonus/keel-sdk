@@ -2,15 +2,15 @@
 
 ## Why runtime versioning matters
 
-An interactive artifact is not only bytes. Browser behavior, viewer logic, timing, viewport, locale, and randomness can change the output. `oca-manifest@2` makes those inputs explicit.
+An interactive artifact is not only bytes. Browser behavior, viewer logic, timing, viewport, locale, and randomness can change the output. `keel-manifest@2` makes those inputs explicit.
 
 ## Engine declaration
 
 ```json
 {
   "engine": {
-    "protocol": "oca-runtime@1",
-    "viewerProtocol": "oca-viewer@1",
+    "protocol": "keel-runtime@1",
+    "viewerProtocol": "keel-viewer@1",
     "renderer": "browser",
     "viewerMirrors": []
   }

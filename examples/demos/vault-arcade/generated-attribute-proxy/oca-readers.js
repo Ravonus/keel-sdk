@@ -11,18 +11,18 @@
  * It is adapted here to use a per-render deterministic noise seed, bounded
  * allocation, and the historical named Sonant-X JSON format used by OCA.
  */
-export const KEEL_SOUND_BITS_CODEC = "oca-sonant-bits@1";
-export const KEEL_SPRITE_SOUND_SCHEMA = "oca-sprite-sounds@1";
+export const KEEL_SOUND_BITS_CODEC = "keel-sonant-bits@1";
+export const KEEL_SPRITE_SOUND_SCHEMA = "keel-sprite-sounds@1";
 export const SONANT_LEGACY_JSON_CODEC = "sonant-x-legacy-json@1";
-export const KEEL_SPRITE_BITS_CODEC = "oca-sprite-bit-atlas@1";
-export const KEEL_GRID_SPRITE_CODEC = "oca-grid-sprite-sheet@1";
-export const KEEL_MATERIAL_BITS_CODEC = "oca-material-bits@1";
-export const KEEL_ATLAS_MATERIAL_BITS_CODEC = "oca-atlas-material-map@1";
-export const KEEL_TRAIT_BITS_CODEC = "oca-trait-catalog-bits@2";
+export const KEEL_SPRITE_BITS_CODEC = "keel-sprite-bit-atlas@1";
+export const KEEL_GRID_SPRITE_CODEC = "keel-grid-sprite-sheet@1";
+export const KEEL_MATERIAL_BITS_CODEC = "keel-material-bits@1";
+export const KEEL_ATLAS_MATERIAL_BITS_CODEC = "keel-atlas-material-map@1";
+export const KEEL_TRAIT_BITS_CODEC = "keel-trait-catalog-bits@2";
 /** Append-only trait catalog. Options carry their introduction epoch so a
  * token can always resolve against the catalog revision it was minted with. */
-export const KEEL_APPEND_ONLY_TRAIT_BITS_CODEC = "oca-trait-catalog-bits@3";
-export const KEEL_CHARACTER_METADATA_BITS_CODEC = "oca-character-metadata-bits@1";
+export const KEEL_APPEND_ONLY_TRAIT_BITS_CODEC = "keel-trait-catalog-bits@3";
+export const KEEL_CHARACTER_METADATA_BITS_CODEC = "keel-character-metadata-bits@1";
 const SONANT_FIELDS = [
     "osc1_oct",
     "osc1_det",
@@ -1001,7 +1001,7 @@ export function parseSpriteAtlasJson(value) {
     }
     if (frames.length === 0 || frames.length > 4096)
         throw new RangeError("Sprite atlas must contain 1 through 4096 frames.");
-    return { codec: "oca-json-sprite-atlas@1", frames };
+    return { codec: "keel-json-sprite-atlas@1", frames };
 }
 /** Encode frame rectangles as a compact varint bit atlas for on-chain use. */
 export function encodeSpriteBitAtlas(value) {

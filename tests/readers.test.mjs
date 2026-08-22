@@ -112,7 +112,7 @@ test("all four Vault weapon attacks compile to compact non-silent one-second sou
     const encoded = encodeSoundBits(source);
     const context = new FakeAudioContext();
     const content = {
-      protocol: "oca-content-gateway@1",
+      protocol: "keel-content-gateway@1",
       manifestId: "vault-weapon-sound-test",
       bytes: () => encoded.slice(),
       text: () => "",
@@ -195,7 +195,7 @@ for (const name of ["shot", "laser"]) {
     const bits = encodeSoundBits(fixture.value);
     const context = new FakeAudioContext();
     const content = {
-      protocol: "oca-content-gateway@1",
+      protocol: "keel-content-gateway@1",
       manifestId: "reader-test",
       bytes: () => bits.slice(),
       text: () => "",

@@ -1,5 +1,5 @@
 {
-  "schema": "oca-semi-bone-rig@1",
+  "schema": "keel-semi-bone-rig@1",
   "id": "vault-humanoid-rig-v1",
   "cell": [48, 48],
   "origin": [24, 31],

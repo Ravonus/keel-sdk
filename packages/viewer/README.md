@@ -134,7 +134,7 @@ const pixels = applyAtlasMaterialMap(
 );
 ```
 
-`oca-atlas-material-map@1` supports named, priority-ordered RGBA ranges. Several
+`keel-atlas-material-map@1` supports named, priority-ordered RGBA ranges. Several
 source ranges can share one material region (for example gold shadow, mid, and
 highlight), other ranges can resolve independently, and `action: "preserve"`
 keeps authored accents fixed. Range matching is intentionally tolerant of

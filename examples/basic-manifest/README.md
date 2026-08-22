@@ -6,7 +6,7 @@ The HTML uses `/content/style` and `/content/runtime`; the CSS uses `/content/fa
 
 The manifest demonstrates:
 
-- `oca-manifest@2`;
+- `keel-manifest@2`;
 - RFC 8785 digest sidecar;
 - deterministic replay viewport/clock/seed;
 - verified-only content policy;

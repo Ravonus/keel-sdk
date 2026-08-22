@@ -1,5 +1,5 @@
 {
-  "codec": "oca-atlas-material-map@1",
+  "codec": "keel-atlas-material-map@1",
   "unmatched": "preserve",
   "targets": [
     {

@@ -9,7 +9,7 @@ export function parseSemiBoneRig(source) {
   const rig = JSON.parse(
     typeof source === "string" ? source : decoder.decode(source),
   );
-  if (rig.schema !== "oca-semi-bone-rig@1")
+  if (rig.schema !== "keel-semi-bone-rig@1")
     throw new TypeError("Unsupported semi-bone rig schema.");
   if (!Array.isArray(rig.bones) || rig.bones.length < 1)
     throw new TypeError("A semi-bone rig requires bones.");

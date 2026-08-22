@@ -112,7 +112,7 @@ test("thumbnail manifests support animated image or MP4 resources up to 2 MiB", 
     { id: "preview", role: "preview", mediaType: "image/webp", sources: [preview] },
   ], { fallback: { image: "preview", animation: "viewer" } });
   manifest.thumbnail = {
-    protocol: "oca-thumbnail@1",
+    protocol: "keel-thumbnail@1",
     image: "preview",
     animation: "preview",
     maxBytes: 2 * 1024 * 1024,
@@ -243,7 +243,7 @@ test("Keel IP-control manifests require a separate Tezos license registry", () =
 test("artifact plugin bindings pin one exact nested manifest graph and sanctioned spec", async () => {
   const viewer = await inlineSource("<main>plugin host</main>");
   const image = await inlineSource("fallback");
-  const pluginBytes = new TextEncoder().encode('{"schema":"oca-manifest@2","id":"keel-market"}');
+  const pluginBytes = new TextEncoder().encode('{"schema":"keel-manifest@2","id":"keel-market"}');
   const pluginIntegrity = await createIntegrity(pluginBytes);
   const value = baseManifest([
     { id: "viewer", role: "entrypoint", mediaType: "text/html", sources: [viewer] },

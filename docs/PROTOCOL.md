@@ -2,13 +2,13 @@
 
 ## Identifiers
 
-- Manifest schema: `oca-manifest@2`
+- Manifest schema: `keel-manifest@2`
 - Canonicalization: `RFC8785`
-- Runtime protocol: `oca-runtime@1`
-- Viewer protocol: `oca-viewer@1`
-- Content gateway: `oca-content-gateway@1`
-- Registry anchor: `oca-artifact-registry@1`
-- Object index encoding: `oca-object-index@1`
+- Runtime protocol: `keel-runtime@1`
+- Viewer protocol: `keel-viewer@1`
+- Content gateway: `keel-content-gateway@1`
+- Registry anchor: `keel-artifact-registry@1`
+- Object index encoding: `keel-object-index@1`
 
 ## Manifest commitment
 
@@ -31,7 +31,7 @@ The implementation rejects:
 
 ```json
 {
-  "schema": "oca-manifest@2",
+  "schema": "keel-manifest@2",
   "canonicalization": "RFC8785",
   "id": "artifact-id",
   "name": "Artifact name",
@@ -134,7 +134,7 @@ Verification order:
 
 ```json
 {
-  "protocol": "oca-content-gateway@1",
+  "protocol": "keel-content-gateway@1",
   "mode": "verified-only",
   "externalSources": "host-verified",
   "manifestTrust": "digest",
@@ -156,7 +156,7 @@ Registry-trusted manifests include:
 ```json
 {
   "anchor": {
-    "protocol": "oca-artifact-registry@1",
+    "protocol": "keel-artifact-registry@1",
     "kind": "artifact-registry",
     "chainId": 1,
     "registry": "0x...",
@@ -197,7 +197,7 @@ A compatible token may expose:
   "image": "...",
   "animation_url": "...",
   "external_url": "...",
-  "oca_schema": "oca-manifest@2",
+  "oca_schema": "keel-manifest@2",
   "oca_manifest": "...",
   "oca_manifest_digest": "0x..."
 }

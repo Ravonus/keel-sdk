@@ -46,7 +46,7 @@ export interface AnalyzeMediaOptions {
 }
 
 export interface MediaAnalysis {
-  readonly schema: "oca-media-analysis@1";
+  readonly schema: "keel-media-analysis@1";
   readonly input: {
     readonly fileName: string;
     readonly mediaType: string;
@@ -69,7 +69,7 @@ export interface BuildMediaArtifactOptions extends Omit<WrapImageOptions, "creat
 }
 
 export interface BuiltMediaArtifact {
-  readonly schema: "oca-build-result@1";
+  readonly schema: "keel-build-result@1";
   readonly determinism: {
     readonly manifest: "deterministic";
     readonly encodedPreview: "processor-dependent";
@@ -79,7 +79,7 @@ export interface BuiltMediaArtifact {
 }
 
 export interface MediaPipelineResult {
-  readonly schema: "oca-media-pipeline@1";
+  readonly schema: "keel-media-pipeline@1";
   readonly valid: boolean;
   readonly analysis: MediaAnalysis;
   readonly build: BuiltMediaArtifact;
@@ -136,7 +136,7 @@ export async function analyzeMedia(options: AnalyzeMediaOptions): Promise<MediaA
     ? { supported: true as const, strategy: "image-wrapper" as const }
     : { supported: false as const, strategy: "none" as const, reason: "The first builder slice wraps image media; this file is ready for a media-specific builder." };
   return {
-    schema: "oca-media-analysis@1",
+    schema: "keel-media-analysis@1",
     input: { fileName: path.basename(input), mediaType, kind, byteLength: bytes.byteLength, integrity: await createIntegrity(bytes) },
     ...(image === undefined ? {} : { image }),
     wrapper,
@@ -153,7 +153,7 @@ export async function buildMediaArtifact(options: BuildMediaArtifactOptions): Pr
     throw new Error("Input changed while the artifact was being built; discard the output and retry.");
   }
   return {
-    schema: "oca-build-result@1",
+    schema: "keel-build-result@1",
     determinism: { manifest: "deterministic", encodedPreview: "processor-dependent" },
     analysis,
     output,
@@ -163,7 +163,7 @@ export async function buildMediaArtifact(options: BuildMediaArtifactOptions): Pr
 export async function runMediaPipeline(options: BuildMediaArtifactOptions): Promise<MediaPipelineResult> {
   const build = await buildMediaArtifact(options);
   const verification = await verifyBuiltArtifact({ directory: options.outputDirectory, ...(options.maxInputBytes === undefined ? {} : { maxSourceBytes: options.maxInputBytes }) });
-  return { schema: "oca-media-pipeline@1", valid: verification.valid, analysis: build.analysis, build, verification };
+  return { schema: "keel-media-pipeline@1", valid: verification.valid, analysis: build.analysis, build, verification };
 }
 
 /** Exposed for callers that need a stable representation in logs or cache keys. */

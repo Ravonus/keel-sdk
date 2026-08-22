@@ -44,7 +44,7 @@
       const key = event.key.toLowerCase();
       if (key === "v" && proof) proof.hidden = !proof.hidden;
       if ((key === "h" || key === "?") && help) help.dataset.open = help.dataset.open === "true" ? "false" : "true";
-      if (key === "g") parent.postMessage({ protocol: "oca-viewer-command@1", action: "open-gallery" }, "*");
+      if (key === "g") parent.postMessage({ protocol: "keel-viewer-command@1", action: "open-gallery" }, "*");
     });
   } catch (error) {
     document.documentElement.dataset.keelCometRendered = "false";

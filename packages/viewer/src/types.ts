@@ -302,7 +302,7 @@ export interface SourceAuditEntry {
 }
 
 export interface ResolutionAudit {
-  readonly schema: "oca-resolution-audit@2";
+  readonly schema: "keel-resolution-audit@2";
   readonly manifestId: string;
   readonly manifestDigest?: Hex;
   readonly anchorVerified: boolean;
@@ -621,7 +621,7 @@ export interface VerifiedContentResponse {
 }
 
 export interface VerifiedContentGateway {
-  readonly protocol: "oca-content-gateway@1";
+  readonly protocol: "keel-content-gateway@1";
   readonly manifestId: string;
   readonly routes: readonly VerifiedContentRoute[];
   resolve(input: string, method?: string): VerifiedContentResponse;

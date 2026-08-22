@@ -117,7 +117,7 @@ release/
 
 The wrapper uses `/content/preview` and `/content/original`. Those names are resolved only after verification. The manifest includes:
 
-- `oca-manifest@2`;
+- `keel-manifest@2`;
 - RFC 8785 canonicalization;
 - per-resource SHA-256 integrity;
 - deterministic replay inputs;

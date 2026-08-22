@@ -43,7 +43,7 @@ await writeFile(
   `${outputBase}.json`,
   `${JSON.stringify(
     {
-      schema: "oca-directional-attribute-grid@1",
+      schema: "keel-directional-attribute-grid@1",
       frameWidth: 48,
       frameHeight: 48,
       imageWidth: layout.imageWidth,

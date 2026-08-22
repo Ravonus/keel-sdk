@@ -22,7 +22,7 @@ async function chainPlan() {
     descriptorMaterialized: true,
     chainReady: false,
     target: { family: "ethereum", network: 1, address: "0x1111111111111111111111111111111111111111" },
-    sourcePlan: { path: "materialized/upload-plan.json", schema: "oca-upload-plan@2", objectName: "hello", mediaType: "text/plain", integrity },
+    sourcePlan: { path: "materialized/upload-plan.json", schema: "keel-upload-plan@2", objectName: "hello", mediaType: "text/plain", integrity },
     operations: [
       {
         kind: "castSlugs",
@@ -96,9 +96,9 @@ test("publish review plans close the recursive logical graph before wrapping", a
     byteLength: 5,
     mediaType: "text/plain",
   };
-  const recursive = { ...source, sourcePlan: { ...source.sourcePlan, schema: "oca-recursive-upload-plan@2" }, operations: [source.operations[0], leaf, composite] };
+  const recursive = { ...source, sourcePlan: { ...source.sourcePlan, schema: "keel-recursive-upload-plan@2" }, operations: [source.operations[0], leaf, composite] };
   const wrapped = await createKeelPublishReviewPlan(recursive);
-  assert.equal(wrapped.plan.source.schema, "oca-recursive-upload-plan@2");
+  assert.equal(wrapped.plan.source.schema, "keel-recursive-upload-plan@2");
   await assert.rejects(() => createKeelPublishReviewPlan({ ...recursive, operations: [source.operations[0], leaf, { ...composite, partObjectIds: ["ghost"] }] }), /unknown|forward/u);
   await assert.rejects(() => createKeelPublishReviewPlan({ ...recursive, operations: [source.operations[0], leaf, { ...composite, partObjectIds: ["root"] }] }), /unknown|forward|self/u);
   await assert.rejects(() => createKeelPublishReviewPlan({ ...recursive, operations: [source.operations[0], leaf, composite, { ...composite, objectId: "root-2" }] }), /unreachable|root/u);

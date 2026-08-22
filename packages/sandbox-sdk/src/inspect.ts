@@ -100,7 +100,7 @@ export async function inspectSandboxManifest(
     diagnostics.some((diagnostic) => diagnostic.level === "error") ||
     projectRevision?.valid === false;
   return {
-    schema: "oca-sandbox-report@1",
+    schema: "keel-sandbox-report@1",
     valid: !errors,
     manifestId: manifest.id,
     revision: manifest.revision.number,

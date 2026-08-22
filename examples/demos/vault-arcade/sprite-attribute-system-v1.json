@@ -1,5 +1,5 @@
 {
-  "schema": "oca-sprite-attributes@1",
+  "schema": "keel-sprite-attributes@1",
   "storage": "keel-object-revisions",
   "selection": {
     "algorithm": "stable-id-pinned-epoch@1",
@@ -46,13 +46,13 @@
     "rule": "Targeted effects consume semantic masks produced by the same hex/range target map."
   },
   "sounds": {
-    "schema": "oca-sprite-sounds@1",
-    "codec": "oca-sonant-bits@1",
+    "schema": "keel-sprite-sounds@1",
+    "codec": "keel-sonant-bits@1",
     "events": ["spawn", "idle", "move", "attack", "hit", "death", "activate", "deactivate"],
     "rule": "Every sprite asset pins an exact Keel sound-profile object revision. Event variations resolve deterministically through the shared sound library and createAudioReader runtime."
   },
   "metadata": {
-    "codec": "oca-character-metadata-bits@1",
+    "codec": "keel-character-metadata-bits@1",
     "labels": "joined from the pinned Keel catalog after decode",
     "tokenStorage": "catalog revision plus compact numeric selections; no repeated names, descriptions or hex strings"
   }

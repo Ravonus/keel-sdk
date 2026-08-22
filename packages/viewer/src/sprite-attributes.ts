@@ -1,5 +1,5 @@
 /** Generalized semantic color targets and FX for every raster sprite family. */
-export const KEEL_SPRITE_ATTRIBUTE_SCHEMA = "oca-sprite-attributes@1" as const;
+export const KEEL_SPRITE_ATTRIBUTE_SCHEMA = "keel-sprite-attributes@1" as const;
 
 export type SpriteRgba = readonly [number, number, number, number];
 export type SpriteChannelRange = readonly [number, number];

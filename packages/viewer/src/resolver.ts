@@ -880,7 +880,7 @@ export async function resolveArtifact(manifest: ArtifactManifest, options: Resol
     for (const [id, pending] of context.cache) resolved.set(id, await pending);
     const completedAt = now(adapters);
     const audit: ResolutionAudit = {
-      schema: "oca-resolution-audit@2",
+      schema: "keel-resolution-audit@2",
       manifestId: manifest.id,
       ...(options.commitment === undefined ? {} : { manifestDigest: options.commitment.integrity.digest }),
       anchorVerified: options.commitment?.registry?.verified === true,

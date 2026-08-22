@@ -1,5 +1,5 @@
 {
-  "schema": "oca-procedural-sprite-rig@1",
+  "schema": "keel-procedural-sprite-rig@1",
   "id": "vault-sidearm-still-rig-v1",
   "frames": 9,
   "fps": 12,

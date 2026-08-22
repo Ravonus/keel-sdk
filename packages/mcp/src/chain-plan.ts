@@ -24,7 +24,7 @@ interface Chunk {
 }
 
 interface FlatPlan {
-  readonly schema: "oca-upload-plan@2";
+  readonly schema: "keel-upload-plan@2";
   readonly objectName: string;
   readonly mediaType: string;
   readonly originalByteLength: number;
@@ -61,7 +61,7 @@ interface Composite {
 }
 
 interface RecursivePlan {
-  readonly schema: "oca-recursive-upload-plan@2";
+  readonly schema: "keel-recursive-upload-plan@2";
   readonly objectName: string;
   readonly mediaType: string;
   readonly byteLength: number;
@@ -232,9 +232,9 @@ function recursiveOperations(plan: RecursivePlan): readonly Record<string, unkno
 async function validatePlan(workspace: Workspace, planDirectory: string, value: unknown): Promise<FlatPlan | RecursivePlan> {
   const plan = object(value, "upload plan");
   const schema = plan.schema;
-  if (schema === "oca-upload-plan@2") {
+  if (schema === "keel-upload-plan@2") {
     exact(plan, ["schema", "indexEncoding", "objectName", "mediaType", "originalByteLength", "storedByteLength", "compression", "integrity", "maxChildren", "chunks"], "upload plan");
-    if (plan.indexEncoding !== "oca-object-index@1" || plan.maxChildren !== 128) throw new TypeError("upload plan limits are unsupported.");
+    if (plan.indexEncoding !== "keel-object-index@1" || plan.maxChildren !== 128) throw new TypeError("upload plan limits are unsupported.");
     const chunksValue = plan.chunks;
     if (!Array.isArray(chunksValue) || chunksValue.length === 0 || chunksValue.length > 128) throw new RangeError("flat upload plan chunks must contain 1 through 128 entries.");
     const chunks: Chunk[] = [];
@@ -250,9 +250,9 @@ async function validatePlan(workspace: Workspace, planDirectory: string, value: 
     await assertCommittedBytes(decoded, committed, originalByteLength, "upload plan");
     return { schema, objectName: objectName(plan.objectName, "upload plan.objectName"), mediaType: mediaType(plan.mediaType, "upload plan.mediaType"), originalByteLength, storedByteLength, compression: selectedCompression, integrity: committed, maxChildren: 128, chunks };
   }
-  if (schema !== "oca-recursive-upload-plan@2") throw new TypeError("Unsupported upload plan schema.");
+  if (schema !== "keel-recursive-upload-plan@2") throw new TypeError("Unsupported upload plan schema.");
   exact(plan, ["schema", "indexEncoding", "objectName", "mediaType", "byteLength", "integrity", "root", "treeDepth", "leafDecodedBytes", "maxChunkBytes", "maxPartsPerComposite", "maxChildren", "objects"], "recursive upload plan");
-  if (plan.indexEncoding !== "oca-object-index@1" || plan.maxChildren !== 128) throw new TypeError("recursive upload plan limits are unsupported.");
+  if (plan.indexEncoding !== "keel-object-index@1" || plan.maxChildren !== 128) throw new TypeError("recursive upload plan limits are unsupported.");
   if (!Array.isArray(plan.objects) || plan.objects.length === 0 || plan.objects.length > MAX_OBJECTS) throw new RangeError(`recursive upload plan objects must contain 1 through ${MAX_OBJECTS} entries.`);
   const objects: (Leaf | Composite)[] = [];
   let decodedBudget = 0;
@@ -366,7 +366,7 @@ export async function createChainOperationPlan(workspace: Workspace, value: unkn
   const loaded = await workspace.readFile(planPath, MAX_PLAN_BYTES);
   const planDirectory = path.dirname(planPath);
   const plan = await validatePlan(workspace, planDirectory, JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(loaded.bytes)) as unknown);
-  const operations = plan.schema === "oca-upload-plan@2" ? flatOperations(plan) : recursiveOperations(plan);
+  const operations = plan.schema === "keel-upload-plan@2" ? flatOperations(plan) : recursiveOperations(plan);
   if (operations.length === 0 || operations.length > MAX_OPERATIONS) throw new RangeError(`chain operation plan exceeds ${MAX_OPERATIONS} operations.`);
   const result = {
     schema: "keel-chain-operation-plan@1",

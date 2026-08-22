@@ -363,8 +363,8 @@ function keelContractPlugin(value: unknown, path: string): void {
 function runtime(value: unknown, path: string): void {
   const data = object(value, path);
   const engine = object(data.engine, `${path}.engine`);
-  oneOf(engine.protocol, ["oca-runtime@1"], `${path}.engine.protocol`);
-  oneOf(engine.viewerProtocol, ["oca-viewer@1"], `${path}.engine.viewerProtocol`);
+  oneOf(engine.protocol, ["keel-runtime@1"], `${path}.engine.protocol`);
+  oneOf(engine.viewerProtocol, ["keel-viewer@1"], `${path}.engine.viewerProtocol`);
   oneOf(engine.renderer, ["browser"], `${path}.engine.renderer`);
   if (engine.viewerMirrors !== undefined) {
     array(engine.viewerMirrors, `${path}.engine.viewerMirrors`).forEach((entry, index) => {
@@ -395,7 +395,7 @@ function runtime(value: unknown, path: string): void {
   }
 
   const content = object(data.content, `${path}.content`);
-  oneOf(content.protocol, ["oca-content-gateway@1"], `${path}.content.protocol`);
+  oneOf(content.protocol, ["keel-content-gateway@1"], `${path}.content.protocol`);
   oneOf(content.mode, ["verified-only"], `${path}.content.mode`);
   oneOf(content.externalSources, ["host-verified"], `${path}.content.externalSources`);
   oneOf(content.manifestTrust, ["digest", "registry"], `${path}.content.manifestTrust`);
@@ -426,7 +426,7 @@ function runtime(value: unknown, path: string): void {
 
 function anchor(value: unknown, path: string): void {
   const data = object(value, path);
-  oneOf(data.protocol, ["oca-artifact-registry@1"], `${path}.protocol`);
+  oneOf(data.protocol, ["keel-artifact-registry@1"], `${path}.protocol`);
   oneOf(data.kind, ["artifact-registry"], `${path}.kind`);
   number(data.chainId, `${path}.chainId`);
   string(data.registry, `${path}.registry`);
@@ -484,7 +484,7 @@ export function parseArtifactManifest(value: unknown): ArtifactManifest {
 
   if (data.thumbnail !== undefined) {
     const thumbnail = object(data.thumbnail, "$.thumbnail");
-    oneOf(thumbnail.protocol, ["oca-thumbnail@1"], "$.thumbnail.protocol");
+    oneOf(thumbnail.protocol, ["keel-thumbnail@1"], "$.thumbnail.protocol");
     optionalString(thumbnail.image, "$.thumbnail.image");
     optionalString(thumbnail.animation, "$.thumbnail.animation");
     number(thumbnail.maxBytes, "$.thumbnail.maxBytes");

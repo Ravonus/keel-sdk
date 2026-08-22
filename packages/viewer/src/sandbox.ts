@@ -318,7 +318,7 @@ interface GatewayPayloadResource {
 }
 
 interface GatewayPayload {
-  readonly protocol: "oca-content-gateway@1";
+  readonly protocol: "keel-content-gateway@1";
   readonly manifestId: string;
   readonly aliases: Readonly<Record<string, string>>;
   readonly resources: Readonly<Record<string, GatewayPayloadResource>>;
@@ -374,7 +374,7 @@ function gatewayPayload(artifact: ResolvedArtifact): GatewayPayload {
     // into data URLs before reader code can request them by ID.
     aliases[route.resourceId] = route.resourceId;
   }
-  return { protocol: "oca-content-gateway@1", manifestId: artifact.manifest.id, aliases, resources };
+  return { protocol: "keel-content-gateway@1", manifestId: artifact.manifest.id, aliases, resources };
 }
 
 function contentGatewayBootstrap(artifact: ResolvedArtifact): string {

@@ -96,7 +96,7 @@ const integrity = await manifestIntegrity(manifest);
 await writeFile(path.join(directory, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
 await writeFile(
   path.join(directory, "manifest.integrity.json"),
-  `${JSON.stringify({ schema: "oca-manifest-integrity@2", manifest: "manifest.json", canonicalization: KEEL_CANONICALIZATION, integrity }, null, 2)}\n`,
+  `${JSON.stringify({ schema: "keel-manifest-integrity@2", manifest: "manifest.json", canonicalization: KEEL_CANONICALIZATION, integrity }, null, 2)}\n`,
 );
 const metadata = {
   name: manifest.name,

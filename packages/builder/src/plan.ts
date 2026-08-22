@@ -60,7 +60,7 @@ export async function createUploadPlan(
   }
 
   const plan: ObjectUploadPlan = {
-    schema: "oca-upload-plan@2",
+    schema: "keel-upload-plan@2",
     indexEncoding: KEEL_OBJECT_INDEX_ENCODING,
     objectName: options.objectName,
     mediaType: options.mediaType,

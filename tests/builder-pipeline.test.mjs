@@ -32,7 +32,7 @@ test("media analysis is typed, hashed, and reports image wrapper support", async
   const { directory, input } = await fixture();
   try {
     const analysis = await analyzeMedia({ input, imageProcessor });
-    assert.equal(analysis.schema, "oca-media-analysis@1");
+    assert.equal(analysis.schema, "keel-media-analysis@1");
     assert.equal(analysis.input.mediaType, "image/png");
     assert.equal(analysis.input.kind, "image");
     assert.equal(analysis.input.byteLength, ONE_PIXEL_PNG.byteLength);

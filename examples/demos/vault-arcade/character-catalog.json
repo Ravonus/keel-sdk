@@ -1,5 +1,5 @@
 {
-  "codec": "oca-trait-catalog-bits@3",
+  "codec": "keel-trait-catalog-bits@3",
   "revision": 1,
   "rejectExactDuplicates": true,
   "attributes": [

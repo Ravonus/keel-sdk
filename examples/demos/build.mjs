@@ -1,4 +1,4 @@
-// Builds a self-contained oca-manifest@2 for each demo.
+// Builds a self-contained keel-manifest@2 for each demo.
 //
 // Sources are inline and individually compressed with whichever of brotli,
 // gzip, deflate, or none is actually smallest for that resource — the same

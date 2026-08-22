@@ -39,7 +39,7 @@ interface Chunk {
 }
 
 interface FlatPlan {
-  readonly schema: "oca-upload-plan@2";
+  readonly schema: "keel-upload-plan@2";
   readonly objectName: string;
   readonly mediaType: string;
   readonly originalByteLength: number;
@@ -76,7 +76,7 @@ interface Composite {
 }
 
 interface RecursivePlan {
-  readonly schema: "oca-recursive-upload-plan@2";
+  readonly schema: "keel-recursive-upload-plan@2";
   readonly objectName: string;
   readonly mediaType: string;
   readonly byteLength: number;
@@ -262,9 +262,9 @@ async function parsePlan(value: unknown, bytes: Readonly<Record<string, Uint8Arr
     if (!Number.isSafeInteger(decodedBudget) || decodedBudget > MAX_TOTAL_DECODED_BYTES) throw new RangeError(`${label} exceeds the ${MAX_TOTAL_DECODED_BYTES}-byte decoded budget.`);
   };
   const input = object(value, "upload plan");
-  if (input.schema === "oca-upload-plan@2") {
+  if (input.schema === "keel-upload-plan@2") {
     exact(input, ["schema", "indexEncoding", "objectName", "mediaType", "originalByteLength", "storedByteLength", "compression", "integrity", "maxChildren", "chunks"], "upload plan");
-    if (input.indexEncoding !== "oca-object-index@1" || input.maxChildren !== CHUNK_STORE_MAX_CHILDREN) throw new TypeError("upload plan limits are unsupported.");
+    if (input.indexEncoding !== "keel-object-index@1" || input.maxChildren !== CHUNK_STORE_MAX_CHILDREN) throw new TypeError("upload plan limits are unsupported.");
     if (!Array.isArray(input.chunks)) throw new TypeError("upload plan.chunks must be an array.");
     const chunks = input.chunks.map((item, index) => parseChunk(item, bytes, `upload plan.chunks[${index}]`));
     validateChunkOrder(chunks, "upload plan.chunks");
@@ -277,9 +277,9 @@ async function parsePlan(value: unknown, bytes: Readonly<Record<string, Uint8Arr
     const plan: FlatPlan = { schema: input.schema, objectName: objectName(input.objectName, "upload plan.objectName"), mediaType: mediaType(input.mediaType, "upload plan.mediaType"), originalByteLength, storedByteLength, compression: selected, integrity: committed, chunks };
     return { plan, decoded: await verifyDecoded(selected, chunks, committed, codecs, "upload plan", reserveDecoded) };
   }
-  if (input.schema !== "oca-recursive-upload-plan@2") throw new TypeError("Unsupported upload plan schema.");
+  if (input.schema !== "keel-recursive-upload-plan@2") throw new TypeError("Unsupported upload plan schema.");
   exact(input, ["schema", "indexEncoding", "objectName", "mediaType", "byteLength", "integrity", "root", "treeDepth", "leafDecodedBytes", "maxChunkBytes", "maxPartsPerComposite", "maxChildren", "objects"], "recursive upload plan");
-  if (input.indexEncoding !== "oca-object-index@1" || input.maxChildren !== CHUNK_STORE_MAX_CHILDREN) throw new TypeError("recursive upload plan limits are unsupported.");
+  if (input.indexEncoding !== "keel-object-index@1" || input.maxChildren !== CHUNK_STORE_MAX_CHILDREN) throw new TypeError("recursive upload plan limits are unsupported.");
   const leafDecodedBytes = positive(input.leafDecodedBytes, "recursive upload plan.leafDecodedBytes", CHUNK_STORE_MAX_OBJECT_BYTES);
   const maxChunkBytes = positive(input.maxChunkBytes, "recursive upload plan.maxChunkBytes", CHUNK_STORE_MAX_SLUG_BYTES);
   const maxPartsPerComposite = positive(input.maxPartsPerComposite, "recursive upload plan.maxPartsPerComposite", CHUNK_STORE_MAX_CHILDREN);
@@ -488,7 +488,7 @@ export async function prepareEthereumKeelHoldOperations(input: EthereumKeelHoldI
       const args = [ids, leaf.integrity.digest, leaf.byteLength, compressionCode(leaf.compression), leaf.mediaType] as const;
       operations.push({ operationId: await operationId(planDigest, operations.length), kind: "weldObject", chainId, to: address.toLowerCase() as `0x${string}`, valueWei: "0", signature: "weldObject(bytes32[],bytes32,uint64,uint8,string)", args, data: await calldata(codecs, "weldObject(bytes32[],bytes32,uint64,uint8,string)", args), ...(objectId === undefined ? {} : { objectId }), storedByteLength: leaf.storedByteLength });
     };
-    if (parsed.plan.schema === "oca-upload-plan@2") await addLeaf({ id: "flat", kind: "leaf", level: 0, byteOffset: 0, byteLength: parsed.plan.originalByteLength, storedByteLength: parsed.plan.storedByteLength, mediaType: parsed.plan.mediaType, compression: parsed.plan.compression, integrity: parsed.plan.integrity, chunks: parsed.plan.chunks, decoded: parsed.decoded }, 0);
+    if (parsed.plan.schema === "keel-upload-plan@2") await addLeaf({ id: "flat", kind: "leaf", level: 0, byteOffset: 0, byteLength: parsed.plan.originalByteLength, storedByteLength: parsed.plan.storedByteLength, mediaType: parsed.plan.mediaType, compression: parsed.plan.compression, integrity: parsed.plan.integrity, chunks: parsed.plan.chunks, decoded: parsed.decoded }, 0);
     else {
       for (const [index, item] of parsed.plan.objects.entries()) if (item.kind === "leaf") await addLeaf(item, index);
       const composites = new Map(parsed.plan.objects.filter((item): item is Composite => item.kind === "composite").map((item) => [item.id, item] as const));

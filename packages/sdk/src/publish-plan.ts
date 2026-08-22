@@ -131,7 +131,7 @@ function source(value: unknown): KeelPublishReviewSource {
   const input = object(value, "sourcePlan");
   exact(input, ["schema", "objectName", "mediaType", "integrity", "byteLength", "path"], "sourcePlan");
   const schema = text(input.schema, "sourcePlan.schema", 128);
-  if (schema !== "oca-upload-plan@2" && schema !== "oca-recursive-upload-plan@2") throw new TypeError("sourcePlan.schema is unsupported.");
+  if (schema !== "keel-upload-plan@2" && schema !== "keel-recursive-upload-plan@2") throw new TypeError("sourcePlan.schema is unsupported.");
   const objectName = text(input.objectName, "sourcePlan.objectName", 128);
   if (objectName === "." || objectName === ".." || objectName.includes("/") || objectName.includes("\\")) throw new TypeError("sourcePlan.objectName must be metadata-safe.");
   const media = mediaType(input.mediaType, "sourcePlan.mediaType");
@@ -257,7 +257,7 @@ function validateOperationGraph(sourcePlan: KeelPublishReviewSource, operations:
   const finalDigest = finalObject.digest;
   const finalLength = finalObject.byteLength;
   if (finalDigest === undefined || finalLength !== sourcePlan.byteLength || !sameIntegrity(finalDigest as Integrity, sourcePlan.integrity)) throw new TypeError("final chain object does not match sourcePlan integrity and byteLength.");
-  if (sourcePlan.schema === "oca-upload-plan@2") {
+  if (sourcePlan.schema === "keel-upload-plan@2") {
     if (descriptors.some((descriptor) => descriptor.kind === "weldComposite") || descriptors.filter((descriptor) => descriptor.kind === "weldObject").length !== 1) throw new TypeError("flat source plans require one direct weldObject and no composites.");
     if (finalObject.objectId !== undefined) throw new TypeError("flat source plans cannot carry a logical objectId.");
   } else {

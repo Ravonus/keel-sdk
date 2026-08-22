@@ -297,7 +297,7 @@ export async function wrapImage(options: WrapImageOptions): Promise<WrappedArtif
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
   await writeFile(
     manifestIntegrityPath,
-    `${JSON.stringify({ schema: "oca-manifest-integrity@2", manifest: "manifest.json", canonicalization: KEEL_CANONICALIZATION, integrity }, null, 2)}\n`,
+    `${JSON.stringify({ schema: "keel-manifest-integrity@2", manifest: "manifest.json", canonicalization: KEEL_CANONICALIZATION, integrity }, null, 2)}\n`,
   );
   return {
     manifest,

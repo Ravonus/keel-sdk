@@ -114,7 +114,7 @@ export interface ResourceDeploymentEstimate {
 }
 
 export interface ArtifactDeploymentEstimate {
-  readonly schema: "oca-studio-deployment-estimate@1";
+  readonly schema: "keel-studio-deployment-estimate@1";
   readonly chunkBytes: number;
   readonly maxChildren: number;
   readonly resources: readonly ResourceDeploymentEstimate[];

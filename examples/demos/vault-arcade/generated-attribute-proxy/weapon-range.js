@@ -66,7 +66,7 @@ const particlePalettes={
   void:{body:"#e3d3ff",shadow:"#2a144d",trim:"#7044b4",core:"#f6efff",glow:"#a867ff"},
   prism:{body:"#ffffff",shadow:"#315277",trim:"#69e3de",core:"#fff8c8",glow:"#ff71df"},
 };
-const soundContent={protocol:"oca-content-gateway@1",manifestId:"vault-weapon-sounds-v1",bytes(resourceId){const bytes=soundBytes.get(resourceId);if(!bytes)throw new Error(`Unknown weapon sound resource ${resourceId}`);return bytes.slice()},text(){throw new Error("Weapon sound resources are binary")},json(){throw new Error("Weapon sound resources are binary")},integrity(){return undefined},url(resourceId){return `./audio/${resourceId}`}};
+const soundContent={protocol:"keel-content-gateway@1",manifestId:"vault-weapon-sounds-v1",bytes(resourceId){const bytes=soundBytes.get(resourceId);if(!bytes)throw new Error(`Unknown weapon sound resource ${resourceId}`);return bytes.slice()},text(){throw new Error("Weapon sound resources are binary")},json(){throw new Error("Weapon sound resources are binary")},integrity(){return undefined},url(resourceId){return `./audio/${resourceId}`}};
 const attackTiming={gyro:{periodMs:1/.00042,triggerPhase:0},rift:{periodMs:1/.00065,triggerPhase:0},bloom:{periodMs:1/.00072,triggerPhase:.32},needle:{periodMs:(1/.0017)/3,triggerPhase:0}};
 
 for(const profile of weaponSoundCatalog.profiles){const label=document.querySelector(`[data-weapon-sound="${profile.assetId}"]`);if(label)label.textContent=`sound · ${profile.id}`}

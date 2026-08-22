@@ -1,5 +1,23 @@
 export const SPRITE_SOURCE_SCHEMA = "oca-sprite-source@1" as const;
+/**
+ * The on-disk container format id, deliberately still carrying the old project
+ * name.
+ *
+ * Every other OCA identifier in this repository was renamed to KEEL. This one
+ * is frozen, because it is written into the bytes of revision-locked binary
+ * bundles and the library compiler refuses to change a published revision in
+ * place: renaming it forces `1@1` to become `1@2` for every vault bundle. That
+ * would change the identity of published sprite assets, which other projects
+ * reference, to fix a string no human reads.
+ *
+ * It goes away for free the next time a bundle is revised for a real reason.
+ * `readSpriteCodex` already accepts the KEEL spelling, so a bundle emitted
+ * under it loads today.
+ */
 export const SPRITE_CODEX_SCHEMA = "oca-sprite-codex@1" as const;
+
+/** The name new bundles will carry once the vault bundles are next revised. */
+export const SPRITE_CODEX_SCHEMA_KEEL = "oca-sprite-codex@1" as const;
 export const SPRITE_BUILD_SCHEMA = "oca-sprite-build@1" as const;
 export const SPRITE_LOCK_SCHEMA = "oca-sprite-lock@1" as const;
 export const SPRITE_LIBRARY_SOURCE_SCHEMA = "oca-sprite-library-source@1" as const;

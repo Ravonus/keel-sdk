@@ -20,7 +20,7 @@ vendored here.
 
 ```
 demos.mjs      the catalogue — the single source of truth for what each demo contains
-build.mjs      builds a self-contained oca-manifest@2 per demo (used by the tests)
+build.mjs      builds a self-contained keel-manifest@2 per demo (used by the tests)
 vendor/        three.js, p5.js, and the SoundBox player
 <slug>/        one directory per demo: index.html plus its own sources
 ```

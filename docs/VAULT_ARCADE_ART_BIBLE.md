@@ -92,14 +92,14 @@ Each catalog definition commits:
 
 The mint receipt stores or derives the selected definition IDs and color values from the committed seed. Changing weights requires a new catalog revision and cannot rewrite existing characters or equipment.
 
-The compact runtime material codec is `oca-material-bits@1`. It supports four explicit policies:
+The compact runtime material codec is `keel-material-bits@1`. It supports four explicit policies:
 
 - `locked`: exact RGB bytes are never recolored.
 - `palette`: choose from a weighted authored list.
 - `ramp`: commit exact dark, mid, and light colors for deterministic shading.
 - `range`: choose bounded hue, saturation, and lightness from the mint seed, then derive a three-stop material ramp.
 
-The character catalogue is not limited to the nine interoperable equipment slots. `oca-trait-catalog-bits@1` gives every named attribute a stable numeric ID and weighted options; verified JSON holds human names and descriptions. Vault Arcade revision 1 includes nine core slots plus fifteen custom attributes for lineage, scenes, auras, trails, projectiles, voice, music, animation, effects, emotes, affinities, shaders, and SFX. A later catalogue revision may append more attributes without changing the ERC-721.
+The character catalogue is not limited to the nine interoperable equipment slots. `keel-trait-catalog-bits@1` gives every named attribute a stable numeric ID and weighted options; verified JSON holds human names and descriptions. Vault Arcade revision 1 includes nine core slots plus fifteen custom attributes for lineage, scenes, auras, trails, projectiles, voice, music, animation, effects, emotes, affinities, shaders, and SFX. A later catalogue revision may append more attributes without changing the ERC-721.
 
 The current catalogue has 24 attributes with 16 options each: `16^24 = 2^96` discrete combinations before bounded material colors. The mint registry can reject a visual fingerprint already used by another token, so the uniqueness promise does not rely on probability alone.
 

@@ -31,7 +31,7 @@ function validateTransform(value, label) {
 export function parseProceduralSpriteRig(bytes) {
   const source = typeof bytes === "string" ? bytes : decoder.decode(bytes);
   const rig = JSON.parse(source);
-  if (rig.schema !== "oca-procedural-sprite-rig@1")
+  if (rig.schema !== "keel-procedural-sprite-rig@1")
     throw new Error("Unsupported procedural sprite rig schema.");
   if (!Number.isInteger(rig.frames) || rig.frames < 2 || rig.frames > 64)
     throw new Error("Procedural sprite rig frames must be between 2 and 64.");

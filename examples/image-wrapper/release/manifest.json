@@ -1,5 +1,5 @@
 {
-  "schema": "oca-manifest@2",
+  "schema": "keel-manifest@2",
   "canonicalization": "RFC8785",
   "id": "original-preserved",
   "name": "Original Preserved",
@@ -80,8 +80,8 @@
   },
   "runtime": {
     "engine": {
-      "protocol": "oca-runtime@1",
-      "viewerProtocol": "oca-viewer@1",
+      "protocol": "keel-runtime@1",
+      "viewerProtocol": "keel-viewer@1",
       "renderer": "browser"
     },
     "determinism": {
@@ -101,7 +101,7 @@
       "timezone": "UTC"
     },
     "content": {
-      "protocol": "oca-content-gateway@1",
+      "protocol": "keel-content-gateway@1",
       "mode": "verified-only",
       "externalSources": "host-verified",
       "manifestTrust": "digest",

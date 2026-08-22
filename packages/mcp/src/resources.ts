@@ -15,13 +15,13 @@ const resourceJson = (value: unknown): string => `${JSON.stringify(value)}\n`;
 
 const RESOURCE_TEXT: Readonly<Record<string, string>> = {
   [KEEL_WORKFLOW_RESOURCE]: resourceJson({
-    schema: "oca-mcp-resource@1",
+    schema: "keel-mcp-resource@1",
     kind: "offline-workflow",
     steps: ["studio-capabilities", "analyze", "cost", "upload-plan", "build", "verify", "module-resolve", "module-lock", "chain-plan", "ethereum-encode", "publish-plan", "wallet-request-prepare", "wallet-link"],
     caveats: ["cost is a modeled estimate", "carriers are metadata-only until bytes are supplied", "ethereum-encode emits unsigned calldata only and does not produce QR payloads", "wallet-link requires and verifies the exact collectionConfig before emitting typed data; account signature, wallet approval, and chain submission are never performed by MCP"],
   }),
   [KEEL_LIMITS_RESOURCE]: resourceJson({
-    schema: "oca-mcp-resource@1",
+    schema: "keel-mcp-resource@1",
     kind: "offline-limits",
     stdioMaxLineBytes: 1048576,
     mediaInputMaxBytes: 268435456,

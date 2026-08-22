@@ -149,7 +149,7 @@ test("MCP cost, module lock, and wallet preparation stay offline and bounded", a
     const uploadPlan = await call(server, 8, "upload-plan", { input: "asset.js", objectName: "asset", mediaType: "text/javascript", strategy: "flat", compression: "none" });
     assert.equal(uploadPlan?.result.structuredContent.dryRun, true);
     assert.equal(uploadPlan?.result.structuredContent.materialized, false);
-    assert.equal(uploadPlan?.result.structuredContent.plan.schema, "oca-upload-plan@2");
+    assert.equal(uploadPlan?.result.structuredContent.plan.schema, "keel-upload-plan@2");
     const recursiveA = await call(server, 9, "upload-plan", { input: "asset.js", objectName: "asset", mediaType: "text/javascript", strategy: "recursive", compression: "none", leafDecodedBytes: 4096 });
     const recursiveB = await call(server, 10, "upload-plan", { input: "asset.js", objectName: "asset", mediaType: "text/javascript", strategy: "recursive", compression: "none", leafDecodedBytes: 4096 });
     assert.deepEqual(recursiveA?.result.structuredContent.plan, recursiveB?.result.structuredContent.plan);

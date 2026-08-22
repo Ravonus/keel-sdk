@@ -17,6 +17,7 @@ import {
   type SpriteSourceAsset,
   type SpriteFrameSource,
   type SpriteSourceManifest,
+  SPRITE_CODEX_SCHEMA,
 } from "./types.js";
 
 interface AuthoredMaskFile {
@@ -270,7 +271,7 @@ export async function compileSpriteCodex(options: CompileOptions): Promise<{ man
     codexAssets.push({ id: asset.id, key: asset.key, label: asset.label, slot: asset.slot, frameCapacity: asset.frameCapacity, regions, frames });
   }
   const codexMetadata: CodexMetadata = {
-    schema: "oca-sprite-codex@1",
+    schema: SPRITE_CODEX_SCHEMA,
     id: source.id,
     frame: source.frame,
     atlas: { width, height, sha256: atlasSha256, mediaType: "image/webp" },

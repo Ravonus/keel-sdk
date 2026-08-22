@@ -9,8 +9,8 @@ export interface StoredChunkPlan {
 }
 
 export interface ObjectUploadPlan {
-  readonly schema: "oca-upload-plan@2";
-  readonly indexEncoding: "oca-object-index@1";
+  readonly schema: "keel-upload-plan@2";
+  readonly indexEncoding: "keel-object-index@1";
   readonly objectName: string;
   readonly mediaType: string;
   readonly originalByteLength: number;
@@ -98,8 +98,8 @@ export interface RecursiveCompositeObjectPlan {
 export type RecursiveObjectPlan = RecursiveLeafObjectPlan | RecursiveCompositeObjectPlan;
 
 export interface RecursiveUploadPlan {
-  readonly schema: "oca-recursive-upload-plan@2";
-  readonly indexEncoding: "oca-object-index@1";
+  readonly schema: "keel-recursive-upload-plan@2";
+  readonly indexEncoding: "keel-object-index@1";
   readonly objectName: string;
   readonly mediaType: string;
   readonly byteLength: number;

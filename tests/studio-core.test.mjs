@@ -134,7 +134,7 @@ test("studio-core emits a valid strict manifest", async () => {
       },
     ],
   });
-  assert.equal(manifest.schema, "oca-manifest@2");
+  assert.equal(manifest.schema, "keel-manifest@2");
   assert.equal(manifest.runtime.content.blockUndeclared, true);
   assert.equal(manifest.runtime.content.externalSources, "host-verified");
   assert.deepEqual(manifest.attributions.map((entry) => entry.tag), ["artist", "engineer"]);

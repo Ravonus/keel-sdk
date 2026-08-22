@@ -59,7 +59,7 @@ the message bridge or for the app-embedding surfaces.
 | vault-runner presentation relay | `apps/vault-runner/.../presentation/character/[tokenId]/route.ts:11` | **Blind bidirectional relay**: no protocol/schema/size/origin filter | **HARDEN** (this is the real 2-layer seam) |
 
 There are four postMessage protocols (`keel-viewer-verification@1`,
-`keel-*wallet*@1`, `keel-thumbnail-capture@1`, `oca-viewer-command@1`). **All
+`keel-*wallet*@1`, `keel-thumbnail-capture@1`, `keel-viewer-command@1`). **All
 use `targetOrigin:"*"`; no handler checks `event.origin`; `MessageChannel`/
 `MessagePort` are used nowhere.** Sender-window checks exist in most host
 handlers but not in `sandbox.ts:711` or the vault-runner relay. No size cap or

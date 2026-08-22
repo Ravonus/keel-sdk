@@ -5,7 +5,7 @@
 - WebP browser preview;
 - small HTML viewer using `/content/preview` and `/content/original`;
 - untouched original SVG;
-- `oca-manifest@2` with file-relative, SHA-256-pinned resources;
+- `keel-manifest@2` with file-relative, SHA-256-pinned resources;
 - RFC 8785 manifest digest sidecar.
 
 Regenerate the media and manifest with the builder after optional `sharp` support is installed:

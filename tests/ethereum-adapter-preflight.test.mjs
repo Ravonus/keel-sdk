@@ -25,8 +25,8 @@ async function readyResult() {
     target,
     codecs: createViemEthereumAdapterCodecs(),
     plan: {
-      schema: "oca-upload-plan@2",
-      indexEncoding: "oca-object-index@1",
+      schema: "keel-upload-plan@2",
+      indexEncoding: "keel-object-index@1",
       objectName: "hello",
       mediaType: "text/plain",
       originalByteLength: bytes.byteLength,

@@ -163,7 +163,7 @@
       ]
     },
     "proceduralStillRig": {
-      "schema": "oca-procedural-sprite-rig@1",
+      "schema": "keel-procedural-sprite-rig@1",
       "runtime": "../../procedural-sprite-rig.js",
       "timeline": "../../sidearm-still-rig.json",
       "storage": "one still per approved layer and direction plus compact transforms",

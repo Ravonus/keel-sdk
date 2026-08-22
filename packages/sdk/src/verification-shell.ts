@@ -496,7 +496,7 @@ export async function wrapInVerificationShell(options: WrapInVerificationShellOp
     chainReady: false,
     target: { family: "ethereum", chainId: target.chainId, address: target.address },
     sourcePlan: {
-      schema: "oca-upload-plan@2",
+      schema: "keel-upload-plan@2",
       objectName,
       mediaType: "text/html",
       integrity: built.htmlIntegrity,

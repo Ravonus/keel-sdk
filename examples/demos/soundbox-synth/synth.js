@@ -1,7 +1,7 @@
 // Keel audio reader demo.
 //
 // The human source remains the historical named Sonant-X JSON. Publication
-// compiles it to oca-sonant-bits@1 (60 B Shot, 58 B Laser, 2.1 KB Theme), and
+// compiles it to keel-sonant-bits@1 (60 B Shot, 58 B Laser, 2.1 KB Theme), and
 // this verified reader turns those bytes into deterministic stereo PCM.
 
 import {

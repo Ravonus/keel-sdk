@@ -137,7 +137,7 @@ export async function createRecursiveUploadPlan(
   const root = currentLevel[0];
   if (root === undefined) throw new Error("Recursive upload plan did not produce a root object.");
   const plan: RecursiveUploadPlan = {
-    schema: "oca-recursive-upload-plan@2",
+    schema: "keel-recursive-upload-plan@2",
     indexEncoding: KEEL_OBJECT_INDEX_ENCODING,
     objectName: options.objectName,
     mediaType: options.mediaType,

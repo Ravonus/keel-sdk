@@ -49,9 +49,9 @@ function errorCode(error: unknown): string | undefined {
 function collectChunkFiles(plan: unknown): string[] {
   const input = record(plan, "upload plan");
   const values: unknown[] = [];
-  if (input.schema === "oca-upload-plan@2") {
+  if (input.schema === "keel-upload-plan@2") {
     if (Array.isArray(input.chunks)) values.push(...input.chunks);
-  } else if (input.schema === "oca-recursive-upload-plan@2" && Array.isArray(input.objects)) {
+  } else if (input.schema === "keel-recursive-upload-plan@2" && Array.isArray(input.objects)) {
     for (const objectValue of input.objects) {
       const item = record(objectValue, "upload plan object");
       if (item.kind === "leaf" && Array.isArray(item.chunks)) values.push(...item.chunks);

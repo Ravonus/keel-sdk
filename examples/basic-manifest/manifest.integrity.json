@@ -1,5 +1,5 @@
 {
-  "schema": "oca-manifest-integrity@2",
+  "schema": "keel-manifest-integrity@2",
   "manifest": "manifest.json",
   "canonicalization": "RFC8785",
   "integrity": {

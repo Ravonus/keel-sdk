@@ -46,7 +46,7 @@ export interface VerifyBuiltArtifactOptions {
 }
 
 export interface BuiltArtifactVerification {
-  readonly schema: "oca-build-verification@1";
+  readonly schema: "keel-build-verification@1";
   readonly valid: boolean;
   readonly manifestPath: string;
   readonly manifestIntegrity: ManifestVerificationResult;
@@ -77,7 +77,7 @@ function parseIntegrity(value: unknown, label: string): Integrity {
 
 function integrityEnvelope(value: unknown): Integrity {
   const object = jsonObject(value, "manifest integrity");
-  if (object.schema !== "oca-manifest-integrity@2") throw new TypeError("manifest integrity schema is unsupported.");
+  if (object.schema !== "keel-manifest-integrity@2") throw new TypeError("manifest integrity schema is unsupported.");
   return parseIntegrity(object.integrity, "manifest integrity.integrity");
 }
 
@@ -196,7 +196,7 @@ export async function verifyBuiltArtifact(options: VerifyBuiltArtifactOptions): 
   } catch (error) {
     const message = `manifest could not be read: ${errorText(error)}`;
     return {
-      schema: "oca-build-verification@1",
+      schema: "keel-build-verification@1",
       valid: false,
       manifestPath,
       manifestIntegrity: { status: "unavailable", envelopePresent: false, message },
@@ -210,7 +210,7 @@ export async function verifyBuiltArtifact(options: VerifyBuiltArtifactOptions): 
   } catch (error) {
     const message = `manifest is invalid: ${errorText(error)}`;
     return {
-      schema: "oca-build-verification@1",
+      schema: "keel-build-verification@1",
       valid: false,
       manifestPath,
       manifestIntegrity: { status: "failed", envelopePresent: false, message },
@@ -244,7 +244,7 @@ export async function verifyBuiltArtifact(options: VerifyBuiltArtifactOptions): 
     if (result.status !== "verified") issues.push(`resource ${resource.id} ${result.status}`);
   }
   return {
-    schema: "oca-build-verification@1",
+    schema: "keel-build-verification@1",
     valid: manifestIntegrityResult.status === "verified" && resources.every((resource) => resource.status === "verified"),
     manifestPath,
     manifestIntegrity: manifestIntegrityResult,

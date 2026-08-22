@@ -747,7 +747,7 @@ let audioReader;
 let weaponSoundBuffer;
 let weaponSoundBoot;
 const soundContent = Object.freeze({
-  protocol: "oca-content-gateway@1",
+  protocol: "keel-content-gateway@1",
   manifestId: "vault-character-showcase-sounds-v1",
   bytes(resourceId) {
     if (resourceId !== weaponSoundVariation?.resourceId) throw new Error(`Unknown weapon sound resource ${resourceId}`);

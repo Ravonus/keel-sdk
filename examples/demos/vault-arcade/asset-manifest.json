@@ -12,7 +12,7 @@
   "mintCatalogue": {
     "humanSource": "character-catalog.json",
     "compactCodec": "character-catalog.octr",
-    "codec": "oca-trait-catalog-bits@3",
+    "codec": "keel-trait-catalog-bits@3",
     "catalogRevision": 1,
     "coreSlots": 9,
     "customAttributes": 17,
@@ -24,13 +24,13 @@
       "character-material-2.ocmp",
       "character-material-3.ocmp"
     ],
-    "materialCodec": "oca-material-bits@1",
+    "materialCodec": "keel-material-bits@1",
     "colorModes": ["locked", "palette", "ramp", "range"]
   },
   "soundSystem": {
     "characterAttribute": "sound-effect-profile",
-    "spriteSchema": "oca-sprite-sounds@1",
-    "soundCodec": "oca-sonant-bits@1",
+    "spriteSchema": "keel-sprite-sounds@1",
+    "soundCodec": "keel-sonant-bits@1",
     "reader": "createAudioReader",
     "storage": "keel-object-revision",
     "assignmentRule": "Every sprite asset pins an exact sound profile; gameplay events resolve deterministic variations from that profile."

@@ -4,7 +4,7 @@ Shared types and deterministic utilities for Keel artifacts.
 
 ## Included
 
-- `oca-manifest@2` types;
+- `keel-manifest@2` types;
 - RFC 8785 canonical JSON;
 - canonical SHA-256 manifest roots;
 - mandatory decoded-byte integrity for every source;
