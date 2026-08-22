@@ -74,20 +74,22 @@ module and is not descended into, anything else is a grouping directory. So
 both layouts work and a workspace can migrate between them freely:
 
 ```
-modules/<id>/                          flat
-modules/<org>/<category>/<id>/         filed by organisation and category
+modules/<id>/                              flat
+modules/<publisher>/<category>/<id>/       filed by publisher and category
 ```
 
 Three manifest shapes are accepted: `keel-module-manifest@1`, the keel-modules
 `keel.jsmodule@1` (id, entry, license, summary), and `keel.jsmodule@2`, which
 adds `category` (what the module is, and the directory it lives in), `owner`
-(who is responsible: an org, optionally a group, optionally a member of that
-group), and `repository` (the module's own public repository).
+(who is responsible), and `repository` (the module's own public repository).
 
-An organisation is declared by `modules/<org>/org.json` (`keel.org@1`) listing
-its people and its groups. Indexing cross-checks every owner path against it,
-so a module cannot list under a heading that does not exist or name somebody
-who is not in the org.
+A publisher is a PERSON or an ORGANISATION, declared by
+`modules/<publisher>/publisher.json` (`keel.publisher@1`). Nobody has to invent
+an organisation to publish a module, so `owner: { user }` owns its modules
+directly and has no groups; `owner: { org, group?, member? }` unlocks the
+longer paths. Indexing cross-checks every owner path against the publisher, so
+a module cannot list under a heading that does not exist, name somebody who is
+not a member, or claim a person is an org.
 
 ```bash
 keel module build --all --root ./keel-modules
@@ -154,6 +156,12 @@ the command that makes "verified" a claim anyone can check rather than one
 somebody made. A branch or tag is refused, because a proof pinned to a moving
 ref expires without saying so.
 
+It imposes nothing on the repository it is checking. No TypeScript, no
+tsconfig, no `src/`, no manifest, no vectors, no layout: only the files the
+entry point actually imports are pinned, and everything else in the tree is
+none of Keel's business. The strictness gate in `keel module build` is a house
+rule for repositories that opt into it; `keel module verify` does not run it.
+
 ## 5. Index for the site: `keel module index`
 
 ```bash
@@ -161,8 +169,8 @@ keel module index --root ./keel-modules --repository https://github.com/you/keel
 ```
 
 Scans the workspace and writes `catalog/catalog.json`
-(`keel-module-catalog@2`): the `organizations` the workspace declares, plus one
-entry per module with `id`, `version`, `license`, `summary`, `org`, `category`,
+(`keel-module-catalog@3`): the `publishers` the workspace declares, plus one
+entry per module with `id`, `version`, `license`, `summary`, `publisher`, `category`,
 `owner`, `sourceRepository` (from the manifest when real, otherwise the
 `--repository` flag, otherwise `null`), `moduleRepository` (its own public
 repo, or null), `githubPath` (repo-relative path to the readable verified entry

@@ -40,7 +40,7 @@ const EXPECTED_MODULES = [
   "keel-creator-identity", "keel-cross-chain-mint", "keel-crucible", "keel-die",
   "keel-equipment", "keel-graph", "keel-harness", "keel-hold", "keel-ip-control",
   "keel-kernel", "keel-market", "keel-mint-access", "keel-presentation", "keel-sleeve",
-  "keel-stake", "keel-web3-url", "line", "onchaininator", "vault-runner",
+  "keel-stake", "keel-web3-url", "line", "vault-runner",
 ];
 
 test("no module disappears without the roster changing", () => {

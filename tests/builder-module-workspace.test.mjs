@@ -253,7 +253,7 @@ test("keel module compact --candidate verifies behavior and emits a behaviorally
   );
 });
 
-test("keel module index writes the keel-module-catalog@2 the site reads", async (t) => {
+test("keel module index writes the keel-module-catalog@3 the site reads", async (t) => {
   const root = await scaffoldWorkspace(t);
   await assert.rejects(() => runCli(["module", "index", "--root", root]), /module build --all/u);
   await runCli(["module", "build", "--all", "--root", root]);
@@ -261,10 +261,10 @@ test("keel module index writes the keel-module-catalog@2 the site reads", async 
   assert.match(stdout, /2 modules, 2 verified/u);
 
   const catalog = JSON.parse(await readFile(path.join(root, "catalog/catalog.json"), "utf8"));
-  assert.equal(catalog.schema, "keel-module-catalog@2");
+  assert.equal(catalog.schema, "keel-module-catalog@3");
   // A flat workspace with keel.jsmodule@1 manifests still indexes: it simply
-  // declares no organisation, so the listing axes are null rather than absent.
-  assert.deepEqual(catalog.organizations, []);
+  // declares no publisher, so the listing axes are null rather than absent.
+  assert.deepEqual(catalog.publishers, []);
   assert.deepEqual(catalog.modules.map((entry) => entry.id), ["adder", "greeter"]);
   const greeter = catalog.modules[1];
   assert.equal(greeter.version, "0.1.0");
@@ -274,7 +274,7 @@ test("keel module index writes the keel-module-catalog@2 the site reads", async 
   assert.equal(greeter.githubPath, "modules/greeter/src/index.ts");
   assert.equal(greeter.disposition, "reproducible-build");
   assert.equal(greeter.verified, true);
-  assert.equal(greeter.org, null);
+  assert.equal(greeter.publisher, null);
   assert.equal(greeter.category, null);
   assert.equal(greeter.owner, null);
   assert.equal(greeter.moduleRepository, null);
@@ -293,4 +293,108 @@ test("keel module index writes the keel-module-catalog@2 the site reads", async 
   // Stale dist bytes are refused rather than catalogued.
   await writeFile(path.join(root, "modules/greeter/dist/greeter.min.js"), "export const tampered = true;\n");
   await assert.rejects(() => runCli(["module", "index", "--root", root]), /no longer match/u);
+});
+
+/**
+ * A publisher is a person or an organisation. Requiring somebody to invent an
+ * org before they can publish a module would be a made-up hurdle, so a user
+ * owns modules directly and has no groups.
+ */
+async function scaffoldPublisherWorkspace(t) {
+  const root = await mkdtemp(path.join(os.tmpdir(), "keel-publisher-workspace-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await writeFile(path.join(root, "tsconfig.base.json"), BASE_TSCONFIG);
+
+  const publishers = [
+    {
+      id: "acme",
+      manifest: {
+        schema: "keel.publisher@1", kind: "org", id: "acme", title: "Acme",
+        summary: "An organisation.", url: "https://github.com/acme", identityId: null,
+        members: [{ id: "dana", name: "Dana", role: "owner", github: "dana", address: null }],
+        groups: [{ id: "tools", title: "Tools", summary: "Tooling.", members: ["dana"] }],
+      },
+    },
+    {
+      id: "solo",
+      manifest: {
+        schema: "keel.publisher@1", kind: "user", id: "solo", title: "Solo Dev",
+        summary: "One person, no org.", url: "https://github.com/solo", identityId: null,
+        members: [], groups: [],
+      },
+    },
+  ];
+  for (const publisher of publishers) {
+    await mkdir(path.join(root, "modules", publisher.id), { recursive: true });
+    await writeFile(path.join(root, "modules", publisher.id, "publisher.json"), `${JSON.stringify(publisher.manifest, null, 2)}\n`);
+  }
+
+  const modules = [
+    { id: "adder", publisher: "acme", category: "math", owner: { org: "acme", group: "tools", member: "dana" }, source: ADDER_SOURCE },
+    { id: "greeter", publisher: "solo", category: "text", owner: { user: "solo" }, source: GREETER_SOURCE },
+  ];
+  for (const module of modules) {
+    const directory = path.join(root, "modules", module.publisher, module.category, module.id);
+    await mkdir(path.join(directory, "src"), { recursive: true });
+    await writeFile(
+      path.join(directory, "keel.module.json"),
+      `${JSON.stringify({
+        schema: "keel.jsmodule@2", id: module.id, entry: "src/index.ts", license: "MIT",
+        summary: `${module.id} module.`, category: module.category, owner: module.owner,
+      }, null, 2)}\n`,
+    );
+    await writeFile(path.join(directory, "tsconfig.json"), `${JSON.stringify({ extends: "../../../../tsconfig.base.json", include: ["src"] }, null, 2)}\n`);
+    await writeFile(path.join(directory, "src/index.ts"), module.source);
+  }
+  return root;
+}
+
+test("a person can publish a module without inventing an organisation", async (t) => {
+  const root = await scaffoldPublisherWorkspace(t);
+  await runCli(["module", "build", "--all", "--root", root]);
+  const { stdout } = await runCli(["module", "index", "--root", root, "--repository", "https://github.com/example/modules"]);
+  assert.match(stdout, /2 modules, 2 verified/u);
+
+  const catalog = JSON.parse(await readFile(path.join(root, "catalog/catalog.json"), "utf8"));
+  assert.equal(catalog.schema, "keel-module-catalog@3");
+  assert.deepEqual(catalog.publishers.map((publisher) => [publisher.id, publisher.kind]), [["acme", "org"], ["solo", "user"]]);
+
+  // The user owns its module directly: no group, no member, no ceremony.
+  const greeter = catalog.modules.find((module) => module.id === "greeter");
+  assert.deepEqual(greeter.owner, { publisher: "solo", kind: "user", group: null, member: null });
+  assert.equal(greeter.publisher, "solo");
+  assert.equal(greeter.category, "text");
+
+  // The org keeps the longer path available.
+  const adder = catalog.modules.find((module) => module.id === "adder");
+  assert.deepEqual(adder.owner, { publisher: "acme", kind: "org", group: "tools", member: "dana" });
+
+  // A user publisher has no groups to list under.
+  assert.deepEqual(catalog.publishers.find((publisher) => publisher.id === "solo").groups, []);
+});
+
+test("an owner that cannot be rendered is refused rather than guessed at", async (t) => {
+  const root = await scaffoldPublisherWorkspace(t);
+  const manifestPath = path.join(root, "modules/solo/text/greeter/keel.module.json");
+  const original = JSON.parse(await readFile(manifestPath, "utf8"));
+
+  const rejected = [
+    // A person is not an org with one member, so a user has no groups.
+    [{ ...original, owner: { user: "solo", group: "tools" } }, /belong to an org/u],
+    // "Who owns this" is the question being asked; two answers is worse than none.
+    [{ ...original, owner: { user: "solo", org: "acme" } }, /must name one/u],
+    // org > member > module has no way back up to a group.
+    [{ ...original, owner: { org: "acme", member: "dana" } }, /requires owner\.group/u],
+    // Claiming a person is an org would render the wrong listing shape.
+    [{ ...original, owner: { org: "solo" } }, /declared as a user/u],
+    [{ ...original, owner: { user: "nobody" } }, /has no publisher\.json/u],
+  ];
+  for (const [manifest, expected] of rejected) {
+    await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+    await assert.rejects(
+      () => runCli(["module", "build", "--all", "--root", root]).then(() => runCli(["module", "index", "--root", root])),
+      expected,
+      `expected ${JSON.stringify(manifest.owner)} to be refused`,
+    );
+  }
 });

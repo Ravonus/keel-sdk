@@ -462,3 +462,41 @@ test("no source survives the call, on success or on failure", async () => {
   );
   assert.deepEqual(await leftovers(), [], "a failed verification kept the checkout");
 });
+
+test("verification imposes no language, layout, or house style on somebody else's repository", async () => {
+  // Deliberately everything the keel-modules workspace is not: plain
+  // JavaScript with no TypeScript anywhere, no tsconfig.json, no src/
+  // directory, no test vectors, no keel.module.json, a nested entry at a path
+  // we would never choose, and a CommonJS-flavoured filename extension.
+  //
+  // Keel's strictness rules are house rules for the Keel repository. Outside
+  // it they are none of our business: the only thing a verification can
+  // legitimately demand of a stranger's code is that it builds deterministically
+  // to the bytes being claimed. If this test ever needs a tsconfig to pass, an
+  // opinion has leaked out of our tree and into other people's.
+  const archive = await gzip(
+    tar({
+      "demo-module-dddd/lib/deep/nested/entry.mjs":
+        'import { shade } from "../../palette.mjs";\nexport const paint = (n) => shade(n) + "!";\n',
+      "demo-module-dddd/lib/palette.mjs": 'export const shade = (n) => `#${n.toString(16)}`;\n',
+      "demo-module-dddd/Makefile": "all:\n\techo not our business\n",
+      "demo-module-dddd/README.txt": "no license header, no vectors, no manifest\n",
+    }),
+  );
+  const result = await verifyKeelModuleFromOrigin({
+    origin: ORIGIN,
+    identity: IDENTITY,
+    entry: "lib/deep/nested/entry.mjs",
+    fetchImpl: async () => new Response(archive, { status: 200 }),
+  });
+
+  assert.equal(result.verification.verdict, "reproduced");
+  assert.equal(result.receipt.disposition, "reproducible-build");
+  // Only the files the entry actually imports are pinned. The Makefile and the
+  // README are not our concern and are not in the recipe.
+  assert.deepEqual(
+    result.recipe.inputs.map((input) => input.path),
+    ["lib/deep/nested/entry.mjs", "lib/palette.mjs"],
+  );
+  assert.ok(result.outputBytes.length > 0);
+});

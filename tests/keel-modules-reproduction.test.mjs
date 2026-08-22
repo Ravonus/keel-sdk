@@ -158,7 +158,7 @@ test("indexing the workspace reproduces the committed catalog, digest for digest
   const regenerated = JSON.parse(regeneratedText);
   const committed = JSON.parse(committedText);
 
-  assert.equal(regenerated.schema, "keel-module-catalog@2");
+  assert.equal(regenerated.schema, "keel-module-catalog@3");
   assert.deepEqual(
     regenerated.modules.map((entry) => entry.id),
     committed.modules.map((entry) => entry.id),
@@ -167,7 +167,7 @@ test("indexing the workspace reproduces the committed catalog, digest for digest
   for (const [index, entry] of regenerated.modules.entries()) {
     assert.deepEqual(entry, committed.modules[index], `${entry.id} drifted from the committed catalog`);
   }
-  assert.deepEqual(regenerated.organizations, committed.organizations);
+  assert.deepEqual(regenerated.publishers, committed.publishers);
 
   // Byte for byte, no exceptions. Every field in the catalog is derived from a
   // committed file, so re-indexing a clean workspace is a no-op diff and a
@@ -239,10 +239,11 @@ test("the receipt chain recomputes link by link, from readable files to catalog 
   assert.equal(entry.deployed, entry.deployments.length > 0);
   assert.equal(publishedEntry.verified, true);
 
-  // Link 8: the listing path resolves inside the org the catalog ships.
-  const org = catalog.organizations.find((candidate) => candidate.id === entry.owner.org);
-  assert.ok(org !== undefined, "the owning org must be in the catalog");
-  assert.ok(org.groups.some((group) => group.id === entry.owner.group), "the owning group must exist in the org");
+  // Link 8: the listing path resolves inside the publisher the catalog ships.
+  const publisher = catalog.publishers.find((candidate) => candidate.id === entry.owner.publisher);
+  assert.ok(publisher !== undefined, "the owning publisher must be in the catalog");
+  assert.equal(publisher.kind, entry.owner.kind, "the manifest and the publisher must agree on kind");
+  assert.ok(publisher.groups.some((group) => group.id === entry.owner.group), "the owning group must exist in the org");
   assert.equal(entry.category, "generative");
   assert.equal(entry.moduleRepository, `https://github.com/keel-web3/${id}`);
 });

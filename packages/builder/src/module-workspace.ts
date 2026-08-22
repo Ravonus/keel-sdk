@@ -4,13 +4,13 @@
  * The layout is the keel-modules repo's layout, and this file is the only
  * place it is known. Modules live under `modules/`, either flat
  * (`modules/<id>/`) or filed by organisation and category
- * (`modules/<org>/<category>/<id>/`); discovery finds a module wherever its
+ * (`modules/<publisher>/<category>/<id>/`); discovery finds a module wherever its
  * `keel.module.json` sits, so both shapes work and a workspace can migrate
  * between them without the rest of the toolchain noticing.
  *
  * `--all` builds and tests walk discovery, and `keel module index` distills
  * the whole workspace into the one artifact the site reads:
- * `catalog/catalog.json` (`keel-module-catalog@2`).
+ * `catalog/catalog.json` (`keel-module-catalog@3`).
  *
  * The catalog is the site's whole view, so its rules are conservative:
  *
@@ -47,14 +47,17 @@ import {
 } from "./module-pipeline.js";
 import { hasModuleVectors, testKeelModule, type TestKeelModuleResult } from "./module-testing.js";
 
-export const KEEL_MODULE_CATALOG_SCHEMA = "keel-module-catalog@2" as const;
+export const KEEL_MODULE_CATALOG_SCHEMA = "keel-module-catalog@3" as const;
 export const KEEL_MODULE_CATALOG_FILE = "catalog/catalog.json" as const;
+export const KEEL_PUBLISHER_MANIFEST_FILE = "publisher.json" as const;
+/** The original name, when every publisher was assumed to be an organisation. */
 export const KEEL_ORG_MANIFEST_FILE = "org.json" as const;
+export const KEEL_PUBLISHER_SCHEMA = "keel.publisher@1" as const;
 export const KEEL_ORG_SCHEMA = "keel.org@1" as const;
 export const KEEL_MODULE_DEPLOYMENTS_DIRECTORY = "deployments" as const;
 export const KEEL_MODULE_DEPLOYMENT_SCHEMA = "keel.jsmodule-deployment@1" as const;
 const MODULES_DIRECTORY = "modules" as const;
-/** modules/<org>/<category>/<id> is the deepest supported nesting. */
+/** modules/<publisher>/<category>/<id> is the deepest supported nesting. */
 const MAX_DISCOVERY_DEPTH = 3;
 
 export interface KeelWorkspaceModule {
@@ -78,7 +81,7 @@ async function isFile(target: string): Promise<boolean> {
  *
  * A directory holding a `keel.module.json` is a module and is not descended
  * into; anything else is a grouping directory. That one rule handles the flat
- * layout and the `<org>/<category>` layout without either being special-cased,
+ * layout and the `<publisher>/<category>` layout without either being special-cased,
  * and it means filing a module under a new category is a `git mv`.
  */
 export async function discoverKeelWorkspaceModules(root: string): Promise<readonly KeelWorkspaceModule[]> {
@@ -113,9 +116,9 @@ export async function discoverKeelWorkspaceModules(root: string): Promise<readon
   return modules.sort((left, right) => (left.manifest.name < right.manifest.name ? -1 : 1));
 }
 
-/* ---------------------------------------------------------- organisations */
+/* ------------------------------------------------------------- publishers */
 
-export interface KeelOrgMember {
+export interface KeelPublisherMember {
   readonly id: string;
   readonly name: string;
   readonly role: string;
@@ -124,7 +127,7 @@ export interface KeelOrgMember {
   readonly address: string | null;
 }
 
-export interface KeelOrgGroup {
+export interface KeelPublisherGroup {
   readonly id: string;
   readonly title: string;
   readonly summary: string;
@@ -132,46 +135,62 @@ export interface KeelOrgGroup {
 }
 
 /**
- * An organisation as the repository records it.
+ * Whoever publishes a module: a PERSON or an ORGANISATION.
  *
- * `organizationId` is the on-chain org id once one is registered, and null
- * until then. That is the same rule the modules follow: the repository is the
- * source of truth and chain state is mirrored INTO it, so an org, its people,
- * and its modules all exist and list correctly before anything is deployed.
+ * Most people are not an organisation, and requiring them to invent one to
+ * publish a module would be a made-up hurdle. So `kind: "user"` is a first
+ * class publisher that owns its modules directly, not a one-member org with
+ * empty ceremony around it. Groups belong to organisations and a user simply
+ * has none.
+ *
+ * `identityId` is the on-chain id once one is registered, and null until then.
+ * That is the same rule the modules follow: the repository is the source of
+ * truth and chain state is mirrored INTO it, so a publisher, their people, and
+ * their modules all exist and list correctly before anything is deployed.
  */
-export interface KeelOrg {
+export interface KeelPublisher {
   readonly id: string;
+  readonly kind: "user" | "org";
   readonly title: string;
   readonly summary: string;
   readonly url: string | null;
-  readonly organizationId: string | null;
-  readonly members: readonly KeelOrgMember[];
-  readonly groups: readonly KeelOrgGroup[];
+  readonly identityId: string | null;
+  readonly members: readonly KeelPublisherMember[];
+  readonly groups: readonly KeelPublisherGroup[];
 }
 
-function orgText(value: unknown, label: string, maximum = 512): string {
+function publisherText(value: unknown, label: string, maximum = 512): string {
   if (typeof value !== "string" || value.length === 0 || value.length > maximum) {
-    throw new Error(`${KEEL_ORG_MANIFEST_FILE}: ${label} must be text of 1 through ${maximum} characters.`);
+    throw new Error(`${KEEL_PUBLISHER_MANIFEST_FILE}: ${label} must be text of 1 through ${maximum} characters.`);
   }
   return value;
 }
 
 function optionalText(value: unknown, label: string, maximum = 512): string | null {
-  return value === undefined || value === null ? null : orgText(value, label, maximum);
+  return value === undefined || value === null ? null : publisherText(value, label, maximum);
 }
 
-export function parseKeelOrg(value: unknown): KeelOrg {
-  if (value === null || typeof value !== "object" || Array.isArray(value)) throw new Error(`${KEEL_ORG_MANIFEST_FILE} must be a JSON object.`);
+export function parseKeelPublisher(value: unknown): KeelPublisher {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) throw new Error(`${KEEL_PUBLISHER_MANIFEST_FILE} must be a JSON object.`);
   const input = value as Record<string, unknown>;
-  if (input.schema !== KEEL_ORG_SCHEMA) throw new Error(`${KEEL_ORG_MANIFEST_FILE}: schema must be ${KEEL_ORG_SCHEMA}.`);
+  // keel.org@1 predates users existing, so it is exactly an org publisher.
+  const legacy = input.schema === KEEL_ORG_SCHEMA;
+  if (!legacy && input.schema !== KEEL_PUBLISHER_SCHEMA) {
+    throw new Error(`${KEEL_PUBLISHER_MANIFEST_FILE}: schema must be ${KEEL_PUBLISHER_SCHEMA} (or the older ${KEEL_ORG_SCHEMA}).`);
+  }
+  const kind = legacy ? "org" : input.kind;
+  if (kind !== "user" && kind !== "org") throw new Error(`${KEEL_PUBLISHER_MANIFEST_FILE}: kind must be "user" or "org".`);
   const members = Array.isArray(input.members) ? input.members : [];
   const groups = Array.isArray(input.groups) ? input.groups : [];
+  if (kind === "user" && groups.length > 0) {
+    throw new Error(`${KEEL_PUBLISHER_MANIFEST_FILE}: a user publisher has no groups; groups belong to an org.`);
+  }
   const parsedMembers = members.map((member) => {
     const item = member as Record<string, unknown>;
     return {
-      id: orgText(item.id, "members[].id", 64),
-      name: orgText(item.name, "members[].name", 128),
-      role: orgText(item.role, "members[].role", 64),
+      id: publisherText(item.id, "members[].id", 64),
+      name: publisherText(item.name, "members[].name", 128),
+      role: publisherText(item.role, "members[].role", 64),
       github: optionalText(item.github, "members[].github", 128),
       address: optionalText(item.address, "members[].address", 128),
     };
@@ -179,30 +198,31 @@ export function parseKeelOrg(value: unknown): KeelOrg {
   const known = new Set(parsedMembers.map((member) => member.id));
   const parsedGroups = groups.map((group) => {
     const item = group as Record<string, unknown>;
-    const groupMembers = (Array.isArray(item.members) ? item.members : []).map((id) => orgText(id, "groups[].members[]", 64));
+    const groupMembers = (Array.isArray(item.members) ? item.members : []).map((id) => publisherText(id, "groups[].members[]", 64));
     // A group naming somebody who is not in the org is a listing that leads
     // nowhere, so it fails here rather than rendering as a dead link.
-    for (const id of groupMembers) if (!known.has(id)) throw new Error(`${KEEL_ORG_MANIFEST_FILE}: group "${String(item.id)}" names unknown member "${id}".`);
+    for (const id of groupMembers) if (!known.has(id)) throw new Error(`${KEEL_PUBLISHER_MANIFEST_FILE}: group "${String(item.id)}" names unknown member "${id}".`);
     return {
-      id: orgText(item.id, "groups[].id", 64),
-      title: orgText(item.title, "groups[].title", 128),
-      summary: orgText(item.summary, "groups[].summary", 512),
+      id: publisherText(item.id, "groups[].id", 64),
+      title: publisherText(item.title, "groups[].title", 128),
+      summary: publisherText(item.summary, "groups[].summary", 512),
       members: groupMembers,
     };
   });
   return {
-    id: orgText(input.id, "id", 64),
-    title: orgText(input.title, "title", 128),
-    summary: orgText(input.summary, "summary", 512),
+    id: publisherText(input.id, "id", 64),
+    kind,
+    title: publisherText(input.title, "title", 128),
+    summary: publisherText(input.summary, "summary", 512),
     url: optionalText(input.url, "url"),
-    organizationId: optionalText(input.organizationId, "organizationId", 66),
+    identityId: optionalText(input.identityId ?? input.organizationId, "identityId", 66),
     members: parsedMembers,
     groups: parsedGroups,
   };
 }
 
-/** Every `modules/<org>/org.json` in the workspace, sorted by id. */
-export async function discoverKeelWorkspaceOrgs(root: string): Promise<readonly KeelOrg[]> {
+/** Every `modules/<publisher>/publisher.json` (or legacy `org.json`), by id. */
+export async function discoverKeelWorkspacePublishers(root: string): Promise<readonly KeelPublisher[]> {
   const modulesRoot = path.join(path.resolve(root), MODULES_DIRECTORY);
   let entries;
   try {
@@ -210,15 +230,18 @@ export async function discoverKeelWorkspaceOrgs(root: string): Promise<readonly 
   } catch {
     return [];
   }
-  const orgs: KeelOrg[] = [];
+  const publishers: KeelPublisher[] = [];
   for (const entry of entries.filter((item) => item.isDirectory())) {
-    const manifestPath = path.join(modulesRoot, entry.name, KEEL_ORG_MANIFEST_FILE);
-    if (!(await isFile(manifestPath))) continue;
-    const org = parseKeelOrg(JSON.parse(await readFile(manifestPath, "utf8")) as unknown);
-    if (org.id !== entry.name) throw new Error(`${manifestPath}: org id "${org.id}" does not match its directory "${entry.name}".`);
-    orgs.push(org);
+    for (const file of [KEEL_PUBLISHER_MANIFEST_FILE, KEEL_ORG_MANIFEST_FILE]) {
+      const manifestPath = path.join(modulesRoot, entry.name, file);
+      if (!(await isFile(manifestPath))) continue;
+      const publisher = parseKeelPublisher(JSON.parse(await readFile(manifestPath, "utf8")) as unknown);
+      if (publisher.id !== entry.name) throw new Error(`${manifestPath}: publisher id "${publisher.id}" does not match its directory "${entry.name}".`);
+      publishers.push(publisher);
+      break;
+    }
   }
-  return orgs.sort((left, right) => (left.id < right.id ? -1 : 1));
+  return publishers.sort((left, right) => (left.id < right.id ? -1 : 1));
 }
 
 /* ------------------------------------------------------------ deployments */
@@ -281,12 +304,12 @@ export async function readKeelModuleRevisions(moduleDirectory: string): Promise<
       revisions.push({
         chainId: chainId as number,
         hold: { address: hold.address.toLowerCase(), objectId: revisionDigest(hold.objectId, "hold.objectId") },
-        version: orgText(item.version, "revisions[].version", 64),
+        version: publisherText(item.version, "revisions[].version", 64),
         outputDigest: revisionDigest(item.outputDigest, "revisions[].outputDigest"),
         receiptDigest: revisionDigest(item.receiptDigest, "revisions[].receiptDigest"),
         block: optionalText(item.block, "revisions[].block", 64),
         txHash: optionalText(item.txHash, "revisions[].txHash", 66),
-        publishedAt: orgText(item.publishedAt, "revisions[].publishedAt", 64),
+        publishedAt: publisherText(item.publishedAt, "revisions[].publishedAt", 64),
         status: item.status === "current" ? "current" : "superseded",
       });
     }
@@ -343,11 +366,19 @@ export interface KeelModuleCatalogEntry {
   readonly version: string;
   readonly license: string;
   readonly summary: string;
-  /** Organisation that owns the module, and the category it is filed under. */
-  readonly org: string | null;
+  /** Publisher that owns the module, and the category it is filed under. */
+  readonly publisher: string | null;
   readonly category: string | null;
-  /** The listing path: org, then optionally group, then member. */
-  readonly owner: { readonly org: string; readonly group: string | null; readonly member: string | null } | null;
+  /**
+   * The listing path. A user owns its modules directly; an org may own them
+   * directly, through a group, or through a member of a group.
+   */
+  readonly owner: {
+    readonly publisher: string;
+    readonly kind: "user" | "org";
+    readonly group: string | null;
+    readonly member: string | null;
+  } | null;
   /** Public repository URL for the readable source; null until one is known. */
   readonly sourceRepository: string | null;
   /** The module's own public repository, once split out; null while it is monorepo-only. */
@@ -373,8 +404,8 @@ export interface KeelModuleCatalogEntry {
 
 export interface KeelModuleCatalog {
   readonly schema: typeof KEEL_MODULE_CATALOG_SCHEMA;
-  /** The listing tree: organisations, their people, and their groups. */
-  readonly organizations: readonly KeelOrg[];
+  /** The listing tree: publishers (people and organisations), and their groups. */
+  readonly publishers: readonly KeelPublisher[];
   readonly modules: readonly KeelModuleCatalogEntry[];
 }
 
@@ -427,11 +458,16 @@ async function catalogEntry(module: KeelWorkspaceModule, options: IndexKeelWorks
     version: module.manifest.version,
     license: module.manifest.license,
     summary: module.manifest.description,
-    org: placement?.org ?? null,
+    publisher: placement?.publisher ?? null,
     category: placement?.category ?? null,
     owner: placement === undefined
       ? null
-      : { org: placement.org, group: placement.group ?? null, member: placement.member ?? null },
+      : {
+          publisher: placement.publisher,
+          kind: placement.publisherKind,
+          group: placement.group ?? null,
+          member: placement.member ?? null,
+        },
     sourceRepository: manifestRepository ?? options.repositoryUrl ?? null,
     moduleRepository: module.manifest.moduleRepository ?? null,
     githubPath: `${module.workspacePath}/${module.manifest.entry}`,
@@ -458,28 +494,33 @@ async function catalogEntry(module: KeelWorkspaceModule, options: IndexKeelWorks
 export async function indexKeelWorkspace(root: string, options: IndexKeelWorkspaceOptions = {}): Promise<IndexKeelWorkspaceResult> {
   const resolvedRoot = path.resolve(root);
   const modules = await discoverKeelWorkspaceModules(resolvedRoot);
-  const organizations = await discoverKeelWorkspaceOrgs(resolvedRoot);
+  const publishers = await discoverKeelWorkspacePublishers(resolvedRoot);
   const entries = [];
   for (const module of modules) entries.push(await catalogEntry(module, options));
-  // A module filed under an org the workspace does not define would list under
-  // a heading that does not exist, so it is caught at index time.
-  const orgIds = new Set(organizations.map((org) => org.id));
+  // A module filed under a publisher the workspace does not define would list
+  // under a heading that does not exist, so it is caught at index time.
   for (const entry of entries) {
     if (entry.owner === null) continue;
-    if (!orgIds.has(entry.owner.org)) throw new Error(`${entry.id}: owner.org "${entry.owner.org}" has no ${KEEL_ORG_MANIFEST_FILE} in this workspace.`);
-    const org = organizations.find((candidate) => candidate.id === entry.owner?.org);
-    const group = entry.owner.group;
-    if (group !== null && !org?.groups.some((candidate) => candidate.id === group)) {
-      throw new Error(`${entry.id}: owner.group "${group}" is not a group of ${entry.owner.org}.`);
+    const owner = entry.owner;
+    const publisher = publishers.find((candidate) => candidate.id === owner.publisher);
+    if (publisher === undefined) {
+      throw new Error(`${entry.id}: owner "${owner.publisher}" has no ${KEEL_PUBLISHER_MANIFEST_FILE} in this workspace.`);
     }
-    const member = entry.owner.member;
-    if (member !== null && !org?.members.some((candidate) => candidate.id === member)) {
-      throw new Error(`${entry.id}: owner.member "${member}" is not a member of ${entry.owner.org}.`);
+    // Claiming a person is an org (or the reverse) would render the wrong
+    // listing shape, so the manifest and the publisher have to agree.
+    if (publisher.kind !== owner.kind) {
+      throw new Error(`${entry.id}: owner names ${owner.publisher} as a ${owner.kind}, but it is declared as a ${publisher.kind}.`);
+    }
+    if (owner.group !== null && !publisher.groups.some((candidate) => candidate.id === owner.group)) {
+      throw new Error(`${entry.id}: owner.group "${owner.group}" is not a group of ${owner.publisher}.`);
+    }
+    if (owner.member !== null && !publisher.members.some((candidate) => candidate.id === owner.member)) {
+      throw new Error(`${entry.id}: owner.member "${owner.member}" is not a member of ${owner.publisher}.`);
     }
   }
   const catalog: KeelModuleCatalog = {
     schema: KEEL_MODULE_CATALOG_SCHEMA,
-    organizations,
+    publishers,
     modules: entries.sort((left, right) => (left.id < right.id ? -1 : 1)),
   };
   const catalogPath = path.join(resolvedRoot, KEEL_MODULE_CATALOG_FILE);

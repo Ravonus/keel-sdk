@@ -60,14 +60,24 @@ const REPOSITORY_PLACEHOLDER_REVISION = "replace-with-a-commit-hash";
  * Where a module sits in the workspace, and who owns it.
  *
  * `category` is what the module IS, and it is the directory it lives in.
- * `group` and `member` are who owns it, and they are a path into the org's
- * own manifest. The two are deliberately separate: a graphics team can own a
- * module filed under `viewer`, and a listing by owner is a different question
- * from a listing by kind.
+ * The rest is who owns it, as a path into a publisher's own manifest.
+ *
+ * A publisher is a PERSON or an ORGANISATION. Most people are not an
+ * organisation and should not have to invent one to publish a module, so
+ * `owner: { user }` is a first-class form and not a degenerate org with one
+ * member. Only organisations have groups.
+ *
+ * Category and owner stay deliberately separate: a graphics team can own a
+ * module filed under `viewer`, and a listing by owner answers a different
+ * question from a listing by kind.
  */
 export interface KeelModulePlacement {
-  readonly org: string;
+  /** Directory name under `modules/`: a user handle or an org id. */
+  readonly publisher: string;
+  /** Which key the manifest used, cross-checked against the publisher manifest. */
+  readonly publisherKind: "user" | "org";
   readonly category: string;
+  /** Organisations only. */
   readonly group?: string;
   readonly member?: string;
 }
@@ -124,22 +134,40 @@ function slug(value: unknown, label: string): string {
   return text;
 }
 
-/** The `owner` object of a `keel.jsmodule@2` manifest: org, then optionally group, then member. */
+/**
+ * The `owner` object of a `keel.jsmodule@2` manifest.
+ *
+ * Either `{ user }` or `{ org, group?, member? }`. Naming both is refused
+ * rather than silently preferring one, because "who owns this" is exactly the
+ * question a reader is asking and an ambiguous answer is worse than none.
+ */
 function parsePlacement(value: unknown, category: string): KeelModulePlacement {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
-    fail(`${KEEL_MODULE_MANIFEST_FILE}: owner must be an object naming at least an org.`);
+    fail(`${KEEL_MODULE_MANIFEST_FILE}: owner must be an object naming a user or an org.`);
   }
   const owner = value as Record<string, unknown>;
   for (const key of Object.keys(owner)) {
-    if (!["org", "group", "member"].includes(key)) fail(`${KEEL_MODULE_MANIFEST_FILE}: owner.${key} is not supported.`);
+    if (!["user", "org", "group", "member"].includes(key)) fail(`${KEEL_MODULE_MANIFEST_FILE}: owner.${key} is not supported.`);
   }
+  if (owner.user !== undefined && owner.org !== undefined) {
+    fail(`${KEEL_MODULE_MANIFEST_FILE}: owner names both a user and an org; it must name one.`);
+  }
+  if (owner.user !== undefined) {
+    // A person is not an organisation with one member, so they have no groups.
+    if (owner.group !== undefined || owner.member !== undefined) {
+      fail(`${KEEL_MODULE_MANIFEST_FILE}: owner.group and owner.member belong to an org; a user owns a module directly.`);
+    }
+    return { publisher: slug(owner.user, "owner.user"), publisherKind: "user", category };
+  }
+  if (owner.org === undefined) fail(`${KEEL_MODULE_MANIFEST_FILE}: owner must name a user or an org.`);
   // A member without a group would leave the listing path ambiguous: the site
   // renders org > group > member > module, and there is no way back up.
   if (owner.member !== undefined && owner.group === undefined) {
     fail(`${KEEL_MODULE_MANIFEST_FILE}: owner.member requires owner.group; a member is reached through a group.`);
   }
   return {
-    org: slug(owner.org, "owner.org"),
+    publisher: slug(owner.org, "owner.org"),
+    publisherKind: "org",
     category,
     ...(owner.group === undefined ? {} : { group: slug(owner.group, "owner.group") }),
     ...(owner.member === undefined ? {} : { member: slug(owner.member, "owner.member") }),
