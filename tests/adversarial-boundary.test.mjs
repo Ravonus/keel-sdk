@@ -223,7 +223,7 @@ test("ATTACK: tampering with frozen presentation data is bounded and rejected", 
   for (let i = 0; i < 400; i += 1) build[`k${i}`] = "x";
   const tampered = {
     data: {
-      protocol: "oca-viewer-verification@1",
+      protocol: "keel-viewer-verification@1",
       action: "presentation-state",
       presentation: "weapon",
       character: { tokenId: "1", seed: "s", appearance: "a" },
@@ -245,7 +245,7 @@ test("ATTACK: tampering with frozen presentation data is bounded and rejected", 
 
 test("ATTACK: an undeclared presentation action is rejected", () => {
   const result = validateKeelPresentationMessage(
-    { data: { protocol: "oca-viewer-verification@1", action: "exfiltrate" }, origin: "null", source: APP_FRAME },
+    { data: { protocol: "keel-viewer-verification@1", action: "exfiltrate" }, origin: "null", source: APP_FRAME },
     APP_FRAME,
   );
   assert.equal(result.ok, false);

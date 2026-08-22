@@ -26,7 +26,7 @@ export function transitionViewerVerificationHost(
 ): ViewerVerificationHostState {
   if (current.terminalFailed) return current;
   // A child viewer may be a perfectly valid, already-verified runtime that
-  // predates the optional `oca-viewer-verification@1` chrome protocol. A
+  // predates the optional `keel-viewer-verification@1` chrome protocol. A
   // missing handshake is therefore an unavailable *interactive* proof, not a
   // failed artifact proof. Keep the state non-terminal so a late handshake can
   // still upgrade the chrome to verified.

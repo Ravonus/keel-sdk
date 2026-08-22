@@ -56,7 +56,7 @@ export function makeKeelWrapperViewerDocument({ css, markup, app }) {
       // the sealed one are the same document with one substitution.
       "<!--@keel:context-->",
       `<script>globalThis.__KEEL_ONCHAIN_CONTEXT__=Object.freeze({json:${escapeJson(json)}});`,
-      `globalThis.__OCA_CONTEXT__=Object.freeze(JSON.parse(${escapeJson(json)}));</script>`,
+      `globalThis.__KEEL_CONTEXT__=Object.freeze(JSON.parse(${escapeJson(json)}));</script>`,
       "</head><body>",
       markup,
       // The artwork itself, base64, carried by this document rather than

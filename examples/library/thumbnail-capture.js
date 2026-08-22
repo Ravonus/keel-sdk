@@ -1,11 +1,11 @@
 /**
  * AI-friendly helpers for exact Keel poster and motion capture markers.
- * The viewer injects __OCA_THUMBNAIL__; importing this file is optional.
+ * The viewer injects __KEEL_THUMBNAIL__; importing this file is optional.
  * MIT.
  */
 function runtime() {
-  const api = globalThis.__OCA_THUMBNAIL__;
-  if (api?.protocol !== "oca-thumbnail-capture@1") {
+  const api = globalThis.__KEEL_THUMBNAIL__;
+  if (api?.protocol !== "keel-thumbnail-capture@1") {
     throw new Error("This artwork is not running in a thumbnail-aware Keel viewer.");
   }
   return api;

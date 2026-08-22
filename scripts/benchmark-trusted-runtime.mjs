@@ -81,7 +81,7 @@ const appLayer = { label: "app", allow: ["wallet.market.bid", "chain.read"] };
 const presFrame = {};
 const presMessage = {
   data: {
-    protocol: "oca-viewer-verification@1",
+    protocol: "keel-viewer-verification@1",
     action: "presentation-state",
     presentation: "weapon",
     character: { tokenId: "1234", seed: "0xabc", appearance: "shell/visor/core/skin" },

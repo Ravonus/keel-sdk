@@ -76,7 +76,7 @@ The generated iframe:
 - blocks WebSocket, EventSource, workers, beacon, forms, ordinary anchor navigation, and window opening;
 - applies replay inputs when declared.
 
-Creator code may access verified bytes through `__OCA_CONTENT__` and runtime information through `__OCA_RUNTIME__`.
+Creator code may access verified bytes through `__KEEL_CONTENT__` and runtime information through `__KEEL_RUNTIME__`.
 
 ## External sources
 

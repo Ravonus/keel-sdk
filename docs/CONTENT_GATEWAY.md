@@ -104,10 +104,10 @@ The sandbox exposes:
 
 ```js
 await fetch("/content/hero-model")
-__OCA_CONTENT__.bytes("hero-model")
-__OCA_CONTENT__.text("/content/config")
-__OCA_CONTENT__.json("oca://metadata")
-__OCA_CONTENT__.url("ipfs://...")
+__KEEL_CONTENT__.bytes("hero-model")
+__KEEL_CONTENT__.text("/content/config")
+__KEEL_CONTENT__.json("oca://metadata")
+__KEEL_CONTENT__.url("ipfs://...")
 ```
 
 Only GET and HEAD are supported. Undeclared names receive a blocked response or `SecurityError`.

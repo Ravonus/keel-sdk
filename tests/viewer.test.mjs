@@ -537,7 +537,7 @@ test("host capabilityCeiling clamps sandbox browser capabilities without touchin
   assert.equal(locked.allow, "");
   // Composition is untouched: the verified Keel content API is still injected.
   assert.match(locked.html, /__KEEL__/u);
-  assert.match(locked.html, /__OCA_CONTENT__/u);
+  assert.match(locked.html, /__KEEL_CONTENT__/u);
 });
 
 test("declared external URLs become local verified aliases instead of runtime network permissions", async () => {
@@ -602,9 +602,9 @@ test("sandbox materializes static virtual routes and blocks all raw creator netw
   const sandbox = createSandboxDocument(artifact);
   assert.ok(sandbox.html.includes("data:image/svg+xml;base64,"));
   assert.ok(sandbox.html.includes("data:text/javascript;base64,"));
-  assert.ok(sandbox.html.includes("__OCA_CONTENT__"));
-  assert.ok(sandbox.html.includes("__OCA_THUMBNAIL__"));
-  assert.ok(sandbox.html.includes("oca-thumbnail-capture@1"));
+  assert.ok(sandbox.html.includes("__KEEL_CONTENT__"));
+  assert.ok(sandbox.html.includes("__KEEL_THUMBNAIL__"));
+  assert.ok(sandbox.html.includes("keel-thumbnail-capture@1"));
   assert.ok(sandbox.html.includes("Keel blocked undeclared content request"));
   assert.ok(sandbox.html.includes("addEventListener(\"navigate\""));
   assert.ok(sandbox.html.includes("Location?.prototype"));
@@ -635,7 +635,7 @@ test("sandbox exposes only a validated pinned Keel chain context", async () => {
     derivedTokenSeed: `0x${"cd".repeat(32)}`,
   };
   const sandbox = createSandboxDocument(artifact, { runtimeContext: context });
-  assert.ok(sandbox.html.includes("__OCA_CONTEXT__"));
+  assert.ok(sandbox.html.includes("__KEEL_CONTEXT__"));
   assert.ok(sandbox.html.includes('"blockNumber":"42"'));
   assert.ok(sandbox.html.includes('"blockTimestamp":"1700000000"'));
   assert.ok(sandbox.html.includes('"tokenId":"7"'));

@@ -72,7 +72,7 @@ const launchParams = new URLSearchParams(location.search);
 const artReviewMode = launchParams.get("artReview") === "1";
 if (artReviewMode) document.documentElement.dataset.artReview = "1";
 const vaultSurface = document.documentElement.dataset.vaultSurface ?? "development-harness";
-const injectedContext = globalThis.__OCA_RUNTIME__?.context ?? globalThis.__OCA_CONTEXT__ ?? null;
+const injectedContext = globalThis.__KEEL_RUNTIME__?.context ?? globalThis.__KEEL_CONTEXT__ ?? null;
 const injectedMapSeed = injectedContext?.mapSeed;
 const injectedCharacterSeed = injectedContext?.derivedTokenSeed;
 const injectedMapCharacterSeed = injectedContext?.mapCharacterSeed;

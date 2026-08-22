@@ -16,7 +16,7 @@ const keys = new Set();
 const pointer = { x: canvas.width / 2, y: canvas.height / 2, down: false };
 
 function contentBlob(id, type) {
-  const bytes = globalThis.__OCA_CONTENT__.bytes(id);
+  const bytes = globalThis.__KEEL_CONTENT__.bytes(id);
   return new Blob([bytes], { type });
 }
 
@@ -43,7 +43,7 @@ function random(seed) {
   };
 }
 
-const runtime = globalThis.__OCA_RUNTIME__;
+const runtime = globalThis.__KEEL_RUNTIME__;
 const characterRecipe = runtime?.context ?? {};
 const mapSeed =
   characterRecipe.mapSeed ??
@@ -845,12 +845,12 @@ async function main() {
     ),
     createImageBitmap(contentBlob("vault-tiles.webp", "image/webp")),
     createImageBitmap(contentBlob("tintable-kit.webp", "image/webp")),
-    Promise.resolve(globalThis.__OCA_CONTENT__.bytes("character-catalog.octr")),
-    Promise.resolve(globalThis.__OCA_CONTENT__.bytes("sidearm-still-rig.json")),
+    Promise.resolve(globalThis.__KEEL_CONTENT__.bytes("character-catalog.octr")),
+    Promise.resolve(globalThis.__KEEL_CONTENT__.bytes("sidearm-still-rig.json")),
     ...[0, 1, 2, 3].map((id) =>
       Promise.resolve(
         decodeMaterialProfile(
-          globalThis.__OCA_CONTENT__.bytes(`character-material-${id}.ocmp`),
+          globalThis.__KEEL_CONTENT__.bytes(`character-material-${id}.ocmp`),
         ),
       ),
     ),

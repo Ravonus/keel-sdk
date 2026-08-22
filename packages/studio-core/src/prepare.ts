@@ -3,9 +3,9 @@ import {
   OCA_CONTENT_GATEWAY_PROTOCOL,
   OCA_MANIFEST_SCHEMA,
   OCA_MAX_THUMBNAIL_BYTES,
-  OCA_RUNTIME_PROTOCOL,
-  OCA_THUMBNAIL_PROTOCOL,
-  OCA_VIEWER_PROTOCOL,
+  KEEL_RUNTIME_PROTOCOL,
+  KEEL_THUMBNAIL_PROTOCOL,
+  KEEL_VIEWER_PROTOCOL,
   assertValidManifest,
   createIntegrity,
   manifestIntegrity,
@@ -241,14 +241,14 @@ function thumbnail(
   if (preview === undefined) {
     return capture === undefined
       ? undefined
-      : { protocol: OCA_THUMBNAIL_PROTOCOL, maxBytes: OCA_MAX_THUMBNAIL_BYTES, capture };
+      : { protocol: KEEL_THUMBNAIL_PROTOCOL, maxBytes: OCA_MAX_THUMBNAIL_BYTES, capture };
   }
   if (preview.decodedByteLength > OCA_MAX_THUMBNAIL_BYTES) {
     throw new RangeError(`Thumbnail ${preview.fileName} exceeds the 2 MiB on-chain preview limit.`);
   }
   if (supportedImages.has(preview.resource.mediaType)) {
     return {
-      protocol: OCA_THUMBNAIL_PROTOCOL,
+      protocol: KEEL_THUMBNAIL_PROTOCOL,
       image: preview.resource.id,
       ...(preview.resource.mediaType === "image/gif" || preview.resource.mediaType === "image/avif" || preview.resource.mediaType === "image/webp"
         ? { animation: preview.resource.id }
@@ -259,7 +259,7 @@ function thumbnail(
   }
   if (preview.resource.mediaType === "video/mp4") {
     return {
-      protocol: OCA_THUMBNAIL_PROTOCOL,
+      protocol: KEEL_THUMBNAIL_PROTOCOL,
       animation: preview.resource.id,
       maxBytes: OCA_MAX_THUMBNAIL_BYTES,
       ...(capture === undefined ? {} : { capture }),
@@ -378,7 +378,7 @@ export async function prepareStudioArtifact(options: PrepareStudioArtifactOption
     ...(artifactThumbnail === undefined ? {} : { thumbnail: artifactThumbnail }),
     ...(withDerivatives.derivatives.length === 0 ? {} : { mediaDerivatives: withDerivatives.derivatives }),
     runtime: {
-      engine: { protocol: OCA_RUNTIME_PROTOCOL, viewerProtocol: OCA_VIEWER_PROTOCOL, renderer: "browser" },
+      engine: { protocol: KEEL_RUNTIME_PROTOCOL, viewerProtocol: KEEL_VIEWER_PROTOCOL, renderer: "browser" },
       determinism: { mode: "live" },
       content: {
         protocol: OCA_CONTENT_GATEWAY_PROTOCOL,

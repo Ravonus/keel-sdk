@@ -5,9 +5,9 @@ import {
   OCA_MAX_OBJECT_CHILDREN,
   OCA_MAX_THUMBNAIL_BYTES,
   OCA_REGISTRY_ANCHOR_PROTOCOL,
-  OCA_THUMBNAIL_PROTOCOL,
-  OCA_RUNTIME_PROTOCOL,
-  OCA_VIEWER_PROTOCOL,
+  KEEL_THUMBNAIL_PROTOCOL,
+  KEEL_RUNTIME_PROTOCOL,
+  KEEL_VIEWER_PROTOCOL,
   KEEL_CONTRACT_PLUGIN_PROTOCOL,
   KEEL_GRAPH_ANCHOR_PROTOCOL,
   KEEL_LIBRARY_BINDINGS_PROTOCOL,
@@ -324,11 +324,11 @@ function validViewerUri(value: string): boolean {
 
 function validateRuntime(manifest: ArtifactManifest, issues: ManifestValidationIssue[]): void {
   const policy = manifest.runtime;
-  if (policy.engine.protocol !== OCA_RUNTIME_PROTOCOL) {
-    issue(issues, "error", "$.runtime.engine.protocol", "runtime.protocol", `Expected ${OCA_RUNTIME_PROTOCOL}.`);
+  if (policy.engine.protocol !== KEEL_RUNTIME_PROTOCOL) {
+    issue(issues, "error", "$.runtime.engine.protocol", "runtime.protocol", `Expected ${KEEL_RUNTIME_PROTOCOL}.`);
   }
-  if (policy.engine.viewerProtocol !== OCA_VIEWER_PROTOCOL) {
-    issue(issues, "error", "$.runtime.engine.viewerProtocol", "viewer.protocol", `Expected ${OCA_VIEWER_PROTOCOL}.`);
+  if (policy.engine.viewerProtocol !== KEEL_VIEWER_PROTOCOL) {
+    issue(issues, "error", "$.runtime.engine.viewerProtocol", "viewer.protocol", `Expected ${KEEL_VIEWER_PROTOCOL}.`);
   }
   if (policy.engine.renderer !== "browser") {
     issue(issues, "error", "$.runtime.engine.renderer", "runtime.renderer", "Only the browser renderer is defined by this release.");
@@ -468,8 +468,8 @@ function validateThumbnail(
 ): void {
   const thumbnail = manifest.thumbnail;
   if (thumbnail === undefined) return;
-  if (thumbnail.protocol !== OCA_THUMBNAIL_PROTOCOL) {
-    issue(issues, "error", "$.thumbnail.protocol", "thumbnail.protocol", `Expected ${OCA_THUMBNAIL_PROTOCOL}.`);
+  if (thumbnail.protocol !== KEEL_THUMBNAIL_PROTOCOL) {
+    issue(issues, "error", "$.thumbnail.protocol", "thumbnail.protocol", `Expected ${KEEL_THUMBNAIL_PROTOCOL}.`);
   }
   if (thumbnail.maxBytes !== OCA_MAX_THUMBNAIL_BYTES) {
     issue(issues, "error", "$.thumbnail.maxBytes", "thumbnail.limit", `Thumbnail resources are capped at ${OCA_MAX_THUMBNAIL_BYTES} bytes.`);

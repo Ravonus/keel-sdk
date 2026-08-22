@@ -120,7 +120,7 @@ export async function createKeelVerificationConsumerCases(repositoryRoot: string
   const vaultGameFixtureSource = vaultGameWithoutRuntime
     .replace(/<script id="keel-verification-presentation" type="application\/json">[\s\S]*?<\/script>/u, "")
     .replace(/<div class="verify-corner"[\s\S]*?<section class="verify-alert"[\s\S]*?<\/section>/u, "")
-    .replace("globalThis.__OCA_CONTEXT__ == null\n    ? Object.keys(weaponAttributeCatalog.weapons)", "assetId === undefined\n    ? Object.keys(weaponAttributeCatalog.weapons)")
+    .replace("globalThis.__KEEL_CONTEXT__ == null\n    ? Object.keys(weaponAttributeCatalog.weapons)", "assetId === undefined\n    ? Object.keys(weaponAttributeCatalog.weapons)")
     .replace("if (!verificationReadyEmitted) { verificationReadyEmitted = true; verificationUI.ready(); }", "if (!verificationReadyEmitted) { verificationReadyEmitted = true; document.body.dataset.assetReady = 'vault-game'; }");
   if (vaultGameFixtureSource.includes("const verificationUI = mountVerificationUI") || vaultGameFixtureSource.includes('class="verify-corner"') || vaultGameFixtureSource === vaultGameSource) {
     throw new Error("Vault game fixture still contains a duplicate verification shell.");

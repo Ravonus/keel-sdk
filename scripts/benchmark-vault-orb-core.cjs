@@ -230,7 +230,7 @@ async function auditStakeVerifier(browser, baseUrl) {
   page.on("pageerror", (error) => problems.push(`pageerror: ${error.message}`));
   await page.addInitScript(() => {
     const bytes32 = (byte) => `0x${byte.repeat(64)}`;
-    globalThis.__OCA_CONTEXT__ = Object.freeze({
+    globalThis.__KEEL_CONTEXT__ = Object.freeze({
       chainId: 11155111,
       tokenId: "7",
       derivedTokenSeed: bytes32("1"),

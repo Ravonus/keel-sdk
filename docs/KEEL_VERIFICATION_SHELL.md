@@ -41,7 +41,7 @@ one system, and this page is the map that was previously missing.
 - **Data injection** (how verified chain facts reach the shell's tables):
   `packages/viewer/src/keel-adapter.ts` — manifest-declared
   `keel-injection@1` fields resolve through pinned-block reads and land in
-  the frozen `__OCA_CONTEXT__` global the shell renders. This includes
+  the frozen `__KEEL_CONTEXT__` global the shell renders. This includes
   `character.attestedAnchors` (cross-chain anchor rows in the
   "Keel object trail" panel, read from the attested-anchor registry's
   `objectAnchoredChains`; requires a `keel.attestedAnchorRegistry`
@@ -56,7 +56,7 @@ storage with no gateway:
   `harnessHTML(objectId, expectedDigest)` returns the exact committed wrapper
   (fail-closed: a broken object returns a self-contained failure document,
   never substitute bytes); `harnessHTMLWithContext(...)` prepends an
-  integrity-bound context script that sets `__OCA_CONTEXT__` plus the
+  integrity-bound context script that sets `__KEEL_CONTEXT__` plus the
   `__KEEL_ONCHAIN_CONTEXT__` envelope (json, sha256 digest, byteLength);
   `harnessDataURI*` wrap either as `data:` URIs.
 - **Tezos** — `packages/tezos/contracts/keel_immutable_checkpoint.py`:

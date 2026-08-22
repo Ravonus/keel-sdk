@@ -1,6 +1,6 @@
 // Keel injects these values only after the manifest, viewer, and seed
 // commitments verify. Preview mode can provide the same fields manually.
-const context = globalThis.__OCA_CONTEXT__ ?? {};
+const context = globalThis.__KEEL_CONTEXT__ ?? {};
 const tokenId = String(context.tokenId ?? "preview");
 const seedHex = context.derivedTokenSeed ?? "0x5f3a91c7";
 const seed = Number.parseInt(seedHex.slice(-8), 16) >>> 0;

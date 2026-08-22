@@ -18,7 +18,7 @@
  */
 import { mountAsset, backdropPath } from "../keel-asset-view.js";
 (() => {
-  const E = globalThis.__KEEL_ONCHAIN_CONTEXT__ || globalThis.__OCA_CONTEXT__ || {};
+  const E = globalThis.__KEEL_ONCHAIN_CONTEXT__ || globalThis.__KEEL_CONTEXT__ || {};
   const C = typeof E.json === "string" ? JSON.parse(E.json) : E;
   /**
    * No host is baked into this document.

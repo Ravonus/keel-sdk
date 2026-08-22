@@ -5,12 +5,12 @@ import type { KeelAttribution } from "./keel-attribution.js";
 export const OCA_MANIFEST_SCHEMA = "oca-manifest@2" as const;
 export const OCA_LEGACY_MANIFEST_SCHEMA = "oca-manifest@1" as const;
 export const OCA_CANONICALIZATION = "RFC8785" as const;
-export const OCA_RUNTIME_PROTOCOL = "oca-runtime@1" as const;
-export const OCA_VIEWER_PROTOCOL = "oca-viewer@1" as const;
+export const KEEL_RUNTIME_PROTOCOL = "oca-runtime@1" as const;
+export const KEEL_VIEWER_PROTOCOL = "oca-viewer@1" as const;
 export const OCA_CONTENT_GATEWAY_PROTOCOL = "oca-content-gateway@1" as const;
 export const OCA_REGISTRY_ANCHOR_PROTOCOL = "oca-artifact-registry@1" as const;
-export const OCA_THUMBNAIL_PROTOCOL = "oca-thumbnail@1" as const;
-export const OCA_THUMBNAIL_CAPTURE_PROTOCOL = "oca-thumbnail-capture@1" as const;
+export const KEEL_THUMBNAIL_PROTOCOL = "oca-thumbnail@1" as const;
+export const KEEL_THUMBNAIL_CAPTURE_PROTOCOL = "keel-thumbnail-capture@1" as const;
 export const OCA_MAX_THUMBNAIL_BYTES = 2 * 1024 * 1024;
 export const KEEL_PLUGIN_BINDINGS_PROTOCOL = "keel-plugin-bindings@1" as const;
 export const KEEL_CONTRACT_PLUGIN_PROTOCOL = "keel-contract-plugin@1" as const;
@@ -393,8 +393,8 @@ export interface RuntimeViewerMirror {
 }
 
 export interface RuntimeEngine {
-  readonly protocol: typeof OCA_RUNTIME_PROTOCOL;
-  readonly viewerProtocol: typeof OCA_VIEWER_PROTOCOL;
+  readonly protocol: typeof KEEL_RUNTIME_PROTOCOL;
+  readonly viewerProtocol: typeof KEEL_VIEWER_PROTOCOL;
   readonly renderer: "browser";
   readonly viewerMirrors?: readonly RuntimeViewerMirror[];
 }
@@ -498,11 +498,11 @@ export type ArtifactThumbnailMediaType =
 
 /**
  * Exact poster/motion resources and an optional deterministic capture recipe.
- * Creator code can use the injected `__OCA_THUMBNAIL__` API or post the same
+ * Creator code can use the injected `__KEEL_THUMBNAIL__` API or post the same
  * protocol messages itself; neither path grants network or wallet access.
  */
 export interface ArtifactThumbnail {
-  readonly protocol: typeof OCA_THUMBNAIL_PROTOCOL;
+  readonly protocol: typeof KEEL_THUMBNAIL_PROTOCOL;
   readonly image?: string;
   readonly animation?: string;
   readonly maxBytes: typeof OCA_MAX_THUMBNAIL_BYTES;

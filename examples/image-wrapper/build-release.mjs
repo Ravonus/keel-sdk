@@ -5,8 +5,8 @@ import {
   OCA_CANONICALIZATION,
   OCA_CONTENT_GATEWAY_PROTOCOL,
   OCA_MANIFEST_SCHEMA,
-  OCA_RUNTIME_PROTOCOL,
-  OCA_VIEWER_PROTOCOL,
+  KEEL_RUNTIME_PROTOCOL,
+  KEEL_VIEWER_PROTOCOL,
   createIntegrity,
   manifestIntegrity,
 } from "../../packages/protocol/dist/index.js";
@@ -50,8 +50,8 @@ const manifest = {
   fallback: { image: "preview", animation: "viewer", backgroundColor: "#09090b" },
   runtime: {
     engine: {
-      protocol: OCA_RUNTIME_PROTOCOL,
-      viewerProtocol: OCA_VIEWER_PROTOCOL,
+      protocol: KEEL_RUNTIME_PROTOCOL,
+      viewerProtocol: KEEL_VIEWER_PROTOCOL,
       renderer: "browser",
     },
     determinism: {

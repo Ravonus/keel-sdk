@@ -31,7 +31,7 @@ def context_injection(context: bytes) -> str:
     return (
         '<script>(()=>{const h="' + context.hex() + '";const b=new Uint8Array(h.length/2);'
         "for(let i=0;i<b.length;i++)b[i]=parseInt(h.substr(i*2,2),16);const j=new TextDecoder().decode(b);"
-        "globalThis.__OCA_CONTEXT__=Object.freeze(JSON.parse(j));"
+        "globalThis.__KEEL_CONTEXT__=Object.freeze(JSON.parse(j));"
         "globalThis.__KEEL_ONCHAIN_CONTEXT__=Object.freeze({json:j,digest:\"0x" + digest + '",byteLength:'
         + str(len(context)) + "})})()</script>"
     )

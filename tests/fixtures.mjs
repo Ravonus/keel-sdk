@@ -2,15 +2,15 @@ import {
   OCA_CANONICALIZATION,
   OCA_CONTENT_GATEWAY_PROTOCOL,
   OCA_MANIFEST_SCHEMA,
-  OCA_RUNTIME_PROTOCOL,
-  OCA_VIEWER_PROTOCOL,
+  KEEL_RUNTIME_PROTOCOL,
+  KEEL_VIEWER_PROTOCOL,
 } from "../packages/protocol/dist/index.js";
 
 export function runtimePolicy(overrides = {}) {
   return {
     engine: {
-      protocol: OCA_RUNTIME_PROTOCOL,
-      viewerProtocol: OCA_VIEWER_PROTOCOL,
+      protocol: KEEL_RUNTIME_PROTOCOL,
+      viewerProtocol: KEEL_VIEWER_PROTOCOL,
       renderer: "browser",
       ...(overrides.engine ?? {}),
     },

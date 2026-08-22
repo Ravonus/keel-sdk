@@ -85,13 +85,13 @@ Feature policy may separately expose fullscreen, gamepad, clipboard write, or au
 Creator code receives frozen objects:
 
 ```js
-__OCA_RUNTIME__
-__OCA_CONTENT__
+__KEEL_RUNTIME__
+__KEEL_CONTENT__
 ```
 
-`__OCA_RUNTIME__` reports the engine, determinism, content policy, manifest ID/digest, registry verification state, and revision.
+`__KEEL_RUNTIME__` reports the engine, determinism, content policy, manifest ID/digest, registry verification state, and revision.
 
-`__OCA_CONTENT__` exposes only verified resources and returns copied bytes rather than mutable shared buffers.
+`__KEEL_CONTENT__` exposes only verified resources and returns copied bytes rather than mutable shared buffers.
 
 ## Long-term preservation
 

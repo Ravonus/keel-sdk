@@ -35,7 +35,7 @@ function marketPolicy() {
         },
       },
       {
-        protocol: "oca-viewer-verification@1",
+        protocol: "keel-viewer-verification@1",
         operationKey: "action",
         operations: {
           "presentation-state": {
@@ -247,7 +247,7 @@ test("host bridge validates enum and string-map bounds for the presentation prot
   const ok = bridge.accept(
     {
       data: {
-        protocol: "oca-viewer-verification@1",
+        protocol: "keel-viewer-verification@1",
         action: "presentation-state",
         presentation: "weapon",
         build: { barrel: "long", stock: "carbon" },
@@ -260,7 +260,7 @@ test("host bridge validates enum and string-map bounds for the presentation prot
   assert.equal(ok.ok, true);
 
   const badEnum = bridge.accept(
-    { data: { protocol: "oca-viewer-verification@1", action: "presentation-state", presentation: "rocket" }, origin: "null", source: frame },
+    { data: { protocol: "keel-viewer-verification@1", action: "presentation-state", presentation: "rocket" }, origin: "null", source: frame },
     frame,
   );
   assert.equal(badEnum.ok, false);
@@ -272,7 +272,7 @@ test("host bridge validates enum and string-map bounds for the presentation prot
   for (let i = 0; i < 20; i += 1) oversizedMap[`k${i}`] = "v";
   const badMap = bridge.accept(
     {
-      data: { protocol: "oca-viewer-verification@1", action: "presentation-state", presentation: "weapon", build: oversizedMap },
+      data: { protocol: "keel-viewer-verification@1", action: "presentation-state", presentation: "weapon", build: oversizedMap },
       origin: "null",
       source: frame,
     },

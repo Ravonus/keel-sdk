@@ -41,7 +41,7 @@ the message bridge or for the app-embedding surfaces.
 
 | Component | Where | What it does today | Authority | Class |
 |---|---|---|---|---|
-| `createSandboxDocument` | `packages/viewer/src/sandbox.ts:770` | Pure string builder: sandbox tokens, CSP, Permissions-Policy, frozen `__OCA_RUNTIME__/__OCA_CONTENT__/__KEEL__`, replay determinism, `fetch`/XHR/WebSocket/nav/form denial | none (emits string) | **KEEP** (strong) |
+| `createSandboxDocument` | `packages/viewer/src/sandbox.ts:770` | Pure string builder: sandbox tokens, CSP, Permissions-Policy, frozen `__KEEL_RUNTIME__/__KEEL_CONTENT__/__KEEL__`, replay determinism, `fetch`/XHR/WebSocket/nav/form denial | none (emits string) | **KEEP** (strong) |
 | `mountArtifact` | `packages/viewer/src/mount.ts:4` | Creates the one iframe: `srcdoc` (opaque origin), `sandbox`, `allow`, `csp` attr, `credentialless` | sole iframe factory | **HARDEN** (add bridge; Chromium-only attrs) |
 | Content gateway | `gateway.ts:108` | Deny-by-default route table; refuses registry-trust without proof | routing only | **KEEP** |
 | Electron egress guard | `egress.ts:49` | Blanket network cancel — Electron only | full deny | **KEEP** (web equivalent is deploy guidance) |
@@ -53,13 +53,13 @@ the message bridge or for the app-embedding surfaces.
 | Component | Where | What it does today | Class |
 |---|---|---|---|
 | `parseKeelPluginFrameMessage` | `plugin-bridge.ts:28` | Only real schema gate: exact-keys, session hex, `intentId` regex, field length caps — **hard-coded to `plugin==="keel-market"` and `^market\.`** | **GENERALIZE** |
-| `keel-viewer-bridge.ts` | `packages/protocol/src/keel-viewer-bridge.ts` | Typed `oca-viewer-verification@1` presentation shapes — **no length/range/key-count caps** | **HARDEN** |
+| `keel-viewer-bridge.ts` | `packages/protocol/src/keel-viewer-bridge.ts` | Typed `keel-viewer-verification@1` presentation shapes — **no length/range/key-count caps** | **HARDEN** |
 | Verification chrome ("the stamp") | `keel-verification-chrome.js:502` | In-frame UI; only frame-side handler that checks `event.source` | **KEEP** |
 | `transitionViewerVerificationHost` | `verification-state.ts:22` | Only replay/dup defense in any bridge (dup `mounted`/`ready` → fail) | **EXTEND** (generalize the discipline) |
 | vault-runner presentation relay | `apps/vault-runner/.../presentation/character/[tokenId]/route.ts:11` | **Blind bidirectional relay**: no protocol/schema/size/origin filter | **HARDEN** (this is the real 2-layer seam) |
 
-There are four postMessage protocols (`oca-viewer-verification@1`,
-`keel-*wallet*@1`, `oca-thumbnail-capture@1`, `oca-viewer-command@1`). **All
+There are four postMessage protocols (`keel-viewer-verification@1`,
+`keel-*wallet*@1`, `keel-thumbnail-capture@1`, `oca-viewer-command@1`). **All
 use `targetOrigin:"*"`; no handler checks `event.origin`; `MessageChannel`/
 `MessagePort` are used nowhere.** Sender-window checks exist in most host
 handlers but not in `sandbox.ts:711` or the vault-runner relay. No size cap or
@@ -230,7 +230,7 @@ Security review (Agent 2) ran against 2a/2b; all findings fixed and tested:
 
 
 - **2a presentation seam (DONE):** `packages/viewer/src/presentation-bridge.ts`
-  is a bounded, source-pinned validator for `oca-viewer-verification@1`
+  is a bounded, source-pinned validator for `keel-viewer-verification@1`
   presentation messages, built on host-bridge. `apps/vault-runner`
   `gallery-presentation.tsx` now routes through it, replacing the unbounded
   type-only `isKeelViewerPresentationState` path that fed an
@@ -268,7 +268,7 @@ Phase 3b (sandbox clamp, DONE): `createSandboxDocument` now accepts a
 `capabilityCeiling` (`SandboxOptions`); each browser capability is enabled only
 if the manifest declares it AND the ceiling allows it — a host narrows, never
 widens. Pair with `effectiveRuntimeCapabilities(effective)`. Backward-compatible
-(no ceiling → unchanged), and it never touches the `__KEEL__`/`__OCA_CONTENT__`
+(no ceiling → unchanged), and it never touches the `__KEEL__`/`__KEEL_CONTENT__`
 composition path — a test asserts both the clamp and that the content API is
 still injected. The wallet-intent narrowing primitive is done too: `narrowWalletOperations` /
 `narrowHostOperations` / `narrowOperationsByCapability` filter a bridge's declared
@@ -342,7 +342,7 @@ no change needed, and the hardening here does not touch it.
   The creator iframe never fetches: `fetch` is replaced by a verified-only shim,
   `connect-src 'none'`.
 - **Dynamism is real but commitment-bounded:** per-token context injection into
-  frozen `__OCA_CONTEXT__` (`keel-adapter.ts:1608`, `sandbox.ts:261-274`),
+  frozen `__KEEL_CONTEXT__` (`keel-adapter.ts:1608`, `sandbox.ts:261-274`),
   per-token viewer forks (`KeelHarnessRegistry.forkHarnessForToken/activateFork`,
   which require `KeelIndex.presentationMatches`), and arbitrary
   viewer↔content pairing via `bindKeelManifest` — which renders only when the

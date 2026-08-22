@@ -1,6 +1,6 @@
 import * as THREE from "/content/libraries/three.module.mjs";
 
-const context = globalThis.__OCA_CONTEXT__ ?? {};
+const context = globalThis.__KEEL_CONTEXT__ ?? {};
 const tokenId = String(context.tokenId ?? "preview");
 const seedHex = context.derivedTokenSeed ?? "0x7a31e5c9";
 const seed = Number.parseInt(seedHex.slice(-8), 16) >>> 0;

@@ -691,7 +691,7 @@ function allowCollectionVerificationFixtureQuery(hostname, explicitTestMode) {
  * The API is deliberately declarative so a person or coding model can author
  * JSON, compile it to compact bytes, and use the same reader in a Keel
  * sandbox. Nothing in this module performs network I/O: callers provide the
- * manifest-scoped `__OCA_CONTENT__` object.
+ * manifest-scoped `__KEEL_CONTENT__` object.
  *
  * The Sonant renderer below is derived from Dominic Szablewski's pl_synth
  * (MIT, Copyright 2024-2025 Dominic Szablewski), itself based on Sonant.
@@ -2870,13 +2870,13 @@ function mat4RotationY(radians) {
 //# sourceMappingURL=readers.js.map
 const localParams = new URLSearchParams(location.search);
 const queryChainId = localParams.get("chainId");
-const contextData = globalThis.__OCA_CONTEXT__ ?? {
+const contextData = globalThis.__KEEL_CONTEXT__ ?? {
   ...(queryChainId !== null && /^\d+$/.test(queryChainId) ? { chainId: Number(queryChainId) } : {}),
   derivedTokenSeed: localParams.get("seed"),
   tokenId: localParams.get("tokenId") ?? "preview",
 };
-const runtimeData = globalThis.__OCA_RUNTIME__;
-const verificationFixturesAllowed = allowCollectionVerificationFixtureQuery(location.hostname, globalThis.__OCA_TEST_MODE__ === true);
+const runtimeData = globalThis.__KEEL_RUNTIME__;
+const verificationFixturesAllowed = allowCollectionVerificationFixtureQuery(location.hostname, globalThis.__KEEL_TEST_MODE__ === true);
 const verificationScenario = verificationFixturesAllowed ? localParams.get("verificationTest") ?? undefined : undefined;
 if (verificationScenario === "module") throw new Error("Intentional pre-mount viewer module failure fixture.");
 const collectionVerificationScenario = verificationFixturesAllowed ? localParams.get("collectionVerificationTest") ?? undefined : undefined;
@@ -2898,22 +2898,22 @@ const collectionFixture = (scenario) => {
   return {
     proofClass: scenario === "adapter" ? "adapter-proof" : scenario === "no-hook" ? "content-only" : "native-proof",
     receiptId: `0x${"17".repeat(32)}`,
-    chainId: String(globalThis.__OCA_CONTEXT__?.chainId ?? 11155111),
-    blockNumber: globalThis.__OCA_CONTEXT__?.blockNumber ?? "9123456",
-    blockHash: globalThis.__OCA_CONTEXT__?.blockHash ?? `0x${"12".repeat(32)}`,
+    chainId: String(globalThis.__KEEL_CONTEXT__?.chainId ?? 11155111),
+    blockNumber: globalThis.__KEEL_CONTEXT__?.blockNumber ?? "9123456",
+    blockHash: globalThis.__KEEL_CONTEXT__?.blockHash ?? `0x${"12".repeat(32)}`,
     observationBlockNumber: "9123455", observationBlockHash: `0x${"18".repeat(32)}`,
-    collection: "0x2222222222222222222222222222222222222222", tokenId: globalThis.__OCA_CONTEXT__?.tokenId ?? "1",
+    collection: "0x2222222222222222222222222222222222222222", tokenId: globalThis.__KEEL_CONTEXT__?.tokenId ?? "1",
     policyVersion: "1", evidenceRoot: `0x${"13".repeat(32)}`, presentationRevision: "2", portableRoot: `0x${"14".repeat(32)}`,
     portableAnchorRoot: `0x${"15".repeat(32)}`, presentationContentDigest: `0x${"16".repeat(32)}`,
     revoked: scenario === "revoked", expired: scenario === "stale", facets,
   };
 };
-const collectionVerificationInput = globalThis.__OCA_CONTEXT__?.collectionVerification
+const collectionVerificationInput = globalThis.__KEEL_CONTEXT__?.collectionVerification
   ?? collectionFixture(collectionVerificationScenario);
 const collectionVerification = collectionVerificationInput === undefined
   ? undefined
   : evaluateCollectionVerification(collectionVerificationInput);
-const baseVerification = evaluateVaultVerification(runtimeData, globalThis.__OCA_CONTEXT__, verificationScenario);
+const baseVerification = evaluateVaultVerification(runtimeData, globalThis.__KEEL_CONTEXT__, verificationScenario);
 const verification = collectionVerification === undefined ? baseVerification : Object.freeze({
   ...baseVerification,
   state: collectionVerification.state === "failed" ? "failed" : baseVerification.state,
@@ -2998,7 +2998,7 @@ const sourceTag = (source) => {
   return { label: "URI mirror", detail: shortValue(source.uri), tone: "uri" };
 };
 const contentResources = () => {
-  const content = globalThis.__OCA_CONTENT__;
+  const content = globalThis.__KEEL_CONTENT__;
   if (typeof content?.resources !== "function") return [];
   try {
     const result = content.resources();
@@ -3184,12 +3184,12 @@ function mountVerificationUI(result, runtime, runtimeContext) {
   const open = () => {
     lastFocus = document.activeElement; document.body.classList.add("verify-open"); panel.setAttribute("aria-hidden", "false"); seal.setAttribute("aria-expanded", "true");
     closeButton.focus({ preventScroll: true });
-    parent.postMessage({ protocol: "oca-viewer-verification@1", action: "opened", state: document.documentElement.dataset.vaultVerification }, "*");
+    parent.postMessage({ protocol: "keel-viewer-verification@1", action: "opened", state: document.documentElement.dataset.vaultVerification }, "*");
   };
   const close = () => {
     document.body.classList.remove("verify-open"); panel.setAttribute("aria-hidden", "true"); seal.setAttribute("aria-expanded", "false");
     if (lastFocus instanceof HTMLElement) lastFocus.focus({ preventScroll: true });
-    parent.postMessage({ protocol: "oca-viewer-verification@1", action: "closed" }, "*");
+    parent.postMessage({ protocol: "keel-viewer-verification@1", action: "closed" }, "*");
   };
   seal.addEventListener("click", open); alertOpen.addEventListener("click", open); closeButton.addEventListener("click", close); backdrop.addEventListener("click", close);
   addEventListener("keydown", (event) => {
@@ -3203,7 +3203,7 @@ function mountVerificationUI(result, runtime, runtimeContext) {
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus({ preventScroll: true }); }
   });
   addEventListener("message", (event) => {
-    if (event.source !== parent || event.data?.protocol !== "oca-viewer-verification@1") return;
+    if (event.source !== parent || event.data?.protocol !== "keel-viewer-verification@1") return;
     if (event.data.action === "open") open();
     else if (event.data.action === "close") close();
     else if (event.data.action === "toggle") document.body.classList.contains("verify-open") ? close() : open();
@@ -3213,20 +3213,20 @@ function mountVerificationUI(result, runtime, runtimeContext) {
   const api = Object.freeze({
     open, close,
     ready() {
-      parent.postMessage({ protocol: "oca-viewer-verification@1", action: "ready", state: currentResult.state, title: currentResult.title, proofTier: currentResult.proofTier }, "*");
+      parent.postMessage({ protocol: "keel-viewer-verification@1", action: "ready", state: currentResult.state, title: currentResult.title, proofTier: currentResult.proofTier }, "*");
     },
     fail(label, detail) {
       render(Object.freeze({ state: "failed", title: "Verification failed", summary: `${label}: ${detail}`, checks: Object.freeze([{ id: "viewer-execution", label, passed: false, detail, severity: "fatal" }]), proofTier: "Rejected render", isFixture: false, proofMode: "rejected" }));
-      parent.postMessage({ protocol: "oca-viewer-verification@1", action: "state", state: "failed", title: "Verification failed", proofTier: "Rejected render" }, "*");
+      parent.postMessage({ protocol: "keel-viewer-verification@1", action: "state", state: "failed", title: "Verification failed", proofTier: "Rejected render" }, "*");
     },
   });
   Object.defineProperty(globalThis, "__VAULT_VERIFICATION_UI__", { value: api, configurable: false, writable: false });
   render(result);
-  parent.postMessage({ protocol: "oca-viewer-verification@1", action: "mounted" }, "*");
+  parent.postMessage({ protocol: "keel-viewer-verification@1", action: "mounted" }, "*");
   return api;
 }
 
-const verificationUI = mountVerificationUI(verification, runtimeData, globalThis.__OCA_CONTEXT__);
+const verificationUI = mountVerificationUI(verification, runtimeData, globalThis.__KEEL_CONTEXT__);
 const seed = contextData?.derivedTokenSeed;
 if (typeof seed !== "string" || !/^0x[0-9a-f]{64}$/.test(seed)) throw new Error("Keel token.seed was not injected");
 const bytes = Array.from({ length: 32 }, (_, index) => Number.parseInt(seed.slice(2 + index * 2, 4 + index * 2), 16));
@@ -3335,7 +3335,7 @@ const weaponAttributeCatalog = await Promise.resolve({
 }
 );
 const selectedWeapon = Object.entries(weaponAttributeCatalog.weapons).find(([, definition]) => definition.assetId?.toLowerCase() === assetId)?.[0]
-  ?? (globalThis.__OCA_CONTEXT__ == null
+  ?? (globalThis.__KEEL_CONTEXT__ == null
     ? Object.keys(weaponAttributeCatalog.weapons)[attributeBytes[0] % Object.keys(weaponAttributeCatalog.weapons).length]
     : undefined);
 if (!selectedWeapon) throw new Error(`The committed weapon assetId is not present in this codex revision: ${assetId ?? "missing"}`);
@@ -4421,7 +4421,7 @@ document.documentElement.dataset.vaultArenaArchetypes = MOB_ARCHETYPES.map((mob)
 document.documentElement.dataset.vaultMobVisualRecipes = String(MOB_VISUAL_RECIPES.length);
 document.documentElement.dataset.vaultMobAttributeLayers = MOB_ATTRIBUTE_LAYERS.join("|");
 document.documentElement.dataset.vaultEscapeStyle = escapeStyle.id;
-globalThis.__OCA_THUMBNAIL__?.ready("vault-orb");
+globalThis.__KEEL_THUMBNAIL__?.ready("vault-orb");
 requestAnimationFrame(draw);
 </script>
   </body>

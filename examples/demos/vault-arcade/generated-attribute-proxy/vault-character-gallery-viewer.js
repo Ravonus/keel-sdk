@@ -32,14 +32,14 @@ addEventListener("unhandledrejection", (event) => {
 const fail = (error) => {
   document.documentElement.dataset.vaultGalleryState = "failed";
   document.documentElement.dataset.vaultGalleryError = errorText(error).slice(0, 180);
-  parent.postMessage({ protocol: "oca-viewer-verification@1", action: "preview-failed" }, "*");
+  parent.postMessage({ protocol: "keel-viewer-verification@1", action: "preview-failed" }, "*");
 };
 
 try {
   // Match the full viewer/game host contract. The runtime envelope is the
   // canonical injection path; the legacy global remains a compatibility
   // fallback for static gallery embeds.
-  const contextData = globalThis.__OCA_RUNTIME__?.context ?? globalThis.__OCA_CONTEXT__;
+  const contextData = globalThis.__KEEL_RUNTIME__?.context ?? globalThis.__KEEL_CONTEXT__;
   const seed = contextData?.derivedTokenSeed;
   const packedAttributes = contextData?.packedAttributes;
   const assetId = contextData?.assetId?.toLowerCase();
@@ -166,7 +166,7 @@ try {
   const light = ORB_LIGHT_STYLES[appearance.coreLight];
   let galleryMode = "character";
   const presentationState = () => Object.freeze({
-    protocol: "oca-viewer-verification@1",
+    protocol: "keel-viewer-verification@1",
     action: "presentation-state",
     presentation: galleryMode,
     character: Object.freeze({
@@ -197,15 +197,15 @@ try {
     publishPresentationState();
   };
   addEventListener("message", (event) => {
-    if (event.source !== parent || event.data?.protocol !== "oca-viewer-verification@1") return;
+    if (event.source !== parent || event.data?.protocol !== "keel-viewer-verification@1") return;
     if (event.data.action === "set-presentation") setGalleryMode(event.data.presentation);
     else if (event.data.action === "get-presentation") publishPresentationState();
   });
-  Object.defineProperty(globalThis, "__OCA_PRESENTATION_API__", {
+  Object.defineProperty(globalThis, "__KEEL_PRESENTATION_API__", {
     configurable: false,
     writable: false,
     value: Object.freeze({
-      protocol: "oca-viewer-verification@1",
+      protocol: "keel-viewer-verification@1",
       setPresentation: setGalleryMode,
       state: presentationState,
     }),
@@ -338,7 +338,7 @@ try {
     if (firstFrame) {
       firstFrame = false;
       document.documentElement.dataset.vaultCharacterReady = "true";
-      parent.postMessage({ protocol: "oca-viewer-verification@1", action: "preview-ready", state: "verified" }, "*");
+      parent.postMessage({ protocol: "keel-viewer-verification@1", action: "preview-ready", state: "verified" }, "*");
       publishPresentationState();
     }
     setTimeout(() => requestAnimationFrame(draw), 120);

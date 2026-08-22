@@ -354,7 +354,7 @@ function mountProofDrawer(result) {
   seal.addEventListener("click", () => setOpen(true)); close.addEventListener("click", () => setOpen(false)); backdrop.addEventListener("click", () => setOpen(false));
   addEventListener("keydown", (event) => { if (event.key === "Escape") setOpen(false); });
   addEventListener("message", (event) => {
-    if (event.source !== parent || event.data?.protocol !== "oca-viewer-verification@1") return;
+    if (event.source !== parent || event.data?.protocol !== "keel-viewer-verification@1") return;
     if (event.data.action === "open") setOpen(true);
     else if (event.data.action === "close") setOpen(false);
     else if (event.data.action === "set-chrome" && (event.data.chrome === "external" || event.data.chrome === "embedded")) document.documentElement.dataset.verificationChrome = event.data.chrome;

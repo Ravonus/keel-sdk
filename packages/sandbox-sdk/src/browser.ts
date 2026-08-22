@@ -2,8 +2,8 @@ import {
   OCA_CANONICALIZATION,
   OCA_CONTENT_GATEWAY_PROTOCOL,
   OCA_MANIFEST_SCHEMA,
-  OCA_RUNTIME_PROTOCOL,
-  OCA_VIEWER_PROTOCOL,
+  KEEL_RUNTIME_PROTOCOL,
+  KEEL_VIEWER_PROTOCOL,
   KEEL_PROJECT_STACK_PROTOCOL,
   assertValidManifest,
   createIntegrity,
@@ -167,7 +167,7 @@ function browserManifest(
       ...(motion === undefined ? {} : { animation: motion.id }),
     },
     runtime: {
-      engine: { protocol: OCA_RUNTIME_PROTOCOL, viewerProtocol: OCA_VIEWER_PROTOCOL, renderer: "browser" },
+      engine: { protocol: KEEL_RUNTIME_PROTOCOL, viewerProtocol: KEEL_VIEWER_PROTOCOL, renderer: "browser" },
       determinism: { mode: "live" },
       content: {
         protocol: OCA_CONTENT_GATEWAY_PROTOCOL,

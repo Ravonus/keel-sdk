@@ -4,8 +4,8 @@ import {
   OCA_CANONICALIZATION,
   OCA_CONTENT_GATEWAY_PROTOCOL,
   OCA_MANIFEST_SCHEMA,
-  OCA_RUNTIME_PROTOCOL,
-  OCA_VIEWER_PROTOCOL,
+  KEEL_RUNTIME_PROTOCOL,
+  KEEL_VIEWER_PROTOCOL,
   assertValidManifest,
   createIntegrity,
   manifestIntegrity,
@@ -227,8 +227,8 @@ export async function wrapImage(options: WrapImageOptions): Promise<WrappedArtif
     },
     runtime: {
       engine: {
-        protocol: OCA_RUNTIME_PROTOCOL,
-        viewerProtocol: OCA_VIEWER_PROTOCOL,
+        protocol: KEEL_RUNTIME_PROTOCOL,
+        viewerProtocol: KEEL_VIEWER_PROTOCOL,
         renderer: "browser",
         ...(options.viewerMirrors === undefined ? {} : { viewerMirrors: options.viewerMirrors }),
       },

@@ -19,7 +19,7 @@
 import { mountAsset, backdropPath } from "../src/keel-asset-view.js";
 import { createKeelChain, KEEL_VIEW_RPC_HOSTS } from "../src/keel-rpc-view.js";
 (() => {
-  const E = globalThis.__KEEL_ONCHAIN_CONTEXT__ || globalThis.__OCA_CONTEXT__ || {};
+  const E = globalThis.__KEEL_ONCHAIN_CONTEXT__ || globalThis.__KEEL_CONTEXT__ || {};
   const C = typeof E.json === "string" ? JSON.parse(E.json) : E;
   // No host is compiled into this document. The artwork travels with the page,
   // so nothing is needed to render it. The panel's live lookups — who owns this

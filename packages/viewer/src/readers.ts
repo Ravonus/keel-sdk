@@ -4,7 +4,7 @@
  * The API is deliberately declarative so a person or coding model can author
  * JSON, compile it to compact bytes, and use the same reader in a Keel
  * sandbox. Nothing in this module performs network I/O: callers provide the
- * manifest-scoped `__OCA_CONTENT__` object.
+ * manifest-scoped `__KEEL_CONTENT__` object.
  *
  * The Sonant renderer below is derived from Dominic Szablewski's pl_synth
  * (MIT, Copyright 2024-2025 Dominic Szablewski), itself based on Sonant.

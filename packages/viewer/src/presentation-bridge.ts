@@ -1,5 +1,5 @@
 /**
- * Hardened validator for the `oca-viewer-verification@1` presentation protocol
+ * Hardened validator for the `keel-viewer-verification@1` presentation protocol
  * a gallery host receives from a Keel viewer frame.
  *
  * The legacy `isKeelViewerPresentationState` (in @keel/protocol) checks field
@@ -13,7 +13,7 @@
 import type { KeelViewerPresentationState } from "@keel/protocol";
 import { createHostBridge, type HostBridgePolicy } from "./host-bridge.js";
 
-export const KEEL_PRESENTATION_PROTOCOL = "oca-viewer-verification@1";
+export const KEEL_PRESENTATION_PROTOCOL = "keel-viewer-verification@1";
 
 /**
  * Policy for the frame -> host presentation channel. The gallery frame is

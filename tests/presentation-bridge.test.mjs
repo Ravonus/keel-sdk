@@ -8,7 +8,7 @@ const ORIGIN = "null";
 
 function presentationState(overrides = {}) {
   return {
-    protocol: "oca-viewer-verification@1",
+    protocol: "keel-viewer-verification@1",
     action: "presentation-state",
     presentation: "weapon",
     character: { tokenId: "1234", seed: "0xabc", appearance: "shell/visor/core/skin" },
@@ -39,7 +39,7 @@ test("presentation bridge accepts a well-formed state from the pinned opaque fra
 test("presentation bridge accepts preview-ready with the producer's state field", () => {
   const frame = {};
   const result = validateKeelPresentationMessage(
-    { data: { protocol: "oca-viewer-verification@1", action: "preview-ready", state: "verified" }, origin: ORIGIN, source: frame },
+    { data: { protocol: "keel-viewer-verification@1", action: "preview-ready", state: "verified" }, origin: ORIGIN, source: frame },
     frame,
   );
   assert.equal(result.ok, true);
@@ -49,7 +49,7 @@ test("presentation bridge accepts preview-ready with the producer's state field"
 test("presentation bridge accepts preview-ready with no state field", () => {
   const frame = {};
   const result = validateKeelPresentationMessage(
-    { data: { protocol: "oca-viewer-verification@1", action: "preview-ready" }, origin: ORIGIN, source: frame },
+    { data: { protocol: "keel-viewer-verification@1", action: "preview-ready" }, origin: ORIGIN, source: frame },
     frame,
   );
   assert.equal(result.ok, true);
@@ -120,7 +120,7 @@ test("presentation bridge rejects an out-of-range combat number", () => {
 test("presentation bridge rejects an undeclared action", () => {
   const frame = {};
   const result = validateKeelPresentationMessage(
-    { data: { protocol: "oca-viewer-verification@1", action: "force-failure" }, origin: ORIGIN, source: frame },
+    { data: { protocol: "keel-viewer-verification@1", action: "force-failure" }, origin: ORIGIN, source: frame },
     frame,
   );
   assert.equal(result.ok, false);

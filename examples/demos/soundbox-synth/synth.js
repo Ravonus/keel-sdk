@@ -67,10 +67,10 @@ async function boot() {
     bootButton.disabled = true;
     bootButton.textContent = "Rendering…";
     setStatus("Unlocking audio and decoding verified bitstreams…");
-    const runtime = globalThis.__OCA_RUNTIME__;
+    const runtime = globalThis.__KEEL_RUNTIME__;
     const seed = runtime?.context?.derivedTokenSeed ?? runtime?.manifestDigest ?? "oca-soundbox-live";
     reader = createAudioReader({
-      content: globalThis.__OCA_CONTENT__,
+      content: globalThis.__KEEL_CONTENT__,
       noiseSeed: seed,
       maxSeconds: 180,
     });
@@ -79,7 +79,7 @@ async function boot() {
     const summaries = [];
     for (const patch of PATCHES) {
       const started = performance.now();
-      const sourceBytes = globalThis.__OCA_CONTENT__.bytes(patch.resourceId);
+      const sourceBytes = globalThis.__KEEL_CONTENT__.bytes(patch.resourceId);
       const buffer = reader.render(soundSpec(patch));
       sampleEnergy(buffer);
       buffers.set(patch.id, buffer);

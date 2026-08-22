@@ -2,8 +2,8 @@ import {
   OCA_CANONICALIZATION,
   OCA_CONTENT_GATEWAY_PROTOCOL,
   OCA_MANIFEST_SCHEMA,
-  OCA_RUNTIME_PROTOCOL,
-  OCA_VIEWER_PROTOCOL,
+  KEEL_RUNTIME_PROTOCOL,
+  KEEL_VIEWER_PROTOCOL,
   assertValidManifest,
   manifestIntegrity,
   type ArtifactManifest,
@@ -60,7 +60,7 @@ export async function buildStudioManifest(input: StudioManifestInput): Promise<B
       backgroundColor: "#07070a",
     },
     runtime: {
-      engine: { protocol: OCA_RUNTIME_PROTOCOL, viewerProtocol: OCA_VIEWER_PROTOCOL, renderer: "browser" },
+      engine: { protocol: KEEL_RUNTIME_PROTOCOL, viewerProtocol: KEEL_VIEWER_PROTOCOL, renderer: "browser" },
       determinism: { mode: "live" },
       content: {
         protocol: OCA_CONTENT_GATEWAY_PROTOCOL,

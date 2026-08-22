@@ -22,8 +22,8 @@ const fpsInput = document.getElementById("fps");
 const playButton = document.getElementById("play");
 
 function seedFromRuntime() {
-  const value = globalThis.__OCA_RUNTIME__?.context?.derivedTokenSeed ??
-    globalThis.__OCA_RUNTIME__?.manifestDigest ??
+  const value = globalThis.__KEEL_RUNTIME__?.context?.derivedTokenSeed ??
+    globalThis.__KEEL_RUNTIME__?.manifestDigest ??
     "oca-sprite-forge";
   let seed = 0x811c9dc5;
   for (const character of String(value)) {
@@ -53,10 +53,10 @@ function updateControls(player) {
 }
 
 async function main() {
-  const atlasBytes = globalThis.__OCA_CONTENT__.bytes("atlas.ocaa");
+  const atlasBytes = globalThis.__KEEL_CONTENT__.bytes("atlas.ocaa");
   const atlas = decodeSpriteBitAtlas(atlasBytes);
   const player = createSpritePlayer({
-    content: globalThis.__OCA_CONTENT__,
+    content: globalThis.__KEEL_CONTENT__,
     canvas,
     atlas,
     layers: palette(seedFromRuntime()),
@@ -88,7 +88,7 @@ async function main() {
   });
 
   const sourceBytes = LAYERS.reduce(
-    (total, layer) => total + globalThis.__OCA_CONTENT__.bytes(layer.resourceId).byteLength,
+    (total, layer) => total + globalThis.__KEEL_CONTENT__.bytes(layer.resourceId).byteLength,
     0,
   );
   status.textContent =

@@ -3,8 +3,8 @@
   const proof = document.getElementById("archive-proof");
   const help = document.getElementById("keel-help");
   try {
-    const runtime = globalThis.__OCA_RUNTIME__;
-    const context = globalThis.__OCA_CONTEXT__;
+    const runtime = globalThis.__KEEL_RUNTIME__;
+    const context = globalThis.__KEEL_CONTEXT__;
     if (runtime?.determinism?.mode !== "live") {
       throw new Error("Keel production viewer requires mode live");
     }

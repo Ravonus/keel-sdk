@@ -4,8 +4,8 @@
   const help = document.getElementById("comet-help");
 
   try {
-    const runtime = globalThis.__OCA_RUNTIME__;
-    const context = globalThis.__OCA_CONTEXT__;
+    const runtime = globalThis.__KEEL_RUNTIME__;
+    const context = globalThis.__KEEL_CONTEXT__;
     const index = globalThis.__KEEL_COMET_INDEX__;
     if (runtime?.determinism?.mode !== "live") throw new Error("Comet requires mode live");
     if (runtime.anchorVerified !== true || context?.protocol !== "keel-context@1") {

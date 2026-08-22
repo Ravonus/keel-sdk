@@ -16,8 +16,8 @@ const stage = document.querySelector("#keel-stage");
 const status = document.querySelector("#keel-status");
 if (!(stage instanceof HTMLElement) || !(status instanceof HTMLElement)) throw new Error("Invalid Keel verifier document.");
 const localParams = new URLSearchParams(location.search);
-let contextData = globalThis.__OCA_CONTEXT__;
-let runtimeData = globalThis.__OCA_RUNTIME__;
+let contextData = globalThis.__KEEL_CONTEXT__;
+let runtimeData = globalThis.__KEEL_RUNTIME__;
 let verificationUI;
 const outerResources = Object.freeze(envelope.items.map((item) => Object.freeze({
   id: item.id,
@@ -31,7 +31,7 @@ const outerResources = Object.freeze(envelope.items.map((item) => Object.freeze(
     : item.sources?.map((source) => ({ kind: "url", uri: source.uri }))
       ?? [{ kind: "inline" }]),
 })));
-Object.defineProperty(globalThis, "__OCA_CONTENT__", {
+Object.defineProperty(globalThis, "__KEEL_CONTENT__", {
   value: Object.freeze({ resources: () => outerResources }),
   configurable: false,
   writable: false,
@@ -290,8 +290,8 @@ async function verifiedRuntimeContext() {
 function instrumentEntrypoint(html, nonce, runtimeContext, contentUrls) {
   const context = runtimeContext === undefined
     ? ""
-    : `<script>globalThis.__OCA_CONTEXT__=Object.freeze(${scriptJson(runtimeContext)});globalThis.__OCA_RUNTIME__=Object.freeze({context:globalThis.__OCA_CONTEXT__})</script>`;
-  const content = `<script>(()=>{const u=Object.freeze(${scriptJson(contentUrls)}),bytes=id=>{const value=u[id];if(typeof value!=="string")throw new Error("Undeclared verified content "+id);const encoded=value.slice(value.indexOf(",")+1);return Uint8Array.from(atob(encoded),character=>character.charCodeAt(0))};globalThis.__OCA_CONTENT__=Object.freeze({url:id=>u[id]??null,bytes})})()</script>`;
+    : `<script>globalThis.__KEEL_CONTEXT__=Object.freeze(${scriptJson(runtimeContext)});globalThis.__KEEL_RUNTIME__=Object.freeze({context:globalThis.__KEEL_CONTEXT__})</script>`;
+  const content = `<script>(()=>{const u=Object.freeze(${scriptJson(contentUrls)}),bytes=id=>{const value=u[id];if(typeof value!=="string")throw new Error("Undeclared verified content "+id);const encoded=value.slice(value.indexOf(",")+1);return Uint8Array.from(atob(encoded),character=>character.charCodeAt(0))};globalThis.__KEEL_CONTENT__=Object.freeze({url:id=>u[id]??null,bytes})})()</script>`;
   const inputBridge = `<script>(()=>{addEventListener("message",event=>{const data=event.data;if(event.source!==parent||data?.protocol!=="keel-child-input@1"||!['keydown','keyup'].includes(data.type)||typeof data.code!=="string"||data.code.length>48||typeof data.key!=="string"||data.key.length>48)return;document.documentElement.dataset.keelLastInput=data.type+':'+data.code;dispatchEvent(new KeyboardEvent(data.type,{code:data.code,key:data.key,repeat:data.repeat===true,altKey:data.altKey===true,ctrlKey:data.ctrlKey===true,metaKey:data.metaKey===true,shiftKey:data.shiftKey===true,bubbles:true,cancelable:true}))})})()</script>`;
   const probe = `<script>(()=>{const n=${JSON.stringify(nonce)},send=(state,detail={})=>parent.postMessage({protocol:"keel-child-runtime@1",nonce:n,state,...detail},"*");addEventListener("error",event=>send("failed",{message:event.message||"Entrypoint runtime error."}));addEventListener("unhandledrejection",event=>send("failed",{message:String(event.reason?.message??event.reason??"Unhandled entrypoint rejection.")}));addEventListener("load",()=>setTimeout(()=>send("ready",{canvasCount:document.querySelectorAll("canvas").length,childCount:document.body?.childElementCount??0,loadError:document.body?.dataset?.loadError??null}),500),{once:true})})()</script>`;
   if (/<head(?:\s[^>]*)?>/iu.test(html)) {

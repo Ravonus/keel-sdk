@@ -191,7 +191,7 @@ const observedCarriage = (sources) => {
 };
 
 const contentResources = () => {
-  const content = globalThis.__OCA_CONTENT__;
+  const content = globalThis.__KEEL_CONTENT__;
   if (typeof content?.resources !== "function") return [];
   try {
     const result = content.resources();
@@ -556,14 +556,14 @@ function mountVerificationUI(result, runtime, runtimeContext, presentationInput)
     setCornerPresence(true);
     lastFocus = document.activeElement; document.body.classList.add("verify-open"); panel.setAttribute("aria-hidden", "false"); seal.setAttribute("aria-expanded", "true");
     closeButton.focus({ preventScroll: true });
-    parent.postMessage({ protocol: "oca-viewer-verification@1", action: "opened", state: document.documentElement.dataset.vaultVerification }, "*");
+    parent.postMessage({ protocol: "keel-viewer-verification@1", action: "opened", state: document.documentElement.dataset.vaultVerification }, "*");
   };
   const close = () => {
     document.body.classList.remove("verify-open"); panel.setAttribute("aria-hidden", "true"); seal.setAttribute("aria-expanded", "false");
     if (lastFocus instanceof HTMLElement && lastFocus !== seal) lastFocus.focus({ preventScroll: true });
     else seal.blur();
     scheduleCornerHide();
-    parent.postMessage({ protocol: "oca-viewer-verification@1", action: "closed" }, "*");
+    parent.postMessage({ protocol: "keel-viewer-verification@1", action: "closed" }, "*");
   };
   const revealCorner = () => {
     clearTimeout(cornerHideTimer);
@@ -583,7 +583,7 @@ function mountVerificationUI(result, runtime, runtimeContext, presentationInput)
   corner.addEventListener("pointercancel", scheduleCornerHide);
   seal.addEventListener("focus", revealCorner);
   seal.addEventListener("blur", scheduleCornerHide);
-  seal.addEventListener("click", open); alertOpen.addEventListener("click", open); alertDismiss.addEventListener("click", () => { document.body.classList.add("verification-alert-dismissed"); parent.postMessage({ protocol: "oca-viewer-verification@1", action: "warning-dismissed", state: currentResult.state }, "*"); }); closeButton.addEventListener("click", close); backdrop.addEventListener("click", close);
+  seal.addEventListener("click", open); alertOpen.addEventListener("click", open); alertDismiss.addEventListener("click", () => { document.body.classList.add("verification-alert-dismissed"); parent.postMessage({ protocol: "keel-viewer-verification@1", action: "warning-dismissed", state: currentResult.state }, "*"); }); closeButton.addEventListener("click", close); backdrop.addEventListener("click", close);
   addEventListener("keydown", (event) => {
     if (!document.body.classList.contains("verify-open")) return;
     if (event.key === "Escape") { close(); return; }
@@ -595,7 +595,7 @@ function mountVerificationUI(result, runtime, runtimeContext, presentationInput)
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus({ preventScroll: true }); }
   });
   addEventListener("message", (event) => {
-    if (event.source !== parent || event.data?.protocol !== "oca-viewer-verification@1") return;
+    if (event.source !== parent || event.data?.protocol !== "keel-viewer-verification@1") return;
     if (event.data.action === "open") open();
     else if (event.data.action === "close") close();
     else if (event.data.action === "toggle") document.body.classList.contains("verify-open") ? close() : open();
@@ -605,16 +605,16 @@ function mountVerificationUI(result, runtime, runtimeContext, presentationInput)
   const api = Object.freeze({
     open, close,
     ready() {
-      parent.postMessage({ protocol: "oca-viewer-verification@1", action: "ready", state: currentResult.state, title: currentResult.title, proofTier: currentResult.proofTier }, "*");
+      parent.postMessage({ protocol: "keel-viewer-verification@1", action: "ready", state: currentResult.state, title: currentResult.title, proofTier: currentResult.proofTier }, "*");
     },
     fail(label, detail) {
       render(Object.freeze({ state: "failed", title: "Verification failed", summary: `${label}: ${detail}`, checks: Object.freeze([{ id: "viewer-execution", label, passed: false, detail, severity: "fatal" }]), proofTier: "Rejected render", isFixture: false, proofMode: "rejected" }));
-      parent.postMessage({ protocol: "oca-viewer-verification@1", action: "state", state: "failed", title: "Verification failed", proofTier: "Rejected render" }, "*");
+      parent.postMessage({ protocol: "keel-viewer-verification@1", action: "state", state: "failed", title: "Verification failed", proofTier: "Rejected render" }, "*");
     },
   });
   Object.defineProperty(globalThis, "__VAULT_VERIFICATION_UI__", { value: api, configurable: false, writable: false });
   render(result);
-  parent.postMessage({ protocol: "oca-viewer-verification@1", action: "mounted" }, "*");
+  parent.postMessage({ protocol: "keel-viewer-verification@1", action: "mounted" }, "*");
   return api;
 }
 

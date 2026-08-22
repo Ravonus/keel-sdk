@@ -6,8 +6,8 @@ import {
   OCA_CONTENT_GATEWAY_PROTOCOL,
   OCA_MANIFEST_SCHEMA,
   OCA_REGISTRY_ANCHOR_PROTOCOL,
-  OCA_RUNTIME_PROTOCOL,
-  OCA_VIEWER_PROTOCOL,
+  KEEL_RUNTIME_PROTOCOL,
+  KEEL_VIEWER_PROTOCOL,
   assertValidManifest,
   canonicalJson,
   encodePortableGraphV1,
@@ -1468,7 +1468,7 @@ const characterManifest: ArtifactManifest = {
     }],
     fallback: { image: "viewer", animation: "viewer", backgroundColor: "#050908" },
     runtime: {
-      engine: { protocol: OCA_RUNTIME_PROTOCOL, viewerProtocol: OCA_VIEWER_PROTOCOL, renderer: "browser" },
+      engine: { protocol: KEEL_RUNTIME_PROTOCOL, viewerProtocol: KEEL_VIEWER_PROTOCOL, renderer: "browser" },
       determinism: { mode: "live" },
       content: { protocol: OCA_CONTENT_GATEWAY_PROTOCOL, mode: "verified-only", externalSources: "host-verified", manifestTrust: "registry", blockUndeclared: true, resourcePathPrefix: "/content/", onchainPathPrefix: "/onchain/", ipfsPathPrefix: "/ipfs/" },
       sandbox: "strict", capabilities: { audio: true }, maxResourceBytes: 1_000_000, maxTotalBytes: 1_000_000, maxRecursionDepth: 8, maxResources: 8, timeoutMs: 30_000,
@@ -1849,7 +1849,7 @@ const mapManifest: ArtifactManifest = {
   resources: mapResources,
   fallback: { image: "character-parts-eight-direction-168.webp", animation: "index.html", backgroundColor: "#070812" },
   runtime: {
-    engine: { protocol: OCA_RUNTIME_PROTOCOL, viewerProtocol: OCA_VIEWER_PROTOCOL, renderer: "browser" },
+    engine: { protocol: KEEL_RUNTIME_PROTOCOL, viewerProtocol: KEEL_VIEWER_PROTOCOL, renderer: "browser" },
     determinism: { mode: "live" },
     content: {
       protocol: OCA_CONTENT_GATEWAY_PROTOCOL,
@@ -2356,7 +2356,7 @@ for (let tokenId = 1n; tokenId <= BigInt(VAULT_SEPOLIA_CHARACTER_MINT_COUNT); to
 
   const reconstructedViewerBytes = hexToBytes(reconstructedViewer);
   const reconstructedViewerDigest = sha256(reconstructedViewerBytes);
-  if (reconstructedViewerBytes.length <= viewerBytes.length || !new TextDecoder().decode(reconstructedViewerBytes.slice(0, 96)).includes("__OCA_CONTEXT__")) {
+  if (reconstructedViewerBytes.length <= viewerBytes.length || !new TextDecoder().decode(reconstructedViewerBytes.slice(0, 96)).includes("__KEEL_CONTEXT__")) {
     throw new Error(`Vault character ${tokenId} on-chain viewer builder did not inject its committed token context.`);
   }
   const rawOnchainViewerPath = path.join(demoRoot, `character-${tokenId}-onchain.html`);

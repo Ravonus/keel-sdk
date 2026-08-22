@@ -1,4 +1,4 @@
-export const KEEL_VIEWER_BRIDGE_PROTOCOL = "oca-viewer-verification@1" as const;
+export const KEEL_VIEWER_BRIDGE_PROTOCOL = "keel-viewer-verification@1" as const;
 
 export type KeelViewerPresentationMode = "character" | "weapon";
 

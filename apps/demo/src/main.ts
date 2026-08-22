@@ -2,8 +2,8 @@ import {
   OCA_CANONICALIZATION,
   OCA_CONTENT_GATEWAY_PROTOCOL,
   OCA_MANIFEST_SCHEMA,
-  OCA_RUNTIME_PROTOCOL,
-  OCA_VIEWER_PROTOCOL,
+  KEEL_RUNTIME_PROTOCOL,
+  KEEL_VIEWER_PROTOCOL,
   createIntegrity,
   encodeBase64,
   type ArtifactManifest,
@@ -76,8 +76,8 @@ async function createManifest(): Promise<ArtifactManifest> {
     fallback: { image: "seal", animation: "viewer", backgroundColor: "#09090b" },
     runtime: {
       engine: {
-        protocol: OCA_RUNTIME_PROTOCOL,
-        viewerProtocol: OCA_VIEWER_PROTOCOL,
+        protocol: KEEL_RUNTIME_PROTOCOL,
+        viewerProtocol: KEEL_VIEWER_PROTOCOL,
         renderer: "browser",
       },
       determinism: {
