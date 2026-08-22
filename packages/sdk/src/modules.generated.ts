@@ -2,13 +2,13 @@
 // Source: packages/contracts/modules/*/keel.module.json and */deployments/*.json
 
 /** Reusable protocol infrastructure. Each module ships as its own repository. */
-export type KeelModuleId = "keel-kernel" | "keel-codecs" | "keel-hold" | "keel-artifacts" | "keel-graph" | "keel-harness" | "keel-presentation" | "keel-die" | "keel-creator-identity" | "keel-mint-access" | "keel-equipment" | "keel-market" | "keel-backpack" | "keel-anchors" | "keel-crucible" | "keel-ip-control" | "keel-sleeve" | "keel-web3-url" | "keel-cross-chain-mint" | "keel-stake";
+export type KeelModuleId = "keel-kernel" | "keel-codecs" | "keel-hold" | "keel-artifacts" | "keel-graph" | "keel-harness" | "keel-presentation" | "keel-die" | "keel-creator-identity" | "keel-mint-access" | "keel-equipment" | "keel-market" | "keel-anchors" | "keel-crucible" | "keel-ip-control" | "keel-sleeve" | "keel-web3-url" | "keel-cross-chain-mint" | "keel-stake";
 
 /**
  * Concrete products built on the modules. Apps consume modules exactly as an
  * outside integrator does, and no module may depend on one.
  */
-export type KeelAppId = "keel-canvas" | "cool-s" | "line" | "vault-runner";
+export type KeelAppId = "keel-canvas" | "cool-s" | "onchaininator" | "line" | "vault-runner";
 
 /** Anything with contracts on a chain — a module or an app. */
 export type KeelUnitId = KeelModuleId | KeelAppId;
@@ -343,32 +343,6 @@ export const KEEL_MODULES: readonly KeelModule[] = [
     ]
   },
   {
-    "id": "keel-backpack",
-    "kind": "module",
-    "title": "Backpack",
-    "group": "assets",
-    "visibility": "private",
-    "summary": "Wrapper collection that preserves a legacy token's art and proves the preservation on chain.",
-    "version": "0.3.0",
-    "repo": "keel-web3/keel-backpack",
-    "deps": [
-      "keel-kernel",
-      "keel-codecs"
-    ],
-    "contracts": [
-      "KeelBackpack721.sol",
-      "KeelBackpackFactory.sol",
-      "KeelBackpackProofLedger.sol",
-      "interfaces/IERC5192.sol"
-    ],
-    "deployable": [
-      "KeelBackpack721",
-      "KeelBackpackFactory",
-      "KeelBackpackProofLedger",
-      "KeelBackpackProofRenderer"
-    ]
-  },
-  {
     "id": "keel-anchors",
     "kind": "module",
     "title": "Anchors",
@@ -639,6 +613,33 @@ export const KEEL_APPS: readonly KeelModule[] = [
       "CoolSReleaseResolverV1",
       "CoolSTargetTableV1",
       "CoolSVisualRegistryV1"
+    ]
+  },
+  {
+    "id": "onchaininator",
+    "kind": "app",
+    "title": "Onchaininator",
+    "group": "apps",
+    "visibility": null,
+    "summary": "Wrapper collection that preserves a legacy token's art and proves the preservation on chain.",
+    "version": "0.3.0",
+    "repo": null,
+    "deps": [
+      "keel-kernel",
+      "keel-codecs"
+    ],
+    "contracts": [
+      "Onchaininator721.sol",
+      "OnchaininatorFactory.sol",
+      "OnchaininatorProofLedger.sol",
+      "PreservationBounty.sol",
+      "interfaces/IERC5192.sol"
+    ],
+    "deployable": [
+      "Onchaininator721",
+      "OnchaininatorFactory",
+      "OnchaininatorProofLedger",
+      "OnchaininatorProofRenderer"
     ]
   },
   {

@@ -147,17 +147,6 @@ export const MODULES = [
     contracts: ["KeelMarket.sol"],
   },
   {
-    id: "keel-backpack",
-    external: true, // sources live in their own repository since the 2026-08-22 split
-    kind: "module",
-    group: "assets",
-    title: "Backpack",
-    summary: "Wrapper collection that preserves a legacy token's art and proves the preservation on chain.",
-    deps: ["keel-kernel", "keel-codecs"],
-    devDeps: ["keel-crucible", "keel-creator-identity", "keel-harness", "keel-hold"],
-    contracts: ["KeelBackpack721.sol", "KeelBackpackFactory.sol", "KeelBackpackProofLedger.sol", "interfaces/IERC5192.sol"],
-  },
-  {
     id: "keel-anchors",
     kind: "module",
     group: "provenance",
@@ -248,6 +237,17 @@ export const MODULES = [
     deps: ["keel-kernel", "keel-die", "keel-equipment", "keel-presentation"],
     devDeps: ["keel-creator-identity", "keel-harness", "keel-mint-access", "keel-artifacts", "keel-hold"],
     contracts: ["CoolS721.sol", "CoolSMetadataRendererV1.sol", "CoolSNoveltyLedgerV1.sol", "CoolSReleaseResolverV1.sol", "CoolSTargetTableV1.sol", "CoolSVisualRegistryV1.sol", "CoolSLocalVRFCoordinator.sol", "KeelGenerativeMintHookBase.sol", "interfaces/ICoolSReleaseResolverV1.sol", "libraries/CoolSVisualStateCodecV1.sol"],
+  },
+  {
+    id: "onchaininator",
+    external: true, // sources live in their own repository since the 2026-08-22 split
+    kind: "app",
+    group: "apps",
+    title: "Onchaininator",
+    summary: "Wrapper collection that preserves a legacy token's art and proves the preservation on chain.",
+    deps: ["keel-kernel", "keel-codecs"],
+    devDeps: ["keel-crucible", "keel-creator-identity", "keel-harness", "keel-hold"],
+    contracts: ["Onchaininator721.sol", "OnchaininatorFactory.sol", "OnchaininatorProofLedger.sol", "PreservationBounty.sol", "interfaces/IERC5192.sol"],
   },
   {
     id: "line",

@@ -1353,16 +1353,19 @@ export const keelManagerAbi = [
 /** The proof ladder behind a wrapped token, including how its viewer document
  * gets the artwork it renders. `viewerCarriage` is read from the viewer
  * composite's own part list, not from anything the document claims. */
-export const keelBackpackProofLedgerAbi = [
-  "function viewerCarriage(address backpack,uint256 tokenId) view returns (uint8)",
-  "function viewerOf(address backpack,uint256 tokenId) view returns (bytes32 objectId,bytes32 digest)",
-  "function weakestLane(address backpack,uint256 tokenId) view returns (uint8)",
-  "function ladderComplete(address backpack,uint256 tokenId) view returns (bool)",
-  "function assetCid(address backpack,uint256 tokenId) view returns (string)",
-  "function imageStrategyOf(address backpack) view returns (uint8)",
+export const onchaininatorProofLedgerAbi = [
+  "function viewerCarriage(address wrapper,uint256 tokenId) view returns (uint8)",
+  "function viewerOf(address wrapper,uint256 tokenId) view returns (bytes32 objectId,bytes32 digest)",
+  "function weakestLane(address wrapper,uint256 tokenId) view returns (uint8)",
+  "function ladderComplete(address wrapper,uint256 tokenId) view returns (bool)",
+  "function assetCid(address wrapper,uint256 tokenId) view returns (string)",
+  "function imageStrategyOf(address wrapper) view returns (uint8)",
   "function linkedImageURI(bytes32 assetObjectId) view returns (string)",
   "function projectedReadGas(uint256 artworkBytes) pure returns (uint256)",
 ] as const;
+
+/** @deprecated Use {@link onchaininatorProofLedgerAbi}. */
+export const keelBackpackProofLedgerAbi = onchaininatorProofLedgerAbi;
 
 export const keelCreatorProfileRegistryAbi = [
   "function CREATOR_ID_DOMAIN() view returns (bytes32)",

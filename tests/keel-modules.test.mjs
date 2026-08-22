@@ -36,11 +36,11 @@ const srcDir = (unit) => `../keel-contracts/src/${unit.kind === "app" ? "apps" :
  * roster makes losing one a failure rather than a quiet consistency.
  */
 const EXPECTED_MODULES = [
-  "cool-s", "keel-anchors", "keel-artifacts", "keel-backpack", "keel-canvas", "keel-codecs",
+  "cool-s", "keel-anchors", "keel-artifacts", "keel-canvas", "keel-codecs",
   "keel-creator-identity", "keel-cross-chain-mint", "keel-crucible", "keel-die",
   "keel-equipment", "keel-graph", "keel-harness", "keel-hold", "keel-ip-control",
   "keel-kernel", "keel-market", "keel-mint-access", "keel-presentation", "keel-sleeve",
-  "keel-stake", "keel-web3-url", "line", "vault-runner",
+  "keel-stake", "keel-web3-url", "line", "onchaininator", "vault-runner",
 ];
 
 test("no module disappears without the roster changing", () => {

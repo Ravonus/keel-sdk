@@ -241,7 +241,7 @@ the module's live addresses, and `package.json`. Test files are the one thing
 rewritten, because `src/` and `test/` are siblings in a split repo but three
 levels apart in the monorepo.
 
-18 of the 20 modules build and pass their suites standalone. `keel-backpack`'s
+18 of the 20 modules build and pass their suites standalone. The `onchaininator` app's
 gas probes fail identically in the monorepo — several revert by design to print
 measurements — and `keel-equipment`'s suite is the app-test-debt case above;
 its sources build clean on their own.

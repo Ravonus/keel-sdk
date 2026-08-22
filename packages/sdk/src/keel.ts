@@ -362,7 +362,7 @@ export const keelDirectReadPolicy = {
     "familyConfig",
   ],
   "keel-manager": ["governanceEpoch", "rpcHostList", "rpcHostCount", "computeRpcHostListDigest", "rpcHostListPreimage"],
-  "keel-backpack-proof-ledger": [
+  "onchaininator-proof-ledger": [
     "viewerCarriage",
     "viewerOf",
     "weakestLane",

@@ -10,6 +10,7 @@ export * from "./keel-sleeve.js";
 export * from "./keel-document.js";
 export * from "./fray-upload.js";
 export * from "./collection-verification.js";
+export * from "./onchaininator-verify.js";
 export * from "./backpack-verify.js";
 export * from "./wallet-request.js";
 export * from "./wallet-intent.js";

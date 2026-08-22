@@ -1,8 +1,10 @@
-# Keel backpack wrapper
+# Onchaininator wrapper
 
-Status: v1 design. No contract in this document is deployed. The claim
-separation, the derived-parameter rule, and the trap list are the load-bearing
-parts; the interfaces are a sketch that implementation is expected to sharpen.
+Status: v1 design for the unit now shipped as the Onchaininator (designed under
+the working name "backpack"; the text below keeps the original vocabulary). No
+contract in this document is deployed. The claim separation, the
+derived-parameter rule, and the trap list are the load-bearing parts; the
+interfaces are a sketch that implementation is expected to sharpen.
 
 Every legacy collection gets its own backpack at an address anyone can compute
 before it exists. Anyone inits it. Anyone then sends a token to that address and
