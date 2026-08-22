@@ -64,31 +64,45 @@ async function copyWorkspace(t) {
   return copy;
 }
 
-async function moduleIds(root) {
-  const entries = await readdir(path.join(root, "modules"), { withFileTypes: true });
-  return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+/** Every module directory, wherever it is filed: {id, directory, workspacePath}. */
+async function discoverModules(root) {
+  const found = [];
+  const walk = async (directory) => {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      const child = path.join(directory, entry.name);
+      try {
+        await stat(path.join(child, "keel.module.json"));
+        found.push({ id: entry.name, directory: child, workspacePath: path.relative(root, child).split(path.sep).join("/") });
+      } catch {
+        await walk(child);
+      }
+    }
+  };
+  await walk(path.join(root, "modules"));
+  return found.sort((left, right) => (left.id < right.id ? -1 : 1));
 }
 
-async function distDigests(root, ids) {
+async function distDigests(modules) {
   const digests = {};
-  for (const id of ids) {
-    digests[id] = (await createIntegrity(new Uint8Array(await readFile(path.join(root, "modules", id, "dist", `${id}.min.js`))))).digest;
+  for (const module of modules) {
+    digests[module.id] = (await createIntegrity(new Uint8Array(await readFile(path.join(module.directory, "dist", `${module.id}.min.js`))))).digest;
   }
   return digests;
 }
 
 test("every published module rebuilds reproducibly, twice, with both compactor candidates recorded", { skip: skipWorkspace }, async (t) => {
   const root = await copyWorkspace(t);
-  const ids = await moduleIds(root);
+  const modules = await discoverModules(root);
+  const ids = modules.map((module) => module.id);
   assert.equal(ids.length, EXPECTED_MODULES, `expected ${EXPECTED_MODULES} modules, found ${ids.join(", ")}`);
 
   const { stdout } = await runCli(["module", "build", "--all", "--root", root]);
-  const built = [...stdout.matchAll(/^Built modules\/([a-z0-9-]+) \(\d+ bytes; (\S+)\)\.$/gmu)];
-  assert.deepEqual(built.map((match) => match[1]), ids);
+  const built = [...stdout.matchAll(/^Built (\S+) \(\d+ bytes; (\S+)\)\.$/gmu)];
+  assert.deepEqual(built.map((match) => match[1]).sort(), modules.map((module) => module.workspacePath).sort());
   for (const match of built) assert.equal(match[2], "reproducible-build", `${match[1]} did not earn a byte proof`);
 
-  for (const id of ids) {
-    const moduleDirectory = path.join(root, "modules", id);
+  for (const { id, directory: moduleDirectory } of modules) {
     const recipe = JSON.parse(await readFile(path.join(moduleDirectory, "dist/keel-build-recipe.json"), "utf8"));
     const receipt = JSON.parse(await readFile(path.join(moduleDirectory, "dist/keel-source-receipt.json"), "utf8"));
     const shipped = new Uint8Array(await readFile(path.join(moduleDirectory, "dist", `${id}.min.js`)));
@@ -109,29 +123,27 @@ test("every published module rebuilds reproducibly, twice, with both compactor c
 
   // Determinism is the load-bearing property for third-party reproduction:
   // the same tree, built again, must produce the same bytes and the same recipe.
-  const first = await distDigests(root, ids);
-  const firstRecipes = Object.fromEntries(await Promise.all(ids.map(async (id) => [
-    id,
-    await keelBuildRecipeDigest(JSON.parse(await readFile(path.join(root, "modules", id, "dist/keel-build-recipe.json"), "utf8"))),
+  const recipeDigests = async () => Object.fromEntries(await Promise.all(modules.map(async (module) => [
+    module.id,
+    await keelBuildRecipeDigest(JSON.parse(await readFile(path.join(module.directory, "dist/keel-build-recipe.json"), "utf8"))),
   ])));
+  const first = await distDigests(modules);
+  const firstRecipes = await recipeDigests();
   await runCli(["module", "build", "--all", "--root", root]);
-  assert.deepEqual(await distDigests(root, ids), first, "a second build produced different bytes");
-  const secondRecipes = Object.fromEntries(await Promise.all(ids.map(async (id) => [
-    id,
-    await keelBuildRecipeDigest(JSON.parse(await readFile(path.join(root, "modules", id, "dist/keel-build-recipe.json"), "utf8"))),
-  ])));
+  assert.deepEqual(await distDigests(modules), first, "a second build produced different bytes");
+  const secondRecipes = await recipeDigests();
   assert.deepEqual(secondRecipes, firstRecipes, "a second build produced a different recipe");
 });
 
 test("every vector passes on the readable source and on the shipped minified bytes", { skip: skipWorkspace }, async (t) => {
   const root = await copyWorkspace(t);
-  const ids = await moduleIds(root);
+  const modules = await discoverModules(root);
   await runCli(["module", "build", "--all", "--root", root]);
   const { stdout } = await runCli(["module", "test", "--all", "--root", root]);
 
   assert.doesNotMatch(stdout, /skipped/u, "every published module must ship vectors");
-  const passed = [...stdout.matchAll(/^modules\/([a-z0-9-]+): passed \((\d+) vectors\)$/gmu)];
-  assert.deepEqual(passed.map((match) => match[1]), ids);
+  const passed = [...stdout.matchAll(/^(\S+): passed \((\d+) vectors\)$/gmu)];
+  assert.deepEqual(passed.map((match) => match[1]).sort(), modules.map((module) => module.workspacePath).sort());
   const total = passed.reduce((sum, match) => sum + Number(match[2]), 0);
   assert.equal(total, EXPECTED_VECTORS, `expected ${EXPECTED_VECTORS} vectors across the workspace, ran ${total}`);
 });
@@ -146,27 +158,22 @@ test("indexing the workspace reproduces the committed catalog, digest for digest
   const regenerated = JSON.parse(regeneratedText);
   const committed = JSON.parse(committedText);
 
-  assert.equal(regenerated.schema, "keel-module-catalog@1");
+  assert.equal(regenerated.schema, "keel-module-catalog@2");
   assert.deepEqual(
     regenerated.modules.map((entry) => entry.id),
     committed.modules.map((entry) => entry.id),
   );
   // Everything the site shows next to the word "verified" is recomputed here.
   for (const [index, entry] of regenerated.modules.entries()) {
-    const published = committed.modules[index];
-    assert.deepEqual({ ...entry, builtAt: null }, { ...published, builtAt: null }, `${entry.id} drifted from the committed catalog`);
+    assert.deepEqual(entry, committed.modules[index], `${entry.id} drifted from the committed catalog`);
   }
+  assert.deepEqual(regenerated.organizations, committed.organizations);
 
-  // Byte level, line by line: the only lines allowed to differ are `builtAt`,
-  // which `keel module index` takes from the receipt file's mtime. Every digest
-  // in the file reproduces exactly; the timestamp cannot, which is why a
-  // stranger diffing their own re-index against the published catalog has to
-  // know to ignore one field. Recorded here rather than papered over.
-  const regeneratedLines = regeneratedText.split("\n");
-  const committedLines = committedText.split("\n");
-  assert.equal(regeneratedLines.length, committedLines.length);
-  const differing = regeneratedLines.filter((line, index) => line !== committedLines[index]);
-  for (const line of differing) assert.match(line, /"builtAt"/u, `an unexpected catalog line differs: ${line}`);
+  // Byte for byte, no exceptions. Every field in the catalog is derived from a
+  // committed file, so re-indexing a clean workspace is a no-op diff and a
+  // stranger can check the published catalog by regenerating it and running
+  // `diff`. Nothing is read from a clock or a file mtime.
+  assert.equal(regeneratedText, committedText, "the catalog is not byte reproducible");
 });
 
 test("the receipt chain recomputes link by link, from readable files to catalog entry", { skip: skipWorkspace }, async (t) => {
@@ -175,7 +182,10 @@ test("the receipt chain recomputes link by link, from readable files to catalog 
   await runCli(["module", "build", "--all", "--root", root]);
   await runCli(["module", "index", "--root", root, "--repository", catalogRepository]);
 
-  const moduleDirectory = path.join(root, "modules", id);
+  const modules = await discoverModules(root);
+  const module = modules.find((candidate) => candidate.id === id);
+  assert.ok(module !== undefined, `${id} is not in the workspace`);
+  const moduleDirectory = module.directory;
   const recipe = JSON.parse(await readFile(path.join(moduleDirectory, "dist/keel-build-recipe.json"), "utf8"));
   const receipt = JSON.parse(await readFile(path.join(moduleDirectory, "dist/keel-source-receipt.json"), "utf8"));
   const catalog = JSON.parse(await readFile(path.join(root, "catalog/catalog.json"), "utf8"));
@@ -189,7 +199,7 @@ test("the receipt chain recomputes link by link, from readable files to catalog 
   for (const [index, input] of recipe.inputs.entries()) {
     const digest = (await createIntegrity(new Uint8Array(await readFile(path.join(moduleDirectory, input.path))))).digest;
     assert.equal(input.integrity.digest, digest, `${input.path} is not what the recipe records`);
-    assert.equal(entry.sourceFiles[index].path, `modules/${id}/${input.path}`);
+    assert.equal(entry.sourceFiles[index].path, `${module.workspacePath}/${input.path}`);
     assert.equal(entry.sourceFiles[index].sha256, digest);
     assert.equal(publishedEntry.sourceFiles[index].sha256, digest, "the published catalog names different source bytes");
   }
@@ -220,9 +230,21 @@ test("the receipt chain recomputes link by link, from readable files to catalog 
   assert.equal(entry.receiptDigest, receiptDigest);
   assert.equal(publishedEntry.receiptDigest, receiptDigest, "the published catalog names a different receipt");
 
-  // Link 7: only a byte proof is allowed to be called verified.
+  // Link 7: only a byte proof is allowed to be called verified, and verified
+  // is a claim about bytes that says nothing about chains. This module is
+  // fully verified and has never been deployed, which is a normal state and
+  // the reason the two axes are recorded separately.
   assert.equal(entry.disposition, "reproducible-build");
   assert.equal(entry.verified, true);
+  assert.equal(entry.deployed, entry.deployments.length > 0);
+  assert.equal(publishedEntry.verified, true);
+
+  // Link 8: the listing path resolves inside the org the catalog ships.
+  const org = catalog.organizations.find((candidate) => candidate.id === entry.owner.org);
+  assert.ok(org !== undefined, "the owning org must be in the catalog");
+  assert.ok(org.groups.some((group) => group.id === entry.owner.group), "the owning group must exist in the org");
+  assert.equal(entry.category, "generative");
+  assert.equal(entry.moduleRepository, `https://github.com/keel-web3/${id}`);
 });
 
 /** The commit GitHub can serve for this checkout, when the checkout is clean. */
@@ -251,7 +273,9 @@ test("a stranger with only the GitHub path reproduces the published on-chain byt
       verified = await verifyKeelModuleFromOrigin({
         origin: { protocol: "keel-source-origin@1", provider: "github", owner: "Ravonus", repo: "keel-modules", commit, visibility: "public" },
         identity: { namespace: "keel", name: id, version: entry.version, entry: entry.githubPath },
-        recipeRoot: `modules/${id}`,
+        // Taken from the published catalog rather than assumed, so filing a
+        // module under a different category never breaks reproduction.
+        recipeRoot: entry.githubPath.slice(0, entry.githubPath.lastIndexOf("/src/")),
         entry: "src/index.ts",
         compact: { keepComments: false },
         mediaType: "text/javascript",

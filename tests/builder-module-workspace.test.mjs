@@ -253,7 +253,7 @@ test("keel module compact --candidate verifies behavior and emits a behaviorally
   );
 });
 
-test("keel module index writes the keel-module-catalog@1 the site reads", async (t) => {
+test("keel module index writes the keel-module-catalog@2 the site reads", async (t) => {
   const root = await scaffoldWorkspace(t);
   await assert.rejects(() => runCli(["module", "index", "--root", root]), /module build --all/u);
   await runCli(["module", "build", "--all", "--root", root]);
@@ -261,7 +261,10 @@ test("keel module index writes the keel-module-catalog@1 the site reads", async 
   assert.match(stdout, /2 modules, 2 verified/u);
 
   const catalog = JSON.parse(await readFile(path.join(root, "catalog/catalog.json"), "utf8"));
-  assert.equal(catalog.schema, "keel-module-catalog@1");
+  assert.equal(catalog.schema, "keel-module-catalog@2");
+  // A flat workspace with keel.jsmodule@1 manifests still indexes: it simply
+  // declares no organisation, so the listing axes are null rather than absent.
+  assert.deepEqual(catalog.organizations, []);
   assert.deepEqual(catalog.modules.map((entry) => entry.id), ["adder", "greeter"]);
   const greeter = catalog.modules[1];
   assert.equal(greeter.version, "0.1.0");
@@ -271,7 +274,13 @@ test("keel module index writes the keel-module-catalog@1 the site reads", async 
   assert.equal(greeter.githubPath, "modules/greeter/src/index.ts");
   assert.equal(greeter.disposition, "reproducible-build");
   assert.equal(greeter.verified, true);
-  assert.match(greeter.builtAt, /^\d{4}-\d{2}-\d{2}T/u);
+  assert.equal(greeter.org, null);
+  assert.equal(greeter.category, null);
+  assert.equal(greeter.owner, null);
+  assert.equal(greeter.moduleRepository, null);
+  // Verified is a claim about bytes and says nothing about chains.
+  assert.deepEqual(greeter.deployments, []);
+  assert.equal(greeter.deployed, false);
   assert.match(greeter.outputDigest, /^0x[0-9a-f]{64}$/u);
   assert.match(greeter.receiptDigest, /^0x[0-9a-f]{64}$/u);
 

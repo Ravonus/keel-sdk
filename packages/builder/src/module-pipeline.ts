@@ -45,6 +45,8 @@ const require = createRequire(import.meta.url);
 export const KEEL_MODULE_MANIFEST_PROTOCOL = "keel-module-manifest@1" as const;
 /** The manifest schema the keel-modules workspace repo uses. Same file name, older shape. */
 export const KEEL_JSMODULE_SCHEMA = "keel.jsmodule@1" as const;
+/** Same manifest plus the org, category, owner path, and the module's own repository. */
+export const KEEL_JSMODULE_SCHEMA_V2 = "keel.jsmodule@2" as const;
 export const KEEL_MODULE_MANIFEST_FILE = "keel.module.json" as const;
 
 const MODULE_NAME = /^[a-z][a-z0-9-]{0,63}$/u;
@@ -53,6 +55,22 @@ const MAX_CHUNKS_PER_CAST = 3;
 const DEFAULT_PLAN_CHAIN_ID = 11_155_111;
 const REPOSITORY_PLACEHOLDER_URL = "https://example.invalid/your-org/your-repo";
 const REPOSITORY_PLACEHOLDER_REVISION = "replace-with-a-commit-hash";
+
+/**
+ * Where a module sits in the workspace, and who owns it.
+ *
+ * `category` is what the module IS, and it is the directory it lives in.
+ * `group` and `member` are who owns it, and they are a path into the org's
+ * own manifest. The two are deliberately separate: a graphics team can own a
+ * module filed under `viewer`, and a listing by owner is a different question
+ * from a listing by kind.
+ */
+export interface KeelModulePlacement {
+  readonly org: string;
+  readonly category: string;
+  readonly group?: string;
+  readonly member?: string;
+}
 
 export interface KeelModuleManifest {
   readonly protocol: typeof KEEL_MODULE_MANIFEST_PROTOCOL;
@@ -63,6 +81,10 @@ export interface KeelModuleManifest {
   readonly license: string;
   /** Placeholder until the module has a public home; build skips it until it is real. */
   readonly sourceRepository: { readonly url: string; readonly revision: string; readonly path: string };
+  /** Present for `keel.jsmodule@2` manifests, which declare org and category. */
+  readonly placement?: KeelModulePlacement;
+  /** The module's own public repository, once it has been split out. */
+  readonly moduleRepository?: string;
 }
 
 function fail(message: string): never {
@@ -94,10 +116,43 @@ function safeEntry(entry: string): string {
  * version defaults and the repository stays the placeholder, which the build
  * already treats as "omit from the receipt until it is real".
  */
-function parseKeelJsModuleManifest(input: Record<string, unknown>): KeelModuleManifest {
-  const allowed = new Set(["schema", "id", "version", "entry", "license", "summary"]);
-  for (const key of Object.keys(input)) if (!allowed.has(key)) fail(`${KEEL_MODULE_MANIFEST_FILE}: "${key}" is not supported in ${KEEL_JSMODULE_SCHEMA}.`);
+const SLUG = /^[a-z][a-z0-9-]{0,63}$/u;
+
+function slug(value: unknown, label: string): string {
+  const text = textField(value, label, 64);
+  if (!SLUG.test(text)) fail(`${KEEL_MODULE_MANIFEST_FILE}: ${label} must match ${SLUG.source}.`);
+  return text;
+}
+
+/** The `owner` object of a `keel.jsmodule@2` manifest: org, then optionally group, then member. */
+function parsePlacement(value: unknown, category: string): KeelModulePlacement {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    fail(`${KEEL_MODULE_MANIFEST_FILE}: owner must be an object naming at least an org.`);
+  }
+  const owner = value as Record<string, unknown>;
+  for (const key of Object.keys(owner)) {
+    if (!["org", "group", "member"].includes(key)) fail(`${KEEL_MODULE_MANIFEST_FILE}: owner.${key} is not supported.`);
+  }
+  // A member without a group would leave the listing path ambiguous: the site
+  // renders org > group > member > module, and there is no way back up.
+  if (owner.member !== undefined && owner.group === undefined) {
+    fail(`${KEEL_MODULE_MANIFEST_FILE}: owner.member requires owner.group; a member is reached through a group.`);
+  }
+  return {
+    org: slug(owner.org, "owner.org"),
+    category,
+    ...(owner.group === undefined ? {} : { group: slug(owner.group, "owner.group") }),
+    ...(owner.member === undefined ? {} : { member: slug(owner.member, "owner.member") }),
+  };
+}
+
+function parseKeelJsModuleManifest(input: Record<string, unknown>, version2: boolean): KeelModuleManifest {
+  const allowed = version2
+    ? new Set(["schema", "id", "version", "entry", "license", "summary", "category", "owner", "repository"])
+    : new Set(["schema", "id", "version", "entry", "license", "summary"]);
+  for (const key of Object.keys(input)) if (!allowed.has(key)) fail(`${KEEL_MODULE_MANIFEST_FILE}: "${key}" is not supported in ${input.schema as string}.`);
   const name = moduleName(textField(input.id, "id", 64));
+  const placement = version2 ? parsePlacement(input.owner, slug(input.category, "category")) : undefined;
   return {
     protocol: KEEL_MODULE_MANIFEST_PROTOCOL,
     name,
@@ -110,13 +165,16 @@ function parseKeelJsModuleManifest(input: Record<string, unknown>): KeelModuleMa
       revision: REPOSITORY_PLACEHOLDER_REVISION,
       path: ".",
     },
+    ...(placement === undefined ? {} : { placement }),
+    ...(input.repository === undefined ? {} : { moduleRepository: textField(input.repository, "repository", 512) }),
   };
 }
 
 export function parseKeelModuleManifest(value: unknown): KeelModuleManifest {
   if (value === null || typeof value !== "object" || Array.isArray(value)) fail(`${KEEL_MODULE_MANIFEST_FILE} must be a JSON object.`);
   const input = value as Record<string, unknown>;
-  if (input.schema === KEEL_JSMODULE_SCHEMA) return parseKeelJsModuleManifest(input);
+  if (input.schema === KEEL_JSMODULE_SCHEMA) return parseKeelJsModuleManifest(input, false);
+  if (input.schema === KEEL_JSMODULE_SCHEMA_V2) return parseKeelJsModuleManifest(input, true);
   const allowed = new Set(["protocol", "name", "version", "description", "entry", "license", "sourceRepository"]);
   for (const key of Object.keys(input)) if (!allowed.has(key)) fail(`${KEEL_MODULE_MANIFEST_FILE}: "${key}" is not supported.`);
   if (input.protocol !== KEEL_MODULE_MANIFEST_PROTOCOL) fail(`${KEEL_MODULE_MANIFEST_FILE}: protocol must be ${KEEL_MODULE_MANIFEST_PROTOCOL}.`);

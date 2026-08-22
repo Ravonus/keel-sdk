@@ -55,7 +55,8 @@ against both the freshly built copy and the committed `catalog/catalog.json`.
 | A hand-minified candidate earns `behaviorally-verified` with per-vector evidence digests, and never claims a rebuild | `a hand-minified candidate earns behaviorally-verified and never more` |
 | A behavior-breaking candidate is rejected and leaves no receipt; a module without vectors cannot be behaviorally verified at all | `a behavior-breaking candidate is rejected...`, `a module with no vectors...` |
 | All 11 published modules build reproducibly and all 65 vectors pass on the readable source AND on the shipped minified bytes | `every vector passes on the readable source and on the shipped minified bytes` |
-| Re-indexing the workspace reproduces the committed catalog, digest for digest | `indexing the workspace reproduces the committed catalog` |
+| Re-indexing the workspace reproduces the committed catalog byte for byte | `indexing the workspace reproduces the committed catalog` |
+| Verified and deployed are independent: a module is verified with an empty deployments list | `the receipt chain recomputes link by link` (link 7) and the site's loader tests |
 | A stranger with only the GitHub path and commit rebuilds the exact published output digest | `a stranger with only the GitHub path reproduces the published on-chain bytes` |
 | The wrap flow embeds the shell, resolves aliases only from the embedded graph, reaches no URL, and returns a review-only plan | `wrapInVerificationShell returns a self-contained document and a review-only plan` |
 
@@ -78,16 +79,38 @@ carry a row whose `verified` flag its own `disposition` does not support, and
 flag. A `behaviorally-verified` module renders with its own honest label and
 never with the VERIFIED badge.
 
+## Verified before on chain
+
+Verification is a statement about bytes: this readable source rebuilds into
+exactly these minified bytes. It is earned on a laptop, before any chain is
+involved, and it does not expire when nothing is ever published. So the
+catalog records the two facts separately and never derives one from the other:
+
+- `verified` comes from the receipt disposition, and from nothing else.
+- `deployments` lists every revision that HAS reached a chain, each pinning the
+  KeelHold instance and object id it lives in plus the `outputDigest` tying it
+  back to the bytes a receipt verified. `deployed` is just whether that list is
+  non-empty.
+
+An empty `deployments` list on a verified module is the normal starting state,
+not a defect, and the site renders it as "Verified / Not deployed" rather than
+treating the pair as a contradiction.
+
 ## Known limits
 
 These are true of the pipeline as it stands, and worth knowing before quoting
 any of the above as stronger than it is.
 
-- **`catalog.json` is not byte reproducible.** `keel module index` takes each
-  entry's `builtAt` from the receipt file's mtime, so a third party who
-  re-indexes the workspace gets every digest right and one field wrong. The
-  reproduction test asserts that `builtAt` is the ONLY line that may differ,
-  rather than ignoring the whole file. Anything else differing is drift.
+- **The catalog is only as reproducible as its inputs are committed.** Every
+  field is derived from a committed file, and nothing is read from a clock or
+  an mtime, so `keel module index` on a clean checkout is a no-op diff. That is
+  a property worth re-checking whenever a field is added: an earlier version
+  took `builtAt` from the receipt file's mtime, which quietly made the whole
+  document unreproducible.
+- **Deployment records are asserted, not proven.** A `deployments/<chainId>.json`
+  entry says a revision is at an address; nothing in this pipeline reads the
+  chain to confirm it. The `outputDigest` in the record makes the claim
+  checkable by anyone with an RPC endpoint, but the check is not run here.
 - **`verifyKeelBuildRecipe` answers a narrow question.** It rebuilds using the
   recipe's own options, so it reports whether a recipe reproduces its own
   declared output, not whether the recipe is the one a receipt committed to.
