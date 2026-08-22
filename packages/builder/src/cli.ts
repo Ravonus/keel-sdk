@@ -4,6 +4,7 @@ import path from "node:path";
 import { canonicalJson, createSourceReceipt, parseArtifactManifest, validateManifest, type Compression, type Hex } from "@keel/protocol";
 import { createUploadPlan } from "./plan.js";
 import { lockModuleSnapshotFile, moduleSpecifierFromFlags, resolveModuleSnapshotFile } from "./module-cli.js";
+import { buildKeelModule, initKeelModule, planKeelModule } from "./module-pipeline.js";
 import { analyzeCost } from "./cost-analysis.js";
 import { analyzeMedia, runMediaPipeline, verifyBuiltArtifact } from "./pipeline.js";
 import { createRecursiveUploadPlan } from "./recursive-plan.js";
@@ -70,30 +71,33 @@ async function readCostInput(filePath: string): Promise<Uint8Array> {
 }
 
 function usage(): string {
-  return `Keel builder
+  return `Keel builder (bin: keel; oca remains as a compatibility alias)
 
 Commands:
-  oca analyze <input> [--media-type <type>] [--json]
-  oca build <input> --out <directory> --created-at <ISO date> [--name <name>] [--description <text>]
+  keel module init <dir> [--name <name>]
+  keel module build <dir> [--json]
+  keel module plan <dir> [--chain-id 11155111] [--address <0x...>] [--json]
+  keel analyze <input> [--media-type <type>] [--json]
+  keel build <input> --out <directory> --created-at <ISO date> [--name <name>] [--description <text>]
     [--id <id>] [--quality 82] [--creator <value>] [--source-repository <value>]
     [--viewer-base-url <url>] [--inline] [--no-original] [--json]
-  oca verify <release-directory> [--manifest <file-name>] [--json]
-  oca cost <input> [--media-type <type>] [--compression auto|none|brotli|gzip|deflate]
+  keel verify <release-directory> [--manifest <file-name>] [--json]
+  keel cost <input> [--media-type <type>] [--compression auto|none|brotli|gzip|deflate]
     [--chunk-bytes 23000] [--leaf-bytes 524288] [--parts 64] [--max-depth 8] [--json]
-  oca module-resolve <snapshot.json> (--name <name> | --digest <0xsha256> --byte-length <n>)
+  keel module-resolve <snapshot.json> (--name <name> | --digest <0xsha256> --byte-length <n>)
     [--namespace npm|keel|github] [--version <version>] [--entry <path>]
     [--artist <artist>] [--tag <a,b>] [--json]
-  oca module-lock <snapshot.json> --out <lock.json> (--name <name> | --digest <0xsha256> --byte-length <n>)
+  keel module-lock <snapshot.json> --out <lock.json> (--name <name> | --digest <0xsha256> --byte-length <n>)
     [--namespace npm|keel|github] [--version <version>] [--entry <path>]
     [--artist <artist>] [--tag <a,b>] [--json]
-  oca wrap-image <input> --out <directory> [--name <name>] [--description <text>] [--id <id>]
+  keel wrap-image <input> --out <directory> [--name <name>] [--description <text>] [--id <id>]
     [--quality 82] [--creator <value>] [--source-repository <value>] [--viewer-base-url <url>]
     [--inline] [--no-original]
-  oca chunk <input> --out <directory> --media-type <type> [--compression auto|brotli|gzip|deflate|none] [--chunk-bytes 23000]
-  oca chunk-recursive <input> --out <directory> --media-type <type> [--leaf-bytes 524288] [--parts 64]
-  oca audit <manifest.json>
-  oca canonicalize <manifest.json> [--out <file>]
-  oca source-verify <source> [--output <published-file>] --media-type <type>
+  keel chunk <input> --out <directory> --media-type <type> [--compression auto|brotli|gzip|deflate|none] [--chunk-bytes 23000]
+  keel chunk-recursive <input> --out <directory> --media-type <type> [--leaf-bytes 524288] [--parts 64]
+  keel audit <manifest.json>
+  keel canonicalize <manifest.json> [--out <file>]
+  keel source-verify <source> [--output <published-file>] --media-type <type>
     [--repository <url> --revision <commit-or-tag> --source-path <path>]
     [--build-recipe-digest <bytes32>] [--out <receipt.json>]
 `;
@@ -120,6 +124,47 @@ async function main(): Promise<void> {
       const result = await lockModuleSnapshotFile(snapshotPath, outputPath, selector);
       output(result, args.flags.json === true, `Wrote ${result.lockPath} and ${result.receiptPath}; bytes=unavailable.`);
       return;
+    }
+
+    case "module": {
+      const verb = required(args.positional[0], "module requires a subcommand: init, build, or plan.");
+      const directory = required(args.positional[1], `module ${verb} requires a module directory.`);
+      if (verb === "init") {
+        const name = flag(args, "name");
+        const result = await initKeelModule(directory, name === undefined ? {} : { name });
+        output(result, args.flags.json === true, `Scaffolded ${result.manifest.name} in ${result.directory}: ${result.files.join(", ")}.`);
+        return;
+      }
+      if (verb === "build") {
+        const result = await buildKeelModule(directory);
+        output(
+          result,
+          args.flags.json === true,
+          `Built ${result.outputPath} (${result.outputIntegrity.byteLength} bytes; ${result.receipt.disposition}).\n` +
+          `source digest:  ${result.receipt.source.digest}\n` +
+          `output digest:  ${result.receipt.output.digest}\n` +
+          `receipt digest: ${result.receiptDigest}`,
+        );
+        return;
+      }
+      if (verb === "plan") {
+        const chainIdValue = flag(args, "chain-id");
+        const chainId = chainIdValue === undefined ? undefined : Number(chainIdValue);
+        if (chainId !== undefined && (!Number.isSafeInteger(chainId) || chainId <= 0)) throw new RangeError("--chain-id must be a positive safe integer.");
+        const address = flag(args, "address");
+        if (address !== undefined && !/^0x[0-9a-f]{40}$/u.test(address)) throw new TypeError("--address must be a lower-case 20-byte Ethereum address.");
+        const result = await planKeelModule(directory, {
+          ...(chainId === undefined ? {} : { chainId }),
+          ...(address === undefined ? {} : { address: address as `0x${string}` }),
+        });
+        output(
+          result,
+          args.flags.json === true,
+          `Wrote ${result.planPath} (review-only; ${result.envelope.plan.operationCount} operations; plan digest ${result.envelope.integrity.digest}).`,
+        );
+        return;
+      }
+      throw new TypeError(`Unknown module subcommand ${verb}. Use init, build, or plan.`);
     }
 
     case "analyze": {

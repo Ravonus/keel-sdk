@@ -87,6 +87,9 @@ importers:
       '@keel/protocol':
         specifier: workspace:*
         version: link:../protocol
+      '@keel/sdk':
+        specifier: workspace:*
+        version: link:../sdk
     optionalDependencies:
       sharp:
         specifier: ^0.34.4

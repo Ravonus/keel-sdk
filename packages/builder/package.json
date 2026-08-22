@@ -24,12 +24,14 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@keel/protocol": "workspace:*"
+    "@keel/protocol": "workspace:*",
+    "@keel/sdk": "workspace:*"
   },
   "optionalDependencies": {
     "sharp": "^0.34.4"
   },
   "bin": {
+    "keel": "./dist/cli.js",
     "oca": "./dist/cli.js"
   }
 }

@@ -9,6 +9,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./verification-shell": {
+      "types": "./dist/verification-shell.d.ts",
+      "import": "./dist/verification-shell.js"
     }
   },
   "files": [

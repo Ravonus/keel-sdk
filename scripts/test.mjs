@@ -31,6 +31,7 @@ run("node", [
   "tests/builder.test.mjs",
   "tests/builder-pipeline.test.mjs",
   "tests/builder-module-resolver.test.mjs",
+  "tests/builder-module-pipeline.test.mjs",
   "tests/builder-cost-analysis.test.mjs",
   "tests/mcp.test.mjs",
   "tests/sprite-codex.test.mjs",
@@ -44,5 +45,6 @@ run("node", [
   "tests/source-verification.test.mjs",
   "tests/keel-presentation.test.mjs",
   "tests/keel-verification-shell.test.mjs",
+  "tests/sdk-verification-wrap.test.mjs",
   "tests/keel-verification-consumer.test.mjs",
 ]);

@@ -22,3 +22,5 @@ export * from "./frozen-dataset.js";
 export * from "./module-review.js";
 export * from "./modules.js";
 export * from "./abis.js";
+// Node-only: reads shell sources from disk and bundles with esbuild.
+export * from "./verification-shell.js";

@@ -9,4 +9,5 @@ export * from "./module-legacy.js";
 export * from "./module-receipt.js";
 export * from "./build-recipe.js";
 export * from "./module-verification.js";
+export * from "./module-pipeline.js";
 export * from "./cost-analysis.js";

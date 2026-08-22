@@ -65,6 +65,13 @@ declare module "node:url" {
   export function fileURLToPath(url: string | URL): string;
 }
 
+declare module "node:module" {
+  export function createRequire(specifier: string | URL): {
+    (id: string): unknown;
+    resolve(id: string): string;
+  };
+}
+
 declare module "node:crypto" {
   export function createHash(algorithm: string): {
     update(data: string | Uint8Array): unknown;

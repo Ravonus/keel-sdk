@@ -29,8 +29,10 @@ one system, and this page is the map that was previously missing.
   `id="verify-seal"`, `id="verify-panel"`, `data-keel-seal="stamp"`, and
   the `keel-verification-presentation` JSON script tag that themes it.
 - **Builders** (bundle the shell byte-identically for every carrier):
-  `apps/studio/scripts/keel-viewer-builder.ts`
-  (`buildEmbeddedKeelViewerShell`) and
+  `packages/sdk/src/verification-shell.ts` (`buildStandaloneKeelViewer`,
+  `buildEmbeddedKeelViewerShell`, and the one-call
+  `wrapInVerificationShell`; `apps/studio/scripts/keel-viewer-builder.ts`
+  re-exports it so there is one implementation) and
   `apps/studio/scripts/vault-keel-viewer-bundle.ts`
   (`buildVaultKeelViewer`). Ethereum and Tezos carriers must ship the
   exact same shell bytes — `tests/keel-verification-shell.test.mjs`

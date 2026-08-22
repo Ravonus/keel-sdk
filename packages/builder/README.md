@@ -2,6 +2,21 @@
 
 Build and audit tools for browser-native Keel artifacts.
 
+The CLI bin is `keel`. The old `oca` bin name still works as a compatibility
+alias for existing scripts; new documentation and tooling use `keel`.
+
+## Author module pipeline
+
+`keel module init|build|plan` walks a strict-TypeScript module from scaffold to
+a review-only publish plan. See `docs/KEEL_MODULE_PIPELINE.md` for the full
+walkthrough:
+
+```bash
+keel module init ./my-module
+keel module build ./my-module   # strict tsc, esbuild minify, recipe + receipt
+keel module plan ./my-module    # review-only keel-publish-plan@1, no signing
+```
+
 ## Deterministic media pipeline
 
 The headless pipeline is shared by the CLI and future Studio/MCP consumers. It
@@ -9,9 +24,9 @@ analyzes a local file, wraps supported image media, then verifies every local
 manifest source and integrity envelope:
 
 ```bash
-oca analyze ./art.png --json
-oca build ./art.png --out ./release --created-at 2026-01-01T00:00:00.000Z --json
-oca verify ./release --json
+keel analyze ./art.png --json
+keel build ./art.png --out ./release --created-at 2026-01-01T00:00:00.000Z --json
+keel verify ./release --json
 ```
 
 `build` requires a canonical UTC timestamp (`YYYY-MM-DDTHH:mm:ss.sssZ`) so
@@ -28,13 +43,13 @@ adapter and are not silently treated as verified by this local command.
 
 ## Modeled storage cost analysis
 
-The pure `analyzeCost` API and `oca cost` command compare deterministic
+The pure `analyzeCost` API and `keel cost` command compare deterministic
 `none`, Brotli, gzip, and deflate encodings (or one requested encoding), then
 report exact stored chunk counts, flat-object feasibility, recursive leaf/tree
 counts, modeled transaction counts, and ABI-sized calldata bytes:
 
 ```bash
-oca cost ./release/viewer.html \
+keel cost ./release/viewer.html \
   --media-type text/html \
   --compression auto \
   --chunk-bytes 23000 \
@@ -62,11 +77,11 @@ metadata is a search aid, not creator or chain identity proof. A canonical
 SHA-256 digest of the snapshot is pinned into every lock and receipt.
 
 ```bash
-oca module-resolve ./modules.snapshot.json \
+keel module-resolve ./modules.snapshot.json \
   --namespace npm --name three --version 0.180.0 \
   --artist "Three.js Authors" --tag renderer --json
 
-oca module-lock ./modules.snapshot.json \
+keel module-lock ./modules.snapshot.json \
   --out ./keel.lock.json \
   --namespace npm --name three --version 0.180.0
 ```
@@ -83,7 +98,7 @@ use the exported pure snapshot, resolver, lock, and receipt APIs.
 ## Image wrapper
 
 ```bash
-oca wrap-image ./art.png \
+keel wrap-image ./art.png \
   --out ./release \
   --name "Living Study #1" \
   --description "WebP display with the exact PNG retained"
@@ -121,7 +136,7 @@ Programmatic callers may inject an `ImageProcessor`, registry anchor, and hash-v
 ## Audit
 
 ```bash
-oca audit ./release/manifest.json
+keel audit ./release/manifest.json
 ```
 
 The command parses untrusted JSON, validates semantics, canonicalizes with RFC 8785, and reports the canonical SHA-256 digest.
@@ -129,7 +144,7 @@ The command parses untrusted JSON, validates semantics, canonicalizes with RFC 8
 ## Flat object plan
 
 ```bash
-oca chunk ./release/living-study-1.viewer.html \
+keel chunk ./release/living-study-1.viewer.html \
   --out ./release/viewer-object \
   --media-type text/html \
   --compression auto \
@@ -141,7 +156,7 @@ Every chunk and object descriptor is emitted. Reconstruction must match the exac
 ## Balanced recursive plan
 
 ```bash
-oca chunk-recursive ./film.mp4 \
+keel chunk-recursive ./film.mp4 \
   --out ./film-plan \
   --media-type video/mp4 \
   --leaf-bytes 524288 \
