@@ -36,9 +36,12 @@ jobs:
         with:
           repository: Ravonus/keel-modules
           path: keel-modules
-      # Version comes from package.json's packageManager field; naming it here
-      # too just creates a second place for it to be wrong.
+      # Version comes from package.json's packageManager field, so it is not
+      # repeated here. The action looks in the workspace root by default, and
+      # this checkout is a subdirectory, so it has to be pointed at the file.
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: keel-sdk/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: 22
