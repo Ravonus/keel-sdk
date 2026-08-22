@@ -1,4 +1,4 @@
-import { OCA_MAX_OBJECT_CHILDREN, type Compression } from "@keel/protocol";
+import { KEEL_MAX_OBJECT_CHILDREN, type Compression } from "@keel/protocol";
 import { compressBytes } from "./compress.js";
 
 export const KEEL_COST_ANALYSIS_PROTOCOL = "keel-cost-analysis@1" as const;
@@ -25,7 +25,7 @@ export interface CostAnalysisOptions {
 export interface CostAnalysisModel {
   readonly chunkBatchSize: typeof CHUNK_BATCH_SIZE;
   readonly maxChunkBytes: number;
-  readonly maxChildren: typeof OCA_MAX_OBJECT_CHILDREN;
+  readonly maxChildren: typeof KEEL_MAX_OBJECT_CHILDREN;
   readonly maxTreeDepth: number;
   readonly mediaType: string;
   readonly mediaTypeByteLength: number;
@@ -46,7 +46,7 @@ export interface CostPlanEstimate {
 }
 
 export interface FlatCostEstimate extends CostPlanEstimate {
-  readonly maxChildren: typeof OCA_MAX_OBJECT_CHILDREN;
+  readonly maxChildren: typeof KEEL_MAX_OBJECT_CHILDREN;
 }
 
 export interface RecursiveCostEstimate extends CostPlanEstimate {
@@ -140,18 +140,18 @@ function validateOptions(options: CostAnalysisOptions): {
   const maxChunkBytes = positiveSafeInteger(options.maxChunkBytes ?? MAX_SLUG_BYTES, "maxChunkBytes");
   if (maxChunkBytes > MAX_SLUG_BYTES) throw new RangeError(`maxChunkBytes cannot exceed ${MAX_SLUG_BYTES}.`);
   const leafDecodedBytes = positiveSafeInteger(
-    options.leafDecodedBytes ?? Math.min(DEFAULT_LEAF_DECODED_BYTES, maxChunkBytes * OCA_MAX_OBJECT_CHILDREN),
+    options.leafDecodedBytes ?? Math.min(DEFAULT_LEAF_DECODED_BYTES, maxChunkBytes * KEEL_MAX_OBJECT_CHILDREN),
     "leafDecodedBytes",
   );
-  if (leafDecodedBytes > maxChunkBytes * OCA_MAX_OBJECT_CHILDREN) {
-    throw new RangeError(`leafDecodedBytes cannot exceed ${maxChunkBytes * OCA_MAX_OBJECT_CHILDREN} bytes.`);
+  if (leafDecodedBytes > maxChunkBytes * KEEL_MAX_OBJECT_CHILDREN) {
+    throw new RangeError(`leafDecodedBytes cannot exceed ${maxChunkBytes * KEEL_MAX_OBJECT_CHILDREN} bytes.`);
   }
   const maxPartsPerComposite = positiveSafeInteger(
     options.maxPartsPerComposite ?? DEFAULT_MAX_PARTS_PER_COMPOSITE,
     "maxPartsPerComposite",
   );
-  if (maxPartsPerComposite < 2 || maxPartsPerComposite > OCA_MAX_OBJECT_CHILDREN) {
-    throw new RangeError(`maxPartsPerComposite must be from 2 through ${OCA_MAX_OBJECT_CHILDREN}.`);
+  if (maxPartsPerComposite < 2 || maxPartsPerComposite > KEEL_MAX_OBJECT_CHILDREN) {
+    throw new RangeError(`maxPartsPerComposite must be from 2 through ${KEEL_MAX_OBJECT_CHILDREN}.`);
   }
   const maxTreeDepth = positiveSafeInteger(options.maxTreeDepth ?? DEFAULT_MAX_TREE_DEPTH, "maxTreeDepth");
   const mediaTypeValue = options.mediaType;
@@ -175,8 +175,8 @@ function flatEstimate(
   const objectTransactions = 1;
   const calldataBytes = chunkUploadCalldataBytes(lengths) + createObjectCalldataBytes(chunkCount, mediaTypeByteLength);
   return {
-    feasible: chunkCount <= OCA_MAX_OBJECT_CHILDREN,
-    maxChildren: OCA_MAX_OBJECT_CHILDREN,
+    feasible: chunkCount <= KEEL_MAX_OBJECT_CHILDREN,
+    maxChildren: KEEL_MAX_OBJECT_CHILDREN,
     storedByteLength: stored.byteLength,
     chunkCount,
     payloadBytes: stored.byteLength,
@@ -236,7 +236,7 @@ function recursiveEstimate(
     const objectTransactions = leafCount;
     const calldataBytes = chunkUploadCalldataBytes(allChunkLengths) + leafCalldataBytes + compositeCalldataBytes;
     return {
-      feasible: maxLeafChunkCount <= OCA_MAX_OBJECT_CHILDREN && compositeNodeCounts.length <= maxTreeDepth,
+      feasible: maxLeafChunkCount <= KEEL_MAX_OBJECT_CHILDREN && compositeNodeCounts.length <= maxTreeDepth,
       storedByteLength,
       chunkCount: leafChunkCount,
       payloadBytes: storedByteLength,
@@ -313,7 +313,7 @@ export async function analyzeCost(sourceBytes: Uint8Array, options: CostAnalysis
     model: {
       chunkBatchSize: CHUNK_BATCH_SIZE,
       maxChunkBytes: validated.maxChunkBytes,
-      maxChildren: OCA_MAX_OBJECT_CHILDREN,
+      maxChildren: KEEL_MAX_OBJECT_CHILDREN,
       maxTreeDepth: validated.maxTreeDepth,
       mediaType: validated.mediaType,
       mediaTypeByteLength: validated.mediaTypeByteLength,

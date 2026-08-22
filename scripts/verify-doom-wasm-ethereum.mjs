@@ -27,7 +27,7 @@ if (!outputDirectory || outputDirectory === path.resolve("")) {
   throw new Error("Provide --output for the prepared Doom publication.");
 }
 
-const rpcUrl = args.get("rpc") ?? process.env.DOOM_ETH_RPC_URL ?? process.env.OCA_RPC_URL ?? "http://127.0.0.1:8545";
+const rpcUrl = args.get("rpc") ?? process.env.DOOM_ETH_RPC_URL ?? process.env.KEEL_RPC_URL ?? "http://127.0.0.1:8545";
 const keelHold = args.get("chunk-store") ?? process.env.DOOM_ETH_CHUNK_STORE ?? "";
 const portableAnchorRegistry = args.get("portable-anchor-registry") ?? process.env.DOOM_ETH_PORTABLE_ANCHOR_REGISTRY ?? "";
 const publication = JSON.parse(await readFile(path.join(outputDirectory, "publication.json"), "utf8"));

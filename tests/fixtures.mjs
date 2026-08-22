@@ -1,7 +1,7 @@
 import {
-  OCA_CANONICALIZATION,
-  OCA_CONTENT_GATEWAY_PROTOCOL,
-  OCA_MANIFEST_SCHEMA,
+  KEEL_CANONICALIZATION,
+  KEEL_CONTENT_GATEWAY_PROTOCOL,
+  KEEL_MANIFEST_SCHEMA,
   KEEL_RUNTIME_PROTOCOL,
   KEEL_VIEWER_PROTOCOL,
 } from "../packages/protocol/dist/index.js";
@@ -16,7 +16,7 @@ export function runtimePolicy(overrides = {}) {
     },
     determinism: overrides.determinism ?? { mode: "live" },
     content: {
-      protocol: OCA_CONTENT_GATEWAY_PROTOCOL,
+      protocol: KEEL_CONTENT_GATEWAY_PROTOCOL,
       mode: "verified-only",
       externalSources: "host-verified",
       manifestTrust: "digest",
@@ -41,8 +41,8 @@ export function runtimePolicy(overrides = {}) {
 
 export function baseManifest(resources, overrides = {}) {
   return {
-    schema: OCA_MANIFEST_SCHEMA,
-    canonicalization: OCA_CANONICALIZATION,
+    schema: KEEL_MANIFEST_SCHEMA,
+    canonicalization: KEEL_CANONICALIZATION,
     id: overrides.id ?? "test-artifact",
     name: overrides.name ?? "Test Artifact",
     entrypoint: overrides.entrypoint ?? { resource: "viewer", mode: "html" },

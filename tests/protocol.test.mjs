@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  OCA_CANONICALIZATION,
-  OCA_MANIFEST_SCHEMA,
+  KEEL_CANONICALIZATION,
+  KEEL_MANIFEST_SCHEMA,
   assertValidKeelIPControlExtension,
   canonicalJson,
   chunkUtf8,
@@ -96,9 +96,9 @@ test("Keel attributions support custom roles without becoming access policy", as
 });
 
 test("untrusted manifest parsing rejects malformed v2 structure before resolution", () => {
-  assert.throws(() => parseArtifactManifest({ schema: OCA_MANIFEST_SCHEMA }), /canonicalization/);
+  assert.throws(() => parseArtifactManifest({ schema: KEEL_MANIFEST_SCHEMA }), /canonicalization/);
   assert.throws(
-    () => parseArtifactManifest({ schema: OCA_MANIFEST_SCHEMA, canonicalization: OCA_CANONICALIZATION }),
+    () => parseArtifactManifest({ schema: KEEL_MANIFEST_SCHEMA, canonicalization: KEEL_CANONICALIZATION }),
     /\$\.id/,
   );
   assert.throws(() => parseArtifactManifest([]), /must be an object/);

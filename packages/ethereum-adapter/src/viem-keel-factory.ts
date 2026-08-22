@@ -1,15 +1,15 @@
 import { keelFactoryAbi, type Address } from "@keel/sdk";
 import type { Hex } from "@keel/protocol";
 import type {
-  OcaFactoryAccountSigner,
-  OcaFactoryAgentWallet,
-  OcaFactoryPublicClient,
-  OcaFactoryReceiptLog,
-  OcaFactoryTransactionReceipt,
+  KeelFactoryAccountSigner,
+  KeelFactoryAgentWallet,
+  KeelFactoryPublicClient,
+  KeelFactoryReceiptLog,
+  KeelFactoryTransactionReceipt,
 } from "./keel-factory-executor.js";
 import { parseAbi } from "viem";
 
-const OCA_FACTORY_ABI = parseAbi(keelFactoryAbi);
+const KEEL_FACTORY_ABI = parseAbi(keelFactoryAbi);
 
 /**
  * The smallest viem client surface needed by the KeelFactory executor.
@@ -66,7 +66,7 @@ function chainTimestamp(value: bigint): number {
   return Number(value);
 }
 
-function receiptLog(log: { readonly address: Address; readonly topics: readonly Hex[]; readonly data: Hex }): OcaFactoryReceiptLog {
+function receiptLog(log: { readonly address: Address; readonly topics: readonly Hex[]; readonly data: Hex }): KeelFactoryReceiptLog {
   if (!/^0x[0-9a-fA-F]{40}$/u.test(log.address) || !/^0x(?:[0-9a-fA-F]{2})*$/u.test(log.data)) {
     throw new TypeError("Viem returned a malformed KeelFactory receipt log.");
   }
@@ -82,14 +82,14 @@ function receiptLog(log: { readonly address: Address; readonly topics: readonly 
  * wallet only when the caller intentionally uses one account for both roles.
  */
 export function createViemOcaFactoryConnectors(clients: ViemOcaFactoryClients): {
-  readonly accountSigner: OcaFactoryAccountSigner;
-  readonly agentWallet: OcaFactoryAgentWallet;
-  readonly publicClient: OcaFactoryPublicClient;
+  readonly accountSigner: KeelFactoryAccountSigner;
+  readonly agentWallet: KeelFactoryAgentWallet;
+  readonly publicClient: KeelFactoryPublicClient;
 } {
   const account = clientAddress(clients.accountClient.account, "accountClient");
   const agent = clientAddress(clients.agentClient.account, "agentClient");
 
-  const accountSigner: OcaFactoryAccountSigner = {
+  const accountSigner: KeelFactoryAccountSigner = {
     account,
     getAddress: async () => account,
     signTypedData: async ({ account: signingAccount, typedData }) => clients.accountClient.signTypedData({
@@ -101,7 +101,7 @@ export function createViemOcaFactoryConnectors(clients: ViemOcaFactoryClients): 
     } as never),
   };
 
-  const agentWallet: OcaFactoryAgentWallet = {
+  const agentWallet: KeelFactoryAgentWallet = {
     account: agent,
     getChainId: clients.agentClient.getChainId,
     sendTransaction: async ({ account: sendingAccount, chainId, to, data, value }) => clients.agentClient.sendTransaction({
@@ -113,12 +113,12 @@ export function createViemOcaFactoryConnectors(clients: ViemOcaFactoryClients): 
     } as never),
   };
 
-  const publicClient: OcaFactoryPublicClient = {
+  const publicClient: KeelFactoryPublicClient = {
     getChainId: clients.publicClient.getChainId,
     getChainTimestamp: async () => chainTimestamp((await clients.publicClient.getBlock()).timestamp),
     readContract: async ({ address, functionName, args }) => clients.publicClient.readContract({
       address,
-      abi: OCA_FACTORY_ABI,
+      abi: KEEL_FACTORY_ABI,
       functionName,
       ...(args === undefined ? {} : { args }),
     } as never),
@@ -127,7 +127,7 @@ export function createViemOcaFactoryConnectors(clients: ViemOcaFactoryClients): 
     },
     waitForTransactionReceipt: async ({ hash }) => {
       const receipt = await clients.publicClient.waitForTransactionReceipt({ hash } as never);
-      const normalized: OcaFactoryTransactionReceipt = {
+      const normalized: KeelFactoryTransactionReceipt = {
         status: receipt.status,
         transactionHash: receipt.transactionHash,
         to: receipt.to === null ? null : receipt.to.toLowerCase() as Address,

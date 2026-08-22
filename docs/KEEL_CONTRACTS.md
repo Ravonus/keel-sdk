@@ -393,7 +393,7 @@ Studio suite because it requires the seeded contract graph:
 PLAYWRIGHT_BASE_URL=http://localhost:3000 \
   pnpm --filter @keel/studio test:e2e:keel
 
-OCA_RPC_URL=http://127.0.0.1:8545 \
+KEEL_RPC_URL=http://127.0.0.1:8545 \
 PLAYWRIGHT_BASE_URL=http://localhost:3000 \
   pnpm --filter @keel/studio test:e2e:keel-market
 ```

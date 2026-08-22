@@ -13,7 +13,7 @@ import { privateKeyToAccount } from "../apps/studio/node_modules/viem/_esm/accou
 import { sepolia } from "../apps/studio/node_modules/viem/_esm/chains/index.js";
 
 const CHAIN_ID = 11_155_111;
-const RPC = process.env.OCA_RPC_URL?.trim() || "https://ethereum-sepolia-rpc.publicnode.com";
+const RPC = process.env.KEEL_RPC_URL?.trim() || "https://ethereum-sepolia-rpc.publicnode.com";
 const KEY_FILE = path.resolve(".secrets/vault-sepolia-deployer.json");
 const EVIDENCE_IN = path.resolve("evidence/keel-trusted-runtime/module-review-registry-sepolia.json");
 const EVIDENCE_OUT = path.resolve("evidence/keel-trusted-runtime/module-review-registry-deprecate-sepolia.json");

@@ -13,7 +13,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { createOcaFactoryConfigDigest, createViemOcaFactoryConnectors, executeOcaFactoryCollection } from "@keel/ethereum-adapter";
 import { createKeelWalletLink, keelFactoryAbi } from "@keel/sdk";
 
-const PORT = Number(process.env.OCA_LOCAL_E2E_PORT ?? 18_545);
+const PORT = Number(process.env.KEEL_LOCAL_E2E_PORT ?? 18_545);
 const RPC_URL = `http://127.0.0.1:${PORT}`;
 const CHAIN_ID = 31_337;
 const DEPLOYER_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
@@ -55,7 +55,7 @@ async function deployFactory(wallet, publicClient) {
 }
 
 async function main() {
-  if (!Number.isSafeInteger(PORT) || PORT <= 0 || PORT > 65_535) throw new TypeError("OCA_LOCAL_E2E_PORT is invalid.");
+  if (!Number.isSafeInteger(PORT) || PORT <= 0 || PORT > 65_535) throw new TypeError("KEEL_LOCAL_E2E_PORT is invalid.");
   const anvil = spawn("anvil", ["--silent", "--host", "127.0.0.1", "--port", String(PORT), "--chain-id", String(CHAIN_ID), "--accounts", "3", "--balance", "1000", "--disable-code-size-limit"], {
     stdio: ["ignore", "ignore", "pipe"],
   });

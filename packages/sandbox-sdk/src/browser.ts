@@ -1,7 +1,7 @@
 import {
-  OCA_CANONICALIZATION,
-  OCA_CONTENT_GATEWAY_PROTOCOL,
-  OCA_MANIFEST_SCHEMA,
+  KEEL_CANONICALIZATION,
+  KEEL_CONTENT_GATEWAY_PROTOCOL,
+  KEEL_MANIFEST_SCHEMA,
   KEEL_RUNTIME_PROTOCOL,
   KEEL_VIEWER_PROTOCOL,
   KEEL_PROJECT_STACK_PROTOCOL,
@@ -142,8 +142,8 @@ function browserManifest(
   const image = resources.find((resource) => resource.mediaType.startsWith("image/"));
   const motion = resources.find((resource) => resource.mediaType.startsWith("video/"));
   return {
-    schema: OCA_MANIFEST_SCHEMA,
-    canonicalization: OCA_CANONICALIZATION,
+    schema: KEEL_MANIFEST_SCHEMA,
+    canonicalization: KEEL_CANONICALIZATION,
     id: input.id,
     name: input.name,
     ...(input.description === undefined ? {} : { description: input.description }),
@@ -170,7 +170,7 @@ function browserManifest(
       engine: { protocol: KEEL_RUNTIME_PROTOCOL, viewerProtocol: KEEL_VIEWER_PROTOCOL, renderer: "browser" },
       determinism: { mode: "live" },
       content: {
-        protocol: OCA_CONTENT_GATEWAY_PROTOCOL,
+        protocol: KEEL_CONTENT_GATEWAY_PROTOCOL,
         mode: "verified-only",
         externalSources: "host-verified",
         manifestTrust: "digest",

@@ -2,16 +2,16 @@ import type { KeelMediaDerivative } from "./keel-hold.js";
 import type { KeelStakeObject } from "./stake-object.js";
 import type { KeelAttribution } from "./keel-attribution.js";
 
-export const OCA_MANIFEST_SCHEMA = "oca-manifest@2" as const;
-export const OCA_LEGACY_MANIFEST_SCHEMA = "oca-manifest@1" as const;
-export const OCA_CANONICALIZATION = "RFC8785" as const;
+export const KEEL_MANIFEST_SCHEMA = "oca-manifest@2" as const;
+export const KEEL_LEGACY_MANIFEST_SCHEMA = "oca-manifest@1" as const;
+export const KEEL_CANONICALIZATION = "RFC8785" as const;
 export const KEEL_RUNTIME_PROTOCOL = "oca-runtime@1" as const;
 export const KEEL_VIEWER_PROTOCOL = "oca-viewer@1" as const;
-export const OCA_CONTENT_GATEWAY_PROTOCOL = "oca-content-gateway@1" as const;
-export const OCA_REGISTRY_ANCHOR_PROTOCOL = "oca-artifact-registry@1" as const;
+export const KEEL_CONTENT_GATEWAY_PROTOCOL = "oca-content-gateway@1" as const;
+export const KEEL_REGISTRY_ANCHOR_PROTOCOL = "oca-artifact-registry@1" as const;
 export const KEEL_THUMBNAIL_PROTOCOL = "oca-thumbnail@1" as const;
 export const KEEL_THUMBNAIL_CAPTURE_PROTOCOL = "keel-thumbnail-capture@1" as const;
-export const OCA_MAX_THUMBNAIL_BYTES = 2 * 1024 * 1024;
+export const KEEL_MAX_THUMBNAIL_BYTES = 2 * 1024 * 1024;
 export const KEEL_PLUGIN_BINDINGS_PROTOCOL = "keel-plugin-bindings@1" as const;
 export const KEEL_CONTRACT_PLUGIN_PROTOCOL = "keel-contract-plugin@1" as const;
 export const KEEL_GRAPH_ANCHOR_PROTOCOL = "keel-graph-registry@1" as const;
@@ -20,8 +20,8 @@ export const KEEL_WALLET_INTENTS_PROTOCOL = "keel-wallet-intents@1" as const;
 export const KEEL_LIBRARY_BINDINGS_PROTOCOL = "keel-library-bindings@1" as const;
 export const KEEL_BUILD_PROVENANCE_PROTOCOL = "keel-build-provenance@1" as const;
 export const KEEL_PROJECT_STACK_PROTOCOL = "keel-project-stack@1" as const;
-export const OCA_OBJECT_INDEX_ENCODING = "oca-object-index@1" as const;
-export const OCA_MAX_OBJECT_CHILDREN = 128 as const;
+export const KEEL_OBJECT_INDEX_ENCODING = "oca-object-index@1" as const;
+export const KEEL_MAX_OBJECT_CHILDREN = 128 as const;
 
 export type Hex = `0x${string}`;
 export type EthereumAddress = `0x${string}`;
@@ -433,7 +433,7 @@ export type RuntimeDeterminism =
     };
 
 export interface RuntimeContentPolicy {
-  readonly protocol: typeof OCA_CONTENT_GATEWAY_PROTOCOL;
+  readonly protocol: typeof KEEL_CONTENT_GATEWAY_PROTOCOL;
   /** Creator code receives only verified resources through the virtual gateway. */
   readonly mode: "verified-only";
   /** Remote bytes are fetched by the trusted host, never by creator code. */
@@ -468,7 +468,7 @@ export interface RuntimePolicy {
 }
 
 export interface KeelIndexAnchor {
-  readonly protocol: typeof OCA_REGISTRY_ANCHOR_PROTOCOL;
+  readonly protocol: typeof KEEL_REGISTRY_ANCHOR_PROTOCOL;
   readonly kind: "artifact-registry";
   readonly chainId: number;
   readonly registry: EthereumAddress;
@@ -505,7 +505,7 @@ export interface ArtifactThumbnail {
   readonly protocol: typeof KEEL_THUMBNAIL_PROTOCOL;
   readonly image?: string;
   readonly animation?: string;
-  readonly maxBytes: typeof OCA_MAX_THUMBNAIL_BYTES;
+  readonly maxBytes: typeof KEEL_MAX_THUMBNAIL_BYTES;
   readonly capture?: {
     readonly mode: "signal" | "after-init" | "time";
     readonly target: "canvas" | "viewport";
@@ -559,9 +559,9 @@ export interface ArtifactDownload {
 }
 
 export interface ArtifactManifest {
-  readonly schema: typeof OCA_MANIFEST_SCHEMA;
+  readonly schema: typeof KEEL_MANIFEST_SCHEMA;
   /** RFC 8785 JSON Canonicalization Scheme, used for manifest commitments. */
-  readonly canonicalization: typeof OCA_CANONICALIZATION;
+  readonly canonicalization: typeof KEEL_CANONICALIZATION;
   readonly id: string;
   readonly name: string;
   readonly description?: string;

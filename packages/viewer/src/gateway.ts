@@ -1,4 +1,4 @@
-import { OCA_CONTENT_GATEWAY_PROTOCOL, type Integrity, type ResourceSource } from "@keel/protocol";
+import { KEEL_CONTENT_GATEWAY_PROTOCOL, type Integrity, type ResourceSource } from "@keel/protocol";
 import type {
   ResolvedArtifact,
   ResolvedResource,
@@ -128,7 +128,7 @@ export function createVerifiedContentGateway(artifact: ResolvedArtifact): Verifi
   }));
 
   return {
-    protocol: OCA_CONTENT_GATEWAY_PROTOCOL,
+    protocol: KEEL_CONTENT_GATEWAY_PROTOCOL,
     manifestId: artifact.manifest.id,
     routes,
     resolve(input: string, requestedMethod = "GET"): VerifiedContentResponse {

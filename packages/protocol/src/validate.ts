@@ -1,10 +1,10 @@
 import {
-  OCA_CANONICALIZATION,
-  OCA_CONTENT_GATEWAY_PROTOCOL,
-  OCA_MANIFEST_SCHEMA,
-  OCA_MAX_OBJECT_CHILDREN,
-  OCA_MAX_THUMBNAIL_BYTES,
-  OCA_REGISTRY_ANCHOR_PROTOCOL,
+  KEEL_CANONICALIZATION,
+  KEEL_CONTENT_GATEWAY_PROTOCOL,
+  KEEL_MANIFEST_SCHEMA,
+  KEEL_MAX_OBJECT_CHILDREN,
+  KEEL_MAX_THUMBNAIL_BYTES,
+  KEEL_REGISTRY_ANCHOR_PROTOCOL,
   KEEL_THUMBNAIL_PROTOCOL,
   KEEL_RUNTIME_PROTOCOL,
   KEEL_VIEWER_PROTOCOL,
@@ -143,13 +143,13 @@ function validateSource(
       if (!HEX_32.test(source.objectId)) {
         issue(issues, "error", `${path}.objectId`, "object.invalid", "objectId must be lower-case bytes32.");
       }
-      if ((source.chunks?.length ?? 0) > OCA_MAX_OBJECT_CHILDREN) {
+      if ((source.chunks?.length ?? 0) > KEEL_MAX_OBJECT_CHILDREN) {
         issue(
           issues,
           "error",
           `${path}.chunks`,
           "chunk.too-many",
-          `A leaf object may expose at most ${OCA_MAX_OBJECT_CHILDREN} chunk hints; use a recursive object tree.`,
+          `A leaf object may expose at most ${KEEL_MAX_OBJECT_CHILDREN} chunk hints; use a recursive object tree.`,
         );
       }
       for (const [index, chunk] of (source.chunks ?? []).entries()) {
@@ -175,13 +175,13 @@ function validateSource(
       if (source.parts.length === 0) {
         issue(issues, "error", `${path}.parts`, "composite.empty", "Composite source must reference at least one resource.");
       }
-      if (source.parts.length > OCA_MAX_OBJECT_CHILDREN) {
+      if (source.parts.length > KEEL_MAX_OBJECT_CHILDREN) {
         issue(
           issues,
           "error",
           `${path}.parts`,
           "composite.too-wide",
-          `Composite nodes may contain at most ${OCA_MAX_OBJECT_CHILDREN} parts; build a balanced tree.`,
+          `Composite nodes may contain at most ${KEEL_MAX_OBJECT_CHILDREN} parts; build a balanced tree.`,
         );
       }
       for (const [index, part] of source.parts.entries()) {
@@ -370,8 +370,8 @@ function validateRuntime(manifest: ArtifactManifest, issues: ManifestValidationI
 
   validateReplay(policy.determinism, issues);
 
-  if (policy.content.protocol !== OCA_CONTENT_GATEWAY_PROTOCOL) {
-    issue(issues, "error", "$.runtime.content.protocol", "content.protocol", `Expected ${OCA_CONTENT_GATEWAY_PROTOCOL}.`);
+  if (policy.content.protocol !== KEEL_CONTENT_GATEWAY_PROTOCOL) {
+    issue(issues, "error", "$.runtime.content.protocol", "content.protocol", `Expected ${KEEL_CONTENT_GATEWAY_PROTOCOL}.`);
   }
   if (policy.content.mode !== "verified-only" || policy.content.externalSources !== "host-verified") {
     issue(issues, "error", "$.runtime.content", "content.mode", "Creator code must use host-verified content only.");
@@ -412,8 +412,8 @@ function validateRuntime(manifest: ArtifactManifest, issues: ManifestValidationI
 
 function validateAnchor(anchor: KeelIndexAnchor, manifest: ArtifactManifest, issues: ManifestValidationIssue[]): void {
   const path = "$.anchor";
-  if (anchor.protocol !== OCA_REGISTRY_ANCHOR_PROTOCOL || anchor.kind !== "artifact-registry") {
-    issue(issues, "error", path, "anchor.protocol", `Expected ${OCA_REGISTRY_ANCHOR_PROTOCOL}.`);
+  if (anchor.protocol !== KEEL_REGISTRY_ANCHOR_PROTOCOL || anchor.kind !== "artifact-registry") {
+    issue(issues, "error", path, "anchor.protocol", `Expected ${KEEL_REGISTRY_ANCHOR_PROTOCOL}.`);
   }
   if (!Number.isSafeInteger(anchor.chainId) || anchor.chainId <= 0) {
     issue(issues, "error", `${path}.chainId`, "chain.invalid", "Anchor chainId must be a positive safe integer.");
@@ -471,8 +471,8 @@ function validateThumbnail(
   if (thumbnail.protocol !== KEEL_THUMBNAIL_PROTOCOL) {
     issue(issues, "error", "$.thumbnail.protocol", "thumbnail.protocol", `Expected ${KEEL_THUMBNAIL_PROTOCOL}.`);
   }
-  if (thumbnail.maxBytes !== OCA_MAX_THUMBNAIL_BYTES) {
-    issue(issues, "error", "$.thumbnail.maxBytes", "thumbnail.limit", `Thumbnail resources are capped at ${OCA_MAX_THUMBNAIL_BYTES} bytes.`);
+  if (thumbnail.maxBytes !== KEEL_MAX_THUMBNAIL_BYTES) {
+    issue(issues, "error", "$.thumbnail.maxBytes", "thumbnail.limit", `Thumbnail resources are capped at ${KEEL_MAX_THUMBNAIL_BYTES} bytes.`);
   }
   const checkResource = (id: string | undefined, path: string, allowed: ReadonlySet<string>): void => {
     if (id === undefined) return;
@@ -486,7 +486,7 @@ function validateThumbnail(
     }
     for (const [index, source] of resource.sources.entries()) {
       const length = source.integrity.byteLength;
-      if (length === undefined || length <= 0 || length > OCA_MAX_THUMBNAIL_BYTES) {
+      if (length === undefined || length <= 0 || length > KEEL_MAX_THUMBNAIL_BYTES) {
         issue(issues, "error", `$.resources.${id}.sources[${index}].integrity.byteLength`, "thumbnail.bytes", "Every thumbnail source must declare from 1 through 2 MiB of decoded bytes.");
       }
     }
@@ -1020,11 +1020,11 @@ function validateContractPlugin(
 export function validateManifest(manifest: ArtifactManifest): ManifestValidationResult {
   const issues: ManifestValidationIssue[] = [];
 
-  if (manifest.schema !== OCA_MANIFEST_SCHEMA) {
-    issue(issues, "error", "$.schema", "schema.unsupported", `Expected ${OCA_MANIFEST_SCHEMA}.`);
+  if (manifest.schema !== KEEL_MANIFEST_SCHEMA) {
+    issue(issues, "error", "$.schema", "schema.unsupported", `Expected ${KEEL_MANIFEST_SCHEMA}.`);
   }
-  if (manifest.canonicalization !== OCA_CANONICALIZATION) {
-    issue(issues, "error", "$.canonicalization", "canonicalization.unsupported", `Expected ${OCA_CANONICALIZATION}.`);
+  if (manifest.canonicalization !== KEEL_CANONICALIZATION) {
+    issue(issues, "error", "$.canonicalization", "canonicalization.unsupported", `Expected ${KEEL_CANONICALIZATION}.`);
   }
   if (manifest.id.trim().length === 0) issue(issues, "error", "$.id", "id.empty", "Manifest ID is required.");
   if (manifest.name.trim().length === 0) issue(issues, "error", "$.name", "name.empty", "Name is required.");

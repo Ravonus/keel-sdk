@@ -2,9 +2,9 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  OCA_CANONICALIZATION,
-  OCA_CONTENT_GATEWAY_PROTOCOL,
-  OCA_MANIFEST_SCHEMA,
+  KEEL_CANONICALIZATION,
+  KEEL_CONTENT_GATEWAY_PROTOCOL,
+  KEEL_MANIFEST_SCHEMA,
   KEEL_RUNTIME_PROTOCOL,
   KEEL_VIEWER_PROTOCOL,
   createIntegrity,
@@ -42,8 +42,8 @@ const resources = await Promise.all([
 ]);
 const replaySeed = await createIntegrity(new TextEncoder().encode("oca-orbit-example/replay/v1"));
 const manifest = {
-  schema: OCA_MANIFEST_SCHEMA,
-  canonicalization: OCA_CANONICALIZATION,
+  schema: KEEL_MANIFEST_SCHEMA,
+  canonicalization: KEEL_CANONICALIZATION,
   id: "oca-orbit-example",
   name: "Keel Orbit Example",
   description: "A minimal multi-resource interactive artifact using the verified virtual content gateway.",
@@ -66,7 +66,7 @@ const manifest = {
       timezone: "UTC",
     },
     content: {
-      protocol: OCA_CONTENT_GATEWAY_PROTOCOL,
+      protocol: KEEL_CONTENT_GATEWAY_PROTOCOL,
       mode: "verified-only",
       externalSources: "host-verified",
       manifestTrust: "digest",
@@ -96,7 +96,7 @@ const integrity = await manifestIntegrity(manifest);
 await writeFile(path.join(directory, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
 await writeFile(
   path.join(directory, "manifest.integrity.json"),
-  `${JSON.stringify({ schema: "oca-manifest-integrity@2", manifest: "manifest.json", canonicalization: OCA_CANONICALIZATION, integrity }, null, 2)}\n`,
+  `${JSON.stringify({ schema: "oca-manifest-integrity@2", manifest: "manifest.json", canonicalization: KEEL_CANONICALIZATION, integrity }, null, 2)}\n`,
 );
 const metadata = {
   name: manifest.name,

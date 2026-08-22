@@ -23,7 +23,7 @@ const DEFAULT_MAX_MANIFEST_BYTES = 2 * 1024 * 1024;
 const DEFAULT_TIMEOUT_MS = 15_000;
 const DIGEST = /^0x[0-9a-f]{64}$/;
 const ADDRESS = /^0x[0-9a-f]{40}$/;
-const OCA_ONCHAIN_MANIFEST_PROTOCOL = "oca-onchain:";
+const KEEL_ONCHAIN_MANIFEST_PROTOCOL = "oca-onchain:";
 
 function positiveInteger(value: number | undefined, fallback: number, label: string): number {
   const result = value ?? fallback;
@@ -83,7 +83,7 @@ function onchainManifestRequest(uri: string): { readonly chainId: number; readon
   } catch {
     return undefined;
   }
-  if (parsed.protocol !== OCA_ONCHAIN_MANIFEST_PROTOCOL) return undefined;
+  if (parsed.protocol !== KEEL_ONCHAIN_MANIFEST_PROTOCOL) return undefined;
   if (parsed.username.length > 0 || parsed.password.length > 0 || parsed.port.length > 0 || parsed.search.length > 0 || parsed.hash.length > 0) {
     throw new TypeError("Onchain manifest URI cannot contain credentials, a port, query, or fragment.");
   }

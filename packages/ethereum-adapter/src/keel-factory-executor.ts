@@ -18,7 +18,7 @@ import {
 import {
   createOcaFactoryConfigDigest,
   normalizeOcaFactoryCollectionConfig,
-  type OcaFactoryCollectionConfig,
+  type KeelFactoryCollectionConfig,
 } from "./keel-factory-config.js";
 
 const FACTORY_ABI = parseAbi([
@@ -36,33 +36,33 @@ const MAX_AUTHORIZATION_LIFETIME = 30 * 24 * 60 * 60;
 
 type FactoryTypedData = Eip712TypedData<CollectionAuthorizationMessage>;
 
-export interface OcaFactoryAccountSigner {
+export interface KeelFactoryAccountSigner {
   readonly account?: Address;
   readonly address?: Address;
   readonly getAddress?: () => Promise<Address>;
   readonly signTypedData: (input: { readonly account: Address; readonly typedData: FactoryTypedData }) => Promise<Hex>;
 }
 
-export interface OcaFactoryAgentWallet {
+export interface KeelFactoryAgentWallet {
   readonly account: Address;
   readonly getChainId: () => Promise<number>;
   readonly sendTransaction: (input: { readonly account: Address; readonly chainId: number; readonly to: Address; readonly data: Hex; readonly value: bigint }) => Promise<Hex>;
 }
 
-export interface OcaFactoryReceiptLog {
+export interface KeelFactoryReceiptLog {
   readonly address: Address;
   readonly topics: readonly Hex[];
   readonly data: Hex;
 }
 
-export interface OcaFactoryTransactionReceipt {
+export interface KeelFactoryTransactionReceipt {
   readonly status: "success" | "reverted";
   readonly transactionHash: Hex;
   readonly to: Address | null;
-  readonly logs: readonly OcaFactoryReceiptLog[];
+  readonly logs: readonly KeelFactoryReceiptLog[];
 }
 
-export interface OcaFactoryPublicClient {
+export interface KeelFactoryPublicClient {
   readonly getChainId: () => Promise<number>;
   readonly getChainTimestamp: () => Promise<number>;
   readonly readContract: (input: {
@@ -77,28 +77,28 @@ export interface OcaFactoryPublicClient {
     readonly data: Hex;
     readonly value: bigint;
   }) => Promise<void>;
-  readonly waitForTransactionReceipt: (input: { readonly hash: Hex }) => Promise<OcaFactoryTransactionReceipt>;
+  readonly waitForTransactionReceipt: (input: { readonly hash: Hex }) => Promise<KeelFactoryTransactionReceipt>;
 }
 
-export interface OcaFactoryExecutionInput {
+export interface KeelFactoryExecutionInput {
   readonly link: unknown;
   readonly collectionConfig: unknown;
   readonly nowSeconds: number;
   readonly mode?: "dry-run" | "execute";
-  readonly trustedDeployment?: OcaFactoryTrustedDeployment;
-  readonly accountSigner?: OcaFactoryAccountSigner;
-  readonly agentWallet?: OcaFactoryAgentWallet;
-  readonly publicClient?: OcaFactoryPublicClient;
+  readonly trustedDeployment?: KeelFactoryTrustedDeployment;
+  readonly accountSigner?: KeelFactoryAccountSigner;
+  readonly agentWallet?: KeelFactoryAgentWallet;
+  readonly publicClient?: KeelFactoryPublicClient;
 }
 
-export interface OcaFactoryTrustedDeployment {
+export interface KeelFactoryTrustedDeployment {
   readonly chainId: number;
   readonly factoryAddress: Address;
   readonly factoryVersion: Hex;
   readonly creationCodeHash: Hex;
 }
 
-export interface OcaFactoryUnsignedTransaction {
+export interface KeelFactoryUnsignedTransaction {
   readonly chainId: number;
   readonly from: Address;
   readonly to: Address;
@@ -106,22 +106,22 @@ export interface OcaFactoryUnsignedTransaction {
   readonly valueWei: "0";
 }
 
-export interface OcaFactoryDryRun {
+export interface KeelFactoryDryRun {
   readonly status: "dry-run";
   readonly execution: "not-performed";
   readonly chainReady: false;
   readonly link: KeelWalletLinkEnvelope;
-  readonly collectionConfig: OcaFactoryCollectionConfig;
+  readonly collectionConfig: KeelFactoryCollectionConfig;
   readonly configDigestVerified: true;
   readonly walletApproval: "required";
   readonly signing: "not-performed";
   readonly simulation: "not-performed";
   readonly submission: "not-performed";
   readonly typedData: FactoryTypedData;
-  readonly unsignedTransaction: OcaFactoryUnsignedTransaction;
+  readonly unsignedTransaction: KeelFactoryUnsignedTransaction;
 }
 
-export interface OcaFactoryExecuted {
+export interface KeelFactoryExecuted {
   readonly status: "executed";
   readonly execution: "submitted-and-verified";
   readonly chainReady: true;
@@ -133,11 +133,11 @@ export interface OcaFactoryExecuted {
   readonly simulation: "performed";
   readonly submission: "performed";
   readonly link: KeelWalletLinkEnvelope;
-  readonly collectionConfig: OcaFactoryCollectionConfig;
-  readonly unsignedTransaction: OcaFactoryUnsignedTransaction;
+  readonly collectionConfig: KeelFactoryCollectionConfig;
+  readonly unsignedTransaction: KeelFactoryUnsignedTransaction;
 }
 
-export interface OcaFactoryExecutionDeferred {
+export interface KeelFactoryExecutionDeferred {
   readonly status: "deferred";
   readonly execution: "not-performed";
   readonly chainReady: false;
@@ -149,7 +149,7 @@ export interface OcaFactoryExecutionDeferred {
   readonly issues: readonly string[];
 }
 
-export type OcaFactoryExecutionResult = OcaFactoryDryRun | OcaFactoryExecuted | OcaFactoryExecutionDeferred;
+export type KeelFactoryExecutionResult = KeelFactoryDryRun | KeelFactoryExecuted | KeelFactoryExecutionDeferred;
 
 function address(value: unknown, label: string): Address {
   if (typeof value !== "string" || !ADDRESS.test(value)) throw new TypeError(`${label} is not an Ethereum address.`);
@@ -189,19 +189,19 @@ function bigintValue(value: unknown, label: string): bigint {
   }
 }
 
-function deferred(code: OcaFactoryExecutionDeferred["code"], issues: readonly string[]): OcaFactoryExecutionDeferred {
+function deferred(code: KeelFactoryExecutionDeferred["code"], issues: readonly string[]): KeelFactoryExecutionDeferred {
   return { status: "deferred", execution: "not-performed", chainReady: false, walletApproval: "required", signing: "not-performed", simulation: "not-performed", submission: "not-performed", code, issues };
 }
 
-function simulationRejected(issues: readonly string[]): OcaFactoryExecutionDeferred {
+function simulationRejected(issues: readonly string[]): KeelFactoryExecutionDeferred {
   return { status: "deferred", execution: "not-performed", chainReady: false, walletApproval: "account-signed", signing: "performed", simulation: "rejected", submission: "not-performed", code: "simulation-rejected", issues };
 }
 
-function configTuple(config: OcaFactoryCollectionConfig): readonly unknown[] {
+function configTuple(config: KeelFactoryCollectionConfig): readonly unknown[] {
   return [config.name, config.symbol, config.admin, config.royaltyReceiver, config.royaltyBps, config.maxSupply, config.mintManager, config.keelIndex];
 }
 
-function unsignedTransaction(link: KeelWalletLinkEnvelope, config: OcaFactoryCollectionConfig, signatureValue: Hex): OcaFactoryUnsignedTransaction {
+function unsignedTransaction(link: KeelWalletLinkEnvelope, config: KeelFactoryCollectionConfig, signatureValue: Hex): KeelFactoryUnsignedTransaction {
   const data = encodeFunctionData({
     abi: FACTORY_ABI,
     functionName: "castDieFor",
@@ -220,14 +220,14 @@ function typedData(link: KeelWalletLinkEnvelope): FactoryTypedData {
   });
 }
 
-async function signerAddress(signer: OcaFactoryAccountSigner): Promise<Address | undefined> {
+async function signerAddress(signer: KeelFactoryAccountSigner): Promise<Address | undefined> {
   if (signer.getAddress !== undefined) return address(await signer.getAddress(), "account signer account");
   if (signer.address !== undefined) return address(signer.address, "account signer account");
   if (signer.account !== undefined) return address(signer.account, "account signer account");
   return undefined;
 }
 
-async function normalizeInput(input: OcaFactoryExecutionInput): Promise<{ link: KeelWalletLinkEnvelope; config: OcaFactoryCollectionConfig; typed: FactoryTypedData; nowSeconds: number } | OcaFactoryExecutionDeferred> {
+async function normalizeInput(input: KeelFactoryExecutionInput): Promise<{ link: KeelWalletLinkEnvelope; config: KeelFactoryCollectionConfig; typed: FactoryTypedData; nowSeconds: number } | KeelFactoryExecutionDeferred> {
   const nowSeconds = numberValue(input.nowSeconds, "executor.nowSeconds");
   let link: KeelWalletLinkEnvelope;
   try {
@@ -241,7 +241,7 @@ async function normalizeInput(input: OcaFactoryExecutionInput): Promise<{ link: 
     if (verification.expired) return deferred("link-expired", verification.issues);
     return deferred("link-invalid", verification.issues);
   }
-  let config: OcaFactoryCollectionConfig;
+  let config: KeelFactoryCollectionConfig;
   try {
     config = normalizeOcaFactoryCollectionConfig(input.collectionConfig);
     const computed = createOcaFactoryConfigDigest(config);
@@ -252,7 +252,7 @@ async function normalizeInput(input: OcaFactoryExecutionInput): Promise<{ link: 
   return { link, config, typed: typedData(link), nowSeconds };
 }
 
-async function validateChain(client: OcaFactoryPublicClient, wallet: OcaFactoryAgentWallet, link: KeelWalletLinkEnvelope): Promise<OcaFactoryExecutionDeferred | undefined> {
+async function validateChain(client: KeelFactoryPublicClient, wallet: KeelFactoryAgentWallet, link: KeelWalletLinkEnvelope): Promise<KeelFactoryExecutionDeferred | undefined> {
   const [chainId, walletChainId, chainTimestamp] = await Promise.all([client.getChainId(), wallet.getChainId(), client.getChainTimestamp()]);
   if (chainId !== link.target.chainId || walletChainId !== link.target.chainId) return deferred("chain-mismatch", [`Expected chain ${link.target.chainId}, got public=${chainId}, wallet=${walletChainId}.`]);
   numberValue(chainTimestamp, "connected chain timestamp");
@@ -278,7 +278,7 @@ function typedAuthorizationDigest(typed: FactoryTypedData): `0x${string}` {
   } as never).toLowerCase() as `0x${string}`;
 }
 
-function validateTrustedDeployment(value: OcaFactoryTrustedDeployment | undefined, link: KeelWalletLinkEnvelope): OcaFactoryExecutionDeferred | undefined {
+function validateTrustedDeployment(value: KeelFactoryTrustedDeployment | undefined, link: KeelWalletLinkEnvelope): KeelFactoryExecutionDeferred | undefined {
   if (value === undefined) return deferred("deployment-unverified", ["Execute mode requires an externally trusted factory deployment pin."]);
   try {
     if (numberValue(value.chainId, "trusted deployment chainId") !== link.target.chainId) return deferred("factory-mismatch", ["Trusted deployment chain does not match wallet-link.target.chainId."]);
@@ -292,12 +292,12 @@ function validateTrustedDeployment(value: OcaFactoryTrustedDeployment | undefine
 }
 
 function eventFromReceipt(
-  receipt: OcaFactoryTransactionReceipt,
+  receipt: KeelFactoryTransactionReceipt,
   link: KeelWalletLinkEnvelope,
-  config: OcaFactoryCollectionConfig,
+  config: KeelFactoryCollectionConfig,
   typed: FactoryTypedData,
   submittedHash: Hex,
-): Address | OcaFactoryExecutionDeferred {
+): Address | KeelFactoryExecutionDeferred {
   if (receipt.status !== "success") return deferred("transaction-reverted", ["The KeelFactory transaction reverted."]);
   try {
     if (address(receipt.to, "receipt.to") !== link.target.factoryAddress) return deferred("event-mismatch", ["Receipt target does not match the pinned KeelFactory."]);
@@ -350,7 +350,7 @@ function eventFromReceipt(
 }
 
 /** Prepare a review-only call or explicitly execute it through injected connectors. */
-export async function executeOcaFactoryCollection(input: OcaFactoryExecutionInput): Promise<OcaFactoryExecutionResult> {
+export async function executeOcaFactoryCollection(input: KeelFactoryExecutionInput): Promise<KeelFactoryExecutionResult> {
   if (input === null || typeof input !== "object" || Array.isArray(input)) return deferred("link-invalid", ["executor input must be an object."]);
   const normalized = await normalizeInput(input);
   if ("status" in normalized) return normalized;
@@ -379,7 +379,7 @@ export async function executeOcaFactoryCollection(input: OcaFactoryExecutionInpu
   }
   if (signer === undefined) return deferred("missing-connector", ["Account signer must expose account, address, or getAddress()."]);
   if (signer !== link.accountAddress) return deferred("factory-mismatch", ["Injected account signer does not match wallet-link.accountAddress."]);
-  let chainError: OcaFactoryExecutionDeferred | undefined;
+  let chainError: KeelFactoryExecutionDeferred | undefined;
   try {
     chainError = await validateChain(input.publicClient, input.agentWallet, link);
   } catch (error) {
@@ -422,7 +422,7 @@ export async function executeOcaFactoryCollection(input: OcaFactoryExecutionInpu
   } catch (error) {
     return deferred("submission-unknown", [error instanceof Error ? error.message : String(error)]);
   }
-  let receipt: OcaFactoryTransactionReceipt;
+  let receipt: KeelFactoryTransactionReceipt;
   try {
     receipt = await input.publicClient.waitForTransactionReceipt({ hash: transactionHash });
   } catch (error) {

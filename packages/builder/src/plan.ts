@@ -1,8 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
-  OCA_MAX_OBJECT_CHILDREN,
-  OCA_OBJECT_INDEX_ENCODING,
+  KEEL_MAX_OBJECT_CHILDREN,
+  KEEL_OBJECT_INDEX_ENCODING,
   chunkBytes,
   createIntegrity,
   type Compression,
@@ -36,9 +36,9 @@ export async function createUploadPlan(
       ? await chooseSmallestCompression(sourceBytes)
       : { compression: options.compression, bytes: await compressBytes(options.compression, sourceBytes) };
   const chunks = chunkBytes(selected.bytes, maxChunkBytes);
-  if (chunks.length > OCA_MAX_OBJECT_CHILDREN) {
+  if (chunks.length > KEEL_MAX_OBJECT_CHILDREN) {
     throw new RangeError(
-      `Flat object needs ${chunks.length} chunks, above the ${OCA_MAX_OBJECT_CHILDREN}-child object limit. Use createRecursiveUploadPlan().`,
+      `Flat object needs ${chunks.length} chunks, above the ${KEEL_MAX_OBJECT_CHILDREN}-child object limit. Use createRecursiveUploadPlan().`,
     );
   }
 
@@ -61,14 +61,14 @@ export async function createUploadPlan(
 
   const plan: ObjectUploadPlan = {
     schema: "oca-upload-plan@2",
-    indexEncoding: OCA_OBJECT_INDEX_ENCODING,
+    indexEncoding: KEEL_OBJECT_INDEX_ENCODING,
     objectName: options.objectName,
     mediaType: options.mediaType,
     originalByteLength: sourceBytes.byteLength,
     storedByteLength: selected.bytes.byteLength,
     compression: selected.compression,
     integrity: await createIntegrity(sourceBytes),
-    maxChildren: OCA_MAX_OBJECT_CHILDREN,
+    maxChildren: KEEL_MAX_OBJECT_CHILDREN,
     chunks: plannedChunks,
   };
   await writeFile(path.join(outputDirectory, "upload-plan.json"), `${JSON.stringify(plan, null, 2)}\n`);

@@ -1,9 +1,9 @@
 import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
-  OCA_CANONICALIZATION,
-  OCA_CONTENT_GATEWAY_PROTOCOL,
-  OCA_MANIFEST_SCHEMA,
+  KEEL_CANONICALIZATION,
+  KEEL_CONTENT_GATEWAY_PROTOCOL,
+  KEEL_MANIFEST_SCHEMA,
   KEEL_RUNTIME_PROTOCOL,
   KEEL_VIEWER_PROTOCOL,
   assertValidManifest,
@@ -212,8 +212,8 @@ export async function wrapImage(options: WrapImageOptions): Promise<WrappedArtif
   const largestBytes = Math.max(wrapperBytes.byteLength, previewBytes.byteLength, preserveOriginal ? originalBytes.byteLength : 0);
   const createdAt = createdAtValue(options.createdAt);
   const manifest: ArtifactManifest = {
-    schema: OCA_MANIFEST_SCHEMA,
-    canonicalization: OCA_CANONICALIZATION,
+    schema: KEEL_MANIFEST_SCHEMA,
+    canonicalization: KEEL_CANONICALIZATION,
     id,
     name,
     ...(options.description === undefined ? {} : { description: options.description }),
@@ -246,7 +246,7 @@ export async function wrapImage(options: WrapImageOptions): Promise<WrappedArtif
         timezone: "UTC",
       },
       content: {
-        protocol: OCA_CONTENT_GATEWAY_PROTOCOL,
+        protocol: KEEL_CONTENT_GATEWAY_PROTOCOL,
         mode: "verified-only",
         externalSources: "host-verified",
         manifestTrust: options.anchor === undefined ? "digest" : "registry",
@@ -285,7 +285,7 @@ export async function wrapImage(options: WrapImageOptions): Promise<WrappedArtif
         preview: "WebP",
         originalPreserved: preserveOriginal,
         sourceMode,
-        canonicalization: OCA_CANONICALIZATION,
+        canonicalization: KEEL_CANONICALIZATION,
       },
     },
   };
@@ -297,7 +297,7 @@ export async function wrapImage(options: WrapImageOptions): Promise<WrappedArtif
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
   await writeFile(
     manifestIntegrityPath,
-    `${JSON.stringify({ schema: "oca-manifest-integrity@2", manifest: "manifest.json", canonicalization: OCA_CANONICALIZATION, integrity }, null, 2)}\n`,
+    `${JSON.stringify({ schema: "oca-manifest-integrity@2", manifest: "manifest.json", canonicalization: KEEL_CANONICALIZATION, integrity }, null, 2)}\n`,
   );
   return {
     manifest,

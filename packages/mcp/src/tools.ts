@@ -27,7 +27,7 @@ import {
 import {
   createOcaFactoryConfigDigest,
   normalizeOcaFactoryCollectionConfig,
-  type OcaFactoryCollectionConfig,
+  type KeelFactoryCollectionConfig,
 } from "@keel/ethereum-adapter";
 import type { Compression, Hex } from "@keel/protocol";
 import { TOOL_SCHEMAS } from "./schemas.js";
@@ -341,7 +341,7 @@ async function walletLinkTool(_context: ToolContext, value: unknown): Promise<un
       link,
     };
   }
-  const normalizedConfig: OcaFactoryCollectionConfig = normalizeOcaFactoryCollectionConfig(rawConfig);
+  const normalizedConfig: KeelFactoryCollectionConfig = normalizeOcaFactoryCollectionConfig(rawConfig);
   const computedDigest = createOcaFactoryConfigDigest(normalizedConfig);
   if (computedDigest !== link.target.configDigest) throw new Error("collectionConfig digest does not match wallet link.target.configDigest.");
   const typed = createCollectionAuthorizationTypedData(link.target.chainId, link.target.factoryAddress, {

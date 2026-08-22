@@ -2,10 +2,10 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
-  OCA_CANONICALIZATION,
-  OCA_CONTENT_GATEWAY_PROTOCOL,
-  OCA_MANIFEST_SCHEMA,
-  OCA_REGISTRY_ANCHOR_PROTOCOL,
+  KEEL_CANONICALIZATION,
+  KEEL_CONTENT_GATEWAY_PROTOCOL,
+  KEEL_MANIFEST_SCHEMA,
+  KEEL_REGISTRY_ANCHOR_PROTOCOL,
   KEEL_RUNTIME_PROTOCOL,
   KEEL_VIEWER_PROTOCOL,
   assertValidManifest,
@@ -1456,8 +1456,8 @@ const characterSeedSetDigest = await publicClient.readContract({
   args: [characterViewerId, 1n, rootSeed, provenanceDigest],
 }) as Hex;
 const characterManifest: ArtifactManifest = {
-    schema: OCA_MANIFEST_SCHEMA,
-    canonicalization: OCA_CANONICALIZATION,
+    schema: KEEL_MANIFEST_SCHEMA,
+    canonicalization: KEEL_CANONICALIZATION,
     id: "vault-orb-character-collection",
     name: "Vault Orb Character",
     description: "An animated floating Orb Core with a detached seeded weapon, permanent mint entropy, material targets, particle FX, and a weapon-matched sound profile.",
@@ -1470,10 +1470,10 @@ const characterManifest: ArtifactManifest = {
     runtime: {
       engine: { protocol: KEEL_RUNTIME_PROTOCOL, viewerProtocol: KEEL_VIEWER_PROTOCOL, renderer: "browser" },
       determinism: { mode: "live" },
-      content: { protocol: OCA_CONTENT_GATEWAY_PROTOCOL, mode: "verified-only", externalSources: "host-verified", manifestTrust: "registry", blockUndeclared: true, resourcePathPrefix: "/content/", onchainPathPrefix: "/onchain/", ipfsPathPrefix: "/ipfs/" },
+      content: { protocol: KEEL_CONTENT_GATEWAY_PROTOCOL, mode: "verified-only", externalSources: "host-verified", manifestTrust: "registry", blockUndeclared: true, resourcePathPrefix: "/content/", onchainPathPrefix: "/onchain/", ipfsPathPrefix: "/ipfs/" },
       sandbox: "strict", capabilities: { audio: true }, maxResourceBytes: 1_000_000, maxTotalBytes: 1_000_000, maxRecursionDepth: 8, maxResources: 8, timeoutMs: 30_000,
     },
-    anchor: { protocol: OCA_REGISTRY_ANCHOR_PROTOCOL, kind: "artifact-registry", chainId, registry: oldDeployment.contracts.keelIndex.toLowerCase() as Address, collection: collection.address.toLowerCase() as Address, scope: "collection", tokenId: "*", revision: 1 },
+    anchor: { protocol: KEEL_REGISTRY_ANCHOR_PROTOCOL, kind: "artifact-registry", chainId, registry: oldDeployment.contracts.keelIndex.toLowerCase() as Address, collection: collection.address.toLowerCase() as Address, scope: "collection", tokenId: "*", revision: 1 },
     revision: { number: 1, compatibility: { min: 1, max: 1 }, policy: "immutable", frozen: true },
     provenance: { creator: account.address.toLowerCase() as Address, createdAt: "2026-08-10T00:00:00.000Z", chainId, collection: collection.address.toLowerCase() as Address, license: "MIT" },
     extensions: { "keel.runtime": {
@@ -1840,8 +1840,8 @@ const mapViewerId = await publicClient.readContract({
   args: [account.address, mapViewerSalt, mapCollection.address],
 }) as Hex;
 const mapManifest: ArtifactManifest = {
-  schema: OCA_MANIFEST_SCHEMA,
-  canonicalization: OCA_CANONICALIZATION,
+  schema: KEEL_MANIFEST_SCHEMA,
+  canonicalization: KEEL_CANONICALIZATION,
   id: "vault-arcade-map-runtime",
   name: "Vault Arcade Map #1",
   description: "A verified Vault Arcade runtime that resolves any selected staked character from the map registry without duplicating a per-character manifest.",
@@ -1852,7 +1852,7 @@ const mapManifest: ArtifactManifest = {
     engine: { protocol: KEEL_RUNTIME_PROTOCOL, viewerProtocol: KEEL_VIEWER_PROTOCOL, renderer: "browser" },
     determinism: { mode: "live" },
     content: {
-      protocol: OCA_CONTENT_GATEWAY_PROTOCOL,
+      protocol: KEEL_CONTENT_GATEWAY_PROTOCOL,
       mode: "verified-only",
       externalSources: "host-verified",
       manifestTrust: "registry",
@@ -1870,7 +1870,7 @@ const mapManifest: ArtifactManifest = {
     timeoutMs: 30_000,
   },
   anchor: {
-    protocol: OCA_REGISTRY_ANCHOR_PROTOCOL,
+    protocol: KEEL_REGISTRY_ANCHOR_PROTOCOL,
     kind: "artifact-registry",
     chainId,
     registry: oldDeployment.contracts.keelIndex.toLowerCase() as Address,

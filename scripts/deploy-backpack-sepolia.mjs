@@ -11,15 +11,15 @@ import { createPublicClient, createWalletClient, getContractAddress, http, forma
 import { privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 
-const RPC = process.env.OCA_RPC_URL ?? "https://ethereum-sepolia-rpc.publicnode.com";
+const RPC = process.env.KEEL_RPC_URL ?? "https://ethereum-sepolia-rpc.publicnode.com";
 
 // The key comes from the deployer file this repo already uses, or from
-// OCA_DEPLOYER_PRIVATE_KEY when it is actually populated. It is read here and
+// KEEL_DEPLOYER_PRIVATE_KEY when it is actually populated. It is read here and
 // nowhere else: nothing logs, echoes or returns it.
 const KEY_FILE = process.env.KEEL_DEPLOYER_FILE ?? ".secrets/vault-sepolia-deployer.json";
-const KEY = process.env.OCA_DEPLOYER_PRIVATE_KEY || JSON.parse(readFileSync(KEY_FILE, "utf8")).privateKey;
+const KEY = process.env.KEEL_DEPLOYER_PRIVATE_KEY || JSON.parse(readFileSync(KEY_FILE, "utf8")).privateKey;
 if (!KEY) {
-  console.error(`no deployer key: set OCA_DEPLOYER_PRIVATE_KEY or provide ${KEY_FILE}`);
+  console.error(`no deployer key: set KEEL_DEPLOYER_PRIVATE_KEY or provide ${KEY_FILE}`);
   process.exit(1);
 }
 

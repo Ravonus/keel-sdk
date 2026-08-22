@@ -12,23 +12,23 @@
  * allocation, and the historical named Sonant-X JSON format used by OCA.
  */
 
-export const OCA_SOUND_BITS_CODEC = "oca-sonant-bits@1" as const;
-export const OCA_SPRITE_SOUND_SCHEMA = "oca-sprite-sounds@1" as const;
+export const KEEL_SOUND_BITS_CODEC = "oca-sonant-bits@1" as const;
+export const KEEL_SPRITE_SOUND_SCHEMA = "oca-sprite-sounds@1" as const;
 export const SONANT_LEGACY_JSON_CODEC = "sonant-x-legacy-json@1" as const;
-export const OCA_SPRITE_BITS_CODEC = "oca-sprite-bit-atlas@1" as const;
-export const OCA_GRID_SPRITE_CODEC = "oca-grid-sprite-sheet@1" as const;
-export const OCA_MATERIAL_BITS_CODEC = "oca-material-bits@1" as const;
-export const OCA_ATLAS_MATERIAL_BITS_CODEC =
+export const KEEL_SPRITE_BITS_CODEC = "oca-sprite-bit-atlas@1" as const;
+export const KEEL_GRID_SPRITE_CODEC = "oca-grid-sprite-sheet@1" as const;
+export const KEEL_MATERIAL_BITS_CODEC = "oca-material-bits@1" as const;
+export const KEEL_ATLAS_MATERIAL_BITS_CODEC =
   "oca-atlas-material-map@1" as const;
-export const OCA_TRAIT_BITS_CODEC = "oca-trait-catalog-bits@2" as const;
+export const KEEL_TRAIT_BITS_CODEC = "oca-trait-catalog-bits@2" as const;
 /** Append-only trait catalog. Options carry their introduction epoch so a
  * token can always resolve against the catalog revision it was minted with. */
-export const OCA_APPEND_ONLY_TRAIT_BITS_CODEC =
+export const KEEL_APPEND_ONLY_TRAIT_BITS_CODEC =
   "oca-trait-catalog-bits@3" as const;
-export const OCA_CHARACTER_METADATA_BITS_CODEC =
+export const KEEL_CHARACTER_METADATA_BITS_CODEC =
   "oca-character-metadata-bits@1" as const;
 
-export interface OcaContentReader {
+export interface KeelContentReader {
   readonly protocol: string;
   readonly manifestId: string;
   bytes(name: string): Uint8Array;
@@ -707,7 +707,7 @@ export type AudioReaderSpec =
       readonly resourceId: string;
     }
   | {
-      readonly codec: typeof OCA_SOUND_BITS_CODEC;
+      readonly codec: typeof KEEL_SOUND_BITS_CODEC;
       readonly resourceId: string;
     };
 
@@ -715,7 +715,7 @@ export function parseAudioReaderSpec(value: unknown): AudioReaderSpec {
   const source = record(value, "audio reader spec");
   const codec = source.codec;
   const resourceId = source.resourceId;
-  if (codec !== SONANT_LEGACY_JSON_CODEC && codec !== OCA_SOUND_BITS_CODEC) {
+  if (codec !== SONANT_LEGACY_JSON_CODEC && codec !== KEEL_SOUND_BITS_CODEC) {
     throw new TypeError("Unsupported audio reader codec.");
   }
   if (
@@ -735,7 +735,7 @@ export interface AudioPlaybackHandle {
   setGain(value: number, when?: number): void;
 }
 
-export interface OcaAudioReader {
+export interface KeelAudioReader {
   readonly context: AudioContext;
   unlock(): Promise<void>;
   load(spec: AudioReaderSpec): SonantLegacySong;
@@ -764,12 +764,12 @@ export interface OcaAudioReader {
 
 /** Create the AI-friendly runtime audio API used inside a verified reader. */
 export function createAudioReader(options: {
-  readonly content: OcaContentReader;
+  readonly content: KeelContentReader;
   readonly noiseSeed?: string | number;
   readonly maxSeconds?: number;
   readonly context?: AudioContext;
   readonly createContext?: () => AudioContext;
-}): OcaAudioReader {
+}): KeelAudioReader {
   const AudioContextConstructor =
     globalThis.AudioContext ??
     (
@@ -796,7 +796,7 @@ export function createAudioReader(options: {
 
   const load = (spec: AudioReaderSpec): SonantLegacySong => {
     const parsed = parseAudioReaderSpec(spec);
-    return parsed.codec === OCA_SOUND_BITS_CODEC
+    return parsed.codec === KEEL_SOUND_BITS_CODEC
       ? decodeSoundBits(options.content.bytes(parsed.resourceId))
       : parseSonantLegacySong(options.content.json(parsed.resourceId));
   };
@@ -886,7 +886,7 @@ export function createAudioReader(options: {
 export interface SpriteSoundVariation {
   readonly soundId: string;
   readonly resourceId: string;
-  readonly codec: typeof OCA_SOUND_BITS_CODEC;
+  readonly codec: typeof KEEL_SOUND_BITS_CODEC;
   readonly weight: number;
   readonly gain: number;
   readonly rate: number;
@@ -906,7 +906,7 @@ export interface SpriteSoundProfile {
 }
 
 export interface SpriteSoundCatalog {
-  readonly schema: typeof OCA_SPRITE_SOUND_SCHEMA;
+  readonly schema: typeof KEEL_SPRITE_SOUND_SCHEMA;
   readonly storage: "keel-object-revision";
   readonly profiles: readonly SpriteSoundProfile[];
 }
@@ -921,7 +921,7 @@ function soundString(value: unknown, label: string): string {
 /** Parse the generic event-to-sound assignments attached to any Keel sprite asset. */
 export function parseSpriteSoundCatalog(value: unknown): SpriteSoundCatalog {
   const source = record(value, "sprite sound catalog");
-  if (source.schema !== OCA_SPRITE_SOUND_SCHEMA) {
+  if (source.schema !== KEEL_SPRITE_SOUND_SCHEMA) {
     throw new TypeError("Unsupported sprite sound catalog schema.");
   }
   if (source.storage !== "keel-object-revision") {
@@ -960,7 +960,7 @@ export function parseSpriteSoundCatalog(value: unknown): SpriteSoundCatalog {
         const soundId = soundString(variation.soundId, `profiles[${profileIndex}].events[${eventIndex}].variations[${variationIndex}].soundId`);
         if (soundIds.has(soundId)) throw new TypeError(`Duplicate sprite sound variation ${assetId}:${eventId}:${soundId}.`);
         soundIds.add(soundId);
-        if (variation.codec !== OCA_SOUND_BITS_CODEC) throw new TypeError(`Unsupported codec for ${soundId}.`);
+        if (variation.codec !== KEEL_SOUND_BITS_CODEC) throw new TypeError(`Unsupported codec for ${soundId}.`);
         const gain = variation.gain === undefined ? 1 : Number(variation.gain);
         const rate = variation.rate === undefined ? 1 : Number(variation.rate);
         if (!Number.isFinite(gain) || gain < 0 || gain > 4) throw new RangeError(`${soundId}.gain must be from 0 through 4.`);
@@ -968,7 +968,7 @@ export function parseSpriteSoundCatalog(value: unknown): SpriteSoundCatalog {
         return {
           soundId,
           resourceId: soundString(variation.resourceId, `${soundId}.resourceId`),
-          codec: OCA_SOUND_BITS_CODEC,
+          codec: KEEL_SOUND_BITS_CODEC,
           weight: integer(variation.weight, `${soundId}.weight`, 1, 0xffff_ffff),
           gain,
           rate,
@@ -982,7 +982,7 @@ export function parseSpriteSoundCatalog(value: unknown): SpriteSoundCatalog {
     });
     return { soundProfileId, id, assetId, events };
   });
-  return { schema: OCA_SPRITE_SOUND_SCHEMA, storage: "keel-object-revision", profiles };
+  return { schema: KEEL_SPRITE_SOUND_SCHEMA, storage: "keel-object-revision", profiles };
 }
 
 /** Resolve one deterministic variation for a sprite event. The profile itself
@@ -1023,8 +1023,8 @@ export interface SpriteFrame {
 
 export interface SpriteAtlas {
   readonly codec:
-    | typeof OCA_SPRITE_BITS_CODEC
-    | typeof OCA_GRID_SPRITE_CODEC
+    | typeof KEEL_SPRITE_BITS_CODEC
+    | typeof KEEL_GRID_SPRITE_CODEC
     | "oca-json-sprite-atlas@1";
   readonly frames: readonly SpriteFrame[];
 }
@@ -1132,7 +1132,7 @@ export function createGridSpriteAtlas(options: {
     throw new RangeError("fps must be greater than 0 and no more than 240.");
   const durationMs = Math.max(1, Math.round(1000 / fps));
   return {
-    codec: OCA_GRID_SPRITE_CODEC,
+    codec: KEEL_GRID_SPRITE_CODEC,
     frames: Array.from({ length: count }, (_, index) => ({
       x: (index % columns) * frameWidth,
       y: Math.floor(index / columns) * frameHeight,
@@ -1224,7 +1224,7 @@ export function packSpriteFrames(options: {
   return {
     imageWidth: usedWidth,
     imageHeight: y + rowHeight,
-    atlas: { codec: OCA_SPRITE_BITS_CODEC, frames },
+    atlas: { codec: KEEL_SPRITE_BITS_CODEC, frames },
   };
 }
 
@@ -1296,7 +1296,7 @@ export function createDirectionalAnimationAtlas(options: {
     imageHeight: rows.length * frameHeight,
     columns,
     rows,
-    atlas: { codec: OCA_GRID_SPRITE_CODEC, frames },
+    atlas: { codec: KEEL_GRID_SPRITE_CODEC, frames },
   };
 }
 
@@ -1502,28 +1502,28 @@ export function decodeSpriteBitAtlas(bytes: Uint8Array): SpriteAtlas {
   if (!reader.done)
     throw new TypeError("Trailing bytes after Keel sprite atlas.");
   return {
-    codec: OCA_SPRITE_BITS_CODEC,
+    codec: KEEL_SPRITE_BITS_CODEC,
     frames: frames.map((frame, index) =>
       parseSpriteFrame(frame, `frames[${index}]`),
     ),
   };
 }
 
-export type OcaRgb = readonly [red: number, green: number, blue: number];
+export type KeelRgb = readonly [red: number, green: number, blue: number];
 
-export interface OcaWeightedColor {
-  readonly color: OcaRgb;
+export interface KeelWeightedColor {
+  readonly color: KeelRgb;
   readonly weight: number;
 }
 
-export type OcaMaterialRule =
-  | { readonly mode: "locked"; readonly color: OcaRgb }
-  | { readonly mode: "palette"; readonly colors: readonly OcaWeightedColor[] }
+export type KeelMaterialRule =
+  | { readonly mode: "locked"; readonly color: KeelRgb }
+  | { readonly mode: "palette"; readonly colors: readonly KeelWeightedColor[] }
   | {
       readonly mode: "ramp";
-      readonly dark: OcaRgb;
-      readonly mid: OcaRgb;
-      readonly light: OcaRgb;
+      readonly dark: KeelRgb;
+      readonly mid: KeelRgb;
+      readonly light: KeelRgb;
     }
   | {
       readonly mode: "range";
@@ -1534,31 +1534,31 @@ export type OcaMaterialRule =
       readonly lighten: number;
     };
 
-export interface OcaMaterialRegion {
+export interface KeelMaterialRegion {
   /** Stable numeric key whose human name lives in the verified catalogue. */
   readonly regionId: number;
   /** Relative rarity of this material region/set. */
   readonly weight: number;
-  readonly rule: OcaMaterialRule;
+  readonly rule: KeelMaterialRule;
 }
 
-export interface OcaMaterialProfile {
-  readonly codec: typeof OCA_MATERIAL_BITS_CODEC;
+export interface KeelMaterialProfile {
+  readonly codec: typeof KEEL_MATERIAL_BITS_CODEC;
   readonly setId: number;
   readonly setWeight: number;
-  readonly regions: readonly OcaMaterialRegion[];
+  readonly regions: readonly KeelMaterialRegion[];
 }
 
-export interface OcaResolvedMaterialRegion {
+export interface KeelResolvedMaterialRegion {
   readonly regionId: number;
-  readonly mode: OcaMaterialRule["mode"];
-  readonly colors: readonly OcaRgb[];
+  readonly mode: KeelMaterialRule["mode"];
+  readonly colors: readonly KeelRgb[];
 }
 
-export type OcaChannelRange = readonly [minimum: number, maximum: number];
-export type OcaAtlasShadeChannel = "luminance" | "red" | "green" | "blue";
+export type KeelChannelRange = readonly [minimum: number, maximum: number];
+export type KeelAtlasShadeChannel = "luminance" | "red" | "green" | "blue";
 
-export interface OcaAtlasMaterialTarget {
+export interface KeelAtlasMaterialTarget {
   /** Stable identity for this pixel target. Human-readable and compact-codec retained. */
   readonly targetId: number;
   readonly label: string;
@@ -1566,22 +1566,22 @@ export interface OcaAtlasMaterialTarget {
   readonly action: "material" | "preserve";
   /** Multiple material targets may intentionally resolve through the same region. */
   readonly materialRegionId?: number;
-  readonly red: OcaChannelRange;
-  readonly green: OcaChannelRange;
-  readonly blue: OcaChannelRange;
-  readonly alpha?: OcaChannelRange;
-  readonly shade: OcaAtlasShadeChannel;
+  readonly red: KeelChannelRange;
+  readonly green: KeelChannelRange;
+  readonly blue: KeelChannelRange;
+  readonly alpha?: KeelChannelRange;
+  readonly shade: KeelAtlasShadeChannel;
   /** Higher priority wins when deliberately overlapping a broad range. */
   readonly priority: number;
 }
 
-export interface OcaAtlasMaterialMap {
-  readonly codec: typeof OCA_ATLAS_MATERIAL_BITS_CODEC;
+export interface KeelAtlasMaterialMap {
+  readonly codec: typeof KEEL_ATLAS_MATERIAL_BITS_CODEC;
   readonly unmatched: "preserve";
-  readonly targets: readonly OcaAtlasMaterialTarget[];
+  readonly targets: readonly KeelAtlasMaterialTarget[];
 }
 
-export interface OcaTraitOption {
+export interface KeelTraitOption {
   readonly optionId: number;
   readonly weight: number;
   readonly materialProfileId?: number;
@@ -1589,7 +1589,7 @@ export interface OcaTraitOption {
   readonly introducedAt?: number;
 }
 
-export interface OcaTraitAttribute {
+export interface KeelTraitAttribute {
   /** Stable numeric key; labels and descriptions remain in verified metadata. */
   readonly attributeId: number;
   /** 0..8 for interoperable equipment slots, or absent for any custom trait. */
@@ -1599,25 +1599,25 @@ export interface OcaTraitAttribute {
   readonly introducedAt?: number;
   /** Stable roll domain. It must never be changed after publication. */
   readonly entropyDomain?: number;
-  readonly options: readonly OcaTraitOption[];
+  readonly options: readonly KeelTraitOption[];
 }
 
-export interface OcaTraitCatalog {
+export interface KeelTraitCatalog {
   readonly codec:
-    | typeof OCA_TRAIT_BITS_CODEC
-    | typeof OCA_APPEND_ONLY_TRAIT_BITS_CODEC;
+    | typeof KEEL_TRAIT_BITS_CODEC
+    | typeof KEEL_APPEND_ONLY_TRAIT_BITS_CODEC;
   readonly revision: number;
   readonly rejectExactDuplicates: boolean;
-  readonly attributes: readonly OcaTraitAttribute[];
+  readonly attributes: readonly KeelTraitAttribute[];
 }
 
-export interface OcaResolvedTrait {
+export interface KeelResolvedTrait {
   readonly attributeId: number;
   readonly optionId: number;
   readonly materialProfileId?: number;
 }
 
-export interface OcaCharacterAttributeSelection {
+export interface KeelCharacterAttributeSelection {
   readonly attributeId: number;
   readonly optionId: number;
   readonly materialProfileId?: number;
@@ -1625,11 +1625,11 @@ export interface OcaCharacterAttributeSelection {
   readonly effectProfileId?: number;
 }
 
-export interface OcaCharacterMetadataVector {
-  readonly codec: typeof OCA_CHARACTER_METADATA_BITS_CODEC;
+export interface KeelCharacterMetadataVector {
+  readonly codec: typeof KEEL_CHARACTER_METADATA_BITS_CODEC;
   readonly catalogRevision: number;
   readonly sceneId: number;
-  readonly attributes: readonly OcaCharacterAttributeSelection[];
+  readonly attributes: readonly KeelCharacterAttributeSelection[];
 }
 
 const MATERIAL_MAGIC = [0x4f, 0x43, 0x4d, 0x50] as const; // OCMP
@@ -1642,7 +1642,7 @@ const MAX_ATLAS_MATERIAL_TARGETS = 64;
 const MAX_TRAIT_ATTRIBUTES = 256;
 const MAX_TRAIT_OPTIONS = 1024;
 
-function rgb(value: unknown, label: string): OcaRgb {
+function rgb(value: unknown, label: string): KeelRgb {
   if (!Array.isArray(value) || value.length !== 3)
     throw new TypeError(`${label} must be an RGB triplet.`);
   return [
@@ -1652,16 +1652,16 @@ function rgb(value: unknown, label: string): OcaRgb {
   ];
 }
 
-function writeRgb(writer: ByteWriter, value: OcaRgb): void {
+function writeRgb(writer: ByteWriter, value: KeelRgb): void {
   writer.raw(value);
 }
 
-function readRgb(reader: ByteReader): OcaRgb {
+function readRgb(reader: ByteReader): KeelRgb {
   const value = reader.raw(3);
   return [value[0]!, value[1]!, value[2]!];
 }
 
-function channelRange(value: unknown, label: string): OcaChannelRange {
+function channelRange(value: unknown, label: string): KeelChannelRange {
   if (!Array.isArray(value) || value.length !== 2)
     throw new TypeError(`${label} must be a min/max pair.`);
   const minimum = integer(value[0], `${label}[0]`, 0, 255);
@@ -1678,13 +1678,13 @@ function validMaterialTargetLabel(value: unknown, label: string): string {
   return value;
 }
 
-function rangesOverlap(left: OcaChannelRange, right: OcaChannelRange): boolean {
+function rangesOverlap(left: KeelChannelRange, right: KeelChannelRange): boolean {
   return left[0] <= right[1] && right[0] <= left[1];
 }
 
 function targetsOverlap(
-  left: OcaAtlasMaterialTarget,
-  right: OcaAtlasMaterialTarget,
+  left: KeelAtlasMaterialTarget,
+  right: KeelAtlasMaterialTarget,
 ): boolean {
   return (
     rangesOverlap(left.red, right.red) &&
@@ -1694,7 +1694,7 @@ function targetsOverlap(
   );
 }
 
-export function parseAtlasMaterialMap(value: unknown): OcaAtlasMaterialMap {
+export function parseAtlasMaterialMap(value: unknown): KeelAtlasMaterialMap {
   const source = record(value, "atlas material map");
   if (
     !Array.isArray(source.targets) ||
@@ -1710,7 +1710,7 @@ export function parseAtlasMaterialMap(value: unknown): OcaAtlasMaterialMap {
   }
   const seen = new Set<number>();
   const targets = source.targets
-    .map((candidate, index): OcaAtlasMaterialTarget => {
+    .map((candidate, index): KeelAtlasMaterialTarget => {
       const entry = record(candidate, `atlas material map.targets[${index}]`);
       const targetId = integer(
         entry.targetId,
@@ -1816,7 +1816,7 @@ export function parseAtlasMaterialMap(value: unknown): OcaAtlasMaterialMap {
     }
   }
   return {
-    codec: OCA_ATLAS_MATERIAL_BITS_CODEC,
+    codec: KEEL_ATLAS_MATERIAL_BITS_CODEC,
     unmatched: "preserve",
     targets,
   };
@@ -1854,7 +1854,7 @@ export function encodeAtlasMaterialMapBits(value: unknown): Uint8Array {
 
 export function decodeAtlasMaterialMapBits(
   bytes: Uint8Array,
-): OcaAtlasMaterialMap {
+): KeelAtlasMaterialMap {
   const reader = new ByteReader(bytes);
   if (
     !reader
@@ -1872,7 +1872,7 @@ export function decodeAtlasMaterialMapBits(
     throw new RangeError("Invalid atlas material target count.");
   const targets = Array.from(
     { length: count },
-    (_, index): OcaAtlasMaterialTarget => {
+    (_, index): KeelAtlasMaterialTarget => {
       const targetId = reader.varUint(`targets[${index}].targetId`);
       const label = reader.text(`targets[${index}].label`, 48);
       const actionFlag = reader.byte();
@@ -1912,7 +1912,7 @@ export function decodeAtlasMaterialMapBits(
   return parseAtlasMaterialMap({ unmatched: "preserve", targets });
 }
 
-function parseMaterialRule(value: unknown, label: string): OcaMaterialRule {
+function parseMaterialRule(value: unknown, label: string): KeelMaterialRule {
   const source = record(value, label);
   if (source.mode === "locked")
     return { mode: "locked", color: rgb(source.color, `${label}.color`) };
@@ -1974,7 +1974,7 @@ function parseMaterialRule(value: unknown, label: string): OcaMaterialRule {
   throw new TypeError(`${label}.mode must be locked, palette, ramp, or range.`);
 }
 
-export function parseMaterialProfile(value: unknown): OcaMaterialProfile {
+export function parseMaterialProfile(value: unknown): KeelMaterialProfile {
   const source = record(value, "material profile");
   if (
     !Array.isArray(source.regions) ||
@@ -1986,7 +1986,7 @@ export function parseMaterialProfile(value: unknown): OcaMaterialProfile {
     );
   }
   const seen = new Set<number>();
-  const regions = source.regions.map((candidate, index): OcaMaterialRegion => {
+  const regions = source.regions.map((candidate, index): KeelMaterialRegion => {
     const entry = record(candidate, `material profile.regions[${index}]`);
     const regionId = integer(
       entry.regionId,
@@ -2014,7 +2014,7 @@ export function parseMaterialProfile(value: unknown): OcaMaterialProfile {
     };
   });
   return {
-    codec: OCA_MATERIAL_BITS_CODEC,
+    codec: KEEL_MATERIAL_BITS_CODEC,
     setId: integer(source.setId, "material profile.setId", 0, MAX_INTEGER),
     setWeight: integer(
       source.setWeight ?? 1,
@@ -2073,7 +2073,7 @@ export function encodeMaterialBits(value: unknown): Uint8Array {
   return writer.finish();
 }
 
-export function decodeMaterialBits(bytes: Uint8Array): OcaMaterialProfile {
+export function decodeMaterialBits(bytes: Uint8Array): KeelMaterialProfile {
   const reader = new ByteReader(bytes);
   if (!reader.raw(4).every((value, index) => value === MATERIAL_MAGIC[index]))
     throw new TypeError("Not a Keel material profile.");
@@ -2086,12 +2086,12 @@ export function decodeMaterialBits(bytes: Uint8Array): OcaMaterialProfile {
   const count = reader.varUint("regionCount");
   if (count === 0 || count > MAX_MATERIAL_REGIONS)
     throw new RangeError("Invalid material region count.");
-  const regions: OcaMaterialRegion[] = [];
+  const regions: KeelMaterialRegion[] = [];
   for (let index = 0; index < count; index += 1) {
     const regionId = reader.varUint(`regions[${index}].regionId`);
     const weight = reader.varUint(`regions[${index}].weight`);
     const mode = reader.byte();
-    let rule: OcaMaterialRule;
+    let rule: KeelMaterialRule;
     if (mode === 0) rule = { mode: "locked", color: readRgb(reader) };
     else if (mode === 2)
       rule = {
@@ -2106,7 +2106,7 @@ export function decodeMaterialBits(bytes: Uint8Array): OcaMaterialProfile {
         throw new RangeError("Invalid material palette size.");
       const colors = Array.from(
         { length: colorCount },
-        (_, colorIndex): OcaWeightedColor => ({
+        (_, colorIndex): KeelWeightedColor => ({
           color: readRgb(reader),
           weight: reader.varUint(
             `regions[${index}].colors[${colorIndex}].weight`,
@@ -2180,7 +2180,7 @@ function rangedInteger(
   return range[0] + (stableSeed32(seed, domain) % (range[1] - range[0] + 1));
 }
 
-function hslRgb(hue: number, saturation: number, lightness: number): OcaRgb {
+function hslRgb(hue: number, saturation: number, lightness: number): KeelRgb {
   const s = saturation / 100;
   const l = lightness / 100;
   const chroma = (1 - Math.abs(2 * l - 1)) * s;
@@ -2201,14 +2201,14 @@ function hslRgb(hue: number, saturation: number, lightness: number): OcaRgb {
   const match = l - chroma / 2;
   return [red, green, blue].map((channel) =>
     Math.round((channel + match) * 255),
-  ) as unknown as OcaRgb;
+  ) as unknown as KeelRgb;
 }
 
 /** Resolve only mutable palette choices; locked colors and full ramps remain exact. */
 export function resolveMaterialProfile(
   value: unknown,
   seed: string | number | Uint8Array,
-): readonly OcaResolvedMaterialRegion[] {
+): readonly KeelResolvedMaterialRegion[] {
   const profile = parseMaterialProfile(value);
   return profile.regions.map((region) => {
     if (region.rule.mode === "locked")
@@ -2266,7 +2266,7 @@ export function resolveMaterialProfile(
   });
 }
 
-function inChannelRange(value: number, range: OcaChannelRange): boolean {
+function inChannelRange(value: number, range: KeelChannelRange): boolean {
   return value >= range[0] && value <= range[1];
 }
 
@@ -2274,7 +2274,7 @@ function mixChannel(left: number, right: number, amount: number): number {
   return Math.round(left + (right - left) * amount);
 }
 
-function mixRgb(left: OcaRgb, right: OcaRgb, amount: number): OcaRgb {
+function mixRgb(left: KeelRgb, right: KeelRgb, amount: number): KeelRgb {
   return [
     mixChannel(left[0], right[0], amount),
     mixChannel(left[1], right[1], amount),
@@ -2282,7 +2282,7 @@ function mixRgb(left: OcaRgb, right: OcaRgb, amount: number): OcaRgb {
   ];
 }
 
-function materialColor(colors: readonly OcaRgb[], shade: number): OcaRgb {
+function materialColor(colors: readonly KeelRgb[], shade: number): KeelRgb {
   if (colors.length === 0)
     throw new RangeError(
       "Resolved material region must contain at least one color.",
@@ -2302,7 +2302,7 @@ function materialColor(colors: readonly OcaRgb[], shade: number): OcaRgb {
 export function applyAtlasMaterialMap(
   pixels: Uint8Array | Uint8ClampedArray,
   mapValue: unknown,
-  resolvedRegions: readonly OcaResolvedMaterialRegion[],
+  resolvedRegions: readonly KeelResolvedMaterialRegion[],
 ): Uint8ClampedArray {
   if (pixels.byteLength === 0 || pixels.byteLength % 4 !== 0) {
     throw new RangeError("Atlas pixels must contain non-empty RGBA bytes.");
@@ -2356,11 +2356,11 @@ export function applyAtlasMaterialMap(
   return output;
 }
 
-export function parseTraitCatalog(value: unknown): OcaTraitCatalog {
+export function parseTraitCatalog(value: unknown): KeelTraitCatalog {
   const source = record(value, "trait catalog");
-  const codec = source.codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC
-    ? OCA_APPEND_ONLY_TRAIT_BITS_CODEC
-    : OCA_TRAIT_BITS_CODEC;
+  const codec = source.codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
+    ? KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
+    : KEEL_TRAIT_BITS_CODEC;
   const revision = integer(
     source.revision,
     "trait catalog.revision",
@@ -2378,7 +2378,7 @@ export function parseTraitCatalog(value: unknown): OcaTraitCatalog {
   }
   const seen = new Set<number>();
   const attributes = source.attributes.map(
-    (candidate, index): OcaTraitAttribute => {
+    (candidate, index): KeelTraitAttribute => {
       const entry = record(candidate, `trait catalog.attributes[${index}]`);
       const attributeId = integer(
         entry.attributeId,
@@ -2391,7 +2391,7 @@ export function parseTraitCatalog(value: unknown): OcaTraitCatalog {
           `trait catalog contains duplicate attributeId ${attributeId}.`,
         );
       seen.add(attributeId);
-      const introducedAt = codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC
+      const introducedAt = codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
         ? integer(
             entry.introducedAt ?? 1,
             `trait catalog.attributes[${index}].introducedAt`,
@@ -2422,7 +2422,7 @@ export function parseTraitCatalog(value: unknown): OcaTraitCatalog {
             }),
         required: entry.required === true,
         ...(introducedAt === undefined ? {} : { introducedAt }),
-        ...(codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC
+        ...(codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
           ? {
               entropyDomain: integer(
                 entry.entropyDomain,
@@ -2465,7 +2465,7 @@ export function parseTraitCatalog(value: unknown): OcaTraitCatalog {
                     MAX_INTEGER,
                   ),
                 }),
-            ...(codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC
+            ...(codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
               ? {
                   introducedAt: integer(
                     item.introducedAt ?? introducedAt,
@@ -2494,7 +2494,7 @@ export function encodeTraitCatalogBits(value: unknown): Uint8Array {
   const catalog = parseTraitCatalog(value);
   const writer = new ByteWriter();
   writer.raw(TRAIT_MAGIC);
-  const appendOnly = catalog.codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC;
+  const appendOnly = catalog.codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC;
   writer.byte(appendOnly ? 3 : 2);
   writer.byte(catalog.rejectExactDuplicates ? 1 : 0);
   writer.varUint(catalog.revision);
@@ -2524,7 +2524,7 @@ export function encodeTraitCatalogBits(value: unknown): Uint8Array {
   return writer.finish();
 }
 
-export function decodeTraitCatalogBits(bytes: Uint8Array): OcaTraitCatalog {
+export function decodeTraitCatalogBits(bytes: Uint8Array): KeelTraitCatalog {
   const reader = new ByteReader(bytes);
   if (!reader.raw(4).every((value, index) => value === TRAIT_MAGIC[index]))
     throw new TypeError("Not a Keel trait catalog.");
@@ -2541,7 +2541,7 @@ export function decodeTraitCatalogBits(bytes: Uint8Array): OcaTraitCatalog {
     throw new RangeError("Invalid trait attribute count.");
   const attributes = Array.from(
     { length: count },
-    (_, index): OcaTraitAttribute => {
+    (_, index): KeelTraitAttribute => {
       const attributeId = reader.varUint(`attributes[${index}].attributeId`);
       const attributeFlags = reader.byte();
       if ((attributeFlags & ~3) !== 0)
@@ -2558,7 +2558,7 @@ export function decodeTraitCatalogBits(bytes: Uint8Array): OcaTraitCatalog {
         throw new RangeError("Invalid trait option count.");
       const options = Array.from(
         { length: optionCount },
-        (_, optionIndex): OcaTraitOption => {
+        (_, optionIndex): KeelTraitOption => {
           const optionId = reader.varUint(
             `attributes[${index}].options[${optionIndex}].optionId`,
           );
@@ -2599,8 +2599,8 @@ export function decodeTraitCatalogBits(bytes: Uint8Array): OcaTraitCatalog {
     throw new TypeError("Trailing bytes after Keel trait catalog.");
   return parseTraitCatalog({
     codec: appendOnly
-      ? OCA_APPEND_ONLY_TRAIT_BITS_CODEC
-      : OCA_TRAIT_BITS_CODEC,
+      ? KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
+      : KEEL_TRAIT_BITS_CODEC,
     revision,
     rejectExactDuplicates: (flags & 1) !== 0,
     attributes,
@@ -2611,24 +2611,24 @@ export function resolveTraitCatalog(
   value: unknown,
   seed: string | number | Uint8Array,
   pinnedRevision?: number,
-): readonly OcaResolvedTrait[] {
+): readonly KeelResolvedTrait[] {
   const catalog = parseTraitCatalog(value);
   const revision = pinnedRevision === undefined
     ? catalog.revision
     : integer(pinnedRevision, "pinned trait revision", 1, catalog.revision);
   return catalog.attributes
     .filter((attribute) =>
-      catalog.codec !== OCA_APPEND_ONLY_TRAIT_BITS_CODEC ||
+      catalog.codec !== KEEL_APPEND_ONLY_TRAIT_BITS_CODEC ||
       attribute.introducedAt! <= revision)
     .map((attribute, index) => {
     // Attribute IDs frequently match their array position. XOR would collapse
     // every domain to zero in that normal case and make all traits choose the
     // same option. Multiplication keeps stable IDs and positions separated.
-    const domain = catalog.codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC
+    const domain = catalog.codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
       ? attribute.entropyDomain!
       : (Math.imul(attribute.attributeId + 1, 0x9e3779b1) ^
           Math.imul(index + 1, 0x85ebca6b)) >>> 0;
-    const options = catalog.codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC
+    const options = catalog.codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
       ? attribute.options.filter((option) => option.introducedAt! <= revision)
       : attribute.options;
     if (options.length === 0) {
@@ -2659,8 +2659,8 @@ export function assertTraitCatalogAppendOnly(previousValue: unknown, nextValue: 
   const previous = parseTraitCatalog(previousValue);
   const next = parseTraitCatalog(nextValue);
   if (
-    previous.codec !== OCA_APPEND_ONLY_TRAIT_BITS_CODEC ||
-    next.codec !== OCA_APPEND_ONLY_TRAIT_BITS_CODEC
+    previous.codec !== KEEL_APPEND_ONLY_TRAIT_BITS_CODEC ||
+    next.codec !== KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
   ) throw new TypeError("Append-only comparison requires trait codec v3.");
   if (next.revision <= previous.revision)
     throw new RangeError("The next trait catalog revision must increase.");
@@ -2704,13 +2704,13 @@ export function assertTraitCatalogAppendOnly(previousValue: unknown, nextValue: 
   }
 }
 
-function parseCharacterMetadataVector(value: unknown): OcaCharacterMetadataVector {
+function parseCharacterMetadataVector(value: unknown): KeelCharacterMetadataVector {
   const source = record(value, "character metadata vector");
   if (!Array.isArray(source.attributes) || source.attributes.length > MAX_TRAIT_ATTRIBUTES) {
     throw new RangeError(`character metadata attributes must contain at most ${MAX_TRAIT_ATTRIBUTES} entries.`);
   }
   let previous = -1;
-  const attributes = source.attributes.map((candidate, index): OcaCharacterAttributeSelection => {
+  const attributes = source.attributes.map((candidate, index): KeelCharacterAttributeSelection => {
     const entry = record(candidate, `character metadata attributes[${index}]`);
     const attributeId = integer(entry.attributeId, `character metadata attributes[${index}].attributeId`);
     if (attributeId <= previous) throw new RangeError("Character metadata attribute IDs must be unique and increasing.");
@@ -2729,7 +2729,7 @@ function parseCharacterMetadataVector(value: unknown): OcaCharacterMetadataVecto
     };
   });
   return {
-    codec: OCA_CHARACTER_METADATA_BITS_CODEC,
+    codec: KEEL_CHARACTER_METADATA_BITS_CODEC,
     catalogRevision: integer(source.catalogRevision, "character metadata catalogRevision", 1),
     sceneId: integer(source.sceneId ?? 0, "character metadata sceneId"),
     attributes,
@@ -2763,7 +2763,7 @@ export function encodeCharacterMetadataBits(value: unknown): Uint8Array {
   return writer.finish();
 }
 
-export function decodeCharacterMetadataBits(bytes: Uint8Array): OcaCharacterMetadataVector {
+export function decodeCharacterMetadataBits(bytes: Uint8Array): KeelCharacterMetadataVector {
   const reader = new ByteReader(bytes);
   if (!reader.raw(4).every((value, index) => value === CHARACTER_METADATA_MAGIC[index])) {
     throw new TypeError("Not a Keel character metadata vector.");
@@ -2774,7 +2774,7 @@ export function decodeCharacterMetadataBits(bytes: Uint8Array): OcaCharacterMeta
   const count = reader.varUint("attributeCount");
   if (count > MAX_TRAIT_ATTRIBUTES) throw new RangeError("Invalid character metadata attribute count.");
   let previous = -1;
-  const attributes = Array.from({ length: count }, (_, index): OcaCharacterAttributeSelection => {
+  const attributes = Array.from({ length: count }, (_, index): KeelCharacterAttributeSelection => {
     const attributeId = previous + 1 + reader.varUint(`attributes[${index}].attributeDelta`);
     previous = attributeId;
     const flags = reader.byte();
@@ -2809,7 +2809,7 @@ export interface SpriteLayerSpec {
 type DrawableImage = ImageBitmap | HTMLImageElement;
 
 async function decodeVerifiedImage(
-  content: OcaContentReader,
+  content: KeelContentReader,
   resourceId: string,
 ): Promise<DrawableImage> {
   const bytes = content.bytes(resourceId);
@@ -2825,7 +2825,7 @@ async function decodeVerifiedImage(
   return image;
 }
 
-export interface OcaSpritePlayer {
+export interface KeelSpritePlayer {
   readonly frameCount: number;
   readonly frameIndex: number;
   readonly playing: boolean;
@@ -2842,13 +2842,13 @@ export interface OcaSpritePlayer {
 
 /** Create a real frame-cropping, layered Canvas2D sprite player. */
 export function createSpritePlayer(options: {
-  readonly content: OcaContentReader;
+  readonly content: KeelContentReader;
   readonly canvas: HTMLCanvasElement;
   readonly atlas: SpriteAtlas;
   readonly layers: readonly SpriteLayerSpec[];
   readonly scale?: number;
   readonly fps?: number;
-}): OcaSpritePlayer {
+}): KeelSpritePlayer {
   const frames = options.atlas.frames.map((frame, index) =>
     parseSpriteFrame(frame, `frames[${index}]`),
   );

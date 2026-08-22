@@ -1,5 +1,5 @@
 import {WEAPON_REGION_OVERRIDE_STORAGE_KEY,loadWeaponRegionOverrides,resolveWeaponRegion} from "./weapon-region-resolver.js";
-import {OCA_SOUND_BITS_CODEC,createAudioReader,parseSpriteSoundCatalog,resolveSpriteSound} from "./oca-readers.js";
+import {KEEL_SOUND_BITS_CODEC,createAudioReader,parseSpriteSoundCatalog,resolveSpriteSound} from "./oca-readers.js";
 
 const paletteSelect=document.querySelector("#weapon-palette");
 const particleColorSelect=document.querySelector("#weapon-particle-color");
@@ -71,7 +71,7 @@ const attackTiming={gyro:{periodMs:1/.00042,triggerPhase:0},rift:{periodMs:1/.00
 
 for(const profile of weaponSoundCatalog.profiles){const label=document.querySelector(`[data-weapon-sound="${profile.assetId}"]`);if(label)label.textContent=`sound · ${profile.id}`}
 document.documentElement.dataset.weaponSoundAssignments=weaponSoundCatalog.profiles.map(profile=>`${profile.assetId}:${profile.soundProfileId}:${profile.id}`).join("|");
-document.documentElement.dataset.weaponSoundLibrary=`${OCA_SOUND_BITS_CODEC}:createAudioReader`;
+document.documentElement.dataset.weaponSoundLibrary=`${KEEL_SOUND_BITS_CODEC}:createAudioReader`;
 document.documentElement.dataset.weaponSoundReady="false";
 
 async function bootWeaponSounds(){
@@ -80,7 +80,7 @@ async function bootWeaponSounds(){
     soundButton.disabled=true;soundButton.textContent="Rendering sounds…";soundStatus.textContent="Unlocking the shared sound system…";
     audioReader=createAudioReader({content:soundContent,noiseSeed:`${seedInput.value}:weapon-sounds`,maxSeconds:5});
     await audioReader.unlock();
-    for(const resourceId of soundResourceIds){soundBuffers.set(resourceId,audioReader.render({codec:OCA_SOUND_BITS_CODEC,resourceId}))}
+    for(const resourceId of soundResourceIds){soundBuffers.set(resourceId,audioReader.render({codec:KEEL_SOUND_BITS_CODEC,resourceId}))}
     soundEnabled=true;soundButton.disabled=false;soundButton.textContent="Attack sounds on";soundStatus.textContent="Four Keel-pinned synthesis profiles armed.";
     document.documentElement.dataset.weaponSoundReady="true";document.documentElement.dataset.weaponSoundEnabled="true";document.documentElement.dataset.weaponAudioContext=audioReader.context.state;
   })().catch(error=>{soundBootPromise=undefined;soundEnabled=false;soundButton.disabled=false;soundButton.textContent="Retry attack sounds";soundStatus.textContent=`Sound failed: ${error instanceof Error?error.message:String(error)}`;document.documentElement.dataset.weaponSoundReady="false";throw error});

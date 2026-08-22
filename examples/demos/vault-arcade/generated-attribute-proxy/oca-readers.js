@@ -11,18 +11,18 @@
  * It is adapted here to use a per-render deterministic noise seed, bounded
  * allocation, and the historical named Sonant-X JSON format used by OCA.
  */
-export const OCA_SOUND_BITS_CODEC = "oca-sonant-bits@1";
-export const OCA_SPRITE_SOUND_SCHEMA = "oca-sprite-sounds@1";
+export const KEEL_SOUND_BITS_CODEC = "oca-sonant-bits@1";
+export const KEEL_SPRITE_SOUND_SCHEMA = "oca-sprite-sounds@1";
 export const SONANT_LEGACY_JSON_CODEC = "sonant-x-legacy-json@1";
-export const OCA_SPRITE_BITS_CODEC = "oca-sprite-bit-atlas@1";
-export const OCA_GRID_SPRITE_CODEC = "oca-grid-sprite-sheet@1";
-export const OCA_MATERIAL_BITS_CODEC = "oca-material-bits@1";
-export const OCA_ATLAS_MATERIAL_BITS_CODEC = "oca-atlas-material-map@1";
-export const OCA_TRAIT_BITS_CODEC = "oca-trait-catalog-bits@2";
+export const KEEL_SPRITE_BITS_CODEC = "oca-sprite-bit-atlas@1";
+export const KEEL_GRID_SPRITE_CODEC = "oca-grid-sprite-sheet@1";
+export const KEEL_MATERIAL_BITS_CODEC = "oca-material-bits@1";
+export const KEEL_ATLAS_MATERIAL_BITS_CODEC = "oca-atlas-material-map@1";
+export const KEEL_TRAIT_BITS_CODEC = "oca-trait-catalog-bits@2";
 /** Append-only trait catalog. Options carry their introduction epoch so a
  * token can always resolve against the catalog revision it was minted with. */
-export const OCA_APPEND_ONLY_TRAIT_BITS_CODEC = "oca-trait-catalog-bits@3";
-export const OCA_CHARACTER_METADATA_BITS_CODEC = "oca-character-metadata-bits@1";
+export const KEEL_APPEND_ONLY_TRAIT_BITS_CODEC = "oca-trait-catalog-bits@3";
+export const KEEL_CHARACTER_METADATA_BITS_CODEC = "oca-character-metadata-bits@1";
 const SONANT_FIELDS = [
     "osc1_oct",
     "osc1_det",
@@ -523,7 +523,7 @@ export function parseAudioReaderSpec(value) {
     const source = record(value, "audio reader spec");
     const codec = source.codec;
     const resourceId = source.resourceId;
-    if (codec !== SONANT_LEGACY_JSON_CODEC && codec !== OCA_SOUND_BITS_CODEC) {
+    if (codec !== SONANT_LEGACY_JSON_CODEC && codec !== KEEL_SOUND_BITS_CODEC) {
         throw new TypeError("Unsupported audio reader codec.");
     }
     if (typeof resourceId !== "string" ||
@@ -552,7 +552,7 @@ export function createAudioReader(options) {
     const active = new Set();
     const load = (spec) => {
         const parsed = parseAudioReaderSpec(spec);
-        return parsed.codec === OCA_SOUND_BITS_CODEC
+        return parsed.codec === KEEL_SOUND_BITS_CODEC
             ? decodeSoundBits(options.content.bytes(parsed.resourceId))
             : parseSonantLegacySong(options.content.json(parsed.resourceId));
     };
@@ -635,7 +635,7 @@ function soundString(value, label) {
 /** Parse the generic event-to-sound assignments attached to any Keel sprite asset. */
 export function parseSpriteSoundCatalog(value) {
     const source = record(value, "sprite sound catalog");
-    if (source.schema !== OCA_SPRITE_SOUND_SCHEMA) {
+    if (source.schema !== KEEL_SPRITE_SOUND_SCHEMA) {
         throw new TypeError("Unsupported sprite sound catalog schema.");
     }
     if (source.storage !== "keel-object-revision") {
@@ -678,7 +678,7 @@ export function parseSpriteSoundCatalog(value) {
                 if (soundIds.has(soundId))
                     throw new TypeError(`Duplicate sprite sound variation ${assetId}:${eventId}:${soundId}.`);
                 soundIds.add(soundId);
-                if (variation.codec !== OCA_SOUND_BITS_CODEC)
+                if (variation.codec !== KEEL_SOUND_BITS_CODEC)
                     throw new TypeError(`Unsupported codec for ${soundId}.`);
                 const gain = variation.gain === undefined ? 1 : Number(variation.gain);
                 const rate = variation.rate === undefined ? 1 : Number(variation.rate);
@@ -689,7 +689,7 @@ export function parseSpriteSoundCatalog(value) {
                 return {
                     soundId,
                     resourceId: soundString(variation.resourceId, `${soundId}.resourceId`),
-                    codec: OCA_SOUND_BITS_CODEC,
+                    codec: KEEL_SOUND_BITS_CODEC,
                     weight: integer(variation.weight, `${soundId}.weight`, 1, 0xffff_ffff),
                     gain,
                     rate,
@@ -703,7 +703,7 @@ export function parseSpriteSoundCatalog(value) {
         });
         return { soundProfileId, id, assetId, events };
     });
-    return { schema: OCA_SPRITE_SOUND_SCHEMA, storage: "keel-object-revision", profiles };
+    return { schema: KEEL_SPRITE_SOUND_SCHEMA, storage: "keel-object-revision", profiles };
 }
 /** Resolve one deterministic variation for a sprite event. The profile itself
  * is pinned by the asset's exact Keel object revision, so later catalog
@@ -749,7 +749,7 @@ export function createGridSpriteAtlas(options) {
         throw new RangeError("fps must be greater than 0 and no more than 240.");
     const durationMs = Math.max(1, Math.round(1000 / fps));
     return {
-        codec: OCA_GRID_SPRITE_CODEC,
+        codec: KEEL_GRID_SPRITE_CODEC,
         frames: Array.from({ length: count }, (_, index) => ({
             x: (index % columns) * frameWidth,
             y: Math.floor(index / columns) * frameHeight,
@@ -810,7 +810,7 @@ export function packSpriteFrames(options) {
     return {
         imageWidth: usedWidth,
         imageHeight: y + rowHeight,
-        atlas: { codec: OCA_SPRITE_BITS_CODEC, frames },
+        atlas: { codec: KEEL_SPRITE_BITS_CODEC, frames },
     };
 }
 /**
@@ -873,7 +873,7 @@ export function createDirectionalAnimationAtlas(options) {
         imageHeight: rows.length * frameHeight,
         columns,
         rows,
-        atlas: { codec: OCA_GRID_SPRITE_CODEC, frames },
+        atlas: { codec: KEEL_GRID_SPRITE_CODEC, frames },
     };
 }
 /** Inspect decoded RGBA pixels against a canonical directional animation grid. */
@@ -1048,7 +1048,7 @@ export function decodeSpriteBitAtlas(bytes) {
     if (!reader.done)
         throw new TypeError("Trailing bytes after Keel sprite atlas.");
     return {
-        codec: OCA_SPRITE_BITS_CODEC,
+        codec: KEEL_SPRITE_BITS_CODEC,
         frames: frames.map((frame, index) => parseSpriteFrame(frame, `frames[${index}]`)),
     };
 }
@@ -1166,7 +1166,7 @@ export function parseAtlasMaterialMap(value) {
         }
     }
     return {
-        codec: OCA_ATLAS_MATERIAL_BITS_CODEC,
+        codec: KEEL_ATLAS_MATERIAL_BITS_CODEC,
         unmatched: "preserve",
         targets,
     };
@@ -1320,7 +1320,7 @@ export function parseMaterialProfile(value) {
         };
     });
     return {
-        codec: OCA_MATERIAL_BITS_CODEC,
+        codec: KEEL_MATERIAL_BITS_CODEC,
         setId: integer(source.setId, "material profile.setId", 0, MAX_INTEGER),
         setWeight: integer(source.setWeight ?? 1, "material profile.setWeight", 1, 65_535),
         regions,
@@ -1593,9 +1593,9 @@ export function applyAtlasMaterialMap(pixels, mapValue, resolvedRegions) {
 }
 export function parseTraitCatalog(value) {
     const source = record(value, "trait catalog");
-    const codec = source.codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC
-        ? OCA_APPEND_ONLY_TRAIT_BITS_CODEC
-        : OCA_TRAIT_BITS_CODEC;
+    const codec = source.codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
+        ? KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
+        : KEEL_TRAIT_BITS_CODEC;
     const revision = integer(source.revision, "trait catalog.revision", 1, MAX_INTEGER);
     if (!Array.isArray(source.attributes) ||
         source.attributes.length === 0 ||
@@ -1609,7 +1609,7 @@ export function parseTraitCatalog(value) {
         if (seen.has(attributeId))
             throw new RangeError(`trait catalog contains duplicate attributeId ${attributeId}.`);
         seen.add(attributeId);
-        const introducedAt = codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC
+        const introducedAt = codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
             ? integer(entry.introducedAt ?? 1, `trait catalog.attributes[${index}].introducedAt`, 1, revision)
             : undefined;
         if (!Array.isArray(entry.options) ||
@@ -1626,7 +1626,7 @@ export function parseTraitCatalog(value) {
                 }),
             required: entry.required === true,
             ...(introducedAt === undefined ? {} : { introducedAt }),
-            ...(codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC
+            ...(codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
                 ? {
                     entropyDomain: integer(entry.entropyDomain, `trait catalog.attributes[${index}].entropyDomain`, 0, MAX_INTEGER),
                 }
@@ -1647,7 +1647,7 @@ export function parseTraitCatalog(value) {
                             : {
                                 materialProfileId: integer(item.materialProfileId, `trait catalog.attributes[${index}].options[${optionIndex}].materialProfileId`, 0, MAX_INTEGER),
                             }),
-                        ...(codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC
+                        ...(codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
                             ? {
                                 introducedAt: integer(item.introducedAt ?? introducedAt, `trait catalog.attributes[${index}].options[${optionIndex}].introducedAt`, introducedAt, revision),
                             }
@@ -1669,7 +1669,7 @@ export function encodeTraitCatalogBits(value) {
     const catalog = parseTraitCatalog(value);
     const writer = new ByteWriter();
     writer.raw(TRAIT_MAGIC);
-    const appendOnly = catalog.codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC;
+    const appendOnly = catalog.codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC;
     writer.byte(appendOnly ? 3 : 2);
     writer.byte(catalog.rejectExactDuplicates ? 1 : 0);
     writer.varUint(catalog.revision);
@@ -1757,8 +1757,8 @@ export function decodeTraitCatalogBits(bytes) {
         throw new TypeError("Trailing bytes after Keel trait catalog.");
     return parseTraitCatalog({
         codec: appendOnly
-            ? OCA_APPEND_ONLY_TRAIT_BITS_CODEC
-            : OCA_TRAIT_BITS_CODEC,
+            ? KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
+            : KEEL_TRAIT_BITS_CODEC,
         revision,
         rejectExactDuplicates: (flags & 1) !== 0,
         attributes,
@@ -1770,17 +1770,17 @@ export function resolveTraitCatalog(value, seed, pinnedRevision) {
         ? catalog.revision
         : integer(pinnedRevision, "pinned trait revision", 1, catalog.revision);
     return catalog.attributes
-        .filter((attribute) => catalog.codec !== OCA_APPEND_ONLY_TRAIT_BITS_CODEC ||
+        .filter((attribute) => catalog.codec !== KEEL_APPEND_ONLY_TRAIT_BITS_CODEC ||
         attribute.introducedAt <= revision)
         .map((attribute, index) => {
         // Attribute IDs frequently match their array position. XOR would collapse
         // every domain to zero in that normal case and make all traits choose the
         // same option. Multiplication keeps stable IDs and positions separated.
-        const domain = catalog.codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC
+        const domain = catalog.codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
             ? attribute.entropyDomain
             : (Math.imul(attribute.attributeId + 1, 0x9e3779b1) ^
                 Math.imul(index + 1, 0x85ebca6b)) >>> 0;
-        const options = catalog.codec === OCA_APPEND_ONLY_TRAIT_BITS_CODEC
+        const options = catalog.codec === KEEL_APPEND_ONLY_TRAIT_BITS_CODEC
             ? attribute.options.filter((option) => option.introducedAt <= revision)
             : attribute.options;
         if (options.length === 0) {
@@ -1800,8 +1800,8 @@ export function resolveTraitCatalog(value, seed, pinnedRevision) {
 export function assertTraitCatalogAppendOnly(previousValue, nextValue) {
     const previous = parseTraitCatalog(previousValue);
     const next = parseTraitCatalog(nextValue);
-    if (previous.codec !== OCA_APPEND_ONLY_TRAIT_BITS_CODEC ||
-        next.codec !== OCA_APPEND_ONLY_TRAIT_BITS_CODEC)
+    if (previous.codec !== KEEL_APPEND_ONLY_TRAIT_BITS_CODEC ||
+        next.codec !== KEEL_APPEND_ONLY_TRAIT_BITS_CODEC)
         throw new TypeError("Append-only comparison requires trait codec v3.");
     if (next.revision <= previous.revision)
         throw new RangeError("The next trait catalog revision must increase.");
@@ -1866,7 +1866,7 @@ function parseCharacterMetadataVector(value) {
         };
     });
     return {
-        codec: OCA_CHARACTER_METADATA_BITS_CODEC,
+        codec: KEEL_CHARACTER_METADATA_BITS_CODEC,
         catalogRevision: integer(source.catalogRevision, "character metadata catalogRevision", 1),
         sceneId: integer(source.sceneId ?? 0, "character metadata sceneId"),
         attributes,

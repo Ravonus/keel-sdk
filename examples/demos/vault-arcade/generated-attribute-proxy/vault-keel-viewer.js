@@ -13,7 +13,7 @@ import {
 } from "/content/weapon-material-runtime.mjs";
 import { evaluateVaultVerification } from "/content/vault-verification.js";
 import { allowCollectionVerificationFixtureQuery, evaluateCollectionVerification } from "/content/collection-verification.js";
-import { OCA_SOUND_BITS_CODEC, createAudioReader } from "/content/oca-readers.js";
+import { KEEL_SOUND_BITS_CODEC, createAudioReader } from "/content/oca-readers.js";
 import {
   VAULT_MOB_ABILITIES,
   VAULT_MOB_ABILITY_RULES,
@@ -1080,8 +1080,8 @@ async function bootWeaponSound() {
   weaponSoundBoot = (async () => {
     audioReader = createAudioReader({ content: soundContent, noiseSeed: `${seed}:${appearance.weapon}:showcase`, maxSeconds: 5 });
     await audioReader.unlock();
-    weaponSoundBuffer = audioReader.render({ codec: OCA_SOUND_BITS_CODEC, resourceId: weaponSoundVariation.resourceId });
-    document.documentElement.dataset.vaultSoundLibrary = `${OCA_SOUND_BITS_CODEC}:createAudioReader`;
+    weaponSoundBuffer = audioReader.render({ codec: KEEL_SOUND_BITS_CODEC, resourceId: weaponSoundVariation.resourceId });
+    document.documentElement.dataset.vaultSoundLibrary = `${KEEL_SOUND_BITS_CODEC}:createAudioReader`;
     document.documentElement.dataset.vaultSoundReady = "true";
   })().catch((error) => {
     weaponSoundBoot = undefined;

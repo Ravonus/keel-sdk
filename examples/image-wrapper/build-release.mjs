@@ -2,9 +2,9 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  OCA_CANONICALIZATION,
-  OCA_CONTENT_GATEWAY_PROTOCOL,
-  OCA_MANIFEST_SCHEMA,
+  KEEL_CANONICALIZATION,
+  KEEL_CONTENT_GATEWAY_PROTOCOL,
+  KEEL_MANIFEST_SCHEMA,
   KEEL_RUNTIME_PROTOCOL,
   KEEL_VIEWER_PROTOCOL,
   createIntegrity,
@@ -40,8 +40,8 @@ const originalIntegrity = resources[2].sources[0].integrity;
 const byteLengths = resources.map((entry) => entry.sources[0].integrity.byteLength ?? 0);
 const createdAt = "2026-08-07T22:04:43.049Z";
 const manifest = {
-  schema: OCA_MANIFEST_SCHEMA,
-  canonicalization: OCA_CANONICALIZATION,
+  schema: KEEL_MANIFEST_SCHEMA,
+  canonicalization: KEEL_CANONICALIZATION,
   id: "original-preserved",
   name: "Original Preserved",
   description: "WebP display with exact SVG original download",
@@ -64,7 +64,7 @@ const manifest = {
       timezone: "UTC",
     },
     content: {
-      protocol: OCA_CONTENT_GATEWAY_PROTOCOL,
+      protocol: KEEL_CONTENT_GATEWAY_PROTOCOL,
       mode: "verified-only",
       externalSources: "host-verified",
       manifestTrust: "digest",
@@ -89,7 +89,7 @@ const manifest = {
       preview: "WebP",
       originalPreserved: true,
       sourceMode: "files",
-      canonicalization: OCA_CANONICALIZATION,
+      canonicalization: KEEL_CANONICALIZATION,
     },
   },
 };
@@ -97,6 +97,6 @@ const integrity = await manifestIntegrity(manifest);
 await writeFile(path.join(directory, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
 await writeFile(
   path.join(directory, "manifest.integrity.json"),
-  `${JSON.stringify({ schema: "oca-manifest-integrity@2", manifest: "manifest.json", canonicalization: OCA_CANONICALIZATION, integrity }, null, 2)}\n`,
+  `${JSON.stringify({ schema: "oca-manifest-integrity@2", manifest: "manifest.json", canonicalization: KEEL_CANONICALIZATION, integrity }, null, 2)}\n`,
 );
 console.log(path.join(directory, "manifest.json"));

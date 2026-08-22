@@ -2,7 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  OCA_APPEND_ONLY_TRAIT_BITS_CODEC,
+  KEEL_APPEND_ONLY_TRAIT_BITS_CODEC,
   encodeMaterialBits,
   encodeTraitCatalogBits,
   traitCombinationCount,
@@ -13,7 +13,7 @@ const source = JSON.parse(await readFile(path.join(directory, "character-catalog
 const materials = JSON.parse(await readFile(path.join(directory, "character-materials.source.json"), "utf8"));
 const options = source.weightCurve;
 const catalog = {
-  codec: OCA_APPEND_ONLY_TRAIT_BITS_CODEC,
+  codec: KEEL_APPEND_ONLY_TRAIT_BITS_CODEC,
   revision: source.revision,
   rejectExactDuplicates: source.rejectExactDuplicates,
   attributes: source.attributeFamilies.map((attribute) => ({

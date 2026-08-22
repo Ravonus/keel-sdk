@@ -9,7 +9,7 @@ import path from "node:path";
 import { createPublicClient, http, getContract } from "../apps/studio/node_modules/viem/_esm/index.js";
 
 const CHAIN_ID = 11_155_111;
-const RPC = process.env.OCA_RPC_URL?.trim() || "https://ethereum-sepolia-rpc.publicnode.com";
+const RPC = process.env.KEEL_RPC_URL?.trim() || "https://ethereum-sepolia-rpc.publicnode.com";
 const EVIDENCE = path.resolve("evidence/keel-trusted-runtime/module-review-registry-sepolia.json");
 
 // Status enum: None=0, Unvetted=1, Sanctioned=2, Deprecated=3, Revoked=4.

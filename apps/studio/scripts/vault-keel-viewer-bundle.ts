@@ -141,7 +141,7 @@ export async function buildVaultKeelViewer(demoRoot: string): Promise<Uint8Array
   viewer = viewer.replace(/^import\s*\{[\s\S]*?\}\s*from\s*"\/content\/weapon-material-runtime\.mjs";\s*/mu, "");
   viewer = viewer.replace(/^import\s*\{\s*evaluateVaultVerification\s*\}\s*from\s*"\/content\/vault-verification\.js";\s*/mu, "");
   viewer = viewer.replace(/^import\s*\{\s*allowCollectionVerificationFixtureQuery,\s*evaluateCollectionVerification\s*\}\s*from\s*"\/content\/collection-verification\.js";\s*/mu, "");
-  viewer = viewer.replace(/^import\s*\{\s*OCA_SOUND_BITS_CODEC,\s*createAudioReader\s*\}\s*from\s*"\/content\/oca-readers\.js";\s*/mu, "");
+  viewer = viewer.replace(/^import\s*\{\s*KEEL_SOUND_BITS_CODEC,\s*createAudioReader\s*\}\s*from\s*"\/content\/oca-readers\.js";\s*/mu, "");
   viewer = viewer.replace(/^import\s*\{[\s\S]*?\}\s*from\s*"\/content\/vault-combat-shared\.mjs";\s*/mu, "");
   viewer = viewer.replace(/^import\s*\{[\s\S]*?\}\s*from\s*"\/content\/vault-input-shared\.mjs";\s*/mu, "");
   viewer = viewer.replace(

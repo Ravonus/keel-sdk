@@ -1,7 +1,7 @@
 import {
-  OCA_CANONICALIZATION,
-  OCA_CONTENT_GATEWAY_PROTOCOL,
-  OCA_MANIFEST_SCHEMA,
+  KEEL_CANONICALIZATION,
+  KEEL_CONTENT_GATEWAY_PROTOCOL,
+  KEEL_MANIFEST_SCHEMA,
   KEEL_RUNTIME_PROTOCOL,
   KEEL_VIEWER_PROTOCOL,
   createIntegrity,
@@ -66,8 +66,8 @@ async function createManifest(): Promise<ArtifactManifest> {
   );
 
   return {
-    schema: OCA_MANIFEST_SCHEMA,
-    canonicalization: OCA_CANONICALIZATION,
+    schema: KEEL_MANIFEST_SCHEMA,
+    canonicalization: KEEL_CANONICALIZATION,
     id: "verified-field-01",
     name: "Verified Field 01",
     description: "A small interactive proof of the Keel resource graph and sandbox model.",
@@ -90,7 +90,7 @@ async function createManifest(): Promise<ArtifactManifest> {
         timezone: "UTC",
       },
       content: {
-        protocol: OCA_CONTENT_GATEWAY_PROTOCOL,
+        protocol: KEEL_CONTENT_GATEWAY_PROTOCOL,
         mode: "verified-only",
         externalSources: "host-verified",
         manifestTrust: "digest",

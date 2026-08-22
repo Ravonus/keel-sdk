@@ -1,10 +1,10 @@
 // Synthwave flow field — a deterministic p5.js sketch for the Keel demo gallery.
 //
-// Every value is derived from OCA_SEED, which the manifest pins under
+// Every value is derived from KEEL_SEED, which the manifest pins under
 // runtime.determinism. Two viewers resolving the same manifest therefore paint
 // the same frames: the artifact is reproducible, not merely re-runnable.
 
-const SEED = (globalThis.OCA_SEED ?? 0x5f3a91c7) >>> 0;
+const SEED = (globalThis.KEEL_SEED ?? 0x5f3a91c7) >>> 0;
 const PARTICLES = 1400;
 const GRID = 26;
 

@@ -9,9 +9,9 @@
 import { writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import {
-  OCA_CANONICALIZATION,
-  OCA_CONTENT_GATEWAY_PROTOCOL,
-  OCA_MANIFEST_SCHEMA,
+  KEEL_CANONICALIZATION,
+  KEEL_CONTENT_GATEWAY_PROTOCOL,
+  KEEL_MANIFEST_SCHEMA,
   KEEL_RUNTIME_PROTOCOL,
   KEEL_VIEWER_PROTOCOL,
   assertValidManifest,
@@ -71,8 +71,8 @@ export async function buildDemoManifest(demo) {
     ?? demo.resources.find((resource) => resource.mediaType.startsWith("image/"))?.id
     ?? demo.entrypointResourceId;
   const manifest = {
-    schema: OCA_MANIFEST_SCHEMA,
-    canonicalization: OCA_CANONICALIZATION,
+    schema: KEEL_MANIFEST_SCHEMA,
+    canonicalization: KEEL_CANONICALIZATION,
     id: demo.id,
     name: demo.name,
     description: demo.description,
@@ -91,7 +91,7 @@ export async function buildDemoManifest(demo) {
       },
       determinism: { mode: "live" },
       content: {
-        protocol: OCA_CONTENT_GATEWAY_PROTOCOL,
+        protocol: KEEL_CONTENT_GATEWAY_PROTOCOL,
         mode: "verified-only",
         externalSources: "host-verified",
         manifestTrust: "digest",

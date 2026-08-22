@@ -1,5 +1,5 @@
 /** Generalized semantic color targets and FX for every raster sprite family. */
-export const OCA_SPRITE_ATTRIBUTE_SCHEMA = "oca-sprite-attributes@1" as const;
+export const KEEL_SPRITE_ATTRIBUTE_SCHEMA = "oca-sprite-attributes@1" as const;
 
 export type SpriteRgba = readonly [number, number, number, number];
 export type SpriteChannelRange = readonly [number, number];
@@ -22,7 +22,7 @@ export interface SpriteSemanticTarget {
 }
 
 export interface SpriteTargetMap {
-  readonly schema: typeof OCA_SPRITE_ATTRIBUTE_SCHEMA;
+  readonly schema: typeof KEEL_SPRITE_ATTRIBUTE_SCHEMA;
   readonly scope: string;
   readonly unmatched: "preserve";
   readonly targets: readonly SpriteSemanticTarget[];
@@ -90,7 +90,7 @@ function overlaps(left: SpritePixelSelector, right: SpritePixelSelector): boolea
 
 export function parseSpriteTargetMap(value: unknown): SpriteTargetMap {
   const source = object(value, "sprite target map");
-  if (source.schema !== OCA_SPRITE_ATTRIBUTE_SCHEMA) throw new TypeError("Unsupported sprite target schema.");
+  if (source.schema !== KEEL_SPRITE_ATTRIBUTE_SCHEMA) throw new TypeError("Unsupported sprite target schema.");
   if (!Array.isArray(source.targets) || source.targets.length > 255) throw new RangeError("Sprite target maps support at most 255 targets.");
   const ids = new Set<number>();
   const names = new Set<string>();
@@ -118,7 +118,7 @@ export function parseSpriteTargetMap(value: unknown): SpriteTargetMap {
       }
     }
   }
-  return { schema: OCA_SPRITE_ATTRIBUTE_SCHEMA, scope: String(source.scope ?? "sprite"), unmatched: "preserve", targets };
+  return { schema: KEEL_SPRITE_ATTRIBUTE_SCHEMA, scope: String(source.scope ?? "sprite"), unmatched: "preserve", targets };
 }
 
 function inside(value: number, bounds: SpriteChannelRange): boolean { return value >= bounds[0] && value <= bounds[1]; }

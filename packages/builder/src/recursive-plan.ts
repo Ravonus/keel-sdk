@@ -1,8 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
-  OCA_MAX_OBJECT_CHILDREN,
-  OCA_OBJECT_INDEX_ENCODING,
+  KEEL_MAX_OBJECT_CHILDREN,
+  KEEL_OBJECT_INDEX_ENCODING,
   chunkBytes,
   createIntegrity,
   type Compression,
@@ -46,12 +46,12 @@ export async function createRecursiveUploadPlan(
   if (maxChunkBytes > 23_000) throw new RangeError("maxChunkBytes cannot exceed the KeelHold limit of 23000.");
   const leafDecodedBytes = positiveSafeInteger(options.leafDecodedBytes ?? 512 * 1024, "leafDecodedBytes");
   const maxPartsPerComposite = positiveSafeInteger(options.maxPartsPerComposite ?? 64, "maxPartsPerComposite");
-  if (maxPartsPerComposite < 2 || maxPartsPerComposite > OCA_MAX_OBJECT_CHILDREN) {
-    throw new RangeError(`maxPartsPerComposite must be from 2 through ${OCA_MAX_OBJECT_CHILDREN}.`);
+  if (maxPartsPerComposite < 2 || maxPartsPerComposite > KEEL_MAX_OBJECT_CHILDREN) {
+    throw new RangeError(`maxPartsPerComposite must be from 2 through ${KEEL_MAX_OBJECT_CHILDREN}.`);
   }
-  if (leafDecodedBytes > maxChunkBytes * OCA_MAX_OBJECT_CHILDREN) {
+  if (leafDecodedBytes > maxChunkBytes * KEEL_MAX_OBJECT_CHILDREN) {
     throw new RangeError(
-      `leafDecodedBytes must fit within ${OCA_MAX_OBJECT_CHILDREN} chunks (${maxChunkBytes * OCA_MAX_OBJECT_CHILDREN} bytes at the current chunk size).`,
+      `leafDecodedBytes must fit within ${KEEL_MAX_OBJECT_CHILDREN} chunks (${maxChunkBytes * KEEL_MAX_OBJECT_CHILDREN} bytes at the current chunk size).`,
     );
   }
 
@@ -71,7 +71,7 @@ export async function createRecursiveUploadPlan(
     await mkdir(path.join(leafDirectory, "chunks"), { recursive: true });
     const chunks: StoredChunkPlan[] = [];
     const byteChunks = chunkBytes(selected.bytes, maxChunkBytes);
-    if (byteChunks.length > OCA_MAX_OBJECT_CHILDREN) {
+    if (byteChunks.length > KEEL_MAX_OBJECT_CHILDREN) {
       throw new RangeError(
         `Leaf ${id} expands to ${byteChunks.length} stored chunks. Lower leafDecodedBytes or use automatic compression.`,
       );
@@ -138,7 +138,7 @@ export async function createRecursiveUploadPlan(
   if (root === undefined) throw new Error("Recursive upload plan did not produce a root object.");
   const plan: RecursiveUploadPlan = {
     schema: "oca-recursive-upload-plan@2",
-    indexEncoding: OCA_OBJECT_INDEX_ENCODING,
+    indexEncoding: KEEL_OBJECT_INDEX_ENCODING,
     objectName: options.objectName,
     mediaType: options.mediaType,
     byteLength: sourceBytes.byteLength,
@@ -148,7 +148,7 @@ export async function createRecursiveUploadPlan(
     leafDecodedBytes,
     maxChunkBytes,
     maxPartsPerComposite,
-    maxChildren: OCA_MAX_OBJECT_CHILDREN,
+    maxChildren: KEEL_MAX_OBJECT_CHILDREN,
     objects,
   };
   await writeFile(path.join(outputDirectory, "recursive-upload-plan.json"), `${JSON.stringify(plan, null, 2)}\n`);

@@ -13,7 +13,7 @@ import { sepolia } from "viem/chains";
 
 const RPC = process.env.KEEL_RPC_URL ?? "https://ethereum-sepolia-rpc.publicnode.com";
 const KEY_FILE = process.env.KEEL_DEPLOYER_FILE ?? ".secrets/vault-sepolia-deployer.json";
-const KEY = process.env.OCA_DEPLOYER_PRIVATE_KEY || JSON.parse(readFileSync(KEY_FILE, "utf8")).privateKey;
+const KEY = process.env.KEEL_DEPLOYER_PRIVATE_KEY || JSON.parse(readFileSync(KEY_FILE, "utf8")).privateKey;
 
 const D = JSON.parse(readFileSync("scripts/backpack-sepolia.json", "utf8"));
 

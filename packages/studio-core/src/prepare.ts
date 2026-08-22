@@ -1,8 +1,8 @@
 import {
-  OCA_CANONICALIZATION,
-  OCA_CONTENT_GATEWAY_PROTOCOL,
-  OCA_MANIFEST_SCHEMA,
-  OCA_MAX_THUMBNAIL_BYTES,
+  KEEL_CANONICALIZATION,
+  KEEL_CONTENT_GATEWAY_PROTOCOL,
+  KEEL_MANIFEST_SCHEMA,
+  KEEL_MAX_THUMBNAIL_BYTES,
   KEEL_RUNTIME_PROTOCOL,
   KEEL_THUMBNAIL_PROTOCOL,
   KEEL_VIEWER_PROTOCOL,
@@ -241,9 +241,9 @@ function thumbnail(
   if (preview === undefined) {
     return capture === undefined
       ? undefined
-      : { protocol: KEEL_THUMBNAIL_PROTOCOL, maxBytes: OCA_MAX_THUMBNAIL_BYTES, capture };
+      : { protocol: KEEL_THUMBNAIL_PROTOCOL, maxBytes: KEEL_MAX_THUMBNAIL_BYTES, capture };
   }
-  if (preview.decodedByteLength > OCA_MAX_THUMBNAIL_BYTES) {
+  if (preview.decodedByteLength > KEEL_MAX_THUMBNAIL_BYTES) {
     throw new RangeError(`Thumbnail ${preview.fileName} exceeds the 2 MiB on-chain preview limit.`);
   }
   if (supportedImages.has(preview.resource.mediaType)) {
@@ -253,7 +253,7 @@ function thumbnail(
       ...(preview.resource.mediaType === "image/gif" || preview.resource.mediaType === "image/avif" || preview.resource.mediaType === "image/webp"
         ? { animation: preview.resource.id }
         : {}),
-      maxBytes: OCA_MAX_THUMBNAIL_BYTES,
+      maxBytes: KEEL_MAX_THUMBNAIL_BYTES,
       ...(capture === undefined ? {} : { capture }),
     };
   }
@@ -261,7 +261,7 @@ function thumbnail(
     return {
       protocol: KEEL_THUMBNAIL_PROTOCOL,
       animation: preview.resource.id,
-      maxBytes: OCA_MAX_THUMBNAIL_BYTES,
+      maxBytes: KEEL_MAX_THUMBNAIL_BYTES,
       ...(capture === undefined ? {} : { capture }),
     };
   }
@@ -364,8 +364,8 @@ export async function prepareStudioArtifact(options: PrepareStudioArtifactOption
   const artifactDownloads = downloads(resources);
   const artifactThumbnail = thumbnail(resources, options.thumbnailCapture);
   const manifest: ArtifactManifest = {
-    schema: OCA_MANIFEST_SCHEMA,
-    canonicalization: OCA_CANONICALIZATION,
+    schema: KEEL_MANIFEST_SCHEMA,
+    canonicalization: KEEL_CANONICALIZATION,
     id: options.id,
     name: options.name,
     ...(options.description === undefined ? {} : { description: options.description }),
@@ -381,7 +381,7 @@ export async function prepareStudioArtifact(options: PrepareStudioArtifactOption
       engine: { protocol: KEEL_RUNTIME_PROTOCOL, viewerProtocol: KEEL_VIEWER_PROTOCOL, renderer: "browser" },
       determinism: { mode: "live" },
       content: {
-        protocol: OCA_CONTENT_GATEWAY_PROTOCOL,
+        protocol: KEEL_CONTENT_GATEWAY_PROTOCOL,
         mode: "verified-only",
         externalSources: "host-verified",
         manifestTrust: "digest",

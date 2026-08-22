@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  OCA_REGISTRY_ANCHOR_PROTOCOL,
+  KEEL_REGISTRY_ANCHOR_PROTOCOL,
   canonicalJson,
   createIntegrity,
   encodeBase64,
@@ -878,7 +878,7 @@ test("registry adapter performs explicit active and confirmation contract calls"
 
 test("registry resolution enforces contract -> manifest -> resource commitment chain", async () => {
   const anchor = {
-    protocol: OCA_REGISTRY_ANCHOR_PROTOCOL,
+    protocol: KEEL_REGISTRY_ANCHOR_PROTOCOL,
     kind: "artifact-registry",
     chainId: 8453,
     registry: "0x1111111111111111111111111111111111111111",
@@ -923,7 +923,7 @@ test("registry-trusted manifests cannot mount through an unanchored resolver pat
   const value = await manifest();
   value.runtime = runtimePolicy({ content: { manifestTrust: "registry" } });
   value.anchor = {
-    protocol: OCA_REGISTRY_ANCHOR_PROTOCOL,
+    protocol: KEEL_REGISTRY_ANCHOR_PROTOCOL,
     kind: "artifact-registry",
     chainId: 1,
     registry: "0x1111111111111111111111111111111111111111",
@@ -1052,7 +1052,7 @@ async function keelManifest(
   const value = await manifest();
   value.runtime = runtimePolicy({ content: { manifestTrust: "registry" }, determinism });
   value.anchor = {
-    protocol: OCA_REGISTRY_ANCHOR_PROTOCOL,
+    protocol: KEEL_REGISTRY_ANCHOR_PROTOCOL,
     kind: "artifact-registry",
     chainId: 31337,
     registry: keelAddresses.artifact,

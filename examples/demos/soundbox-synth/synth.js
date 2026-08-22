@@ -5,7 +5,7 @@
 // this verified reader turns those bytes into deterministic stereo PCM.
 
 import {
-  OCA_SOUND_BITS_CODEC,
+  KEEL_SOUND_BITS_CODEC,
   createAudioReader,
 } from "/content/oca-readers.js";
 
@@ -28,7 +28,7 @@ function setStatus(message) {
 }
 
 function soundSpec(patch) {
-  return { codec: OCA_SOUND_BITS_CODEC, resourceId: patch.resourceId };
+  return { codec: KEEL_SOUND_BITS_CODEC, resourceId: patch.resourceId };
 }
 
 function sampleEnergy(buffer) {

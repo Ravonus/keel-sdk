@@ -3,14 +3,14 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 import {
-  OCA_SOUND_BITS_CODEC,
-  OCA_SPRITE_SOUND_SCHEMA,
-  OCA_ATLAS_MATERIAL_BITS_CODEC,
-  OCA_MATERIAL_BITS_CODEC,
-  OCA_TRAIT_BITS_CODEC,
-  OCA_APPEND_ONLY_TRAIT_BITS_CODEC,
-  OCA_CHARACTER_METADATA_BITS_CODEC,
-  OCA_SPRITE_ATTRIBUTE_SCHEMA,
+  KEEL_SOUND_BITS_CODEC,
+  KEEL_SPRITE_SOUND_SCHEMA,
+  KEEL_ATLAS_MATERIAL_BITS_CODEC,
+  KEEL_MATERIAL_BITS_CODEC,
+  KEEL_TRAIT_BITS_CODEC,
+  KEEL_APPEND_ONLY_TRAIT_BITS_CODEC,
+  KEEL_CHARACTER_METADATA_BITS_CODEC,
+  KEEL_SPRITE_ATTRIBUTE_SCHEMA,
   applySpriteTargets,
   assertTraitCatalogAppendOnly,
   applyAtlasMaterialMap,
@@ -121,7 +121,7 @@ test("all four Vault weapon attacks compile to compact non-silent one-second sou
       url: () => "data:application/octet-stream;base64,",
     };
     const reader = createAudioReader({ content, context, noiseSeed: "vault-weapon-test", maxSeconds: 5 });
-    const buffer = reader.render({ codec: OCA_SOUND_BITS_CODEC, resourceId: `${name}.ocas` });
+    const buffer = reader.render({ codec: KEEL_SOUND_BITS_CODEC, resourceId: `${name}.ocas` });
     assert.equal(buffer.duration, 1, `${name} must be a bounded one-second patch`);
     assert.ok(encoded.byteLength < sourceBytes.byteLength / 8, `${name} must remain compact`);
     let energy = 0;
@@ -164,7 +164,7 @@ test("sound bit codec rejects corruption and schema confusion", async () => {
 
 test("sprite sound profiles resolve deterministic event variations from pinned library resources", () => {
   const catalog = {
-    schema: OCA_SPRITE_SOUND_SCHEMA,
+    schema: KEEL_SPRITE_SOUND_SCHEMA,
     storage: "keel-object-revision",
     profiles: [{
       soundProfileId: 41,
@@ -174,8 +174,8 @@ test("sprite sound profiles resolve deterministic event variations from pinned l
         eventId: "attack",
         retriggerMs: 80,
         variations: [
-          { soundId: "attack-a", resourceId: "attack-a.ocas", codec: OCA_SOUND_BITS_CODEC, weight: 3, gain: 0.7, rate: 1 },
-          { soundId: "attack-b", resourceId: "attack-b.ocas", codec: OCA_SOUND_BITS_CODEC, weight: 1, gain: 0.6, rate: 1.1 },
+          { soundId: "attack-a", resourceId: "attack-a.ocas", codec: KEEL_SOUND_BITS_CODEC, weight: 3, gain: 0.7, rate: 1 },
+          { soundId: "attack-b", resourceId: "attack-b.ocas", codec: KEEL_SOUND_BITS_CODEC, weight: 1, gain: 0.6, rate: 1.1 },
         ],
       }],
     }],
@@ -209,7 +209,7 @@ for (const name of ["shot", "laser"]) {
       noiseSeed: "test-token",
       maxSeconds: 12,
     });
-    const spec = { codec: OCA_SOUND_BITS_CODEC, resourceId: `${name}.ocsa` };
+    const spec = { codec: KEEL_SOUND_BITS_CODEC, resourceId: `${name}.ocsa` };
     const first = reader.render(spec);
     const second = reader.render(spec);
     assert.equal(first.sampleRate, 44_100);
@@ -395,7 +395,7 @@ test("directional atlas pixel audit reports missing and unexpected cells", () =>
 
 test("material codec preserves locked accents, weighted colors, and luminance ramps", () => {
   const human = {
-    codec: OCA_MATERIAL_BITS_CODEC,
+    codec: KEEL_MATERIAL_BITS_CODEC,
     setId: 42,
     setWeight: 7,
     regions: [
@@ -468,7 +468,7 @@ test("material codec preserves locked accents, weighted colors, and luminance ra
 
 test("atlas material map binds multiple lossy color ranges to seeded regions and preserves fixed accents", () => {
   const human = {
-    codec: OCA_ATLAS_MATERIAL_BITS_CODEC,
+    codec: KEEL_ATLAS_MATERIAL_BITS_CODEC,
     unmatched: "preserve",
     targets: [
       {
@@ -534,7 +534,7 @@ test("atlas material map binds multiple lossy color ranges to seeded regions and
   assert.ok(encoded.byteLength < Buffer.byteLength(JSON.stringify(human)) / 2);
 
   const profile = {
-    codec: OCA_MATERIAL_BITS_CODEC,
+    codec: KEEL_MATERIAL_BITS_CODEC,
     setId: 91,
     regions: [
       {
@@ -620,7 +620,7 @@ test("extensible mint catalogue handles core slots plus arbitrary attributes wit
     })),
   }));
   const human = {
-    codec: OCA_TRAIT_BITS_CODEC,
+    codec: KEEL_TRAIT_BITS_CODEC,
     revision: 3,
     rejectExactDuplicates: true,
     attributes,
@@ -655,7 +655,7 @@ test("extensible mint catalogue handles core slots plus arbitrary attributes wit
 test("append-only trait epochs preserve every old roll after new assets are appended", () => {
   const domain = 0x12345678;
   const first = {
-    codec: OCA_APPEND_ONLY_TRAIT_BITS_CODEC,
+    codec: KEEL_APPEND_ONLY_TRAIT_BITS_CODEC,
     revision: 1,
     rejectExactDuplicates: true,
     attributes: [{
@@ -705,7 +705,7 @@ test("append-only trait epochs preserve every old roll after new assets are appe
 
 test("bit metadata round-trips all character, color, particle and FX selections compactly", () => {
   const vector = {
-    codec: OCA_CHARACTER_METADATA_BITS_CODEC,
+    codec: KEEL_CHARACTER_METADATA_BITS_CODEC,
     catalogRevision: 17,
     sceneId: 4,
     attributes: Array.from({ length: 26 }, (_, attributeId) => ({
@@ -723,7 +723,7 @@ test("bit metadata round-trips all character, color, particle and FX selections 
 
 test("semantic sprite targets support exact hexes, ranges, recolor masks and sprite-wide filters", () => {
   const targetMap = {
-    schema: OCA_SPRITE_ATTRIBUTE_SCHEMA,
+    schema: KEEL_SPRITE_ATTRIBUTE_SCHEMA,
     scope: "character.weapon",
     unmatched: "preserve",
     targets: [

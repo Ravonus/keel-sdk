@@ -7,7 +7,7 @@
 
 import * as THREE from "/content/three.min.js";
 
-const SEED = (globalThis.OCA_SEED ?? 0x5f3a91c7) >>> 0;
+const SEED = (globalThis.KEEL_SEED ?? 0x5f3a91c7) >>> 0;
 const TOKEN_ID = globalThis.__KEEL_CONTEXT__?.tokenId ?? "preview";
 
 function makeRandom(seed) {
