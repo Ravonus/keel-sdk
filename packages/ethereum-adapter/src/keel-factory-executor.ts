@@ -16,8 +16,8 @@ import {
   type Hex as ViemHex,
 } from "viem";
 import {
-  createOcaFactoryConfigDigest,
-  normalizeOcaFactoryCollectionConfig,
+  createKeelFactoryConfigDigest,
+  normalizeKeelFactoryCollectionConfig,
   type KeelFactoryCollectionConfig,
 } from "./keel-factory-config.js";
 
@@ -243,8 +243,8 @@ async function normalizeInput(input: KeelFactoryExecutionInput): Promise<{ link:
   }
   let config: KeelFactoryCollectionConfig;
   try {
-    config = normalizeOcaFactoryCollectionConfig(input.collectionConfig);
-    const computed = createOcaFactoryConfigDigest(config);
+    config = normalizeKeelFactoryCollectionConfig(input.collectionConfig);
+    const computed = createKeelFactoryConfigDigest(config);
     if (computed !== link.target.configDigest) return deferred("config-mismatch", ["collectionConfig digest does not match wallet-link.target.configDigest."]);
   } catch (error) {
     return deferred("config-invalid", [error instanceof Error ? error.message : String(error)]);
@@ -350,7 +350,7 @@ function eventFromReceipt(
 }
 
 /** Prepare a review-only call or explicitly execute it through injected connectors. */
-export async function executeOcaFactoryCollection(input: KeelFactoryExecutionInput): Promise<KeelFactoryExecutionResult> {
+export async function executeKeelFactoryCollection(input: KeelFactoryExecutionInput): Promise<KeelFactoryExecutionResult> {
   if (input === null || typeof input !== "object" || Array.isArray(input)) return deferred("link-invalid", ["executor input must be an object."]);
   const normalized = await normalizeInput(input);
   if ("status" in normalized) return normalized;

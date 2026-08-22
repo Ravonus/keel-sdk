@@ -4,8 +4,8 @@ import { encodeAbiParameters, encodeEventTopics, hashTypedData, parseAbi } from 
 
 import { createKeelWalletLink } from "../packages/sdk/dist/index.js";
 import {
-  createOcaFactoryConfigDigest,
-  executeOcaFactoryCollection,
+  createKeelFactoryConfigDigest,
+  executeKeelFactoryCollection,
 } from "../packages/ethereum-adapter/dist/index.js";
 
 const FACTORY = "0x3333333333333333333333333333333333333333";
@@ -32,7 +32,7 @@ const config = {
 };
 
 async function fixture() {
-  const configDigest = createOcaFactoryConfigDigest(config);
+  const configDigest = createKeelFactoryConfigDigest(config);
   const link = await createKeelWalletLink({
     family: "ethereum",
     accountAddress: ACCOUNT,
@@ -108,13 +108,13 @@ function clientFor(link, digest, overrides = {}) {
 
 async function executeFixture(overrides = {}) {
   const base = await fixture();
-  const dry = await executeOcaFactoryCollection({ ...base, mode: "dry-run" });
+  const dry = await executeKeelFactoryCollection({ ...base, mode: "dry-run" });
   assert.equal(dry.status, "dry-run");
   const authorizationDigest = hashTypedData(dry.typedData);
   const client = clientFor(base.link, base.configDigest, { ...overrides, receipt: overrides.receipt ?? { status: "success", transactionHash: TX_HASH, to: FACTORY, logs: eventLog(base.configDigest, { ...overrides, authorizationDigest }) } });
   const sent = [];
   const signerCalls = [];
-  const result = await executeOcaFactoryCollection({
+  const result = await executeKeelFactoryCollection({
     ...base,
     mode: "execute",
     accountSigner: {
@@ -134,7 +134,7 @@ async function executeFixture(overrides = {}) {
 test("KeelFactory executor dry-run is deterministic and does not call connectors", async () => {
   const base = await fixture();
   let called = false;
-  const result = await executeOcaFactoryCollection({
+  const result = await executeKeelFactoryCollection({
     ...base,
     mode: "dry-run",
     accountSigner: { getAddress: async () => { called = true; return ACCOUNT; }, signTypedData: async () => "0x1234" },
@@ -171,7 +171,7 @@ test("KeelFactory executor signs, submits, and verifies both creation events", a
 
 test("KeelFactory executor rejects connector identity, chain, factory, nonce, and expiry mismatches", async () => {
   const wrongSigner = await executeFixture();
-  assert.equal((await executeOcaFactoryCollection({ ...wrongSigner.base, mode: "execute", accountSigner: { account: AGENT, signTypedData: async () => "0x1234" }, agentWallet: { account: AGENT, getChainId: async () => 1, sendTransaction: async () => TX_HASH }, publicClient: wrongSigner.client })).code, "factory-mismatch");
+  assert.equal((await executeKeelFactoryCollection({ ...wrongSigner.base, mode: "execute", accountSigner: { account: AGENT, signTypedData: async () => "0x1234" }, agentWallet: { account: AGENT, getChainId: async () => 1, sendTransaction: async () => TX_HASH }, publicClient: wrongSigner.client })).code, "factory-mismatch");
   assert.equal((await executeFixture({ chainId: 2 })).result.code, "chain-mismatch");
   assert.equal((await executeFixture({ factoryVersion: `0x${"66".repeat(32)}` })).result.code, "factory-mismatch");
   assert.equal((await executeFixture({ nonce: 7n })).result.code, "nonce-mismatch");
@@ -179,23 +179,23 @@ test("KeelFactory executor rejects connector identity, chain, factory, nonce, an
   assert.equal((await executeFixture({ walletChainId: 2 })).result.code, "chain-mismatch");
   assert.equal((await executeFixture({ timestamp: 1_700_000_000 })).result.code, "link-invalid");
   const expired = await fixture();
-  assert.equal((await executeOcaFactoryCollection({ ...expired, nowSeconds: expired.link.expiresAt, mode: "dry-run" })).code, "link-expired");
+  assert.equal((await executeKeelFactoryCollection({ ...expired, nowSeconds: expired.link.expiresAt, mode: "dry-run" })).code, "link-expired");
   const { trustedDeployment: _pin, ...withoutPin } = wrongSigner.base;
-  assert.equal((await executeOcaFactoryCollection({ ...withoutPin, mode: "execute", accountSigner: { account: ACCOUNT, signTypedData: async () => "0x1234" }, agentWallet: { account: AGENT, getChainId: async () => 1, sendTransaction: async () => TX_HASH }, publicClient: wrongSigner.client })).code, "deployment-unverified");
+  assert.equal((await executeKeelFactoryCollection({ ...withoutPin, mode: "execute", accountSigner: { account: ACCOUNT, signTypedData: async () => "0x1234" }, agentWallet: { account: AGENT, getChainId: async () => 1, sendTransaction: async () => TX_HASH }, publicClient: wrongSigner.client })).code, "deployment-unverified");
   const signatureBase = await fixture();
-  assert.equal((await executeOcaFactoryCollection({ ...signatureBase, mode: "execute", accountSigner: { account: ACCOUNT, signTypedData: async () => { throw new Error("user rejected"); } }, agentWallet: { account: AGENT, getChainId: async () => 1, sendTransaction: async () => TX_HASH }, publicClient: clientFor(signatureBase.link, signatureBase.configDigest) })).code, "signature-invalid");
-  assert.equal((await executeOcaFactoryCollection({ ...wrongSigner.base, mode: "execute", trustedDeployment: wrongSigner.base.trustedDeployment })).code, "missing-connector");
-  assert.equal((await executeOcaFactoryCollection(null)).code, "link-invalid");
+  assert.equal((await executeKeelFactoryCollection({ ...signatureBase, mode: "execute", accountSigner: { account: ACCOUNT, signTypedData: async () => { throw new Error("user rejected"); } }, agentWallet: { account: AGENT, getChainId: async () => 1, sendTransaction: async () => TX_HASH }, publicClient: clientFor(signatureBase.link, signatureBase.configDigest) })).code, "signature-invalid");
+  assert.equal((await executeKeelFactoryCollection({ ...wrongSigner.base, mode: "execute", trustedDeployment: wrongSigner.base.trustedDeployment })).code, "missing-connector");
+  assert.equal((await executeKeelFactoryCollection(null)).code, "link-invalid");
 });
 
 test("KeelFactory executor fails closed for signature, submission, revert, hash, target, and event forgery", async () => {
   const base = await fixture();
-  const dry = await executeOcaFactoryCollection({ ...base, mode: "dry-run" });
+  const dry = await executeKeelFactoryCollection({ ...base, mode: "dry-run" });
   const auth = hashTypedData(dry.typedData);
   const signer = { getAddress: async () => ACCOUNT, signTypedData: async () => "0x1234" };
   const wallet = (send) => ({ account: AGENT, getChainId: async () => 1, sendTransaction: send });
   const client = (receipt) => clientFor(base.link, base.configDigest, { receipt: { to: FACTORY, ...receipt } });
-  const invoke = (publicClient, agentWallet = wallet(async () => TX_HASH), accountSigner = signer) => executeOcaFactoryCollection({ ...base, mode: "execute", accountSigner, agentWallet, publicClient });
+  const invoke = (publicClient, agentWallet = wallet(async () => TX_HASH), accountSigner = signer) => executeKeelFactoryCollection({ ...base, mode: "execute", accountSigner, agentWallet, publicClient });
   assert.equal((await invoke(client({ status: "success", transactionHash: TX_HASH, logs: eventLog(base.configDigest, { authorizationDigest: `0x${"99".repeat(32)}` }) }))).code, "event-mismatch");
   assert.equal((await invoke(client({ status: "success", transactionHash: TX_HASH, logs: eventLog(base.configDigest, { authorizationDigest: auth, createdName: "Mutated" }) }))).code, "event-mismatch");
   assert.equal((await invoke(client({ status: "success", transactionHash: `0x${"cd".repeat(32)}`, logs: eventLog(base.configDigest, { authorizationDigest: auth }) }))).code, "event-mismatch");
@@ -219,7 +219,7 @@ test("KeelFactory executor rechecks nonce after signing and never sends stale au
     return originalRead(request);
   };
   let sent = 0;
-  const result = await executeOcaFactoryCollection({
+  const result = await executeKeelFactoryCollection({
     ...base,
     mode: "execute",
     accountSigner: { account: ACCOUNT, signTypedData: async () => "0x1234" },

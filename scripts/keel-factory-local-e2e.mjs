@@ -10,7 +10,7 @@ import {
   parseAbi,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { createOcaFactoryConfigDigest, createViemOcaFactoryConnectors, executeOcaFactoryCollection } from "@keel/ethereum-adapter";
+import { createKeelFactoryConfigDigest, createViemKeelFactoryConnectors, executeKeelFactoryCollection } from "@keel/ethereum-adapter";
 import { createKeelWalletLink, keelFactoryAbi } from "@keel/sdk";
 
 const PORT = Number(process.env.KEEL_LOCAL_E2E_PORT ?? 18_545);
@@ -85,9 +85,9 @@ async function main() {
       mintManager: agent.address,
       keelIndex: "0x0000000000000000000000000000000000000000",
     };
-    const configDigest = createOcaFactoryConfigDigest(config);
+    const configDigest = createKeelFactoryConfigDigest(config);
     const trustedDeployment = { chainId: CHAIN_ID, factoryAddress, factoryVersion: asHex(factoryVersion), creationCodeHash: asHex(creationCodeHash) };
-    const connectors = createViemOcaFactoryConnectors({
+    const connectors = createViemKeelFactoryConnectors({
       accountClient: creatorWallet,
       agentClient: agentWallet,
       publicClient,
@@ -120,7 +120,7 @@ async function main() {
     }
 
     const firstLink = await linkFor(0);
-    const first = await executeOcaFactoryCollection({
+    const first = await executeKeelFactoryCollection({
       mode: "execute",
       link: firstLink,
       collectionConfig: config,
@@ -130,7 +130,7 @@ async function main() {
     });
     if (first.status !== "executed") throw new Error(`First create did not execute: ${first.code} ${first.issues.join("; ")}`);
 
-    const replay = await executeOcaFactoryCollection({
+    const replay = await executeKeelFactoryCollection({
       mode: "execute",
       link: firstLink,
       collectionConfig: config,
@@ -143,7 +143,7 @@ async function main() {
     const secondLink = await linkFor(1);
     const invalidateHash = await creatorWallet.writeContract({ address: factoryAddress, abi: ABI, functionName: "invalidateCreatorNonce", args: [2n] });
     await publicClient.waitForTransactionReceipt({ hash: invalidateHash });
-    const revoked = await executeOcaFactoryCollection({
+    const revoked = await executeKeelFactoryCollection({
       mode: "execute",
       link: secondLink,
       collectionConfig: config,

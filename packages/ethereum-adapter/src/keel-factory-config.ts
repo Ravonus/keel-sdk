@@ -71,7 +71,7 @@ function uint(value: unknown, label: string, maximum: bigint, allowZero: boolean
 }
 
 /** Normalize an exact JSON-safe CollectionConfig for account review. */
-export function normalizeOcaFactoryCollectionConfig(value: unknown): KeelFactoryCollectionConfig {
+export function normalizeKeelFactoryCollectionConfig(value: unknown): KeelFactoryCollectionConfig {
   const input = object(value, "KeelFactory collectionConfig");
   exact(input, "KeelFactory collectionConfig");
   const royaltyBps = uint(input.royaltyBps, "collectionConfig.royaltyBps", MAX_UINT96, true);
@@ -91,8 +91,8 @@ export function normalizeOcaFactoryCollectionConfig(value: unknown): KeelFactory
 }
 
 /** Compute KeelFactory.dieConfigDigest(config) with viem's ABI encoder. */
-export function createOcaFactoryConfigDigest(value: unknown): Hex {
-  const config = normalizeOcaFactoryCollectionConfig(value);
+export function createKeelFactoryConfigDigest(value: unknown): Hex {
+  const config = normalizeKeelFactoryCollectionConfig(value);
   const encoded = encodeAbiParameters(CONFIG_PARAMETERS, [
     keccak256(stringToHex(config.name)),
     keccak256(stringToHex(config.symbol)),

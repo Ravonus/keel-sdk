@@ -18,18 +18,18 @@ const KEEL_FACTORY_ABI = parseAbi(keelFactoryAbi);
  * transport. This makes the same connector usable from Wagmi, a test client,
  * or a server-side wallet without giving this package custody or RPC policy.
  */
-export interface ViemOcaFactoryAccountClient {
+export interface ViemKeelFactoryAccountClient {
   readonly account?: Address | { readonly address: Address };
   readonly signTypedData: (input: unknown) => Promise<Hex>;
 }
 
-export interface ViemOcaFactoryAgentClient {
+export interface ViemKeelFactoryAgentClient {
   readonly account?: Address | { readonly address: Address };
   readonly getChainId: () => Promise<number>;
   readonly sendTransaction: (input: unknown) => Promise<Hex>;
 }
 
-export interface ViemOcaFactoryPublicClient {
+export interface ViemKeelFactoryPublicClient {
   readonly getChainId: () => Promise<number>;
   readonly getBlock: () => Promise<{ readonly timestamp: bigint }>;
   readonly readContract: (input: unknown) => Promise<unknown>;
@@ -46,10 +46,10 @@ export interface ViemOcaFactoryPublicClient {
   }>;
 }
 
-export interface ViemOcaFactoryClients {
-  readonly accountClient: ViemOcaFactoryAccountClient;
-  readonly agentClient: ViemOcaFactoryAgentClient;
-  readonly publicClient: ViemOcaFactoryPublicClient;
+export interface ViemKeelFactoryClients {
+  readonly accountClient: ViemKeelFactoryAccountClient;
+  readonly agentClient: ViemKeelFactoryAgentClient;
+  readonly publicClient: ViemKeelFactoryPublicClient;
 }
 
 function clientAddress(value: Address | { readonly address: Address } | undefined, label: string): Address {
@@ -81,7 +81,7 @@ function receiptLog(log: { readonly address: Address; readonly topics: readonly 
  * sends the resulting `castDieFor` call. They may be the same
  * wallet only when the caller intentionally uses one account for both roles.
  */
-export function createViemOcaFactoryConnectors(clients: ViemOcaFactoryClients): {
+export function createViemKeelFactoryConnectors(clients: ViemKeelFactoryClients): {
   readonly accountSigner: KeelFactoryAccountSigner;
   readonly agentWallet: KeelFactoryAgentWallet;
   readonly publicClient: KeelFactoryPublicClient;

@@ -5,9 +5,9 @@ import { createHash } from "node:crypto";
 import { canonicalJson, createIntegrity, utf8ToBytes } from "../packages/protocol/dist/index.js";
 import {
   CHUNK_STORE_MAX_BATCH_SLUGS,
-  createOcaFactoryConfigDigest,
+  createKeelFactoryConfigDigest,
   createViemEthereumAdapterCodecs,
-  normalizeOcaFactoryCollectionConfig,
+  normalizeKeelFactoryCollectionConfig,
   prepareEthereumKeelHoldOperations,
 } from "../packages/ethereum-adapter/dist/index.js";
 
@@ -44,13 +44,13 @@ const collectionConfig = {
 
 test("KeelFactory config helper matches the exact dieConfigDigest tuple", () => {
   const mixedCaseAdmin = `${collectionConfig.admin.slice(0, 2)}${collectionConfig.admin.slice(2).toUpperCase()}`;
-  assert.deepEqual(normalizeOcaFactoryCollectionConfig({ ...collectionConfig, admin: mixedCaseAdmin }), collectionConfig);
-  assert.equal(createOcaFactoryConfigDigest(collectionConfig), "0x818fc05dadddd562c44596d54c5a4a3f934f2058101087ed8f0bb95fa42c3744");
-  assert.notEqual(createOcaFactoryConfigDigest({ ...collectionConfig, name: "Keel Mutated" }), createOcaFactoryConfigDigest(collectionConfig));
-  assert.throws(() => createOcaFactoryConfigDigest({ ...collectionConfig, maxSupply: "01" }), /canonical decimal/u);
-  assert.throws(() => createOcaFactoryConfigDigest({ ...collectionConfig, royaltyBps: "1".repeat(30) }), /decimal width/u);
-  assert.throws(() => createOcaFactoryConfigDigest({ ...collectionConfig, maxSupply: "1".repeat(79) }), /decimal width/u);
-  assert.throws(() => createOcaFactoryConfigDigest({ ...collectionConfig, name: "\uD800" }), /unpaired UTF-16/u);
+  assert.deepEqual(normalizeKeelFactoryCollectionConfig({ ...collectionConfig, admin: mixedCaseAdmin }), collectionConfig);
+  assert.equal(createKeelFactoryConfigDigest(collectionConfig), "0x818fc05dadddd562c44596d54c5a4a3f934f2058101087ed8f0bb95fa42c3744");
+  assert.notEqual(createKeelFactoryConfigDigest({ ...collectionConfig, name: "Keel Mutated" }), createKeelFactoryConfigDigest(collectionConfig));
+  assert.throws(() => createKeelFactoryConfigDigest({ ...collectionConfig, maxSupply: "01" }), /canonical decimal/u);
+  assert.throws(() => createKeelFactoryConfigDigest({ ...collectionConfig, royaltyBps: "1".repeat(30) }), /decimal width/u);
+  assert.throws(() => createKeelFactoryConfigDigest({ ...collectionConfig, maxSupply: "1".repeat(79) }), /decimal width/u);
+  assert.throws(() => createKeelFactoryConfigDigest({ ...collectionConfig, name: "\uD800" }), /unpaired UTF-16/u);
 });
 
 async function flatPlan(content = "hello", chunkSize = content.length, compression = "none") {

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { createViemOcaFactoryConnectors } from "@keel/ethereum-adapter";
+import { createViemKeelFactoryConnectors } from "@keel/ethereum-adapter";
 
 const creator = "0x70997970c51812dc3a010c7d01b50e0d17dc79c8";
 const agent = "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc";
@@ -10,7 +10,7 @@ const hash = `0x${"11".repeat(32)}`;
 
 test("viem connector keeps creator signing and agent submission separate", async () => {
   const calls = [];
-  const connectors = createViemOcaFactoryConnectors({
+  const connectors = createViemKeelFactoryConnectors({
     accountClient: {
       account: creator,
       signTypedData: async (input) => {
@@ -53,13 +53,13 @@ test("viem connector keeps creator signing and agent submission separate", async
 });
 
 test("viem connector rejects missing wallet accounts and unsafe timestamps", async () => {
-  assert.throws(() => createViemOcaFactoryConnectors({
+  assert.throws(() => createViemKeelFactoryConnectors({
     accountClient: { signTypedData: async () => hash },
     agentClient: { account: agent, getChainId: async () => 31337, sendTransaction: async () => hash },
     publicClient: { getChainId: async () => 31337, getBlock: async () => ({ timestamp: 1n }), readContract: async () => `0x${"22".repeat(32)}`, call: async () => undefined, waitForTransactionReceipt: async () => ({ status: "success", transactionHash: hash, to: factory, logs: [] }) },
   }), /accountClient/iu);
 
-  const connectors = createViemOcaFactoryConnectors({
+  const connectors = createViemKeelFactoryConnectors({
     accountClient: { account: creator, signTypedData: async () => hash },
     agentClient: { account: agent, getChainId: async () => 31337, sendTransaction: async () => hash },
     publicClient: { getChainId: async () => 31337, getBlock: async () => ({ timestamp: BigInt(Number.MAX_SAFE_INTEGER) + 1n }), readContract: async () => `0x${"22".repeat(32)}`, call: async () => undefined, waitForTransactionReceipt: async () => ({ status: "success", transactionHash: hash, to: factory, logs: [] }) },

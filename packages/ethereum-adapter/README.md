@@ -23,16 +23,16 @@ create a WalletConnect/Beacon payload. Large
 `castSlugs` calls exceed the SDK's custom QR budget and are reported as a
 transport limitation rather than silently encoded as a QR request.
 
-`createViemOcaFactoryConnectors` is the optional viem/Wagmi bridge for the
+`createViemKeelFactoryConnectors` is the optional viem/Wagmi bridge for the
 KeelFactory executor. Pass it two injected wallet clients (`accountClient` for
 the creator's EIP-712 signature and `agentClient` for the linked submitter) and
 one injected viem `publicClient`; it creates no transport and stores no keys.
 The bridge normalizes viem receipts, chain timestamps, factory reads, and the
-`chainId`-bound send request for `executeOcaFactoryCollection`.
+`chainId`-bound send request for `executeKeelFactoryCollection`.
 
 ## KeelFactory collection review
 
-`normalizeOcaFactoryCollectionConfig` and `createOcaFactoryConfigDigest` accept
+`normalizeKeelFactoryCollectionConfig` and `createKeelFactoryConfigDigest` accept
 the complete JSON-safe `KeelFactory.CollectionConfig` tuple and reproduce the
 contract's `keccak256(abi.encode(...))` digest with viem. A wallet-link
 connector can compare that digest to its pinned target before showing account
@@ -63,7 +63,7 @@ transport must remain a separate review gate.
 
 ## KeelFactory execution boundary
 
-`executeOcaFactoryCollection` is the explicit, opt-in connector for the
+`executeKeelFactoryCollection` is the explicit, opt-in connector for the
 account/agent wallet link. It accepts a verified `keel-wallet-link@1` plus
 the normalized `KeelFactory.CollectionConfig`, and uses only injected
 interfaces:
