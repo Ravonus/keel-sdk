@@ -76,6 +76,12 @@ importers:
         specifier: ^7.1.0
         version: 7.3.6(@types/node@22.20.1)
 
+  apps/studio:
+    dependencies:
+      brotli-dec-wasm:
+        specifier: 2.3.2
+        version: 2.3.2
+
   packages/builder:
     dependencies:
       '@keel/protocol':
@@ -1174,6 +1180,9 @@ packages:
 
   brorand@1.1.0:
     resolution: {integrity: sha512-cKV8tMCEpQs4hK/ik71d6LrPOnpkpGBR0wzxqr68g2m/LB2GxVYQroAjMJZRVM1Y4BCjCKc3vAamxSzOY2RP+w==}
+
+  brotli-dec-wasm@2.3.2:
+    resolution: {integrity: sha512-5H+k8eVLIJY6B4olN2HP9QzJAxcplf0jV7mWnkpxvOSeUE9Npg3dQ2pgLn30a9MUFHNro1iSmtdu6VNdlb+TIw==}
 
   brotli-wasm@2.0.1:
     resolution: {integrity: sha512-+3USgYsC7bzb5yU0/p2HnnynZl0ak0E6uoIm4UW4Aby/8s8HFCq6NCfrrf1E9c3O8OCSzq3oYO1tUVqIi61Nww==}
@@ -2421,6 +2430,8 @@ snapshots:
   bn.js@4.12.5: {}
 
   brorand@1.1.0: {}
+
+  brotli-dec-wasm@2.3.2: {}
 
   brotli-wasm@2.0.1: {}
 

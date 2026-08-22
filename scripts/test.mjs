@@ -43,4 +43,6 @@ run("node", [
   "tests/sandbox-sdk.test.mjs",
   "tests/source-verification.test.mjs",
   "tests/keel-presentation.test.mjs",
+  "tests/keel-verification-shell.test.mjs",
+  "tests/keel-verification-consumer.test.mjs",
 ]);

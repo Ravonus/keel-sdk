@@ -48,14 +48,14 @@ test("consumer matrix uses the canonical builder for real media and hostile veri
 
 test("both chain contract gates cover revisions, staking authority, immutable code, API manifests, and permanent materialization",async()=>{
   const [evm,evmObjects,evmMint,tezos,tezosCheckpoint]=await Promise.all([
-    source("../packages/contracts/test/KeelPresentationStateRegistry.t.sol"),
-    source("../packages/contracts/test/KeelArtifactRegistry.t.sol"),
-    source("../packages/contracts/test/VaultCharacter721.t.sol"),
+    source("../../keel-contracts/test/modules/keel-presentation/KeelPresentationStateRegistry.t.sol"),
+    source("../../keel-contracts/test/modules/keel-artifacts/KeelArtifactRegistry.t.sol"),
+    source("../../vault-of-the-fallen/contracts/test/VaultCharacter721.t.sol"),
     source("../packages/tezos/tests/test_keel_presentation_state.py"),
     source("../packages/tezos/tests/test_keel_immutable_checkpoint.py"),
   ]);
   for(const pattern of [/CreatorCssRevision/u,/ImmutableExecutable/u,/UnconfiguredPolicyMakesNoStakingClaim/u,/ConfiguredStakingAdapterCanLock/u,/ConfiguredStakingAdapterCanDelegate/u,/ApiSnapshotRequiresOracleManifestFormatAndAdvancingSequence/u,/MutableCarrierBecomesContractImmutableOnlyAfterOnchainMaterialization/u])assert.match(evm,pattern);
-  assert.match(evmObjects,/ObjectLargerThanOneChunkManifestSealsThroughCompositeCheckpoints/u);
+  assert.match(evmObjects,/ObjectLargerThanOneSlugManifestSealsThroughCompositeCheckpoints/u);
   assert.match(evmMint,/MintSeedCommitsAutomaticChainMintInputsBeforeTraitExpansion/u);
   for(const phrase of ["css-v2","locked-code","set_owner","configure_staking_rule","UPDATES_LOCKED_WHILE_STAKED","controller-while-staked","INVALID_MEDIA_TYPE","API_MANIFEST_MISSING","API_SEQUENCE_STALE","seal_policy_to_onchain_object","POLICY_SEALED"])assert.match(tezos,new RegExp(phrase,"u"));
   for(const phrase of ["append_checkpoint_chunk","CHECKPOINT_INCOMPLETE","OBJECT_SEALED","get_immutable_object"])assert.match(tezosCheckpoint,new RegExp(phrase,"u"));
