@@ -1,0 +1,93 @@
+name: modules-verify
+
+# The deep verification of the public keel-modules workspace.
+#
+# It lives here rather than in keel-modules because this is where the builder
+# is. Both repositories are public, so either could check the other out; what
+# decides it is that this one already installs and builds the toolchain for its
+# own suite. Running the deep check there instead would mean a second full pnpm
+# install and build, in a repository whose own CI is deliberately toolchain-free
+# so that a contributor can run every one of its checks with nothing but Node.
+#
+# keel-modules runs the checks that need no toolchain (lint, typecheck,
+# vectors, the offline catalog gate, and the origin-archive watchdog). This is
+# the half that rebuilds.
+on:
+  schedule:
+    # Daily. A registered origin can be deleted, made private, or force-pushed
+    # without anybody touching either repository, so the check cannot only run
+    # when somebody opens a pull request.
+    - cron: "41 5 * * *"
+  workflow_dispatch:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      # Both repositories as siblings, because that is the layout the toolchain
+      # and its tests expect: keel-sdk resolves the workspace at ../keel-modules.
+      - uses: actions/checkout@v4
+        with:
+          path: keel-sdk
+      - uses: actions/checkout@v4
+        with:
+          repository: Ravonus/keel-modules
+          path: keel-modules
+      # Version comes from package.json's packageManager field; naming it here
+      # too just creates a second place for it to be wrong.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: keel-sdk/pnpm-lock.yaml
+
+      - name: Install
+        working-directory: keel-sdk
+        run: pnpm install --frozen-lockfile
+      - name: Build the toolchain
+        working-directory: keel-sdk
+        run: node scripts/build.mjs
+
+      # Every module rebuilds from its readable source to the exact bytes its
+      # receipt claims. A module that does not reproduce fails here.
+      - name: Reproduce every module
+        working-directory: keel-sdk
+        run: node packages/builder/dist/cli.js module build --all --root ../keel-modules
+
+      # The vectors run against the readable source AND the shipped minified
+      # bytes, so a minifier that changed behaviour is caught, not just one that
+      # changed size.
+      - name: Run every module's vectors against the minified bytes
+        working-directory: keel-sdk
+        run: node packages/builder/dist/cli.js module test --all --root ../keel-modules
+
+      # The real determinism gate. Indexing reads only committed files, so a
+      # clean checkout must produce a byte-identical catalog. If this diff is
+      # non-empty the published catalog is not reproducible, which is the
+      # property that lets a stranger check it by regenerating it.
+      - name: Catalog is byte reproducible
+        working-directory: keel-sdk
+        run: |
+          node packages/builder/dist/cli.js module index \
+            --root ../keel-modules \
+            --repository https://github.com/Ravonus/keel-modules
+          git -C ../keel-modules diff --exit-code catalog/catalog.json
+
+      # The deep half of origin registration: re-fetch every registered foreign
+      # repository, rebuild it, and compare against the digests the registration
+      # committed. keel-modules runs a lighter archive-integrity check daily;
+      # this one actually rebuilds and is what settles whether a changed archive
+      # means changed source.
+      - name: Re-verify every registered origin
+        working-directory: keel-sdk
+        run: node packages/builder/dist/cli.js module verify --all --root ../keel-modules
+
+      # The suite includes the reproduction tests, which fetch keel-modules from
+      # GitHub at its current commit and rebuild it, plus the tamper drills.
+      - name: Full test suite
+        working-directory: keel-sdk
+        run: node scripts/test.mjs
