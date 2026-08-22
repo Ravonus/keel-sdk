@@ -11,6 +11,8 @@ import {
   assertValidKeelBuildRecipe,
   assertValidKeelModuleIndex,
   assertValidKeelSourceOrigin,
+  canonicalJson,
+  createIntegrity,
   diffKeelBuildRecipes,
   sortKeelModuleIndex,
   keelBuildRecipeDigest,
@@ -19,6 +21,7 @@ import {
   keelSourceArchiveUrl,
   keelSourceOriginUrl,
   keelSourceRepositoryRef,
+  utf8ToBytes,
 } from "../packages/protocol/dist/index.js";
 import {
   createKeelBuildRecipe,
@@ -432,12 +435,26 @@ test("an oversized archive is refused before it is unpacked", async () => {
   );
 });
 
-test("no source survives the call, on success or on failure", async () => {
+test("no source survives the call, on success or on failure", async (t) => {
   // The load-bearing promise of the whole design: Keel is not a code host.
   // A comment saying so is not a test, and a `finally` that stops running is
   // exactly the kind of regression nobody notices until a disk fills.
+  //
+  // The verifier builds its checkouts under os.tmpdir(), which is shared, so
+  // this test gets its own to look at. Scanning the real one made the check
+  // race every other test file that verifies an origin concurrently: it would
+  // see their in-flight checkouts and blame this code for them.
+  const previous = process.env.TMPDIR;
+  const isolated = await mkdtemp(path.join(tmpdir(), "keel-leftovers-"));
+  process.env.TMPDIR = isolated;
+  t.after(async () => {
+    if (previous === undefined) delete process.env.TMPDIR;
+    else process.env.TMPDIR = previous;
+    await rm(isolated, { recursive: true, force: true });
+  });
+
   const leftovers = async () =>
-    (await readdir(tmpdir())).filter((name) => name.startsWith("keel-verify-"));
+    (await readdir(isolated)).filter((name) => name.startsWith("keel-verify-"));
   assert.deepEqual(await leftovers(), [], "a previous run left a checkout behind");
 
   const good = await gzip(tar({ "demo-module-dddd/src/index.js": "export const hello = () => 1;\n" }));
@@ -499,4 +516,26 @@ test("verification imposes no language, layout, or house style on somebody else'
     ["lib/deep/nested/entry.mjs", "lib/palette.mjs"],
   );
   assert.ok(result.outputBytes.length > 0);
+});
+
+test("an origin verification's receiptDigest is the same digest the catalog computes", async () => {
+  // These were computed two different ways: the catalog canonicalises the
+  // receipt, this path used JSON.stringify. Same receipt, different digest, so
+  // comparing a catalog entry against an origin verification reported a
+  // mismatch that was not real. Every other digest in the system is over
+  // canonical bytes; this one is now too.
+  const archive = await gzip(
+    tar({
+      "demo-module-dddd/src/index.js": 'import { greet } from "./greet.js";\nexport const hello = () => greet("world");\n',
+      "demo-module-dddd/src/greet.js": "export const greet = (who) => `hello ${who}`;\n",
+    }),
+  );
+  const result = await verifyKeelModuleFromOrigin({
+    origin: ORIGIN,
+    identity: IDENTITY,
+    entry: "src/index.js",
+    fetchImpl: async () => new Response(archive, { status: 200 }),
+  });
+  const canonical = (await createIntegrity(utf8ToBytes(canonicalJson(result.receipt)))).digest;
+  assert.equal(result.indexEntry.receiptDigest, canonical);
 });

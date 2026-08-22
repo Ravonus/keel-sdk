@@ -46,6 +46,13 @@ import {
   KEEL_MODULE_MANIFEST_FILE,
 } from "./module-pipeline.js";
 import { hasModuleVectors, testKeelModule, type TestKeelModuleResult } from "./module-testing.js";
+import {
+  parseKeelModuleRegistration,
+  verifyKeelModuleRegistration,
+  KEEL_REGISTRATION_FILE,
+  type KeelModuleRegistration,
+  type RegistrationVerification,
+} from "./module-registration.js";
 
 export const KEEL_MODULE_CATALOG_SCHEMA = "keel-module-catalog@3" as const;
 export const KEEL_MODULE_CATALOG_FILE = "catalog/catalog.json" as const;
@@ -68,6 +75,17 @@ export interface KeelWorkspaceModule {
   readonly manifest: KeelModuleManifest;
 }
 
+/**
+ * A module registered by origin: its source lives in somebody else's
+ * repository and is not vendored here. There is nothing local to build or
+ * test, only committed digests to index and a network check to re-derive them.
+ */
+export interface KeelWorkspaceRegistration {
+  readonly directory: string;
+  readonly workspacePath: string;
+  readonly registration: KeelModuleRegistration;
+}
+
 async function isFile(target: string): Promise<boolean> {
   try {
     return (await stat(target)).isFile();
@@ -84,7 +102,10 @@ async function isFile(target: string): Promise<boolean> {
  * layout and the `<publisher>/<category>` layout without either being special-cased,
  * and it means filing a module under a new category is a `git mv`.
  */
-export async function discoverKeelWorkspaceModules(root: string): Promise<readonly KeelWorkspaceModule[]> {
+export async function discoverKeelWorkspaceModules(
+  root: string,
+  options: { readonly allowEmpty?: boolean } = {},
+): Promise<readonly KeelWorkspaceModule[]> {
   const resolvedRoot = path.resolve(root);
   const modulesRoot = path.join(resolvedRoot, MODULES_DIRECTORY);
   try {
@@ -97,6 +118,8 @@ export async function discoverKeelWorkspaceModules(root: string): Promise<readon
     const entries = await readdir(directory, { withFileTypes: true });
     for (const entry of entries.filter((item) => item.isDirectory()).sort((left, right) => (left.name < right.name ? -1 : 1))) {
       const child = path.join(directory, entry.name);
+      // A registration is a leaf too: it has no source to descend into.
+      if (await isFile(path.join(child, KEEL_REGISTRATION_FILE))) continue;
       if (await isFile(path.join(child, KEEL_MODULE_MANIFEST_FILE))) {
         const manifest = await readKeelModuleManifest(child);
         modules.push({
@@ -110,10 +133,70 @@ export async function discoverKeelWorkspaceModules(root: string): Promise<readon
     }
   };
   await walk(modulesRoot, 1);
-  if (modules.length === 0) {
+  // A workspace made entirely of origin registrations has no vendored modules,
+  // which is a perfectly good workspace and not an error. Only the verbs that
+  // need something local to chew on treat empty as a mistake.
+  if (modules.length === 0 && options.allowEmpty !== true) {
     throw new Error(`No ${KEEL_MODULE_MANIFEST_FILE} found under ${modulesRoot}. Nothing to process.`);
   }
   return modules.sort((left, right) => (left.manifest.name < right.manifest.name ? -1 : 1));
+}
+
+/**
+ * Every registration under `modules/`, sorted by id.
+ *
+ * Deliberately a separate walk from `discoverKeelWorkspaceModules`: the two
+ * kinds need opposite things. A vendored module is built and tested locally
+ * and has no origin; a registration has an origin and nothing local to build.
+ * Collapsing them into one list would mean every caller re-splitting it.
+ */
+export async function discoverKeelWorkspaceRegistrations(root: string): Promise<readonly KeelWorkspaceRegistration[]> {
+  const resolvedRoot = path.resolve(root);
+  const modulesRoot = path.join(resolvedRoot, MODULES_DIRECTORY);
+  const found: KeelWorkspaceRegistration[] = [];
+  const walk = async (directory: string, depth: number): Promise<void> => {
+    let entries;
+    try {
+      entries = await readdir(directory, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const entry of entries.filter((item) => item.isDirectory()).sort((left, right) => (left.name < right.name ? -1 : 1))) {
+      const child = path.join(directory, entry.name);
+      const registrationPath = path.join(child, KEEL_REGISTRATION_FILE);
+      if (await isFile(registrationPath)) {
+        const registration = parseKeelModuleRegistration(JSON.parse(await readFile(registrationPath, "utf8")) as unknown);
+        if (registration.id !== entry.name) throw new Error(`${registrationPath}: id "${registration.id}" does not match its directory "${entry.name}".`);
+        found.push({ directory: child, workspacePath: path.relative(resolvedRoot, child).split(path.sep).join("/"), registration });
+        continue;
+      }
+      if (await isFile(path.join(child, KEEL_MODULE_MANIFEST_FILE))) continue;
+      if (depth < MAX_DISCOVERY_DEPTH) await walk(child, depth + 1);
+    }
+  };
+  await walk(modulesRoot, 1);
+  return found.sort((left, right) => (left.registration.id < right.registration.id ? -1 : 1));
+}
+
+/**
+ * `keel module verify --all`: the NETWORKED half of registration.
+ *
+ * Re-fetch every registered origin, rebuild it, and compare against the
+ * digests the registration committed. This is deliberately not part of
+ * indexing: indexing must read only committed files so the catalog stays
+ * deterministic, and a check that reaches the network during an index run
+ * would let a forge's bad afternoon quietly rewrite the catalog.
+ */
+export async function verifyKeelWorkspaceRegistrations(
+  root: string,
+  options: { readonly fetchImpl?: typeof fetch } = {},
+): Promise<readonly RegistrationVerification[]> {
+  const registrations = await discoverKeelWorkspaceRegistrations(root);
+  const results: RegistrationVerification[] = [];
+  for (const entry of registrations) {
+    results.push(await verifyKeelModuleRegistration(entry.registration, options));
+  }
+  return results;
 }
 
 /* ------------------------------------------------------------- publishers */
@@ -324,6 +407,7 @@ export interface WorkspaceBuildResult {
 
 /** `keel module build --all`: every module, fail-fast, module named in every failure. */
 export async function buildKeelWorkspace(root: string, options: BuildKeelModuleOptions = {}): Promise<readonly WorkspaceBuildResult[]> {
+  // Registrations are not discovered here: there is nothing local to build.
   const modules = await discoverKeelWorkspaceModules(root);
   const results: WorkspaceBuildResult[] = [];
   for (const module of modules) {
@@ -400,6 +484,27 @@ export interface KeelModuleCatalogEntry {
   readonly deployments: readonly KeelModuleRevision[];
   /** Convenience for the site: whether any revision has reached a chain. */
   readonly deployed: boolean;
+  /**
+   * How this entry's digests were established.
+   *
+   * `vendored` means the source is in this workspace and was rebuilt locally
+   * when the catalog was written. `origin` means the source lives in another
+   * repository and the digests are what a verification of that origin found;
+   * the entry then carries the exact commit it was verified at, so anyone can
+   * repeat the check with `keel module verify`.
+   */
+  readonly provenance: "vendored" | "origin";
+  /** Present only for origin-registered entries. */
+  readonly origin: {
+    readonly provider: string;
+    readonly owner: string;
+    readonly repo: string;
+    readonly commit: string;
+    readonly path: string | null;
+    readonly entry: string;
+    readonly archiveDigest: Hex;
+    readonly verifiedAt: string;
+  } | null;
 }
 
 export interface KeelModuleCatalog {
@@ -483,6 +588,66 @@ async function catalogEntry(module: KeelWorkspaceModule, options: IndexKeelWorks
     verified: VERIFIED_DISPOSITIONS.has(receipt.disposition),
     deployments,
     deployed: deployments.length > 0,
+    provenance: "vendored",
+    origin: null,
+  };
+}
+
+/**
+ * A catalog entry for a module registered by origin.
+ *
+ * Everything here comes from the committed registration, so indexing stays
+ * offline and deterministic. The digests are what a verification found; that
+ * they are still true is what `keel module verify --all` re-checks over the
+ * network, separately and on purpose.
+ */
+async function registrationCatalogEntry(
+  entry: KeelWorkspaceRegistration,
+  options: IndexKeelWorkspaceOptions,
+): Promise<KeelModuleCatalogEntry> {
+  const { registration } = entry;
+  const owner = registration.owner as { readonly user?: string; readonly org?: string; readonly group?: string; readonly member?: string };
+  const publisher = owner.user ?? owner.org;
+  if (publisher === undefined) throw new Error(`${entry.workspacePath}: owner must name a user or an org.`);
+  const deployments = await readKeelModuleRevisions(entry.directory);
+  const originPath = registration.origin.path ?? null;
+  const prefix = originPath === null ? "" : `${originPath}/`;
+  return {
+    id: registration.id,
+    version: registration.version,
+    license: registration.license,
+    summary: registration.summary,
+    publisher,
+    category: registration.category,
+    owner: {
+      publisher,
+      kind: owner.user === undefined ? "org" : "user",
+      group: owner.group ?? null,
+      member: owner.member ?? null,
+    },
+    sourceRepository: registration.repository,
+    moduleRepository: registration.repository,
+    // Paths are relative to the FOREIGN repository, not this one, because that
+    // is where a reader actually finds these files.
+    githubPath: `${prefix}${registration.origin.entry}`,
+    sourceFiles: registration.expect.sourceFiles.map((file) => ({ path: `${prefix}${file.path}`, sha256: file.sha256 })),
+    outputDigest: registration.expect.outputDigest,
+    receiptDigest: registration.expect.receiptDigest,
+    disposition: "reproducible-build",
+    verified: true,
+    deployments,
+    deployed: deployments.length > 0,
+    provenance: "origin",
+    origin: {
+      provider: registration.origin.provider,
+      owner: registration.origin.owner,
+      repo: registration.origin.repo,
+      commit: registration.origin.commit,
+      path: originPath,
+      entry: registration.origin.entry,
+      archiveDigest: registration.expect.archiveDigest,
+      verifiedAt: registration.verifiedAt,
+    },
   };
 }
 
@@ -493,10 +658,21 @@ async function catalogEntry(module: KeelWorkspaceModule, options: IndexKeelWorks
  */
 export async function indexKeelWorkspace(root: string, options: IndexKeelWorkspaceOptions = {}): Promise<IndexKeelWorkspaceResult> {
   const resolvedRoot = path.resolve(root);
-  const modules = await discoverKeelWorkspaceModules(resolvedRoot);
+  const modules = await discoverKeelWorkspaceModules(resolvedRoot, { allowEmpty: true });
   const publishers = await discoverKeelWorkspacePublishers(resolvedRoot);
+  const registrations = await discoverKeelWorkspaceRegistrations(resolvedRoot);
+  if (modules.length === 0 && registrations.length === 0) {
+    throw new Error(`No ${KEEL_MODULE_MANIFEST_FILE} or ${KEEL_REGISTRATION_FILE} found under ${resolvedRoot}. Nothing to index.`);
+  }
+  // Checked before anything is built or read, because two entries claiming the
+  // same id is a workspace mistake, not a stale-dist one, and reporting the
+  // stale dist first would send somebody chasing the wrong thing.
+  const declaredIds = [...modules.map((module) => module.manifest.name), ...registrations.map((entry) => entry.registration.id)];
+  const duplicates = declaredIds.filter((id, index) => declaredIds.indexOf(id) !== index);
+  if (duplicates.length > 0) throw new Error(`Duplicate module id(s) in the workspace: ${[...new Set(duplicates)].join(", ")}.`);
   const entries = [];
   for (const module of modules) entries.push(await catalogEntry(module, options));
+  for (const registration of registrations) entries.push(await registrationCatalogEntry(registration, options));
   // A module filed under a publisher the workspace does not define would list
   // under a heading that does not exist, so it is caught at index time.
   for (const entry of entries) {

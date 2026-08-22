@@ -33,7 +33,9 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import {
   assertValidKeelSourceOrigin,
+  canonicalJson,
   createIntegrity,
+  utf8ToBytes,
   remoteUrlAllowed,
   keelBuildRecipeDigest,
   keelSourceArchiveUrl,
@@ -245,9 +247,13 @@ export async function verifyKeelModuleFromOrigin(
       sourceBytes: new Uint8Array(await readFile(path.join(root, sourcePath))),
       repository: keelSourceRepositoryRef(origin, sourcePath),
     });
-    const receiptDigest = (await createIntegrity(
-      new TextEncoder().encode(JSON.stringify(receipt)),
-    )).digest;
+    // canonicalJson, not JSON.stringify: every other digest in the system is
+    // over canonical bytes (the recipe digest, the readability report digest,
+    // the catalog's receiptDigest). Hashing this one over insertion order made
+    // the same receipt digest differently here than in `keel module index`, so
+    // comparing an origin verification against a catalog entry reported a
+    // mismatch that was not real.
+    const receiptDigest = (await createIntegrity(utf8ToBytes(canonicalJson(receipt)))).digest;
 
     const indexEntry: KeelModuleIndexEntry = {
       identity: options.identity,

@@ -6,7 +6,8 @@ import { createUploadPlan } from "./plan.js";
 import { lockModuleSnapshotFile, moduleSpecifierFromFlags, resolveModuleSnapshotFile } from "./module-cli.js";
 import { buildKeelModule, initKeelModule, planKeelModule } from "./module-pipeline.js";
 import { testKeelModule, verifyKeelModuleCandidate } from "./module-testing.js";
-import { buildKeelWorkspace, indexKeelWorkspace, testKeelWorkspace } from "./module-workspace.js";
+import { buildKeelWorkspace, indexKeelWorkspace, testKeelWorkspace, verifyKeelWorkspaceRegistrations } from "./module-workspace.js";
+import { registerKeelModuleFromOrigin } from "./module-registration.js";
 import { verifyKeelModuleFromOrigin } from "./module-verification.js";
 import { analyzeCost } from "./cost-analysis.js";
 import { analyzeMedia, runMediaPipeline, verifyBuiltArtifact } from "./pipeline.js";
@@ -86,6 +87,11 @@ Commands:
   keel module index [--root <workspace>] [--repository <url>] [--json]
   keel module verify --repo <owner/name> --commit <sha> [--path <dir>] [--entry src/index.ts]
     [--expect <0xdigest>] [--no-compact] [--json]
+  keel module verify --all [--root <workspace>] [--json]
+  keel module register --repo <owner/name> --commit <sha> --out <dir> [--path <dir>]
+    [--entry src/index.ts] [--id <id>] [--category <name>] [--owner-user <handle>]
+    [--owner-org <id>] [--owner-group <id>] [--owner-member <id>] [--license MIT]
+    [--summary <text>] [--version 0.1.0] [--json]
   keel module plan <dir> [--chain-id 11155111] [--address <0x...>] [--json]
   keel analyze <input> [--media-type <type>] [--json]
   keel build <input> --out <directory> --created-at <ISO date> [--name <name>] [--description <text>]
@@ -137,10 +143,10 @@ async function main(): Promise<void> {
     }
 
     case "module": {
-      const verb = required(args.positional[0], "module requires a subcommand: init, build, test, compact, verify, index, or plan.");
-      const all = args.flags.all === true && (verb === "build" || verb === "test");
+      const verb = required(args.positional[0], "module requires a subcommand: init, build, test, compact, verify, register, index, or plan.");
+      const all = args.flags.all === true && (verb === "build" || verb === "test" || verb === "verify");
       const workspaceRoot = flag(args, "root") ?? process.cwd();
-      const directory = verb === "index" || verb === "verify" || all
+      const directory = verb === "index" || verb === "verify" || verb === "register" || all
         ? undefined
         : required(args.positional[1], `module ${verb} requires a module directory (or --all).`);
       if (verb === "init") {
@@ -215,6 +221,66 @@ async function main(): Promise<void> {
         );
         return;
       }
+      if (verb === "verify" && all) {
+        const results = await verifyKeelWorkspaceRegistrations(workspaceRoot);
+        const failed = results.filter((result) => !result.reproduced);
+        output(
+          results,
+          args.flags.json === true,
+          results.length === 0
+            ? "No origin registrations in this workspace."
+            : results
+                .map((result) => result.reproduced
+                  ? `${result.registration.id}: reproduced from ${result.registration.origin.owner}/${result.registration.origin.repo}@${result.registration.origin.commit.slice(0, 10)}`
+                  : `${result.registration.id}: DRIFTED\n  ${result.mismatches.join("\n  ")}`)
+                .join("\n"),
+        );
+        if (failed.length > 0) process.exitCode = 1;
+        return;
+      }
+      if (verb === "register") {
+        const repository = required(flag(args, "repo"), "module register requires --repo <owner/name>.");
+        const [owner, name] = repository.split("/");
+        if (owner === undefined || name === undefined || name.length === 0) throw new TypeError("--repo must be <owner>/<name>.");
+        const commit = required(flag(args, "commit"), "module register requires --commit <sha>.");
+        const outDirectory = required(flag(args, "out"), "module register requires --out <dir>, where the registration is written.");
+        const recipeRoot = flag(args, "path");
+        const entry = flag(args, "entry") ?? "src/index.ts";
+        const ownerUser = flag(args, "owner-user");
+        const ownerOrg = flag(args, "owner-org");
+        if ((ownerUser === undefined) === (ownerOrg === undefined)) throw new TypeError("Provide exactly one of --owner-user or --owner-org.");
+        const ownerGroup = flag(args, "owner-group");
+        const ownerMember = flag(args, "owner-member");
+        const result = await registerKeelModuleFromOrigin({
+          origin: {
+            provider: "github",
+            owner,
+            repo: name,
+            commit,
+            ...(recipeRoot === undefined ? {} : { path: recipeRoot }),
+            entry,
+          },
+          id: flag(args, "id") ?? name,
+          version: flag(args, "version") ?? "0.1.0",
+          license: flag(args, "license") ?? "MIT",
+          summary: flag(args, "summary") ?? `${flag(args, "id") ?? name}: a Keel module.`,
+          category: flag(args, "category") ?? "uncategorised",
+          owner: ownerUser === undefined
+            ? { org: ownerOrg as string, ...(ownerGroup === undefined ? {} : { group: ownerGroup }), ...(ownerMember === undefined ? {} : { member: ownerMember }) }
+            : { user: ownerUser },
+          outDirectory,
+        });
+        output(
+          result,
+          args.flags.json === true,
+          `Wrote ${result.path}\n` +
+          `verified:       ${owner}/${name}@${commit.slice(0, 10)}\n` +
+          `output digest:  ${result.registration.expect.outputDigest}\n` +
+          `receipt digest: ${result.registration.expect.receiptDigest}\n` +
+          "Commit this file. Indexing reads it offline; \"keel module verify --all\" re-checks it over the network.",
+        );
+        return;
+      }
       if (verb === "verify") {
         const repository = required(flag(args, "repo"), "module verify requires --repo <owner/name>.");
         const [owner, name] = repository.split("/");
@@ -279,7 +345,7 @@ async function main(): Promise<void> {
         );
         return;
       }
-      throw new TypeError(`Unknown module subcommand ${verb}. Use init, build, test, compact, verify, index, or plan.`);
+      throw new TypeError(`Unknown module subcommand ${verb}. Use init, build, test, compact, verify, register, index, or plan.`);
     }
 
     case "analyze": {
