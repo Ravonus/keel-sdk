@@ -335,3 +335,76 @@ export async function registerKeelModuleFromOrigin(options: RegisterKeelModuleOp
   await writeFile(target, `${JSON.stringify(registration, null, 2)}\n`);
   return { path: target, registration };
 }
+
+export interface BumpKeelRegistrationOptions {
+  /** Directory holding the existing keel.registration.json. */
+  readonly directory: string;
+  /** The new commit to pin. Must be a full sha, like the original. */
+  readonly commit: string;
+  readonly version?: string;
+  readonly summary?: string;
+  readonly fetchImpl?: typeof fetch;
+  readonly now?: () => Date;
+}
+
+/** The digest fields a bump can move, so a caller can report them by name. */
+export type KeelRegistrationDigestField = "sourceDigest" | "outputDigest" | "receiptDigest" | "archiveDigest";
+
+export interface BumpKeelRegistrationResult {
+  readonly path: string;
+  readonly previous: KeelModuleRegistration;
+  readonly registration: KeelModuleRegistration;
+  /** Which committed digests the new commit changed. Empty means a no-op bump. */
+  readonly changed: readonly KeelRegistrationDigestField[];
+}
+
+/**
+ * `keel module bump`: re-pin an existing registration to a newer commit.
+ *
+ * An author who ships a new version needs the registration to follow, and
+ * hand-editing a commit sha into a file full of digests that no longer match it
+ * is exactly the mistake this whole design exists to prevent. So a bump is a
+ * fresh verification: fetch the new commit, rebuild, and rewrite every digest
+ * from what the rebuild produced.
+ *
+ * What a bump deliberately cannot change is WHICH repository is being
+ * registered. Moving a registration to a different owner, repo, or entry point
+ * is not a new version of the same module, it is a different module wearing its
+ * name, and quietly allowing it would turn a bump into a takeover.
+ */
+export async function bumpKeelModuleRegistration(options: BumpKeelRegistrationOptions): Promise<BumpKeelRegistrationResult> {
+  const previous = await readKeelModuleRegistration(options.directory);
+  if (previous.origin.commit === options.commit) {
+    throw new Error(`${previous.id} is already registered at ${options.commit}.`);
+  }
+  const candidate = parseKeelModuleRegistration({
+    ...previous,
+    ...(options.version === undefined ? {} : { version: options.version }),
+    ...(options.summary === undefined ? {} : { summary: options.summary }),
+    origin: { ...previous.origin, commit: options.commit },
+    verifiedAt: previous.verifiedAt,
+  });
+
+  let checked: RegistrationVerification;
+  try {
+    checked = await verifyKeelModuleRegistration(candidate, {
+      ...(options.fetchImpl === undefined ? {} : { fetchImpl: options.fetchImpl }),
+    });
+  } catch (error) {
+    throw new Error(`Refusing to bump ${previous.id}: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  if (checked.mismatches.some((issue) => issue.startsWith("origin did not reproduce"))) {
+    throw new Error(`Refusing to bump ${previous.id}: ${checked.mismatches[0] as string}`);
+  }
+
+  const registration: KeelModuleRegistration = {
+    ...candidate,
+    expect: checked.actual,
+    verifiedAt: (options.now?.() ?? new Date()).toISOString(),
+  };
+  const changed: readonly KeelRegistrationDigestField[] = (["sourceDigest", "outputDigest", "receiptDigest", "archiveDigest"] as const)
+    .filter((field) => previous.expect[field] !== registration.expect[field]);
+  const target = path.join(path.resolve(options.directory), KEEL_REGISTRATION_FILE);
+  await writeFile(target, `${JSON.stringify(registration, null, 2)}\n`);
+  return { path: target, previous, registration, changed };
+}

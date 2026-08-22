@@ -7,7 +7,7 @@ import { lockModuleSnapshotFile, moduleSpecifierFromFlags, resolveModuleSnapshot
 import { buildKeelModule, initKeelModule, planKeelModule } from "./module-pipeline.js";
 import { testKeelModule, verifyKeelModuleCandidate } from "./module-testing.js";
 import { buildKeelWorkspace, indexKeelWorkspace, testKeelWorkspace, verifyKeelWorkspaceRegistrations } from "./module-workspace.js";
-import { registerKeelModuleFromOrigin } from "./module-registration.js";
+import { bumpKeelModuleRegistration, registerKeelModuleFromOrigin } from "./module-registration.js";
 import { verifyKeelModuleFromOrigin } from "./module-verification.js";
 import { analyzeCost } from "./cost-analysis.js";
 import { analyzeMedia, runMediaPipeline, verifyBuiltArtifact } from "./pipeline.js";
@@ -88,6 +88,7 @@ Commands:
   keel module verify --repo <owner/name> --commit <sha> [--path <dir>] [--entry src/index.ts]
     [--expect <0xdigest>] [--no-compact] [--json]
   keel module verify --all [--root <workspace>] [--json]
+  keel module bump <dir> --commit <sha> [--version <v>] [--summary <text>] [--json]
   keel module register --repo <owner/name> --commit <sha> --out <dir> [--path <dir>]
     [--entry src/index.ts] [--id <id>] [--category <name>] [--owner-user <handle>]
     [--owner-org <id>] [--owner-group <id>] [--owner-member <id>] [--license MIT]
@@ -143,7 +144,7 @@ async function main(): Promise<void> {
     }
 
     case "module": {
-      const verb = required(args.positional[0], "module requires a subcommand: init, build, test, compact, verify, register, index, or plan.");
+      const verb = required(args.positional[0], "module requires a subcommand: init, build, test, compact, verify, register, bump, index, or plan.");
       const all = args.flags.all === true && (verb === "build" || verb === "test" || verb === "verify");
       const workspaceRoot = flag(args, "root") ?? process.cwd();
       const directory = verb === "index" || verb === "verify" || verb === "register" || all
@@ -236,6 +237,27 @@ async function main(): Promise<void> {
                 .join("\n"),
         );
         if (failed.length > 0) process.exitCode = 1;
+        return;
+      }
+      if (verb === "bump") {
+        const commit = required(flag(args, "commit"), "module bump requires --commit <sha>.");
+        const version = flag(args, "version");
+        const summary = flag(args, "summary");
+        const result = await bumpKeelModuleRegistration({
+          directory: directory as string,
+          commit,
+          ...(version === undefined ? {} : { version }),
+          ...(summary === undefined ? {} : { summary }),
+        });
+        output(
+          result,
+          args.flags.json === true,
+          `Bumped ${result.registration.id} to ${commit.slice(0, 10)}\n` +
+          `  ${result.previous.origin.commit.slice(0, 10)} -> ${commit.slice(0, 10)}\n` +
+          (result.changed.length === 0
+            ? "  No digest changed: the new commit builds to exactly the same bytes."
+            : result.changed.map((field) => `  ${field}: ${result.previous.expect[field]} -> ${result.registration.expect[field]}`).join("\n")),
+        );
         return;
       }
       if (verb === "register") {
@@ -345,7 +367,7 @@ async function main(): Promise<void> {
         );
         return;
       }
-      throw new TypeError(`Unknown module subcommand ${verb}. Use init, build, test, compact, verify, register, index, or plan.`);
+      throw new TypeError(`Unknown module subcommand ${verb}. Use init, build, test, compact, verify, register, bump, index, or plan.`);
     }
 
     case "analyze": {

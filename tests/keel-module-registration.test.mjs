@@ -16,6 +16,7 @@ import path from "node:path";
 import test from "node:test";
 
 import {
+  bumpKeelModuleRegistration,
   indexKeelWorkspace,
   parseKeelModuleRegistration,
   registerKeelModuleFromOrigin,
@@ -227,4 +228,81 @@ test("a registered id cannot collide with a vendored one", async (t) => {
   await writeFile(path.join(directory, "src/index.ts"), "export const paint = (n: number): string => String(n);\n");
 
   await assert.rejects(() => indexKeelWorkspace(root, {}), /Duplicate module id/u);
+});
+
+test("bumping re-verifies at the new commit instead of trusting the edit", async (t) => {
+  const { outDirectory } = await workspaceWithRegistration(t);
+  const NEXT = "d".repeat(40);
+  const nextFiles = {
+    [`stranger-${NEXT.slice(0, 4)}/lib/main.mjs`]:
+      'import { tint } from "./tint.mjs";\nexport const paint = (n) => tint(n) + "?";\n',
+    [`stranger-${NEXT.slice(0, 4)}/lib/tint.mjs`]: 'export const tint = (n) => `#${n.toString(16)}`;\n',
+  };
+
+  const before = parseKeelModuleRegistration(JSON.parse(await readFile(path.join(outDirectory, "keel.registration.json"), "utf8")));
+  const result = await bumpKeelModuleRegistration({
+    directory: outDirectory,
+    commit: NEXT,
+    version: "2.0.0",
+    fetchImpl: forge(nextFiles),
+    now: () => new Date("2026-02-02T00:00:00.000Z"),
+  });
+
+  const after = parseKeelModuleRegistration(JSON.parse(await readFile(path.join(outDirectory, "keel.registration.json"), "utf8")));
+  assert.equal(after.origin.commit, NEXT);
+  assert.equal(after.version, "2.0.0");
+  assert.equal(after.verifiedAt, "2026-02-02T00:00:00.000Z");
+  // Every digest is what the NEW rebuild produced, not the old ones carried over.
+  assert.notEqual(after.expect.outputDigest, before.expect.outputDigest);
+  assert.notEqual(after.expect.sourceDigest, before.expect.sourceDigest);
+  assert.ok(result.changed.includes("outputDigest"), result.changed.join(", "));
+  // Identity is untouched: a bump is a new version, not a new module.
+  assert.equal(after.id, before.id);
+  assert.equal(after.origin.owner, before.origin.owner);
+  assert.equal(after.origin.repo, before.origin.repo);
+
+  // A bump to a commit that does not build leaves the registration alone.
+  await assert.rejects(
+    () => bumpKeelModuleRegistration({
+      directory: outDirectory,
+      commit: "e".repeat(40),
+      fetchImpl: forge({ [`stranger-eeee/lib/main.mjs`]: "export const paint = (\n" }),
+    }),
+    /Refusing to bump/u,
+  );
+  const unchanged = parseKeelModuleRegistration(JSON.parse(await readFile(path.join(outDirectory, "keel.registration.json"), "utf8")));
+  assert.equal(unchanged.origin.commit, NEXT, "a refused bump must not touch the file");
+
+  // Re-pinning to the commit it already has is a mistake, not a no-op.
+  await assert.rejects(
+    () => bumpKeelModuleRegistration({ directory: outDirectory, commit: NEXT, fetchImpl: forge(nextFiles) }),
+    /already registered at/u,
+  );
+});
+
+test("a bump reports honestly when the new commit changes nothing", async (t) => {
+  const { outDirectory } = await workspaceWithRegistration(t);
+  // A commit that touched only files the entry never imports: same build, same
+  // bytes. Saying "bumped" without saying "nothing moved" would imply a change.
+  const NEXT = "d".repeat(40);
+  const sameBuild = {
+    [`stranger-${NEXT.slice(0, 4)}/lib/main.mjs`]: FOREIGN[`stranger-${COMMIT.slice(0, 4)}/lib/main.mjs`],
+    [`stranger-${NEXT.slice(0, 4)}/lib/tint.mjs`]: FOREIGN[`stranger-${COMMIT.slice(0, 4)}/lib/tint.mjs`],
+    [`stranger-${NEXT.slice(0, 4)}/CHANGELOG.md`]: "# 2.0.0\n",
+  };
+  const result = await bumpKeelModuleRegistration({
+    directory: outDirectory,
+    commit: NEXT,
+    fetchImpl: forge(sameBuild),
+    now: () => new Date("2026-02-02T00:00:00.000Z"),
+  });
+  // The bytes that would go on chain are identical, and so is the readable
+  // source they came from.
+  assert.equal(result.registration.expect.outputDigest, result.previous.expect.outputDigest);
+  assert.equal(result.registration.expect.sourceDigest, result.previous.expect.sourceDigest);
+  // Two things still move, and both are correct. The archive differs because
+  // the tree does, even though the build does not. The receipt differs because
+  // it pins the revision it was verified at, which is the point of recording
+  // one: the same bytes verified at a different commit is a different claim.
+  assert.deepEqual(result.changed, ["receiptDigest", "archiveDigest"]);
 });

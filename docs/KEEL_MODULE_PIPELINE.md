@@ -162,6 +162,34 @@ entry point actually imports are pinned, and everything else in the tree is
 none of Keel's business. The strictness gate in `keel module build` is a house
 rule for repositories that opt into it; `keel module verify` does not run it.
 
+## 4c. Register somebody else's repository: `keel module register`
+
+```bash
+keel module register --repo <owner>/<name> --commit <sha> \
+  --entry lib/main.mjs --id thing --category render --owner-user handle \
+  --out modules/handle/render/thing
+```
+
+Fetches, rebuilds, and writes `keel.registration.json` recording what the
+rebuild produced. No source is copied: the registration is the whole artifact.
+If the origin does not build, nothing is written, so a registration can never
+be an assertion somebody made about their own code.
+
+`keel module bump <dir> --commit <sha>` re-pins an existing registration to a
+newer commit by re-verifying it, and reports which digests moved. It cannot
+change which repository is registered, because that is a takeover rather than a
+version.
+
+The digests are committed rather than looked up so that indexing stays offline
+and deterministic. Re-deriving them is the separate networked verb:
+
+```bash
+keel module verify --all --root ./keel-modules
+```
+
+which rebuilds every registered origin and fails on drift. Indexing reaching
+the network would let a forge's bad afternoon quietly rewrite the catalog.
+
 ## 5. Index for the site: `keel module index`
 
 ```bash

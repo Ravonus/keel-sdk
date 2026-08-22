@@ -107,6 +107,12 @@ any of the above as stronger than it is.
   a property worth re-checking whenever a field is added: an earlier version
   took `builtAt` from the receipt file's mtime, which quietly made the whole
   document unreproducible.
+- **A registration's digests are re-derived, not recomputed locally.** A module
+  registered by origin keeps its source in another repository, so nothing in a
+  local checkout can recompute its digests; the offline catalog gate can only
+  check that the registration and the catalog agree. `keel module verify --all`
+  rebuilds from the origin and is the check that settles it, and keel-modules
+  runs a lighter archive-integrity watchdog daily.
 - **Deployment records are asserted, not proven.** A `deployments/<chainId>.json`
   entry says a revision is at an address; nothing in this pipeline reads the
   chain to confirm it. The `outputDigest` in the record makes the claim
