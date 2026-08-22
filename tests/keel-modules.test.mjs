@@ -1,5 +1,6 @@
-import test from "node:test";
+import nodeTest from "node:test";
 import assert from "node:assert/strict";
+import { siblingTest } from "./sibling-repository.mjs";
 import { execFileSync } from "node:child_process";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -22,6 +23,12 @@ import {
 
 import { MODULE_BY_ID as UNIT_MAP } from "../tools/keel/module-map.mjs";
 
+// Every case here compares this repository's module map against the contracts
+// tree, so all of them need that sibling. See sibling-repository.mjs for why
+// this is a skip rather than a token in a public workflow, and for the guard
+// that stops it skipping everywhere unnoticed.
+const test = siblingTest(nodeTest, "keel-contracts");
+
 const MODULES_DIR = "../keel-contracts/modules";
 const APPS_DIR = "../keel-contracts/apps";
 /** modules and apps live in sibling trees; everything else about them matches */
@@ -40,7 +47,7 @@ const EXPECTED_MODULES = [
   "keel-creator-identity", "keel-cross-chain-mint", "keel-crucible", "keel-die",
   "keel-equipment", "keel-graph", "keel-harness", "keel-hold", "keel-ip-control",
   "keel-kernel", "keel-market", "keel-mint-access", "keel-presentation", "keel-sleeve",
-  "keel-stake", "keel-web3-url", "line", "onchaininator", "vault-runner",
+  "keel-stake", "keel-web3-url", "line", "vault-runner",
 ];
 
 test("no module disappears without the roster changing", () => {

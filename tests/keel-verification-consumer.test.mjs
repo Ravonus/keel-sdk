@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import test from "node:test";
+import nodeTest from "node:test";
+import { siblingTest } from "./sibling-repository.mjs";
+
+// These cases read the contracts test suites and the vault character contracts
+// to prove the chain gates and this consumer app still describe the same
+// behaviour. Both are private siblings; see sibling-repository.mjs.
+const test = siblingTest(nodeTest, "keel-contracts", "vault-of-the-fallen");
 
 const source=async(path)=>readFile(new URL(path,import.meta.url),"utf8");
 
