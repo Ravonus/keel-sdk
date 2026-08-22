@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: production game sprite candidate for a high-angle top-down twin-stick pixel-art roguelike
+Primary request: Create one entirely new directionless radial weapon to replace an unpopular spherical orb weapon. Design an AEGIS STAR: a compact floating eight-way symmetric warhead with a bold star/gear silhouette, eight broad armored cleaver-like vanes surrounding a small circular central void aperture. It must read as a dangerous weapon, not a decorative orb, flower, shield, drone, or character.
+Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for later background removal; one uniform color, no shadows, gradients, texture, reflections, floor plane, or lighting variation.
+Style/medium: crisp hand-authored pixel art, nearest-neighbor stair-step edges, coherent limited grayscale value bands, production-ready game sprite.
+Composition/framing: square canvas, object precisely centered, generous even padding on every side, complete silhouette fully visible, high-angle top-down view. Radially symmetric and readable from every azimuth without a front, back, handle, or barrel.
+Color palette: grayscale weapon only—black fixed outlines and void seams, dark gray recessed metal, medium gray trim, bright white armor highlights. Do not use #00ff00 or any colored pixels in the weapon.
+Materials/textures: hard segmented metal plates, black separation seams, central aperture ring; chunky readable forms rather than tiny noise.
+Constraints: no sphere, no ball, no plain circular disk; no character, face, eye, limbs, petals, gun barrel, handle, text, ground shadow, projectile, beam, particles, orbit nodes, glow, watermark, or UI. Keep three clearly separable tint regions: outer armor vanes, dark seams/recesses, and central aperture ring. The background must remain exactly flat #00ff00 with crisp subject separation.

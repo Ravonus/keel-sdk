@@ -1,0 +1,46 @@
+{
+  "schema": "vault-biome-atlas-manifest@2",
+  "provider": "openai-imagegen",
+  "mode": "new-image-generation",
+  "grid": [6, 6],
+  "dimensions": [1254, 1254],
+  "semanticRows": ["floor", "wall", "object", "enemy", "boss-part", "effect"],
+  "runtimeEncoding": {
+    "format": "webp",
+    "quality": 70,
+    "method": 6,
+    "sharpYuv": true
+  },
+  "atlases": {
+    "crystal-overgrowth": {
+      "title": "Prism Garden",
+      "source": "prism-garden-atlas-v2.png",
+      "sourceSha256": "05ac664354c2504b13b904713b37116fc84413143a2ee4ba206f722faa5fcffd",
+      "runtimeSource": "prism-garden-atlas-v2.webp",
+      "runtimeSha256": "c878b8387d4a969f8b2bbd9d5fab21068a13562c659b880796195f8531708c1c",
+      "runtimeBytes": 179154,
+      "state": "candidate-visual-review",
+      "promptSummary": "One exact 6 by 6 grayscale pixel-art atlas: glass, moss, crystal and root floors; matching root and crystal walls, arch and gate; foliage, mushrooms, crystal shrub, caches and relay; six mobs; modular garden boss parts; six effects."
+    },
+    "occult-machine-catacomb": {
+      "title": "Signal Crypt",
+      "source": "signal-crypt-atlas-v2.png",
+      "sourceSha256": "ca620afc84d88b9880a7b7730d7df5a00119854692be529dd68ee58ffcef114b",
+      "runtimeSource": "signal-crypt-atlas-v2.webp",
+      "runtimeSha256": "49e131a0e034e855df7ab2446d8ca1912e3d2fdc2b6e69b2e52567a8ef53ae12",
+      "runtimeBytes": 131288,
+      "state": "candidate-visual-review",
+      "promptSummary": "One exact 6 by 6 grayscale pixel-art atlas: crypt floors, walls, arch and sealed sarcophagus gate; dead vines, candles, mushrooms, cache and terminal; six mobs; modular sarcophagus boss parts; six effects."
+    },
+    "zero-gravity-reactor": {
+      "title": "Void Engine",
+      "source": "void-engine-atlas-v2.png",
+      "sourceSha256": "d02705a9c0b135f481cdfbed65b8ee1cbb7d69bbedcfb0ede16f4c712d7f0f7d",
+      "runtimeSource": "void-engine-atlas-v2.webp",
+      "runtimeSha256": "c3ad34f800da8406996130b807c4d795286a6ee9b24d8dd27de0ec208f63f0d5",
+      "runtimeBytes": 133514,
+      "state": "candidate-visual-review",
+      "promptSummary": "One exact 6 by 6 grayscale pixel-art atlas: reactor floors, walls, arch and iris gate; cable vines, debris, crystal, cache and coil; six mobs; modular reactor boss parts; six effects."
+    }
+  }
+}

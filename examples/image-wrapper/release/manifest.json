@@ -1,0 +1,151 @@
+{
+  "schema": "oca-manifest@2",
+  "canonicalization": "RFC8785",
+  "id": "original-preserved",
+  "name": "Original Preserved",
+  "description": "WebP display with exact SVG original download",
+  "entrypoint": {
+    "resource": "viewer",
+    "mode": "html"
+  },
+  "resources": [
+    {
+      "id": "viewer",
+      "role": "entrypoint",
+      "mediaType": "text/html",
+      "executable": true,
+      "originalName": "original-preserved.viewer.html",
+      "aliases": [
+        "/content/viewer"
+      ],
+      "sources": [
+        {
+          "kind": "uri",
+          "uri": "./original-preserved.viewer.html",
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0x1a2ebeceecf9dca94006112ae34bc7b210635d5d37f39a7c98956a9d1953c617",
+            "byteLength": 1126
+          }
+        }
+      ]
+    },
+    {
+      "id": "preview",
+      "role": "preview",
+      "mediaType": "image/webp",
+      "executable": false,
+      "originalName": "original-preserved.preview.webp",
+      "aliases": [
+        "/content/preview"
+      ],
+      "sources": [
+        {
+          "kind": "uri",
+          "uri": "./original-preserved.preview.webp",
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0xf665811a1f1ca9b650d0db5b0cfabddb5c6c38b41751c03f22a44712457f99aa",
+            "byteLength": 25200
+          }
+        }
+      ]
+    },
+    {
+      "id": "original",
+      "role": "original",
+      "mediaType": "image/svg+xml",
+      "executable": false,
+      "originalName": "source.svg",
+      "aliases": [
+        "/content/original"
+      ],
+      "sources": [
+        {
+          "kind": "uri",
+          "uri": "./original-preserved.original.svg",
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0xd7457733e5dd957df7c9be9c863e739ac6a8bd00b98663c380f51ea8cffb1461",
+            "byteLength": 828
+          }
+        }
+      ]
+    }
+  ],
+  "fallback": {
+    "image": "preview",
+    "animation": "viewer",
+    "backgroundColor": "#09090b"
+  },
+  "runtime": {
+    "engine": {
+      "protocol": "oca-runtime@1",
+      "viewerProtocol": "oca-viewer@1",
+      "renderer": "browser"
+    },
+    "determinism": {
+      "mode": "replay",
+      "seed": "0xd7457733e5dd957df7c9be9c863e739ac6a8bd00b98663c380f51ea8cffb1461",
+      "randomAlgorithm": "xoshiro128ss",
+      "viewport": {
+        "width": 1024,
+        "height": 1024,
+        "devicePixelRatio": 1
+      },
+      "clock": {
+        "mode": "fixed",
+        "epochMs": 1786140283049
+      },
+      "locale": "en-US",
+      "timezone": "UTC"
+    },
+    "content": {
+      "protocol": "oca-content-gateway@1",
+      "mode": "verified-only",
+      "externalSources": "host-verified",
+      "manifestTrust": "digest",
+      "blockUndeclared": true,
+      "resourcePathPrefix": "/content/",
+      "onchainPathPrefix": "/onchain/",
+      "ipfsPathPrefix": "/ipfs/"
+    },
+    "sandbox": "strict",
+    "capabilities": {
+      "downloads": true
+    },
+    "maxResourceBytes": 26224,
+    "maxTotalBytes": 31250,
+    "maxRecursionDepth": 8,
+    "maxResources": 16,
+    "timeoutMs": 15000
+  },
+  "revision": {
+    "number": 1,
+    "compatibility": {
+      "min": 1,
+      "max": 1
+    },
+    "policy": "creator"
+  },
+  "provenance": {
+    "createdAt": "2026-08-07T22:04:43.049Z",
+    "creator": "Ravonus",
+    "sourceRepository": "oca-modern"
+  },
+  "downloads": [
+    {
+      "resource": "original",
+      "label": "Download original",
+      "filename": "source.svg"
+    }
+  ],
+  "extensions": {
+    "oca:derived": {
+      "preview": "WebP",
+      "originalPreserved": true,
+      "sourceMode": "files",
+      "canonicalization": "RFC8785"
+    }
+  }
+}

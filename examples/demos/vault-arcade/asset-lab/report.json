@@ -1,0 +1,357 @@
+{
+  "schema": "keel-vault-sprite-benchmark@1",
+  "source": "examples/demos/vault-arcade/assets/character-parts-eight-direction-168.webp",
+  "sourceByteLength": 196736,
+  "sourceGrid": {
+    "columns": 8,
+    "rows": 9,
+    "cellWidth": 168,
+    "cellHeight": 168
+  },
+  "measurement": "Each candidate is decoded and compared with a nearest-neighbor resized PNG reference at the same dimensions.",
+  "budget": {
+    "resolvedCharacterCeilingBytes": 2500000,
+    "sharedRendererAndGameReserveBytes": 500000,
+    "selectedAssetBudgetBytes": 2000000,
+    "scope": "one resolved token or map, not the complete reusable asset catalogue"
+  },
+  "results": [
+    {
+      "cellSize": 64,
+      "width": 512,
+      "height": 576,
+      "variant": "webp-lossless",
+      "fileName": "character-9-layer-8-direction-64-webp-lossless.webp",
+      "byteLength": 140044,
+      "meanAbsoluteError": 0,
+      "psnr": null,
+      "selectedSheetsInsideBudget": 14
+    },
+    {
+      "cellSize": 64,
+      "width": 512,
+      "height": 576,
+      "variant": "webp-q90",
+      "fileName": "character-9-layer-8-direction-64-webp-q90.webp",
+      "byteLength": 74422,
+      "meanAbsoluteError": 1.3382,
+      "psnr": 37.07,
+      "selectedSheetsInsideBudget": 26
+    },
+    {
+      "cellSize": 64,
+      "width": 512,
+      "height": 576,
+      "variant": "webp-q80",
+      "fileName": "character-9-layer-8-direction-64-webp-q80.webp",
+      "byteLength": 62150,
+      "meanAbsoluteError": 1.9082,
+      "psnr": 34.99,
+      "selectedSheetsInsideBudget": 32
+    },
+    {
+      "cellSize": 64,
+      "width": 512,
+      "height": 576,
+      "variant": "avif-q60",
+      "fileName": "character-9-layer-8-direction-64-avif-q60.avif",
+      "byteLength": 50722,
+      "meanAbsoluteError": 1.8919,
+      "psnr": 36.03,
+      "selectedSheetsInsideBudget": 39
+    },
+    {
+      "cellSize": 64,
+      "width": 512,
+      "height": 576,
+      "variant": "avif-q45",
+      "fileName": "character-9-layer-8-direction-64-avif-q45.avif",
+      "byteLength": 35357,
+      "meanAbsoluteError": 2.9957,
+      "psnr": 31.96,
+      "selectedSheetsInsideBudget": 56
+    },
+    {
+      "cellSize": 96,
+      "width": 768,
+      "height": 864,
+      "variant": "webp-lossless",
+      "fileName": "character-9-layer-8-direction-96-webp-lossless.webp",
+      "byteLength": 257270,
+      "meanAbsoluteError": 0,
+      "psnr": null,
+      "selectedSheetsInsideBudget": 7
+    },
+    {
+      "cellSize": 96,
+      "width": 768,
+      "height": 864,
+      "variant": "webp-q90",
+      "fileName": "character-9-layer-8-direction-96-webp-q90.webp",
+      "byteLength": 128834,
+      "meanAbsoluteError": 1.064,
+      "psnr": 39.21,
+      "selectedSheetsInsideBudget": 15
+    },
+    {
+      "cellSize": 96,
+      "width": 768,
+      "height": 864,
+      "variant": "webp-q80",
+      "fileName": "character-9-layer-8-direction-96-webp-q80.webp",
+      "byteLength": 106582,
+      "meanAbsoluteError": 1.578,
+      "psnr": 36.67,
+      "selectedSheetsInsideBudget": 18
+    },
+    {
+      "cellSize": 96,
+      "width": 768,
+      "height": 864,
+      "variant": "avif-q60",
+      "fileName": "character-9-layer-8-direction-96-avif-q60.avif",
+      "byteLength": 83726,
+      "meanAbsoluteError": 1.6363,
+      "psnr": 37.19,
+      "selectedSheetsInsideBudget": 23
+    },
+    {
+      "cellSize": 96,
+      "width": 768,
+      "height": 864,
+      "variant": "avif-q45",
+      "fileName": "character-9-layer-8-direction-96-avif-q45.avif",
+      "byteLength": 59420,
+      "meanAbsoluteError": 2.5401,
+      "psnr": 33.26,
+      "selectedSheetsInsideBudget": 33
+    },
+    {
+      "cellSize": 128,
+      "width": 1024,
+      "height": 1152,
+      "variant": "webp-lossless",
+      "fileName": "character-9-layer-8-direction-128-webp-lossless.webp",
+      "byteLength": 419394,
+      "meanAbsoluteError": 0,
+      "psnr": null,
+      "selectedSheetsInsideBudget": 4
+    },
+    {
+      "cellSize": 128,
+      "width": 1024,
+      "height": 1152,
+      "variant": "webp-q90",
+      "fileName": "character-9-layer-8-direction-128-webp-q90.webp",
+      "byteLength": 190730,
+      "meanAbsoluteError": 0.8849,
+      "psnr": 41.23,
+      "selectedSheetsInsideBudget": 10
+    },
+    {
+      "cellSize": 128,
+      "width": 1024,
+      "height": 1152,
+      "variant": "webp-q80",
+      "fileName": "character-9-layer-8-direction-128-webp-q80.webp",
+      "byteLength": 158684,
+      "meanAbsoluteError": 1.4354,
+      "psnr": 37.51,
+      "selectedSheetsInsideBudget": 12
+    },
+    {
+      "cellSize": 128,
+      "width": 1024,
+      "height": 1152,
+      "variant": "avif-q60",
+      "fileName": "character-9-layer-8-direction-128-avif-q60.avif",
+      "byteLength": 113165,
+      "meanAbsoluteError": 1.5267,
+      "psnr": 37.65,
+      "selectedSheetsInsideBudget": 17
+    },
+    {
+      "cellSize": 128,
+      "width": 1024,
+      "height": 1152,
+      "variant": "avif-q45",
+      "fileName": "character-9-layer-8-direction-128-avif-q45.avif",
+      "byteLength": 80855,
+      "meanAbsoluteError": 2.3097,
+      "psnr": 33.99,
+      "selectedSheetsInsideBudget": 24
+    },
+    {
+      "cellSize": 168,
+      "width": 1344,
+      "height": 1512,
+      "variant": "webp-lossless",
+      "fileName": "character-9-layer-8-direction-168-webp-lossless.webp",
+      "byteLength": 579822,
+      "meanAbsoluteError": 0,
+      "psnr": null,
+      "selectedSheetsInsideBudget": 3
+    },
+    {
+      "cellSize": 168,
+      "width": 1344,
+      "height": 1512,
+      "variant": "webp-q90",
+      "fileName": "character-9-layer-8-direction-168-webp-q90.webp",
+      "byteLength": 220756,
+      "meanAbsoluteError": 0.5634,
+      "psnr": 45.57,
+      "selectedSheetsInsideBudget": 9
+    },
+    {
+      "cellSize": 168,
+      "width": 1344,
+      "height": 1512,
+      "variant": "webp-q80",
+      "fileName": "character-9-layer-8-direction-168-webp-q80.webp",
+      "byteLength": 190266,
+      "meanAbsoluteError": 0.8209,
+      "psnr": 42.3,
+      "selectedSheetsInsideBudget": 10
+    },
+    {
+      "cellSize": 168,
+      "width": 1344,
+      "height": 1512,
+      "variant": "avif-q60",
+      "fileName": "character-9-layer-8-direction-168-avif-q60.avif",
+      "byteLength": 157863,
+      "meanAbsoluteError": 1.2128,
+      "psnr": 39.07,
+      "selectedSheetsInsideBudget": 12
+    },
+    {
+      "cellSize": 168,
+      "width": 1344,
+      "height": 1512,
+      "variant": "avif-q45",
+      "fileName": "character-9-layer-8-direction-168-avif-q45.avif",
+      "byteLength": 110116,
+      "meanAbsoluteError": 1.9176,
+      "psnr": 35.04,
+      "selectedSheetsInsideBudget": 18
+    }
+  ],
+  "fullMotionProxy": {
+    "status": "layout-and-size-proof-not-final-animation-art",
+    "cellSize": 96,
+    "directions": 4,
+    "directionOrder": [
+      "south",
+      "west",
+      "north",
+      "east"
+    ],
+    "clips": [
+      {
+        "id": "idle",
+        "frames": 4
+      },
+      {
+        "id": "walk",
+        "frames": 6
+      },
+      {
+        "id": "attack",
+        "frames": 8
+      },
+      {
+        "id": "hit",
+        "frames": 3
+      },
+      {
+        "id": "death",
+        "frames": 8
+      }
+    ],
+    "frameCells": 116,
+    "grid": {
+      "columns": 8,
+      "rows": 20
+    },
+    "candidates": [
+      {
+        "variant": "webp-lossless",
+        "fileName": "body-full-motion-proxy-96-4dir-webp-lossless.webp",
+        "byteLength": 86618,
+        "meanAbsoluteError": 0,
+        "psnr": null
+      },
+      {
+        "variant": "webp-q90",
+        "fileName": "body-full-motion-proxy-96-4dir-webp-q90.webp",
+        "byteLength": 123578,
+        "meanAbsoluteError": 0.6832,
+        "psnr": 42.43
+      },
+      {
+        "variant": "webp-q80",
+        "fileName": "body-full-motion-proxy-96-4dir-webp-q80.webp",
+        "byteLength": 92580,
+        "meanAbsoluteError": 1.0325,
+        "psnr": 38.99
+      },
+      {
+        "variant": "webp-q70",
+        "fileName": "body-full-motion-proxy-96-4dir-webp-q70.webp",
+        "byteLength": 78374,
+        "meanAbsoluteError": 1.3089,
+        "psnr": 36.88
+      },
+      {
+        "variant": "webp-q60",
+        "fileName": "body-full-motion-proxy-96-4dir-webp-q60.webp",
+        "byteLength": 75942,
+        "meanAbsoluteError": 1.4302,
+        "psnr": 36.08
+      },
+      {
+        "variant": "webp-q50",
+        "fileName": "body-full-motion-proxy-96-4dir-webp-q50.webp",
+        "byteLength": 70918,
+        "meanAbsoluteError": 1.5969,
+        "psnr": 35.1
+      },
+      {
+        "variant": "avif-q70",
+        "fileName": "body-full-motion-proxy-96-4dir-avif-q70.avif",
+        "byteLength": 103134,
+        "meanAbsoluteError": 0.7283,
+        "psnr": 41.93
+      },
+      {
+        "variant": "avif-q60",
+        "fileName": "body-full-motion-proxy-96-4dir-avif-q60.avif",
+        "byteLength": 88608,
+        "meanAbsoluteError": 0.9153,
+        "psnr": 39.81
+      },
+      {
+        "variant": "avif-q50",
+        "fileName": "body-full-motion-proxy-96-4dir-avif-q50.avif",
+        "byteLength": 71451,
+        "meanAbsoluteError": 1.169,
+        "psnr": 37.47
+      },
+      {
+        "variant": "avif-q40",
+        "fileName": "body-full-motion-proxy-96-4dir-avif-q40.avif",
+        "byteLength": 56926,
+        "meanAbsoluteError": 1.6056,
+        "psnr": 34.51
+      },
+      {
+        "variant": "avif-q30",
+        "fileName": "body-full-motion-proxy-96-4dir-avif-q30.avif",
+        "byteLength": 46190,
+        "meanAbsoluteError": 2.0597,
+        "psnr": 32.27
+      }
+    ]
+  }
+}

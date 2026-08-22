@@ -1,0 +1,23 @@
+{
+  "schema": "vault-base-rig-animation-bible@1",
+  "purpose": "Canonical pose and registration source for every layered visual attribute",
+  "cell": { "authored": 48, "display": 96, "originX": 24, "originY": 42 },
+  "camera": "top-down three-quarter arena",
+  "directions": ["south", "west", "north", "east"],
+  "atlas": { "columns": 8, "rows": 20, "width": 384, "height": 960 },
+  "clips": [
+    { "id": "idle", "frames": 4, "fps": 6, "motion": "quiet breathing and weight shift; feet remain planted" },
+    { "id": "walk", "frames": 6, "fps": 10, "motion": "complete readable locomotion cycle with opposing arms and legs" },
+    { "id": "attack", "frames": 8, "fps": 12, "motion": "gun-ready aim, recoil, recovery; hands preserve weapon socket" },
+    { "id": "hit", "frames": 3, "fps": 12, "motion": "impact recoil, peak reaction, return transition" },
+    { "id": "death", "frames": 8, "fps": 8, "motion": "upright to grounded collapse; no disappearing body" }
+  ],
+  "layerPlanes": ["behind-body", "body", "front-of-body"],
+  "rules": [
+    "Every exported row uses the same cell and origin.",
+    "The base rig contains no equipment, armor, hair, face, or weapon artwork.",
+    "Every decorative attribute is authored over the rig but exported alone.",
+    "An attribute may use behind-body and front-of-body planes when it crosses the silhouette.",
+    "No duplicated or globally shifted frames count as authored animation."
+  ]
+}

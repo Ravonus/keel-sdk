@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vault sprite size lab</title><style>
+body{margin:0;background:#080910;color:#f5f2ff;font:14px system-ui;padding:24px}header{max-width:900px;margin:auto auto 24px}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:1500px;margin:auto}article{border:1px solid #ffffff20;border-radius:18px;background:#11131c;padding:16px}img{display:block;width:100%;height:auto;image-rendering:pixelated;background:#05060a}h1{font-size:32px}h2{font-size:16px;margin:14px 0 6px}p{color:#a6a6b5;line-height:1.5;margin:5px 0}
+</style></head><body><header><h1>Vault sprite size lab</h1><p>Same nine-layer, eight-direction source at four cell sizes and five deterministic codecs. The budget is per resolved character, not the whole Library.</p></header><main>
+  <article>
+    <img src="./character-9-layer-8-direction-64-webp-lossless.webp" alt="64px webp-lossless" />
+    <h2>64px · webp-lossless</h2>
+    <p>136.8 KiB · MAE 0 · lossless</p>
+    <p>Up to 14 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-64-webp-q90.webp" alt="64px webp-q90" />
+    <h2>64px · webp-q90</h2>
+    <p>72.7 KiB · MAE 1.3382 · 37.07 dB</p>
+    <p>Up to 26 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-64-webp-q80.webp" alt="64px webp-q80" />
+    <h2>64px · webp-q80</h2>
+    <p>60.7 KiB · MAE 1.9082 · 34.99 dB</p>
+    <p>Up to 32 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-64-avif-q60.avif" alt="64px avif-q60" />
+    <h2>64px · avif-q60</h2>
+    <p>49.5 KiB · MAE 1.8919 · 36.03 dB</p>
+    <p>Up to 39 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-64-avif-q45.avif" alt="64px avif-q45" />
+    <h2>64px · avif-q45</h2>
+    <p>34.5 KiB · MAE 2.9957 · 31.96 dB</p>
+    <p>Up to 56 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-96-webp-lossless.webp" alt="96px webp-lossless" />
+    <h2>96px · webp-lossless</h2>
+    <p>251.2 KiB · MAE 0 · lossless</p>
+    <p>Up to 7 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-96-webp-q90.webp" alt="96px webp-q90" />
+    <h2>96px · webp-q90</h2>
+    <p>125.8 KiB · MAE 1.064 · 39.21 dB</p>
+    <p>Up to 15 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-96-webp-q80.webp" alt="96px webp-q80" />
+    <h2>96px · webp-q80</h2>
+    <p>104.1 KiB · MAE 1.578 · 36.67 dB</p>
+    <p>Up to 18 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-96-avif-q60.avif" alt="96px avif-q60" />
+    <h2>96px · avif-q60</h2>
+    <p>81.8 KiB · MAE 1.6363 · 37.19 dB</p>
+    <p>Up to 23 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-96-avif-q45.avif" alt="96px avif-q45" />
+    <h2>96px · avif-q45</h2>
+    <p>58.0 KiB · MAE 2.5401 · 33.26 dB</p>
+    <p>Up to 33 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-128-webp-lossless.webp" alt="128px webp-lossless" />
+    <h2>128px · webp-lossless</h2>
+    <p>409.6 KiB · MAE 0 · lossless</p>
+    <p>Up to 4 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-128-webp-q90.webp" alt="128px webp-q90" />
+    <h2>128px · webp-q90</h2>
+    <p>186.3 KiB · MAE 0.8849 · 41.23 dB</p>
+    <p>Up to 10 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-128-webp-q80.webp" alt="128px webp-q80" />
+    <h2>128px · webp-q80</h2>
+    <p>155.0 KiB · MAE 1.4354 · 37.51 dB</p>
+    <p>Up to 12 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-128-avif-q60.avif" alt="128px avif-q60" />
+    <h2>128px · avif-q60</h2>
+    <p>110.5 KiB · MAE 1.5267 · 37.65 dB</p>
+    <p>Up to 17 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-128-avif-q45.avif" alt="128px avif-q45" />
+    <h2>128px · avif-q45</h2>
+    <p>79.0 KiB · MAE 2.3097 · 33.99 dB</p>
+    <p>Up to 24 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-168-webp-lossless.webp" alt="168px webp-lossless" />
+    <h2>168px · webp-lossless</h2>
+    <p>566.2 KiB · MAE 0 · lossless</p>
+    <p>Up to 3 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-168-webp-q90.webp" alt="168px webp-q90" />
+    <h2>168px · webp-q90</h2>
+    <p>215.6 KiB · MAE 0.5634 · 45.57 dB</p>
+    <p>Up to 9 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-168-webp-q80.webp" alt="168px webp-q80" />
+    <h2>168px · webp-q80</h2>
+    <p>185.8 KiB · MAE 0.8209 · 42.3 dB</p>
+    <p>Up to 10 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-168-avif-q60.avif" alt="168px avif-q60" />
+    <h2>168px · avif-q60</h2>
+    <p>154.2 KiB · MAE 1.2128 · 39.07 dB</p>
+    <p>Up to 12 sheets after the 500 KB runtime reserve.</p>
+  </article>
+
+  <article>
+    <img src="./character-9-layer-8-direction-168-avif-q45.avif" alt="168px avif-q45" />
+    <h2>168px · avif-q45</h2>
+    <p>107.5 KiB · MAE 1.9176 · 35.04 dB</p>
+    <p>Up to 18 sheets after the 500 KB runtime reserve.</p>
+  </article></main></body></html>

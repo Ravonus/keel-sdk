@@ -1,0 +1,28 @@
+{
+  "schema": "vault-keel-viewer-revision@3",
+  "chainId": 11155111,
+  "network": "Ethereum Sepolia",
+  "publisher": "0x1bF2d0B339b5850F88eCe7b14a2497c3Dc821C90",
+  "logicalObject": {
+    "objectId": "0xdbc37b9024bf07eb5ee1086613b02f31b8aa9d21f07dd5c7c585a2a9af43279b",
+    "revision": 2,
+    "parentRevision": 1,
+    "policy": "creator"
+  },
+  "parent": {
+    "contentObjectId": "0x59747dc8fbc39e59eeee365c7e252c464a0c93f528bdc742aae20afefd103d26",
+    "digest": "0x4d8ea3087a6bdaa140714085fcaf91b572fe37d82b7ab55390e207ecdd15bce4",
+    "byteLength": 3519
+  },
+  "content": {
+    "contentObjectId": "0xeec5e04500707297cd3fb35e80aaf56d00cde891f66c0ab78a9bdb7a4209277e",
+    "digest": "0xba0a1137b71d066cfa443c9cfe4f2d73178d98e67e6212ef18dd747dac5f66d8",
+    "byteLength": 3519,
+    "slugId": "0xe6de2bbd7daf996ecb0927fbcb04911dffdcc9283e5fe6eb3feef4c04217207a"
+  },
+  "appendTransaction": "0x7d80b94dcf3b173afa72bf58bc86d6139f9565979cb7a3bb148523100d4d3a64",
+  "htmlBuilder": "0x10727f2AC4E4416bAe15BDD96311Bfc006706042",
+  "keelHold": "0x2621C924aDfeac2b761B2DDc6611A9581120d439",
+  "artifactRegistry": "0x95161Bd877Ed9300397e179bae6a10178C6d6D8b",
+  "createdAt": "2026-08-13T23:44:25.972Z"
+}

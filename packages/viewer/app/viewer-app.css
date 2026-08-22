@@ -1,0 +1,195 @@
+/* Keel wrapper viewer.
+   Two columns on a desktop, one on a phone, and the art never competes with the
+   panel for space. Type is monospace throughout because most of what is shown
+   is a hash, an address or a byte count, and those are read character by
+   character rather than as words. */
+:root{
+  color-scheme:dark;
+  --bg:rgb(5,8,7); --panel:rgb(10,21,18); --line:rgba(255,255,255,0.078); --ink:rgb(223,248,240); --dim:rgb(125,150,141);
+  --ok:rgb(103,246,197); --ok-rgb:103,246,197; --warn:rgb(255,202,99); --bad:rgb(255,101,115);
+  --accent:var(--ok);
+}
+html.is-unwrapped{--accent:var(--bad)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;
+  position:fixed;inset:0;overflow:hidden;
+}
+
+/* ---------------------------------------------------------------- the art */
+/* Fixed and centred on its own layer. The drawer can grow to any height and
+   the art will not budge — an earlier version let a long panel reflow the page
+   and push the artwork down, which is unforgivable on somebody's work. */
+.stage{position:fixed;inset:0;display:grid;place-items:center;overflow:hidden;
+  background:radial-gradient(circle at 50% 42%,rgb(13,31,26) 0,rgb(6,13,11) 55%,rgb(3,6,5) 100%);
+  transition:transform .5s cubic-bezier(.22,.9,.24,1)}
+/* The asset module owns sizing; the stage just centres whatever it produces. */
+[id=asset]{display:grid;place-items:center;width:100%;height:100%;min-width:0;min-height:0}
+[id=asset]>*{max-width:100%;max-height:100%}
+[id=boot]{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);letter-spacing:.16em}
+[id=boot][hidden]{display:none}
+
+/* On a wide screen the drawer takes a slice and the art slides over to stay
+   centred in what is left. On a narrow or square frame it is a bottom sheet,
+   because that is the gesture people already know there. */
+@media(min-width:721px){
+  body.open .stage{transform:translateX(min(-210px,-23vw))}
+}
+
+/* An emptied wrapper still shows the art — it was preserved and that has not
+   stopped being true. What changed is that it cannot be traded, so the frame
+   says so continuously rather than hiding it behind a click. */
+/* The frame follows the artwork's own edge. Where the backdrop is a rounded
+   rect — an ape's orange field is radius 21 of 631 — the stroke curves with it;
+   where the art bleeds to the corners there is no backdrop to follow and the
+   painted rectangle is the honest answer. Both come from the same measurement,
+   never from a guess about what collection this is. */
+.edge{position:absolute;left:0;top:0;pointer-events:none;z-index:3;overflow:visible;
+  opacity:0;transition:opacity .35s ease}
+html.is-unwrapped .edge{opacity:1}
+.edge path{fill:none;stroke:var(--bad);stroke-width:5;stroke-linejoin:round;
+  animation:breathe 2.6s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.22;filter:none}
+  50%{opacity:1;filter:drop-shadow(0 0 14px rgba(255,101,115,.75))}}
+.flag{position:absolute;left:14px;top:14px;z-index:4;display:none;align-items:center;gap:7px;
+  padding:6px 11px;border:1px solid var(--bad);border-radius:999px;background:rgba(42,0,6,0.902);
+  color:rgb(255,217,222);font-size:9px;font-weight:900;letter-spacing:.16em}
+html.is-unwrapped .flag{display:flex}
+.flag i{width:6px;height:6px;border-radius:50%;background:var(--bad);
+  animation:blink 2.6s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1;box-shadow:0 0 12px var(--bad)}}
+
+/* -------------------------------------------------------------- the panel */
+/* The seal is not faint by default — it is absent. This is somebody's artwork
+   and nothing belongs on top of it uninvited. The corner stays a hover target,
+   so the mark appears the moment a reader goes looking and at no other time. */
+.corner{position:absolute;left:0;bottom:0;z-index:8;transition:left .3s ease,bottom .3s ease;width:104px;height:104px;
+  display:flex;align-items:flex-end;padding:16px;pointer-events:auto}
+.seal{width:38px;height:38px;padding:0;border:1px solid rgba(var(--ok-rgb),.5);border-radius:11px;
+  background:rgba(4,16,12,0.902);color:var(--accent);cursor:pointer;display:grid;place-items:center;
+  backdrop-filter:blur(8px);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateX(-14px) rotate(-7deg) scale(.9);
+  transition:opacity .34s ease,transform .44s cubic-bezier(.16,1,.3,1),
+    box-shadow .3s ease,visibility 0s linear .34s}
+.corner:hover .seal,.corner:focus-within .seal,.seal[aria-expanded=true]{
+  opacity:1;visibility:visible;pointer-events:auto;transform:none;
+  box-shadow:0 0 26px rgba(var(--ok-rgb),.3);
+  transition:opacity .3s ease,transform .44s cubic-bezier(.16,1,.3,1),
+    box-shadow .3s ease,visibility 0s linear 0s}
+.seal:focus-visible{outline:2px solid rgb(255,255,255);outline-offset:3px}
+.seal b{font:900 15px/1 ui-monospace,monospace;letter-spacing:-.06em}
+/* No hover on a touch screen, so the corner itself is the target there and the
+   mark shows only while the panel is open. */
+@media(pointer:coarse){
+  .corner:hover .seal{opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-14px) rotate(-7deg) scale(.9)}
+  .seal[aria-expanded=true]{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+}
+
+.scrim{position:absolute;inset:0;z-index:9;border:0;background:rgba(0,0,0,0.667);opacity:0;pointer-events:none;
+  transition:opacity .35s ease}
+body.open .scrim{opacity:1;pointer-events:auto}
+
+.panel{position:fixed;z-index:10;display:flex;flex-direction:column;
+  background:linear-gradient(150deg,rgba(11,26,22,0.988),rgba(4,9,8,0.988));
+  border:1px solid rgba(var(--ok-rgb),.24);
+  box-shadow:0 -18px 70px rgba(0,0,0,0.8),0 0 46px rgba(var(--ok-rgb),.06);
+  pointer-events:none;overflow:hidden;
+  transition:transform .48s cubic-bezier(.22,.9,.24,1),opacity .3s ease}
+html.is-unwrapped .panel{border-color:rgba(255,101,115,.34)}
+
+/* desktop: a drawer off the right edge */
+@media(min-width:721px){
+  .panel{top:0;right:0;bottom:0;width:min(460px,44vw);
+    border-width:0 0 0 1px;transform:translateX(101%);opacity:1}
+  body.open .panel{transform:none;pointer-events:auto}
+}
+/* touch / square: a sheet off the bottom, full-height on a phone */
+@media(max-width:720px){
+  .panel{left:0;right:0;bottom:0;max-height:92%;border-radius:18px 18px 0 0;
+    border-width:1px 0 0 0;transform:translateY(101%)}
+  body.open .panel{transform:none;pointer-events:auto}
+  .grab{display:block;width:38px;height:4px;margin:9px auto 2px;border-radius:99px;background:rgba(255,255,255,0.18)}
+  .corner{width:84px;height:84px;padding:13px}
+}
+.grab{display:none}
+.close{position:absolute;right:12px;top:12px;z-index:2;width:28px;height:28px;border:0;border-radius:50%;
+  background:rgba(255,255,255,0.071);color:var(--ink);font-size:16px;cursor:pointer}
+.head{display:flex;align-items:baseline;gap:10px;padding:15px 44px 11px 16px;border-bottom:1px solid var(--line)}
+.head b{font-size:14px;letter-spacing:-.02em}
+.head span{color:var(--dim);font-size:10px}
+.tabs{display:flex;gap:4px;padding:10px 12px;border-bottom:1px solid var(--line);overflow:auto}
+.tab{flex:1;min-width:84px;border:0;border-radius:9px;padding:9px 8px;background:transparent;
+  color:var(--dim);font:800 9px/1 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.tab[aria-selected=true]{background:rgba(var(--ok-rgb),.12);color:var(--accent);
+  box-shadow:0 0 0 1px rgba(var(--ok-rgb),.18) inset}
+[id=pages]{flex:1;overflow:auto;padding:13px;overscroll-behavior:contain}
+.page{display:grid;gap:12px}
+.page[hidden]{display:none}
+
+.card{border:1px solid var(--line);border-radius:14px;padding:13px 14px;background:rgba(255,255,255,0.02)}
+.card h3{margin:0 0 10px;color:rgb(205,225,218);font-size:9px;letter-spacing:.15em;text-transform:uppercase}
+.row{display:grid;grid-template-columns:minmax(96px,.8fr) minmax(0,1.2fr);gap:10px;
+  padding:6px 0;border-top:1px solid var(--line);font-size:10.5px}
+.row:first-of-type{border-top:0}
+.k{color:var(--dim)}
+.v{color:var(--ink);text-align:right;overflow-wrap:anywhere}
+.v.mono{font-family:ui-monospace,monospace}
+a.v{color:var(--accent);text-decoration:none;border-bottom:1px dotted rgba(var(--ok-rgb),.4)}
+@media(max-width:520px){.row{grid-template-columns:1fr;gap:2px}.v{text-align:left}}
+
+/* the verdict */
+.verdict{display:flex;align-items:center;gap:14px;padding:15px;border:1px solid rgba(var(--ok-rgb),.3);
+  border-radius:16px;background:linear-gradient(140deg,rgba(var(--ok-rgb),.09),transparent)}
+.score{display:flex;align-items:baseline;gap:3px;color:var(--accent)}
+.score b{font-size:34px;letter-spacing:-.05em;line-height:1}
+.score span{font-size:11px;color:var(--dim)}
+.grade{margin:0;color:var(--accent);font-size:13px;font-weight:900;letter-spacing:.12em}
+.grade-sub{margin:4px 0 0;color:var(--dim);font-size:9.5px;line-height:1.5}
+
+/* custody banner */
+.custody{display:flex;gap:11px;align-items:flex-start;padding:12px 13px;border-radius:14px;
+  border:1px solid var(--line);background:rgba(255,255,255,0.02)}
+.custody.held{border-color:rgba(var(--ok-rgb),.28)}
+.custody.empty{border-color:rgba(255,101,115,.4);background:rgba(38,6,11,0.69)}
+.custody b{display:block;font-size:10px;letter-spacing:.14em}
+.custody.held b{color:var(--ok)} .custody.empty b{color:var(--bad)}
+.custody small{display:block;margin-top:3px;color:var(--dim);font-size:9.5px;line-height:1.5}
+.pulse{flex:none;width:8px;height:8px;margin-top:4px;border-radius:50%;background:var(--ok)}
+.custody.empty .pulse{background:var(--bad);animation:blink 2.6s ease-in-out infinite}
+
+/* checks */
+.chk{display:grid;grid-template-columns:8px 1fr;gap:9px;padding:7px 0;border-top:1px solid var(--line)}
+.chk:first-of-type{border-top:0}
+.chk .dot{width:7px;height:7px;margin-top:4px;border-radius:50%;background:var(--ok)}
+.chk.warn .dot{background:var(--warn)} .chk.no .dot{background:var(--bad)}
+.chk b{font-size:10.5px;font-weight:800}
+.chk small{display:block;margin-top:2px;color:var(--dim);font-size:9.5px;line-height:1.5}
+
+/* mutability */
+.mut{padding:8px 0;border-top:1px solid var(--line)}
+.mut:first-of-type{border-top:0}
+.mut-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mut b{font-size:10.5px}
+.tag{padding:2px 7px;border-radius:999px;font-size:8px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.tag.good{background:rgba(var(--ok-rgb),.14);color:var(--ok)}
+.tag.warn{background:rgba(255,202,99,.14);color:var(--warn)}
+.mut small{display:block;margin-top:3px;color:var(--dim);font-size:9.5px;line-height:1.5}
+
+/* rows that drill into an on-chain inspector */
+.row.drill{cursor:pointer;border-radius:7px;margin:0 -6px;padding-left:6px;padding-right:6px;
+  transition:background .16s ease}
+.row.drill:hover,.row.drill:focus-visible{background:rgba(var(--ok-rgb),.07);outline:none}
+.row.drill .v{color:var(--accent)}
+.row.drill::after{content:"›";color:var(--dim);grid-column:2;justify-self:end;font-size:11px;margin-top:-16px}
+.back{margin:0 0 10px;border:1px solid var(--line);border-radius:9px;padding:6px 10px;
+  background:rgba(255,255,255,0.031);color:var(--dim);font:800 9px ui-monospace,monospace;letter-spacing:.1em;cursor:pointer}
+.back:hover{color:var(--ink)}
+.loading{color:var(--dim);font-size:10px;letter-spacing:.1em}
+
+/* A verifier with no artwork of its own has nothing to frame, so the stage
+   stands down and the panel is the whole document. */
+html.is-chrome-only .stage{background:radial-gradient(circle at 50% 40%,rgb(13,31,26) 0,rgb(3,6,5) 100%)}
+html.is-chrome-only .edge{display:none}

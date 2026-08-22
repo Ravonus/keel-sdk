@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Keel · Vault Of The Fallen</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #06050d;
+        color: #fff;
+        font-family: ui-monospace, monospace;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+      }
+      #plate {
+        position: absolute;
+        left: 24px;
+        bottom: 22px;
+        z-index: 2;
+        pointer-events: none;
+      }
+      #plate small {
+        display: block;
+        font-size: 11px;
+        letter-spacing: 0.24em;
+        color: #59e5ff;
+      }
+      #plate strong {
+        display: block;
+        font-size: 22px;
+        letter-spacing: -0.02em;
+        margin-top: 4px;
+        font-weight: 600;
+      }
+      #plate span {
+        display: block;
+        font-size: 11px;
+        color: #8b8ba7;
+        margin-top: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <div id="plate">
+      <small>THREE.JS · VERIFIED BYTES</small>
+      <strong>Vault Of The Fallen</strong>
+      <span
+        >A full 3D library resolved from immutable storage and hash-checked
+        before a single frame renders</span
+      >
+    </div>
+    <script type="module" src="/content/scene.js"></script>
+  </body>
+</html>

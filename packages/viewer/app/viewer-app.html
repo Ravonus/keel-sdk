@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Keel verified</title><style>__CSS__</style><!--@keel:context--></head><body>
+<div class="stage">
+  <div id="asset"></div>
+  <!-- The unwrapped frame is stroked along the artwork's own backdrop edge,
+       measured from the pixels, so a rounded field is followed rather than
+       squared off. Positioned by script over the painted rectangle. -->
+  <svg class="edge" id="edge" aria-hidden="true"><path id="edge-path" /></svg>
+  <div class="flag" id="flag"><i></i>UNWRAPPED</div>
+  <div id="boot">READING THE ARTWORK</div>
+</div>
+<button class="scrim" id="scrim" type="button" aria-label="Close proof"></button>
+<div class="corner"><button class="seal" id="seal" type="button" aria-expanded="false" aria-controls="panel" aria-label="Open Keel proof"><b>S</b></button></div>
+<div class="panel" id="panel" role="dialog" aria-modal="true" aria-label="Keel proof" hidden>
+<span class="grab" aria-hidden="true"></span>
+<button class="close" id="close" type="button" aria-label="Close">×</button>
+  <div class="head"><b>Keel proof</b><span id="head-sub">on-chain verification</span></div>
+  <div class="tabs" role="tablist">
+    <button class="tab" data-tab="overview" role="tab" aria-selected="true">Overview</button>
+    <button class="tab" data-tab="provenance" role="tab" aria-selected="false">Provenance</button>
+    <button class="tab" data-tab="storage" role="tab" aria-selected="false">Storage</button>
+    <button class="tab" data-tab="report" role="tab" aria-selected="false">Report</button>
+  </div>
+  <div id="pages"></div>
+</div>
+<!-- The artwork itself, base64, carried by this document rather than fetched.
+     The composite object that assembles this page puts the bytes between these
+     two tags, so rendering the page and holding the preserved bytes are the
+     same thing — there is nothing to go and get, and nothing to trust. -->
+<script type="text/plain" id="art">__ART__</script>
+<script>__JS__</script></body></html>

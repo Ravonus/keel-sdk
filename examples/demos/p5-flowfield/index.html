@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Keel · Synthwave Flow Field</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #06050d;
+        color: #fff;
+        font-family: ui-monospace, monospace;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+      }
+      #plate {
+        position: absolute;
+        left: 24px;
+        bottom: 22px;
+        z-index: 2;
+        pointer-events: none;
+      }
+      #plate small {
+        display: block;
+        font-size: 11px;
+        letter-spacing: 0.24em;
+        color: #ff8ad4;
+      }
+      #plate strong {
+        display: block;
+        font-size: 22px;
+        letter-spacing: -0.02em;
+        margin-top: 4px;
+        font-weight: 600;
+      }
+      #plate span {
+        display: block;
+        font-size: 11px;
+        color: #8b8ba7;
+        margin-top: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <div id="plate">
+      <small>P5.JS · VERIFIED BYTES</small>
+      <strong>Synthwave Flow Field</strong>
+      <span
+        >1400 seeded particles · library and sketch both resolved through the
+        Keel content gateway</span
+      >
+    </div>
+    <script src="/content/p5.min.js"></script>
+    <script src="/content/sketch.js"></script>
+  </body>
+</html>

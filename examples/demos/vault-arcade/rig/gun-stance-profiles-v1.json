@@ -1,0 +1,349 @@
+{
+  "schema": "vault-gun-stance-profiles@1",
+  "characterId": "9e6e4de8-ba5b-4f35-aaac-c8bbdb92695c",
+  "sourceCell": [92, 92],
+  "packedCell": [48, 48],
+  "directions": {
+    "south": {
+      "view": "front",
+      "anatomicalRight": "viewer-left",
+      "anatomicalLeft": "viewer-right",
+      "aim": "toward-camera-foreshortened"
+    },
+    "west": {
+      "view": "left-profile",
+      "anatomicalRight": "trigger-hand-even-when-partly-occluded",
+      "anatomicalLeft": "support-or-neutral-hand",
+      "aim": "screen-left"
+    },
+    "north": {
+      "view": "back",
+      "anatomicalRight": "viewer-right",
+      "anatomicalLeft": "viewer-left",
+      "aim": "screen-up-away-from-camera"
+    },
+    "east": {
+      "view": "right-profile",
+      "anatomicalRight": "trigger-hand",
+      "anatomicalLeft": "support-or-neutral-hand",
+      "aim": "screen-right"
+    }
+  },
+  "profiles": [
+    {
+      "id": "sidearm-one-hand",
+      "label": "One-hand sidearm",
+      "triggerHand": "right",
+      "supportHand": "neutral",
+      "bodyAction": "draw, aim, recoil, settle, return",
+      "compatibleWeapons": ["pistol", "revolver", "wand", "compact-tool"],
+      "frames": 9,
+      "animationPlayer": {
+        "status": "current-result-rejected",
+        "source": "./sidearm-mask-v12-animation-q50.webp",
+        "columns": 9,
+        "rows": 4,
+        "frames": 9,
+        "fps": 10,
+        "row": 3,
+        "directionOrder": ["south", "west", "north", "east"],
+        "label": "Current PixelLab v12 result — rejected mask and pose drift"
+      },
+      "review": {
+        "overall": "v17-rejected-by-manager",
+        "south": "v14-state-candidate",
+        "west": "v17-rejected-before-visual-review",
+        "north": "v14-state-candidate",
+        "east": "v14-foreground-right-arm-candidate",
+        "currentStateCharacterId": "b81f8304-8ac6-497c-ab57-fb1a720b2b33",
+        "currentStateStatus": "reference-directions-only-no-active-west-candidate",
+        "currentStateDirections": {
+          "south": "../concepts/pixellab/9e6e4de8/sidearm-handed-mask-v14/south.png",
+          "north": "../concepts/pixellab/9e6e4de8/sidearm-handed-mask-v14/north.png",
+          "east": "../concepts/pixellab/9e6e4de8/sidearm-handed-mask-v14/east.png"
+        },
+        "currentStateReason": "v17 was rejected automatically before visual review: wrong geometry 2106x747; expected 828x92 (9 square cells); background is opaque; transparent sprite output is mandatory. The manager keeps the authoritative East motion visible and will not promote the failed West output.",
+        "westRepairJobId": "74e75e24-5c6b-46b4-84f8-b169b3c7979f",
+        "westRepairStatus": "rejected-identity-clothing-face-drift",
+        "westRepairReason": "The paid PixelLab masked repair changed the character identity, clothing, and face instead of moving only the firing arm. It is retained only as rejected evidence.",
+        "westRepairPreview": "../concepts/pixellab/9e6e4de8/west-masked-repair-v15/result.png",
+        "westLocalCandidateStatus": "rejected-does-not-match-character-and-does-not-prove-hand-change",
+        "westLocalCandidateReason": "Rejected by visual review: the generated local candidate changed the character identity and still did not clearly switch to the anatomical-right rear hand.",
+        "westLocalCandidatePreview": "../concepts/pixellab/9e6e4de8/west-local-edit-v15/west-candidate.png",
+        "westAnimationJobId": "3b57f464-2b8a-4587-b51e-682e9fcb6a18",
+        "westAnimationStatus": "rejected-derived-from-mismatched-v15-candidate",
+        "westAnimationSeed": 1501,
+        "westAnimationFrames": 8,
+        "westAnimationTotalFrames": 9,
+        "westAnimationLoopPreview": "../concepts/pixellab/9e6e4de8/west-local-edit-v15/animation-seed-1501/west-loop.webp",
+        "westAnimationContactSheet": "../concepts/pixellab/9e6e4de8/west-local-edit-v15/animation-seed-1501/contact-sheet.png",
+        "westAnimationMechanicalAudit": {
+          "sourceStartEqualsEnd": false,
+          "sourceEndpointDifferentPixels": 15,
+          "normalizedPlaybackEndUsesExactFrame0": true,
+          "groundY": 71,
+          "maximumCentroidDriftPixels": 1.68,
+          "decision": "mechanical-pass-visual-review-required"
+        },
+        "imagegenWestSheetStatus": "rejected-before-visual-review",
+        "imagegenWestSheetPreview": "../concepts/imagegen/west-sidearm-v17/west-east-motion-conditioned-9-frame-strip.png",
+        "imagegenWestSheetSha256": "7cf8f3705a1bd061552efbfce91298275942ea4768efb60c2f4ea12cd14537ef",
+        "imagegenWestSheetColumns": 9,
+        "imagegenWestSheetRows": 1,
+        "imagegenWestSheetFrames": 9,
+        "imagegenWestSheetFps": 8,
+        "imagegenWestSheetPixelPolicy": "original-generator-output-no-crop-no-resample-no-pixel-edit",
+        "imagegenWestMotionReference": "../concepts/pixellab/9e6e4de8/sidearm-mask-guide-v12/east-row.png",
+        "imagegenWestMotionReferenceLabel": "Rejected East nine-frame firing experiment; not a motion authority",
+        "rejectedImagegenV16Status": "rejected-static-pose-sequence-did-not-match-east-animation",
+        "rejectedImagegenV16Preview": "../concepts/imagegen/west-sidearm-v16/west-9-frame-sheet.png",
+        "rejectedV14WestStatus": "rejected-near-arm-points-toward-camera-not-current",
+        "rejectedV14WestPreview": "../concepts/pixellab/9e6e4de8/sidearm-handed-mask-v14/west.png",
+        "abandonedAnimationGroupId": "894a7f49-3c3d-4c44-8a12-42fe2205a086",
+        "abandonedAnimationStatus": "deleted-three-directions-from-rejected-state",
+        "lastMaskStateCharacterId": "8808d2a9-c7bf-4985-ac07-84448e7e0780",
+        "lastMaskStateStatus": "rejected-east-west-mirrored-hand-selection",
+        "lastMaskStatePreview": "../concepts/pixellab/9e6e4de8/sidearm-mask-guide-v12/turnaround.png",
+        "currentAnimationGroupId": "367d0e3c-9787-4fc9-8655-d2ea673c3f1c",
+        "currentAnimationStatus": "rejected-mask-and-pose-drift",
+        "currentAnimationPreview": "../concepts/pixellab/9e6e4de8/sidearm-mask-guide-v12/animation-atlas.png",
+        "currentAnimationReason": "The four directional sequences are distinct, but PixelLab drops or moves the magenta mask and lowers the aiming arm during the middle frames. This result cannot drive equipment overlays.",
+        "cancelledAnimationGroupId": "c091c5f9-d6bc-4aae-b417-36581cc8d6b8",
+        "cancelledAnimationStatus": "deleted-before-completion-because-east-west-state-handedness-failed",
+        "previousStateCharacterId": "4eef90d5-197c-4770-a527-afc223f876ec",
+        "previousStateStatus": "rejected-south-missing-aim-pose",
+        "previousStatePreview": "../concepts/pixellab/9e6e4de8/sidearm-socket-v11/turnaround.png",
+        "latestRepairJobs": {
+          "south": {
+            "jobId": "91d64714-0beb-4c9d-acdd-440efc202712",
+            "decision": "rejected",
+            "reason": "closed-hands fist silhouette remains"
+          },
+          "west": {
+            "jobId": "8399200c-e652-46a8-b834-50b33f112e5d",
+            "decision": "rejected",
+            "reason": "malformed thin arm and baked circular shape"
+          }
+        },
+        "imagegenWestAudit": {
+          "candidateId": "v17",
+          "schema": "vault-gun-animation-candidate-audit@1",
+          "decision": "rejected-before-visual-review",
+          "passed": false,
+          "failures": [
+            "wrong geometry 2106x747; expected 828x92 (9 square cells)",
+            "background is opaque; transparent sprite output is mandatory"
+          ],
+          "actualImage": [2106, 747],
+          "expectedCell": [92, 92],
+          "uniqueFrames": 9
+        },
+        "repairBoard": {
+          "schema": "vault-single-direction-repair-board@1",
+          "status": "blocked-invalid-east-motion-reference",
+          "direction": "west",
+          "preview": "../generated-attribute-proxy/west-sidearm-repair-board-v1.png",
+          "sha256": "1948c7b6bdccbc141b5dd1f1346e1b106203e0346942d8b17f9921dd723157cc",
+          "canvas": [1876, 644],
+          "prompt": "./west-sidearm-repair-prompt-v1.txt",
+          "promptSha256": "9dd16ee7df2e14996d4c497c8b2c613411a15998ca7f502fa871fdd541abe7f2",
+          "motionReference": {
+            "status": "rejected-not-authoritative",
+            "direction": "east",
+            "clip": "sidearm-fire",
+            "frames": 9,
+            "completeCharacterAnimationSet": false,
+            "reason": "middle frames move or drop the weapon mask and lower the body socket; this strip cannot condition another direction"
+          },
+          "stanceCandidate": {
+            "id": "v20-simplified-one-frame",
+            "status": "pending-user-hand-review-not-approved",
+            "preview": "../generated-attribute-proxy/west-sidearm-v20-stance-candidate.png",
+            "sha256": "abcb2f927cd5b21ade53c7d3bd77f4834697c21e5fe59c5491360562245b99f0",
+            "promptPolicy": "two raw sprite references; one frame; no anatomy terminology"
+          },
+          "output": {
+            "frames": 9,
+            "cell": [92, 92],
+            "image": [828, 92],
+            "boundaries": [0, 92, 184, 276, 368, 460, 552, 644, 736, 828]
+          },
+          "anatomyLock": {
+            "firingHand": "anatomical-right",
+            "firingArmDepth": "far-rear-behind-torso",
+            "aim": "screen-left",
+            "neutralHand": "anatomical-left",
+            "neutralArmDepth": "near-foreground-over-torso-edge",
+            "neutralArmPose": "down-at-hip-never-points-never-crosses"
+          },
+          "pairedMotionRule": "blocked until a visually approved East action cycle names and passes all nine phases",
+          "handCountRule": "exactly one arm raised; hands never meet; no support grip or two-hand stance",
+          "hardFailures": [
+            "foreground anatomical-left arm points or fires in any frame",
+            "both hands meet or form a two-handed support grip",
+            "rear anatomical-right firing arm does not originate behind the torso edge",
+            "East anatomy is mirrored instead of re-authored for West",
+            "character identity, scale, palette, root, or ground line changes",
+            "gun details, face, backpack, armor, muzzle flash, projectile, or detached effect appears",
+            "output is not one transparent 828x92 West-only strip"
+          ]
+        }
+      }
+    },
+    {
+      "id": "compact-two-hand",
+      "label": "Compact two-hand",
+      "triggerHand": "right",
+      "supportHand": "close-under-fore-end",
+      "bodyAction": "raise, shoulder, recoil, settle, lower",
+      "compatibleWeapons": ["smg", "machine-pistol", "short-shotgun"],
+      "frames": 8,
+      "animationPlayer": {
+        "status": "rejected-reference",
+        "source": "./compact-two-hand-east-v3-locked-contact-sheet.png",
+        "columns": 9,
+        "rows": 1,
+        "frames": 9,
+        "fps": 8,
+        "row": 0,
+        "directionOrder": ["east"],
+        "label": "Rejected compact east animation proof"
+      },
+      "review": {
+        "overall": "localized-support-hand-repair-v3-rejected",
+        "animationGroupId": "f12d7b61-448b-4ff3-86ef-2de8b0be48c3",
+        "rejectedBaseAnimationGroupId": "cc6c5ad5-4c9d-402b-b312-b81371ed52b2",
+        "east": "animation-rejected-one-hand-collapse",
+        "south": "rejected-mask-removal-body-erasure",
+        "west": "guide-only-not-final",
+        "north": "rejected-guide-missing-two-hand-geometry",
+        "contactSheet": "../concepts/pixellab/9e6e4de8/compact-two-hand-east-v3-locked/contact-sheet.png",
+        "animationDecision": "rejected",
+        "animationReason": "east sequence collapses the two distinct empty-hand sockets into a one-hand silhouette",
+        "lockedImageRepairJobId": "319beeec-af14-4898-b47c-604a8dc34c17",
+        "lockedImageRepairStatus": "rejected-support-hand-collapses",
+        "lockedImageRepairReason": "even with identical start and final keyframes, the generated middle frames drop the support arm instead of preserving the compact two-hand socket",
+        "nextStateCharacterId": "5af50896-20d6-4530-9f12-d65a03212b80",
+        "nextStateStatus": "rejected-directional-pose-mismatch",
+        "nextStateReason": "south and north raise one hand as a gesture; east and west collapse into a single long forward arm",
+        "nextStatePreview": "../concepts/pixellab/9e6e4de8/compact-gun-state-v2/turnaround.png",
+        "guideStateCharacterId": "6fe0e22f-cde0-4e43-ad19-15cd4cfcf5c0",
+        "guideStateStatus": "completed-never-approvable",
+        "guideRemovalPolicy": "temporary gun pixels must be mask-removed before any body socket may enter review",
+        "guideStatePreview": "../concepts/pixellab/9e6e4de8/compact-guide-state-v3/turnaround.png",
+        "guideDirectionReview": {
+          "south": "usable-for-mask-removal",
+          "west": "usable-for-mask-removal",
+          "north": "rejected-missing-two-hand-geometry",
+          "east": "usable-for-mask-removal"
+        },
+        "southMaskRemovalJobId": "7c97a698-811a-4847-91f3-db89a80f9b58",
+        "southMaskRemovalStatus": "rejected-body-erasure-and-detached-fragments",
+        "southMaskRemovalReason": "masked inpaint erased most of the body and returned detached fragments instead of a connected body socket",
+        "southMaskRemovalPreview": "../concepts/pixellab/9e6e4de8/compact-guide-south-mask-v1/result.png",
+        "southPreciseMaskJobId": "7ddfcc64-7fc2-48c7-93fb-25121c3ea633",
+        "southPreciseMaskStatus": "rejected-support-hand-dropped-and-oversized",
+        "southPreciseMaskPreview": "../concepts/pixellab/9e6e4de8/compact-guide-south-mask-v2/gun-only-mask-grid.png",
+        "southPreciseMaskResultPreview": "../concepts/pixellab/9e6e4de8/compact-guide-south-mask-v2/result.png",
+        "southHandRepairJobId": "37f03ac7-87dc-42a6-8f8c-08d5cc5e8f59",
+        "southHandRepairStatus": "rejected-oversized-hand-and-wrong-position",
+        "southHandRepairPreview": "../concepts/pixellab/9e6e4de8/compact-guide-south-hand-v3/result.png",
+        "southHandRepairReason": "The localized repair preserved the torso but produced an oversized support hand too far from the compact two-hand socket.",
+        "repairGuideJobId": "2ac3343b-228f-4d08-8bbf-2d3be3fbec08",
+        "repairGuideStatus": "rejected-face-and-malformed-arms",
+        "stanceStateCharacterId": "b8575b69-7868-4573-8d8c-724017def44b",
+        "stanceStateStatus": "candidate-pending-manager",
+        "preview": "./compact-two-hand-state-v1-turnaround.png"
+      }
+    },
+    {
+      "id": "long-gun-two-hand",
+      "label": "Long gun",
+      "triggerHand": "right",
+      "supportHand": "forward-under-fore-end",
+      "bodyAction": "shoulder, track, recoil, settle, lower",
+      "compatibleWeapons": ["rifle", "shotgun", "marksman", "staff"],
+      "frames": 8,
+      "animationPlayer": {
+        "status": "rejected-reference",
+        "source": "./gun-profile-east-v1-contact-sheet.png",
+        "columns": 8,
+        "rows": 3,
+        "frames": 8,
+        "fps": 8,
+        "row": 1,
+        "directionOrder": ["east"],
+        "label": "Rejected long-gun east animation proof"
+      },
+      "review": {
+        "overall": "partial-state-candidate",
+        "animationGroupId": "02e6cfb3-f378-4608-a93a-fba3fa9d8267",
+        "east": "state-candidate",
+        "south": "rejected-support-arm-drops",
+        "west": "state-candidate",
+        "north": "rejected-no-long-gun-gap",
+        "contactSheet": "../concepts/pixellab/9e6e4de8/gun-profile-east-v1/contact-sheet.png",
+        "stanceStateCharacterId": "927f26b6-b15c-415f-b81f-1a66d1082f35",
+        "stanceStateStatus": "partial-candidate",
+        "preview": "./long-gun-state-v1-turnaround.png"
+      }
+    },
+    {
+      "id": "heavy-shoulder",
+      "label": "Heavy shoulder weapon",
+      "triggerHand": "right",
+      "supportHand": "braced-forward",
+      "bodyAction": "brace, fire, heavy-recoil, recover, lower",
+      "compatibleWeapons": ["launcher", "heavy-cannon", "oversized-tool"],
+      "frames": 8,
+      "animationPlayer": {
+        "status": "rejected-reference",
+        "source": "./gun-profile-east-v1-contact-sheet.png",
+        "columns": 8,
+        "rows": 3,
+        "frames": 8,
+        "fps": 8,
+        "row": 2,
+        "directionOrder": ["east"],
+        "label": "Rejected heavy-shoulder east animation proof"
+      },
+      "review": {
+        "overall": "state-rejected-baked-equipment",
+        "animationGroupId": "ccc5ff8d-72c1-4c17-a26e-99030219cf3f",
+        "east": "rejected-baked-shoulder-equipment",
+        "south": "rejected-baked-shoulder-equipment",
+        "west": "rejected-baked-shoulder-equipment",
+        "north": "rejected-baked-shoulder-equipment",
+        "contactSheet": "../concepts/pixellab/9e6e4de8/gun-profile-east-v1/contact-sheet.png",
+        "stanceStateCharacterId": "dd51436d-04b0-40c5-8b71-919382bbe5d6",
+        "stanceStateStatus": "rejected",
+        "preview": "./heavy-shoulder-state-v1-turnaround.png"
+      }
+    }
+  ],
+  "bodyLayerExcludes": [
+    "gun",
+    "weapon",
+    "barrel",
+    "stock",
+    "projectile",
+    "muzzle-flash",
+    "shell",
+    "glow",
+    "backpack",
+    "face",
+    "eyes",
+    "armor",
+    "clothing"
+  ],
+  "managerGates": [
+    "profile-specific pose",
+    "anatomical right trigger hand in every direction",
+    "profile-specific left support or neutral hand",
+    "no weapon or firing effect baked into body pixels",
+    "no rear equipment silhouette",
+    "one connected body component",
+    "locked lower-body root and ground line",
+    "draw and return motion instead of a stalled endpoint"
+  ]
+}

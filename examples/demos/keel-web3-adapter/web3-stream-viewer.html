@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Keel web3:// stream viewer</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; display: flex; flex-direction: column; height: 100vh; }
+  header { padding: 10px 14px; border-bottom: 1px solid color-mix(in srgb, currentColor 25%, transparent); display: flex; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+  header strong { font-size: 15px; }
+  #status { opacity: 0.75; }
+  iframe { flex: 1; border: 0; width: 100%; }
+</style>
+</head>
+<body>
+<header>
+  <strong>Keel web3:// stream viewer</strong>
+  <span id="status">waiting for parameters…</span>
+</header>
+<iframe id="artifact" sandbox="allow-scripts" title="streamed artifact"></iframe>
+<script type="module">
+  // A deliberately generic HTML viewer. It knows nothing about Keel
+  // internals: it speaks only the ERC-5219/7617 standards surface through
+  // the dependency-free loader, then renders whatever Content-Type arrives.
+  // Usage:
+  //   web3-stream-viewer.html?rpc=<url>&adapter=0x…&object=0x…
+  import { fetchStream } from "./web3-stream-loader.mjs";
+
+  const status = document.getElementById("status");
+  const params = new URLSearchParams(location.search);
+  const rpcUrl = params.get("rpc");
+  const adapter = params.get("adapter");
+  const objectId = params.get("object");
+
+  if (!rpcUrl || !adapter || !objectId) {
+    status.textContent = "missing ?rpc=&adapter=&object= parameters";
+  } else {
+    try {
+      status.textContent = "streaming chunks…";
+      const started = performance.now();
+      const result = await fetchStream({ rpcUrl, adapter, objectId });
+      const elapsed = Math.round(performance.now() - started);
+      if (result.statusCode !== 200) {
+        status.textContent = `HTTP ${result.statusCode}: ${new TextDecoder().decode(result.body)}`;
+      } else {
+        const blob = new Blob([result.body], { type: result.contentType });
+        document.getElementById("artifact").src = URL.createObjectURL(blob);
+        status.textContent = `${result.body.length.toLocaleString()} bytes as ${result.contentType} in ${elapsed} ms`;
+      }
+    } catch (error) {
+      status.textContent = `stream failed: ${error.message}`;
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+{
+  "schema": "oca-procedural-sprite-rig@1",
+  "id": "vault-sidearm-still-rig-v1",
+  "frames": 9,
+  "fps": 12,
+  "phases": [
+    "ready",
+    "draw",
+    "raise",
+    "aim",
+    "fire",
+    "recoil",
+    "settle",
+    "lower",
+    "return"
+  ],
+  "source": {
+    "kind": "directional-still-layers",
+    "directions": 8,
+    "rule": "one still cell per layer and direction; browser generates every action frame"
+  },
+  "handedness": {
+    "firing": "anatomical-right",
+    "neutral": "anatomical-left",
+    "eastOrder": ["left-arm", "body", "right-arm", "weapon"],
+    "westOrder": ["right-arm", "body", "left-arm", "weapon"],
+    "generatorMayChooseHand": false
+  },
+  "layers": [
+    {
+      "id": "body",
+      "sourceRow": 0,
+      "frames": [
+        { "y": 0 },
+        { "y": 0 },
+        { "y": -1 },
+        { "y": -1 },
+        { "y": -1 },
+        { "x": -1, "y": -1 },
+        { "y": -1 },
+        { "y": 0 },
+        { "y": 0 }
+      ]
+    },
+    {
+      "id": "legs",
+      "sourceRow": 1,
+      "frames": [
+        { "y": 0 },
+        { "y": 0 },
+        { "y": 0 },
+        { "y": 0 },
+        { "y": 0 },
+        { "x": -1 },
+        { "y": 0 },
+        { "y": 0 },
+        { "y": 0 }
+      ]
+    },
+    {
+      "id": "shirt",
+      "sourceRow": 2,
+      "frames": [
+        { "y": 0 },
+        { "y": 0 },
+        { "y": -1 },
+        { "y": -1 },
+        { "y": -1 },
+        { "x": -1, "y": -1 },
+        { "y": -1 },
+        { "y": 0 },
+        { "y": 0 }
+      ]
+    },
+    {
+      "id": "hair-head",
+      "sourceRow": 3,
+      "frames": [
+        { "y": 0 },
+        { "y": 0 },
+        { "y": -1 },
+        { "y": -1 },
+        { "y": -1 },
+        { "x": -1, "y": -1 },
+        { "y": -1 },
+        { "y": 0 },
+        { "y": 0 }
+      ]
+    },
+    {
+      "id": "face",
+      "sourceRow": 4,
+      "frames": [
+        { "y": 0 },
+        { "y": 0 },
+        { "y": -1 },
+        { "y": -1 },
+        { "y": -1 },
+        { "x": -1, "y": -1 },
+        { "y": -1 },
+        { "y": 0 },
+        { "y": 0 }
+      ]
+    },
+    {
+      "id": "weapon",
+      "sourceRow": 5,
+      "frames": [
+        { "x": -2, "y": 2 },
+        { "x": -1, "y": 1 },
+        { "x": 0, "y": 0 },
+        { "x": 1, "y": -1 },
+        { "x": 2, "y": -1 },
+        { "x": -2, "y": -1, "rotation": -0.025 },
+        { "x": 0, "y": -1 },
+        { "x": -1, "y": 1 },
+        { "x": -2, "y": 2 }
+      ]
+    },
+    {
+      "id": "addon-one",
+      "sourceRow": 6,
+      "frames": [
+        { "y": 0 },
+        { "y": 0 },
+        { "y": -1 },
+        { "y": -1 },
+        { "y": -1 },
+        { "x": -1, "y": -1 },
+        { "y": -1 },
+        { "y": 0 },
+        { "y": 0 }
+      ]
+    },
+    {
+      "id": "addon-two",
+      "sourceRow": 7,
+      "frames": [
+        { "y": 0 },
+        { "y": 0 },
+        { "y": -1 },
+        { "y": -1 },
+        { "y": -1 },
+        { "x": -1, "y": -1 },
+        { "y": -1 },
+        { "y": 0 },
+        { "y": 0 }
+      ]
+    },
+    {
+      "id": "addon-three",
+      "sourceRow": 8,
+      "frames": [
+        { "y": 0 },
+        { "y": 0 },
+        { "y": 0 },
+        { "y": 0 },
+        { "y": 0 },
+        { "x": 1 },
+        { "y": 0 },
+        { "y": 0 },
+        { "y": 0 }
+      ]
+    }
+  ],
+  "futureRequiredIsolatedLayers": ["right-arm", "left-arm"],
+  "status": "runtime-active-with-legacy-full-body-source; isolated-arm stills pending art approval"
+}

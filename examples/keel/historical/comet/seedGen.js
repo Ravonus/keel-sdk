@@ -1,0 +1,1 @@
+function seedGen(seed) { var a = 1103515245, c = 12345, state = seed; return () => (state = (a * state + c) & 0x7fffffff) / 0x80000000; }

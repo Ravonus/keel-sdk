@@ -1,0 +1,240 @@
+{
+  "schema": "vault-gun-animation-normalization@1",
+  "source": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/imagegen/west-sidearm-v18/codex-imagegen-transparent-source.png",
+  "reference": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/sidearm-mask-guide-v12/east-row.png",
+  "grid": [
+    9,
+    1
+  ],
+  "cell": [
+    92,
+    92
+  ],
+  "reports": [
+    {
+      "frame": 0,
+      "sourceBounds": {
+        "left": 57,
+        "top": 305,
+        "right": 134,
+        "bottom": 420,
+        "width": 78,
+        "height": 116
+      },
+      "referenceBounds": {
+        "left": 40,
+        "top": 23,
+        "right": 69,
+        "bottom": 68,
+        "width": 30,
+        "height": 46
+      },
+      "normalized": {
+        "left": 39,
+        "top": 23,
+        "width": 31,
+        "height": 46
+      }
+    },
+    {
+      "frame": 1,
+      "sourceBounds": {
+        "left": 66,
+        "top": 307,
+        "right": 134,
+        "bottom": 420,
+        "width": 69,
+        "height": 114
+      },
+      "referenceBounds": {
+        "left": 40,
+        "top": 23,
+        "right": 69,
+        "bottom": 68,
+        "width": 30,
+        "height": 46
+      },
+      "normalized": {
+        "left": 41,
+        "top": 23,
+        "width": 28,
+        "height": 46
+      }
+    },
+    {
+      "frame": 2,
+      "sourceBounds": {
+        "left": 75,
+        "top": 305,
+        "right": 136,
+        "bottom": 420,
+        "width": 62,
+        "height": 116
+      },
+      "referenceBounds": {
+        "left": 38,
+        "top": 24,
+        "right": 67,
+        "bottom": 68,
+        "width": 30,
+        "height": 45
+      },
+      "normalized": {
+        "left": 41,
+        "top": 24,
+        "width": 24,
+        "height": 45
+      }
+    },
+    {
+      "frame": 3,
+      "sourceBounds": {
+        "left": 95,
+        "top": 306,
+        "right": 159,
+        "bottom": 420,
+        "width": 65,
+        "height": 115
+      },
+      "referenceBounds": {
+        "left": 38,
+        "top": 24,
+        "right": 67,
+        "bottom": 68,
+        "width": 30,
+        "height": 45
+      },
+      "normalized": {
+        "left": 40,
+        "top": 24,
+        "width": 25,
+        "height": 45
+      }
+    },
+    {
+      "frame": 4,
+      "sourceBounds": {
+        "left": 95,
+        "top": 306,
+        "right": 163,
+        "bottom": 419,
+        "width": 69,
+        "height": 114
+      },
+      "referenceBounds": {
+        "left": 37,
+        "top": 24,
+        "right": 66,
+        "bottom": 68,
+        "width": 30,
+        "height": 45
+      },
+      "normalized": {
+        "left": 38,
+        "top": 24,
+        "width": 27,
+        "height": 45
+      }
+    },
+    {
+      "frame": 5,
+      "sourceBounds": {
+        "left": 96,
+        "top": 307,
+        "right": 161,
+        "bottom": 420,
+        "width": 66,
+        "height": 114
+      },
+      "referenceBounds": {
+        "left": 38,
+        "top": 23,
+        "right": 67,
+        "bottom": 68,
+        "width": 30,
+        "height": 46
+      },
+      "normalized": {
+        "left": 39,
+        "top": 23,
+        "width": 27,
+        "height": 46
+      }
+    },
+    {
+      "frame": 6,
+      "sourceBounds": {
+        "left": 98,
+        "top": 307,
+        "right": 167,
+        "bottom": 419,
+        "width": 70,
+        "height": 113
+      },
+      "referenceBounds": {
+        "left": 39,
+        "top": 23,
+        "right": 66,
+        "bottom": 68,
+        "width": 28,
+        "height": 46
+      },
+      "normalized": {
+        "left": 39,
+        "top": 23,
+        "width": 28,
+        "height": 46
+      }
+    },
+    {
+      "frame": 7,
+      "sourceBounds": {
+        "left": 89,
+        "top": 307,
+        "right": 147,
+        "bottom": 420,
+        "width": 59,
+        "height": 114
+      },
+      "referenceBounds": {
+        "left": 40,
+        "top": 23,
+        "right": 65,
+        "bottom": 68,
+        "width": 26,
+        "height": 46
+      },
+      "normalized": {
+        "left": 41,
+        "top": 23,
+        "width": 24,
+        "height": 46
+      }
+    },
+    {
+      "frame": 8,
+      "sourceBounds": {
+        "left": 75,
+        "top": 305,
+        "right": 146,
+        "bottom": 420,
+        "width": 72,
+        "height": 116
+      },
+      "referenceBounds": {
+        "left": 40,
+        "top": 23,
+        "right": 64,
+        "bottom": 68,
+        "width": 25,
+        "height": 46
+      },
+      "normalized": {
+        "left": 38,
+        "top": 23,
+        "width": 29,
+        "height": 46
+      }
+    }
+  ]
+}

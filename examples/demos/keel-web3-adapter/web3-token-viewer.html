@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Keel web3:// token viewer</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; font: 14px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; display: grid; grid-template-rows: auto 1fr; height: 100vh; }
+  header { padding: 12px 16px; border-bottom: 1px solid color-mix(in srgb, currentColor 25%, transparent); }
+  header strong { font-size: 16px; }
+  #status { opacity: 0.7; margin-left: 10px; }
+  main { display: grid; grid-template-columns: 340px 1fr; gap: 0; min-height: 0; }
+  aside { padding: 14px 16px; border-right: 1px solid color-mix(in srgb, currentColor 25%, transparent); overflow-y: auto; }
+  aside h1 { font-size: 18px; margin: 0 0 6px; }
+  aside p { opacity: 0.85; }
+  aside img { width: 100%; border-radius: 8px; margin: 10px 0; }
+  dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 12.5px; }
+  dt { opacity: 0.6; }
+  dd { margin: 0; overflow-wrap: anywhere; }
+  iframe { border: 0; width: 100%; height: 100%; }
+  @media (max-width: 760px) { main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; } aside { border-right: 0; border-bottom: 1px solid color-mix(in srgb, currentColor 25%, transparent); } }
+</style>
+</head>
+<body>
+<header>
+  <strong>Keel web3:// token viewer</strong>
+  <label style="margin-left:10px;cursor:pointer"><input type="checkbox" id="mode-toggle" /> web3 mode</label>
+  <span id="status">waiting for parameters…</span>
+</header>
+<main>
+  <aside id="panel" hidden>
+    <h1 id="name"></h1>
+    <img id="image" alt="token image" hidden />
+    <p id="description"></p>
+    <dl id="attributes"></dl>
+  </aside>
+  <iframe id="animation" sandbox="allow-scripts" title="token animation" hidden></iframe>
+</main>
+<script type="module">
+  // Generic ERC-721 token viewer with native web3:// resolution. It reads
+  // tokenURI over raw JSON-RPC, then resolves data:, https:, and web3://
+  // URIs — the last through the dependency-free ERC-5219/7617 stream loader,
+  // so Keel-served metadata and media need no gateway at all.
+  import { fetchStream } from "./web3-stream-loader.mjs";
+
+  const params = new URLSearchParams(location.search);
+  const rpcUrl = params.get("rpc");
+  const collection = params.get("collection");
+  const tokenId = params.get("token");
+  // Resolution mode: "web3" prefers native web3_* fields and resolves the
+  // web3:// scheme; "inline" consumes only what a plain browser could (data:
+  // and https) and REFUSES web3 objects — an inline/base64 document has no
+  // resolver of its own unless a script with RPC access supplies one.
+  const web3Mode = params.get("mode") !== "inline";
+  const toggle = document.getElementById("mode-toggle");
+  toggle.checked = web3Mode;
+  toggle.addEventListener("change", () => {
+    params.set("mode", toggle.checked ? "web3" : "inline");
+    location.search = params.toString();
+  });
+  const status = document.getElementById("status");
+
+  function decodeStringReturn(hex) {
+    const clean = hex.slice(2);
+    const read = (wordIndex) => parseInt(clean.slice(wordIndex * 64, wordIndex * 64 + 64), 16);
+    const offset = read(0);
+    const length = parseInt(clean.slice(offset * 2, offset * 2 + 64), 16);
+    const bytes = new Uint8Array(length);
+    const start = offset * 2 + 64;
+    for (let i = 0; i < length; i += 1) bytes[i] = parseInt(clean.slice(start + i * 2, start + i * 2 + 2), 16);
+    return new TextDecoder().decode(bytes);
+  }
+
+  async function ethCall(to, data) {
+    const response = await fetch(rpcUrl, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to, data }, "latest"] }),
+    });
+    const payload = await response.json();
+    if (payload.error) throw new Error(payload.error.message);
+    return payload.result;
+  }
+
+  const WEB3_OBJECT = /^web3:\/\/(0x[0-9a-fA-F]{40})(?::(\d+))?\/object\/(0x[0-9a-fA-F]{64})$/;
+
+  // Resolves any supported URI to { bytes, contentType }.
+  async function resolve(uri) {
+    if (uri.startsWith("data:")) {
+      const response = await fetch(uri);
+      return { bytes: new Uint8Array(await response.arrayBuffer()), contentType: uri.slice(5, uri.indexOf(";")) || "text/plain" };
+    }
+    if (uri.startsWith("web3://") || uri.startsWith("w3://")) {
+      if (!web3Mode) throw new Error("inline mode refuses web3 objects — flip to web3 mode to resolve this token");
+      const native = uri.match(WEB3_OBJECT);
+      if (native) {
+        const result = await fetchStream({ rpcUrl, adapter: native[1], objectId: native[3] });
+        if (result.statusCode !== 200) throw new Error(`web3 stream HTTP ${result.statusCode}`);
+        return { bytes: result.body, contentType: result.contentType };
+      }
+      // Auto-mode haulObject form: single eth_call, raw bytes, no base64 tax.
+      const auto = uri.match(/^web3:\/\/(0x[0-9a-fA-F]{40})(?::(\d+))?\/haulObject\/(0x[0-9a-fA-F]{64})(?:\?mime\.type=(\w+))?$/);
+      if (auto) {
+        const returned = await ethCall(auto[1], "0x5ea5306e" + auto[3].slice(2));
+        const clean = returned.slice(2);
+        const offset = parseInt(clean.slice(0, 64), 16);
+        const length = parseInt(clean.slice(offset * 2, offset * 2 + 64), 16);
+        const bytes = new Uint8Array(length);
+        const start = offset * 2 + 64;
+        for (let i = 0; i < length; i += 1) bytes[i] = parseInt(clean.slice(start + i * 2, start + i * 2 + 2), 16);
+        const ext = { svg: "image/svg+xml", htm: "text/html", html: "text/html", json: "application/json" }[auto[4] ?? ""] ?? "application/octet-stream";
+        return { bytes, contentType: ext };
+      }
+      throw new Error(`unsupported web3 URL shape: ${uri.slice(0, 48)}`);
+    }
+    if (uri.startsWith("http")) {
+      const response = await fetch(uri);
+      if (!response.ok) throw new Error(`HTTP ${response.status} for ${uri}`);
+      return { bytes: new Uint8Array(await response.arrayBuffer()), contentType: response.headers.get("content-type") ?? "application/octet-stream" };
+    }
+    throw new Error(`unsupported URI scheme: ${uri.slice(0, 24)}`);
+  }
+
+  function blobUrl(resolved) {
+    return URL.createObjectURL(new Blob([resolved.bytes], { type: resolved.contentType.split(";")[0] }));
+  }
+
+  if (!rpcUrl || !collection || !tokenId) {
+    status.textContent = "missing ?rpc=&collection=&token= parameters";
+  } else {
+    try {
+      status.textContent = "reading tokenURI…";
+      const calldata = "0xc87b56dd" + BigInt(tokenId).toString(16).padStart(64, "0");
+      const tokenUri = decodeStringReturn(await ethCall(collection, calldata));
+
+      status.textContent = "resolving metadata…";
+      const metadata = JSON.parse(new TextDecoder().decode((await resolve(tokenUri)).bytes));
+
+      document.getElementById("panel").hidden = false;
+      document.getElementById("name").textContent = metadata.name ?? `token #${tokenId}`;
+      document.getElementById("description").textContent = metadata.description ?? "";
+      const attributes = document.getElementById("attributes");
+      for (const attribute of metadata.attributes ?? []) {
+        const dt = document.createElement("dt");
+        dt.textContent = attribute.trait_type;
+        const dd = document.createElement("dd");
+        dd.textContent = String(attribute.value);
+        attributes.append(dt, dd);
+      }
+
+      // Strict per-mode selection — no mingling. web3 mode consumes the
+      // web3_* representations; inline mode consumes only what a plain
+      // browser could (data:/https fields, or raw image_data markup). A
+      // token carrying both representations of the same bytes swaps cleanly
+      // between modes.
+      const imageUri = web3Mode ? (metadata.web3_image ?? metadata.image) : metadata.image;
+      const animationUri = web3Mode ? (metadata.web3_animation_url ?? metadata.animation_url) : metadata.animation_url;
+      if (!web3Mode && metadata.image_data) {
+        const image = document.getElementById("image");
+        image.src = URL.createObjectURL(new Blob([metadata.image_data], { type: "image/svg+xml" }));
+        image.hidden = false;
+      } else if (imageUri) {
+        status.textContent = "streaming image…";
+        const image = document.getElementById("image");
+        image.src = blobUrl(await resolve(imageUri));
+        image.hidden = false;
+      }
+      if (animationUri) {
+        status.textContent = "streaming animation…";
+        const frame = document.getElementById("animation");
+        frame.src = blobUrl(await resolve(animationUri));
+        frame.hidden = false;
+      }
+      const native = [imageUri, animationUri, tokenUri].filter((uri) => uri?.startsWith("web3://")).length;
+      status.textContent = `loaded · ${native} of 3 URIs resolved natively over web3://`;
+    } catch (error) {
+      status.textContent = `failed: ${error.message}`;
+    }
+  }
+</script>
+</body>
+</html>

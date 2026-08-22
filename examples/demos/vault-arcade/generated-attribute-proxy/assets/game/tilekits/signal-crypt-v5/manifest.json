@@ -1,0 +1,31 @@
+{
+  "schema": "vault-signal-crypt-material-atlas@1",
+  "id": "signal-crypt-material-atlas-v5",
+  "state": "candidate-independent-visual-review",
+  "source": {
+    "file": "source-material-atlas-4x4.png",
+    "width": 1254,
+    "height": 1254,
+    "sha256": "89b568ee1fddf4ba4d37f23b8e94cec2a185195efa0a10bc87102accfc0c44db"
+  },
+  "runtime": {
+    "file": "runtime-material-atlas-4x4.png",
+    "width": 1024,
+    "height": 1024,
+    "grid": [4, 4],
+    "cellSize": 256,
+    "sha256": "776af94542c8b7d0c5e657d244aa20e760677318d185995887cb5697943111dc"
+  },
+  "roles": [
+    ["calm-floor", "worn-floor", "circuit-floor", "fog-stained-floor"],
+    ["macro-interior", "macro-edge", "transition-collar", "deep-wall-field"],
+    ["wall-face", "wall-lip", "corner-plate", "structural-rib"],
+    ["horizontal-gate", "horizontal-core", "vertical-gate", "vertical-core"]
+  ],
+  "constraints": {
+    "geometryAuthority": "vault-game-core.mjs and procedural runtime masks",
+    "topologyFromImage": false,
+    "runtimeTinted": true,
+    "pixelRegistration": 64
+  }
+}

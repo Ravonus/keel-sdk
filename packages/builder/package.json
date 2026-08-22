@@ -1,0 +1,35 @@
+{
+  "name": "@keel/builder",
+  "version": "0.3.0",
+  "description": "CLI and build pipeline for wrapping, compressing, auditing, and chunk-planning browser-native artifacts.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsc -p tsconfig.json"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@keel/protocol": "workspace:*"
+  },
+  "optionalDependencies": {
+    "sharp": "^0.34.4"
+  },
+  "bin": {
+    "oca": "./dist/cli.js"
+  }
+}

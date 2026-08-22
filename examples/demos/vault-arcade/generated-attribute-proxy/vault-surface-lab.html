@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vault Authored Surface Lab</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background:#070c11; color:#eaf8f5; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; background:radial-gradient(circle at 50% -20%,#193442 0,#091119 38%,#05080d 100%); }
+    header { position:sticky; top:0; z-index:4; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:18px 24px; background:rgba(5,9,13,.93); border-bottom:1px solid #234249; backdrop-filter:blur(16px); }
+    h1 { margin:0; font-size:clamp(18px,2.3vw,30px); }
+    header p { margin:4px 0 0; color:#91aaa8; font-size:13px; }
+    button { border:1px solid #50e9c4; border-radius:999px; padding:11px 18px; color:#06100f; background:#61f1c9; font-weight:800; cursor:pointer; }
+    main { width:min(1540px,100%); margin:0 auto; padding:24px; }
+    .status { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin-bottom:20px; }
+    .status div { padding:12px 14px; border:1px solid #203940; border-radius:14px; background:#091319; }
+    .status span { display:block; color:#6d8d8c; font-size:11px; letter-spacing:.1em; text-transform:uppercase; }
+    .status strong { display:block; margin-top:5px; font-size:14px; color:#8dffe0; }
+    section { margin:0 0 30px; padding:18px; border:1px solid #203940; border-radius:20px; background:rgba(7,14,19,.9); }
+    section h2 { margin:0 0 4px; font-size:20px; }
+    section > p { margin:0 0 16px; color:#8ba2a2; font-size:13px; }
+    .pair { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+    figure { margin:0; min-width:0; }
+    figcaption { display:flex; justify-content:space-between; gap:12px; margin-bottom:8px; color:#bed4d1; font-size:12px; }
+    figcaption em { color:#6c8b89; font-style:normal; }
+    canvas { width:100%; height:auto; display:block; border-radius:12px; border:1px solid #2d4d54; background:#071016; image-rendering:auto; }
+    .loading { opacity:.45; }
+    @media (max-width:780px) { header { align-items:flex-start; flex-direction:column; } .status,.pair { grid-template-columns:1fr; } main { padding:14px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div><h1>Authored Surface A/B</h1><p>Isolated candidate lab — never mutates the playable Vault renderer.</p></div>
+    <button id="next-seed" type="button">Next deterministic seed</button>
+  </header>
+  <main>
+    <div class="status" aria-live="polite">
+      <div><span>Seed</span><strong id="seed-label">loading</strong></div>
+      <div><span>Signal synthesis</span><strong id="signal-time">—</strong></div>
+      <div><span>Forge synthesis</span><strong id="forge-time">—</strong></div>
+      <div><span>Signal RGBA</span><strong id="signal-hash">—</strong></div>
+      <div><span>Forge RGBA</span><strong id="forge-hash">—</strong></div>
+      <div><span>Signal raw 64 ratio</span><strong id="signal-grid-ratio">—</strong></div>
+      <div><span>Forge raw 64 ratio</span><strong id="forge-grid-ratio">—</strong></div>
+      <div><span>Exact 64 duplicates</span><strong id="duplicate-crops">—</strong></div>
+      <div><span>State</span><strong id="state-label">candidate only</strong></div>
+    </div>
+    <section>
+      <h2>Signal Crypt</h2><p>13×11-cell room plus a centered 5-cell entrance corridor. Calm + worn authored material quilt, then one intact 512px authored room motif with a room-space feather.</p>
+      <div class="pair">
+        <figure><figcaption><b>Restored baseline</b><em>direct repeat / same intact macro</em></figcaption><canvas id="signal-baseline" width="832" height="832" aria-label="Signal Crypt direct-repeat baseline"></canvas></figure>
+        <figure><figcaption><b>Authored quilt candidate</b><em>192px patches / 48px overlap</em></figcaption><canvas id="signal-candidate" width="832" height="832" aria-label="Signal Crypt authored quilt candidate"></canvas></figure>
+      </div>
+    </section>
+    <section>
+      <h2>Industrial Forge</h2><p>One continuous deterministic surface synthesized from the approved grayscale material exemplar; no random grain or 64px cell choice.</p>
+      <div class="pair">
+        <figure><figcaption><b>Current 1024px crop control</b><em>direct Forge material</em></figcaption><canvas id="forge-baseline" width="832" height="832" aria-label="Industrial Forge direct-material baseline"></canvas></figure>
+        <figure><figcaption><b>Authored quilt candidate</b><em>source pixels only / minimum-error seams</em></figcaption><canvas id="forge-candidate" width="832" height="832" aria-label="Industrial Forge authored quilt candidate"></canvas></figure>
+      </div>
+    </section>
+  </main>
+  <canvas id="signal-raw-quilt" width="832" height="832" hidden></canvas>
+  <canvas id="forge-raw-quilt" width="832" height="832" hidden></canvas>
+  <img id="signal-candidate-rgba" hidden alt="">
+  <img id="forge-candidate-rgba" hidden alt="">
+  <script id="surface-audit-data" type="application/json">null</script>
+  <script type="module" src="vault-surface-lab.js"></script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+{
+  "schema": "vault-gun-stance-prompts@1",
+  "source": "gun-stance-profiles-v1.json",
+  "characterId": "9e6e4de8-ba5b-4f35-aaac-c8bbdb92695c",
+  "managerGates": [
+    "profile-specific pose",
+    "anatomical right trigger hand in every direction",
+    "profile-specific left support or neutral hand",
+    "no weapon or firing effect baked into body pixels",
+    "no rear equipment silhouette",
+    "one connected body component",
+    "locked lower-body root and ground line",
+    "draw and return motion instead of a stalled endpoint"
+  ],
+  "prompts": [
+    {
+      "id": "sidearm-one-hand:south",
+      "profile": "sidearm-one-hand",
+      "direction": "south",
+      "frames": 8,
+      "compatibleWeapons": [
+        "pistol",
+        "revolver",
+        "wand",
+        "compact-tool"
+      ],
+      "prompt": "Create an 8-frame One-hand sidearm BODY SOCKET animation for the approved blank modular character facing south (front). This exact sidearm-one-hand profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as viewer-left; aim toward-camera-foreshortened. The anatomical LEFT hand is viewer-right and must be neutral. Animate draw, aim, recoil, settle, return. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "sidearm-one-hand:west",
+      "profile": "sidearm-one-hand",
+      "direction": "west",
+      "frames": 8,
+      "compatibleWeapons": [
+        "pistol",
+        "revolver",
+        "wand",
+        "compact-tool"
+      ],
+      "prompt": "Create an 8-frame One-hand sidearm BODY SOCKET animation for the approved blank modular character facing west (left-profile). This exact sidearm-one-hand profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as trigger-hand-even-when-partly-occluded; aim screen-left. The anatomical LEFT hand is support-or-neutral-hand and must be neutral. Animate draw, aim, recoil, settle, return. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "sidearm-one-hand:north",
+      "profile": "sidearm-one-hand",
+      "direction": "north",
+      "frames": 8,
+      "compatibleWeapons": [
+        "pistol",
+        "revolver",
+        "wand",
+        "compact-tool"
+      ],
+      "prompt": "Create an 8-frame One-hand sidearm BODY SOCKET animation for the approved blank modular character facing north (back). This exact sidearm-one-hand profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as viewer-right; aim screen-up-away-from-camera. The anatomical LEFT hand is viewer-left and must be neutral. Animate draw, aim, recoil, settle, return. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "sidearm-one-hand:east",
+      "profile": "sidearm-one-hand",
+      "direction": "east",
+      "frames": 8,
+      "compatibleWeapons": [
+        "pistol",
+        "revolver",
+        "wand",
+        "compact-tool"
+      ],
+      "prompt": "Create an 8-frame One-hand sidearm BODY SOCKET animation for the approved blank modular character facing east (right-profile). This exact sidearm-one-hand profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as trigger-hand; aim screen-right. The anatomical LEFT hand is support-or-neutral-hand and must be neutral. Animate draw, aim, recoil, settle, return. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "compact-two-hand:south",
+      "profile": "compact-two-hand",
+      "direction": "south",
+      "frames": 8,
+      "compatibleWeapons": [
+        "smg",
+        "machine-pistol",
+        "short-shotgun"
+      ],
+      "prompt": "Create an 8-frame Compact two-hand BODY SOCKET animation for the approved blank modular character facing south (front). This exact compact-two-hand profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as viewer-left; aim toward-camera-foreshortened. The anatomical LEFT hand is viewer-right and must be close-under-fore-end. Animate raise, shoulder, recoil, settle, lower. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "compact-two-hand:west",
+      "profile": "compact-two-hand",
+      "direction": "west",
+      "frames": 8,
+      "compatibleWeapons": [
+        "smg",
+        "machine-pistol",
+        "short-shotgun"
+      ],
+      "prompt": "Create an 8-frame Compact two-hand BODY SOCKET animation for the approved blank modular character facing west (left-profile). This exact compact-two-hand profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as trigger-hand-even-when-partly-occluded; aim screen-left. The anatomical LEFT hand is support-or-neutral-hand and must be close-under-fore-end. Animate raise, shoulder, recoil, settle, lower. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "compact-two-hand:north",
+      "profile": "compact-two-hand",
+      "direction": "north",
+      "frames": 8,
+      "compatibleWeapons": [
+        "smg",
+        "machine-pistol",
+        "short-shotgun"
+      ],
+      "prompt": "Create an 8-frame Compact two-hand BODY SOCKET animation for the approved blank modular character facing north (back). This exact compact-two-hand profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as viewer-right; aim screen-up-away-from-camera. The anatomical LEFT hand is viewer-left and must be close-under-fore-end. Animate raise, shoulder, recoil, settle, lower. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "compact-two-hand:east",
+      "profile": "compact-two-hand",
+      "direction": "east",
+      "frames": 8,
+      "compatibleWeapons": [
+        "smg",
+        "machine-pistol",
+        "short-shotgun"
+      ],
+      "prompt": "Create an 8-frame Compact two-hand BODY SOCKET animation for the approved blank modular character facing east (right-profile). This exact compact-two-hand profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as trigger-hand; aim screen-right. The anatomical LEFT hand is support-or-neutral-hand and must be close-under-fore-end. Animate raise, shoulder, recoil, settle, lower. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "long-gun-two-hand:south",
+      "profile": "long-gun-two-hand",
+      "direction": "south",
+      "frames": 8,
+      "compatibleWeapons": [
+        "rifle",
+        "shotgun",
+        "marksman",
+        "staff"
+      ],
+      "prompt": "Create an 8-frame Long gun BODY SOCKET animation for the approved blank modular character facing south (front). This exact long-gun-two-hand profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as viewer-left; aim toward-camera-foreshortened. The anatomical LEFT hand is viewer-right and must be forward-under-fore-end. Animate shoulder, track, recoil, settle, lower. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "long-gun-two-hand:west",
+      "profile": "long-gun-two-hand",
+      "direction": "west",
+      "frames": 8,
+      "compatibleWeapons": [
+        "rifle",
+        "shotgun",
+        "marksman",
+        "staff"
+      ],
+      "prompt": "Create an 8-frame Long gun BODY SOCKET animation for the approved blank modular character facing west (left-profile). This exact long-gun-two-hand profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as trigger-hand-even-when-partly-occluded; aim screen-left. The anatomical LEFT hand is support-or-neutral-hand and must be forward-under-fore-end. Animate shoulder, track, recoil, settle, lower. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "long-gun-two-hand:north",
+      "profile": "long-gun-two-hand",
+      "direction": "north",
+      "frames": 8,
+      "compatibleWeapons": [
+        "rifle",
+        "shotgun",
+        "marksman",
+        "staff"
+      ],
+      "prompt": "Create an 8-frame Long gun BODY SOCKET animation for the approved blank modular character facing north (back). This exact long-gun-two-hand profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as viewer-right; aim screen-up-away-from-camera. The anatomical LEFT hand is viewer-left and must be forward-under-fore-end. Animate shoulder, track, recoil, settle, lower. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "long-gun-two-hand:east",
+      "profile": "long-gun-two-hand",
+      "direction": "east",
+      "frames": 8,
+      "compatibleWeapons": [
+        "rifle",
+        "shotgun",
+        "marksman",
+        "staff"
+      ],
+      "prompt": "Create an 8-frame Long gun BODY SOCKET animation for the approved blank modular character facing east (right-profile). This exact long-gun-two-hand profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as trigger-hand; aim screen-right. The anatomical LEFT hand is support-or-neutral-hand and must be forward-under-fore-end. Animate shoulder, track, recoil, settle, lower. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "heavy-shoulder:south",
+      "profile": "heavy-shoulder",
+      "direction": "south",
+      "frames": 8,
+      "compatibleWeapons": [
+        "launcher",
+        "heavy-cannon",
+        "oversized-tool"
+      ],
+      "prompt": "Create an 8-frame Heavy shoulder weapon BODY SOCKET animation for the approved blank modular character facing south (front). This exact heavy-shoulder profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as viewer-left; aim toward-camera-foreshortened. The anatomical LEFT hand is viewer-right and must be braced-forward. Animate brace, fire, heavy-recoil, recover, lower. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "heavy-shoulder:west",
+      "profile": "heavy-shoulder",
+      "direction": "west",
+      "frames": 8,
+      "compatibleWeapons": [
+        "launcher",
+        "heavy-cannon",
+        "oversized-tool"
+      ],
+      "prompt": "Create an 8-frame Heavy shoulder weapon BODY SOCKET animation for the approved blank modular character facing west (left-profile). This exact heavy-shoulder profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as trigger-hand-even-when-partly-occluded; aim screen-left. The anatomical LEFT hand is support-or-neutral-hand and must be braced-forward. Animate brace, fire, heavy-recoil, recover, lower. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "heavy-shoulder:north",
+      "profile": "heavy-shoulder",
+      "direction": "north",
+      "frames": 8,
+      "compatibleWeapons": [
+        "launcher",
+        "heavy-cannon",
+        "oversized-tool"
+      ],
+      "prompt": "Create an 8-frame Heavy shoulder weapon BODY SOCKET animation for the approved blank modular character facing north (back). This exact heavy-shoulder profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as viewer-right; aim screen-up-away-from-camera. The anatomical LEFT hand is viewer-left and must be braced-forward. Animate brace, fire, heavy-recoil, recover, lower. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    },
+    {
+      "id": "heavy-shoulder:east",
+      "profile": "heavy-shoulder",
+      "direction": "east",
+      "frames": 8,
+      "compatibleWeapons": [
+        "launcher",
+        "heavy-cannon",
+        "oversized-tool"
+      ],
+      "prompt": "Create an 8-frame Heavy shoulder weapon BODY SOCKET animation for the approved blank modular character facing east (right-profile). This exact heavy-shoulder profile must not reuse poses from another gun profile. The anatomical RIGHT hand is always the trigger hand and appears as trigger-hand; aim screen-right. The anatomical LEFT hand is support-or-neutral-hand and must be braced-forward. Animate brace, fire, heavy-recoil, recover, lower. Keep hands empty so a separate equipment layer can supply any compatible gun type. Exclude gun, weapon, barrel, stock, projectile, muzzle-flash, shell, glow, backpack, face, eyes, armor, clothing. Preserve the exact body identity, transparent background, lower-body root, ground line, proportions, and pixel clusters."
+    }
+  ]
+}

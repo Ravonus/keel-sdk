@@ -1,0 +1,44 @@
+{
+  "schema": "vault-weapon-region-layouts@2",
+  "size": [96, 96],
+  "weapons": {
+    "gyro": {
+      "label": "Gyro Saw",
+      "regions": [
+        { "id": "hub", "label": "Center piece", "color": "#ffcf5a", "match": { "shape": "ellipse", "cx": 47.5, "cy": 47.5, "rx": 9.5, "ry": 9.5 } },
+        { "id": "inner-ring", "label": "Inner metal ring", "color": "#61e6ff", "match": { "shape": "ellipse", "cx": 47.5, "cy": 47.5, "rx": 14.5, "ry": 14.5 } },
+        { "id": "gear", "label": "Gear body", "color": "#af76ff", "match": { "shape": "ellipse", "cx": 47.5, "cy": 47.5, "rx": 30.5, "ry": 29.5 } },
+        { "id": "outer-ring", "label": "Outer metal ring", "color": "#58f29b", "match": { "shape": "ellipse", "cx": 47.5, "cy": 47.5, "rx": 38.5, "ry": 37.5 } },
+        { "id": "blade", "label": "Blade", "color": "#ff5b79", "match": { "shape": "fallback" } }
+      ]
+    },
+    "rift": {
+      "label": "Rift Fork",
+      "regions": [
+        { "id": "core-light", "label": "Square core light", "color": "#fff27a", "match": { "shape": "rect", "x0": 18, "y0": 38, "x1": 31, "y1": 58 } },
+        { "id": "rear-hilt", "label": "Rear hilt cap", "color": "#ff6b78", "match": { "shape": "x-before", "x": 14 } },
+        { "id": "core-hilt", "label": "Core hilt collar", "color": "#62ddff", "match": { "shape": "rect", "x0": 14, "y0": 31, "x1": 28, "y1": 65 } },
+        { "id": "front-hilt", "label": "Front hilt crown", "color": "#b276ff", "match": { "shape": "x-before", "x": 44 } },
+        { "id": "prongs", "label": "Twin prongs", "color": "#58f29b", "match": { "shape": "fallback" } }
+      ]
+    },
+    "needle": {
+      "label": "Needle Array",
+      "regions": [
+        { "id": "core-light", "label": "Circular core light", "color": "#fff27a", "match": { "shape": "ellipse", "cx": 16.5, "cy": 48, "rx": 10.5, "ry": 11.5 } },
+        { "id": "circle-housing", "label": "Circular housing", "color": "#62ddff", "match": { "shape": "x-before", "x": 37 } },
+        { "id": "main-body", "label": "Three-channel body", "color": "#b276ff", "match": { "shape": "x-before", "x": 57 } },
+        { "id": "needle-holder", "label": "Needle holder", "color": "#ff9f43", "match": { "shape": "x-before", "x": 68 } },
+        { "id": "needles", "label": "Needles", "color": "#58f29b", "match": { "shape": "fallback" } }
+      ]
+    },
+    "bloom": {
+      "label": "Aegis Star",
+      "regions": [
+        { "id": "aperture", "label": "Core aperture ring", "color": "#fff27a", "match": { "shape": "ellipse", "cx": 48, "cy": 48, "rx": 12, "ry": 12 } },
+        { "id": "seams", "label": "Hub seams", "color": "#ff6b78", "match": { "shape": "luma-below", "value": 112 } },
+        { "id": "shell", "label": "Armor vanes", "color": "#62ddff", "match": { "shape": "fallback" } }
+      ]
+    }
+  }
+}

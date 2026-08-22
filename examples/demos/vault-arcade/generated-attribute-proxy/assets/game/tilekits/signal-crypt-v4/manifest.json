@@ -1,0 +1,22 @@
+{
+  "schema": "vault-floor-macro-atlas@1",
+  "id": "signal-crypt-floor-macros-v4",
+  "state": "candidate-visual-review",
+  "source": {
+    "file": "source-floor-macros-2x2.png",
+    "width": 1254,
+    "height": 1254,
+    "sha256": "dfd742b5c38995478ab90426fd28a3a8c9929cafb4a782417d73339bfc25da4e"
+  },
+  "runtime": {
+    "file": "runtime-floor-macros-2x2.png",
+    "width": 1024,
+    "height": 1024,
+    "quadrants": 4,
+    "quadrantSize": 512,
+    "cellSize": 64,
+    "cellsPerQuadrant": [8, 8],
+    "sha256": "f56c9eb01b2a36958f53033b6baca769632b0eb615310f743d2ed4ce363d1275"
+  },
+  "roles": ["eight-point-circuit", "reactor-ring", "circuit-labyrinth", "warning-diamond"]
+}

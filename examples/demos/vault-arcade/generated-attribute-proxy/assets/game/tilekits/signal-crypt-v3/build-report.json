@@ -1,0 +1,1478 @@
+{
+  "schema": "vault-tilekit-build-report@1",
+  "state": "candidate-visual-review",
+  "tilekit": {
+    "source": "examples/demos/vault-arcade/generated-attribute-proxy/assets/game/tilekits/signal-crypt-v3/source-tilekit-6x6.png",
+    "target": "examples/demos/vault-arcade/generated-attribute-proxy/assets/game/tilekits/signal-crypt-v3/runtime-tilekit-64.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "runtimeSize": [
+      384,
+      384
+    ],
+    "grid": [
+      6,
+      6
+    ],
+    "cell": [
+      64,
+      64
+    ],
+    "sha256": "7b988eddc5c96bfab0fdc0d434733dfd99ccf296f7f41ede3ca19fee86dd7ea2",
+    "cells": [
+      {
+        "column": 0,
+        "row": 0,
+        "sourceBounds": [
+          28,
+          21,
+          209,
+          204
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 1,
+        "row": 0,
+        "sourceBounds": [
+          0,
+          21,
+          204,
+          204
+        ],
+        "opaqueCoverage": 0.9216,
+        "edgeOccupancy": {
+          "north": 59,
+          "east": 64,
+          "south": 59,
+          "west": 64
+        }
+      },
+      {
+        "column": 2,
+        "row": 0,
+        "sourceBounds": [
+          16,
+          21,
+          198,
+          204
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 3,
+        "row": 0,
+        "sourceBounds": [
+          10,
+          21,
+          192,
+          204
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 4,
+        "row": 0,
+        "sourceBounds": [
+          3,
+          21,
+          209,
+          204
+        ],
+        "opaqueCoverage": 0.9062,
+        "edgeOccupancy": {
+          "north": 58,
+          "east": 64,
+          "south": 58,
+          "west": 64
+        }
+      },
+      {
+        "column": 5,
+        "row": 0,
+        "sourceBounds": [
+          0,
+          21,
+          180,
+          204
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 0,
+        "row": 1,
+        "sourceBounds": [
+          28,
+          18,
+          209,
+          201
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 1,
+        "row": 1,
+        "sourceBounds": [
+          0,
+          18,
+          204,
+          201
+        ],
+        "opaqueCoverage": 0.9219,
+        "edgeOccupancy": {
+          "north": 59,
+          "east": 64,
+          "south": 59,
+          "west": 64
+        }
+      },
+      {
+        "column": 2,
+        "row": 1,
+        "sourceBounds": [
+          16,
+          18,
+          198,
+          201
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 3,
+        "row": 1,
+        "sourceBounds": [
+          10,
+          18,
+          192,
+          201
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 4,
+        "row": 1,
+        "sourceBounds": [
+          3,
+          18,
+          209,
+          200
+        ],
+        "opaqueCoverage": 0.9062,
+        "edgeOccupancy": {
+          "north": 58,
+          "east": 64,
+          "south": 58,
+          "west": 64
+        }
+      },
+      {
+        "column": 5,
+        "row": 1,
+        "sourceBounds": [
+          0,
+          18,
+          180,
+          201
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 0,
+        "row": 2,
+        "sourceBounds": [
+          26,
+          56,
+          209,
+          136
+        ],
+        "opaqueCoverage": 0.3533,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 1,
+        "row": 2,
+        "sourceBounds": [
+          0,
+          17,
+          133,
+          189
+        ],
+        "opaqueCoverage": 0.2925,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 2,
+        "row": 2,
+        "sourceBounds": [
+          18,
+          17,
+          181,
+          186
+        ],
+        "opaqueCoverage": 0.5442,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 3,
+        "row": 2,
+        "sourceBounds": [
+          11,
+          16,
+          170,
+          187
+        ],
+        "opaqueCoverage": 0.5105,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 4,
+        "row": 2,
+        "sourceBounds": [
+          5,
+          17,
+          209,
+          190
+        ],
+        "opaqueCoverage": 0.4097,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 5,
+        "row": 2,
+        "sourceBounds": [
+          0,
+          13,
+          180,
+          194
+        ],
+        "opaqueCoverage": 0.5525,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 0,
+        "row": 3,
+        "sourceBounds": [
+          28,
+          8,
+          208,
+          209
+        ],
+        "opaqueCoverage": 0.6243,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 1,
+        "row": 3,
+        "sourceBounds": [
+          21,
+          8,
+          194,
+          209
+        ],
+        "opaqueCoverage": 0.4426,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 2,
+        "row": 3,
+        "sourceBounds": [
+          16,
+          33,
+          188,
+          209
+        ],
+        "opaqueCoverage": 0.5691,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 3,
+        "row": 3,
+        "sourceBounds": [
+          12,
+          18,
+          179,
+          209
+        ],
+        "opaqueCoverage": 0.6526,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 4,
+        "row": 3,
+        "sourceBounds": [
+          6,
+          27,
+          209,
+          209
+        ],
+        "opaqueCoverage": 0.4661,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 5,
+        "row": 3,
+        "sourceBounds": [
+          0,
+          17,
+          174,
+          209
+        ],
+        "opaqueCoverage": 0.5251,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 0,
+        "row": 4,
+        "sourceBounds": [
+          29,
+          0,
+          202,
+          209
+        ],
+        "opaqueCoverage": 0.8,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 42,
+          "south": 30,
+          "west": 48
+        }
+      },
+      {
+        "column": 1,
+        "row": 4,
+        "sourceBounds": [
+          22,
+          0,
+          194,
+          209
+        ],
+        "opaqueCoverage": 0.8074,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 46,
+          "south": 30,
+          "west": 47
+        }
+      },
+      {
+        "column": 2,
+        "row": 4,
+        "sourceBounds": [
+          15,
+          0,
+          189,
+          209
+        ],
+        "opaqueCoverage": 0.7712,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 44,
+          "south": 6,
+          "west": 48
+        }
+      },
+      {
+        "column": 3,
+        "row": 4,
+        "sourceBounds": [
+          10,
+          0,
+          182,
+          209
+        ],
+        "opaqueCoverage": 0.7805,
+        "edgeOccupancy": {
+          "north": 63,
+          "east": 42,
+          "south": 26,
+          "west": 47
+        }
+      },
+      {
+        "column": 4,
+        "row": 4,
+        "sourceBounds": [
+          5,
+          0,
+          209,
+          156
+        ],
+        "opaqueCoverage": 0.8325,
+        "edgeOccupancy": {
+          "north": 53,
+          "east": 33,
+          "south": 52,
+          "west": 64
+        }
+      },
+      {
+        "column": 5,
+        "row": 4,
+        "sourceBounds": [
+          0,
+          0,
+          177,
+          209
+        ],
+        "opaqueCoverage": 0.7026,
+        "edgeOccupancy": {
+          "north": 21,
+          "east": 15,
+          "south": 4,
+          "west": 47
+        }
+      },
+      {
+        "column": 0,
+        "row": 5,
+        "sourceBounds": [
+          33,
+          0,
+          185,
+          171
+        ],
+        "opaqueCoverage": 0.53,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 1,
+        "row": 5,
+        "sourceBounds": [
+          40,
+          0,
+          162,
+          166
+        ],
+        "opaqueCoverage": 0.4263,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 2,
+        "row": 5,
+        "sourceBounds": [
+          14,
+          0,
+          177,
+          171
+        ],
+        "opaqueCoverage": 0.6011,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 3,
+        "row": 5,
+        "sourceBounds": [
+          21,
+          0,
+          173,
+          166
+        ],
+        "opaqueCoverage": 0.6345,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 4,
+        "row": 5,
+        "sourceBounds": [
+          12,
+          11,
+          171,
+          154
+        ],
+        "opaqueCoverage": 0.688,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 5,
+        "row": 5,
+        "sourceBounds": [
+          10,
+          0,
+          169,
+          164
+        ],
+        "opaqueCoverage": 0.5784,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      }
+    ]
+  },
+  "animations": {
+    "source": "examples/demos/vault-arcade/generated-attribute-proxy/assets/game/tilekits/signal-crypt-v3/source-animations-8x6.png",
+    "target": "examples/demos/vault-arcade/generated-attribute-proxy/assets/game/tilekits/signal-crypt-v3/runtime-animations-64.png",
+    "sourceSize": [
+      1448,
+      1086
+    ],
+    "runtimeSize": [
+      512,
+      384
+    ],
+    "grid": [
+      8,
+      6
+    ],
+    "cell": [
+      64,
+      64
+    ],
+    "sha256": "2354f040e6b7dbdfd5321c12210f8eaa8bc75b8839e69b44a296f844a750d01f",
+    "cells": [
+      {
+        "column": 0,
+        "row": 0,
+        "sourceBounds": [
+          15,
+          17,
+          177,
+          177
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 1,
+        "row": 0,
+        "sourceBounds": [
+          13,
+          17,
+          176,
+          177
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 2,
+        "row": 0,
+        "sourceBounds": [
+          11,
+          17,
+          174,
+          177
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 3,
+        "row": 0,
+        "sourceBounds": [
+          9,
+          17,
+          172,
+          177
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 4,
+        "row": 0,
+        "sourceBounds": [
+          7,
+          17,
+          170,
+          177
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 5,
+        "row": 0,
+        "sourceBounds": [
+          6,
+          17,
+          169,
+          177
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 6,
+        "row": 0,
+        "sourceBounds": [
+          4,
+          17,
+          167,
+          177
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 7,
+        "row": 0,
+        "sourceBounds": [
+          3,
+          17,
+          166,
+          177
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 0,
+        "row": 1,
+        "sourceBounds": [
+          15,
+          11,
+          177,
+          171
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 1,
+        "row": 1,
+        "sourceBounds": [
+          13,
+          11,
+          175,
+          171
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 2,
+        "row": 1,
+        "sourceBounds": [
+          11,
+          11,
+          174,
+          171
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 3,
+        "row": 1,
+        "sourceBounds": [
+          9,
+          11,
+          172,
+          171
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 4,
+        "row": 1,
+        "sourceBounds": [
+          7,
+          11,
+          170,
+          171
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 5,
+        "row": 1,
+        "sourceBounds": [
+          6,
+          11,
+          169,
+          171
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 6,
+        "row": 1,
+        "sourceBounds": [
+          4,
+          11,
+          167,
+          171
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 7,
+        "row": 1,
+        "sourceBounds": [
+          3,
+          11,
+          166,
+          171
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 0,
+        "row": 2,
+        "sourceBounds": [
+          15,
+          7,
+          177,
+          167
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 1,
+        "row": 2,
+        "sourceBounds": [
+          13,
+          7,
+          175,
+          167
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 2,
+        "row": 2,
+        "sourceBounds": [
+          11,
+          7,
+          174,
+          167
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 3,
+        "row": 2,
+        "sourceBounds": [
+          9,
+          7,
+          172,
+          167
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 4,
+        "row": 2,
+        "sourceBounds": [
+          7,
+          7,
+          170,
+          167
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 5,
+        "row": 2,
+        "sourceBounds": [
+          6,
+          7,
+          169,
+          167
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 6,
+        "row": 2,
+        "sourceBounds": [
+          4,
+          7,
+          167,
+          167
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 7,
+        "row": 2,
+        "sourceBounds": [
+          3,
+          7,
+          166,
+          167
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 0,
+        "row": 3,
+        "sourceBounds": [
+          15,
+          6,
+          177,
+          166
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 1,
+        "row": 3,
+        "sourceBounds": [
+          13,
+          6,
+          176,
+          166
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 2,
+        "row": 3,
+        "sourceBounds": [
+          11,
+          6,
+          174,
+          166
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 3,
+        "row": 3,
+        "sourceBounds": [
+          9,
+          6,
+          172,
+          166
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 4,
+        "row": 3,
+        "sourceBounds": [
+          7,
+          6,
+          170,
+          166
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 5,
+        "row": 3,
+        "sourceBounds": [
+          6,
+          6,
+          169,
+          166
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 6,
+        "row": 3,
+        "sourceBounds": [
+          4,
+          6,
+          167,
+          166
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 7,
+        "row": 3,
+        "sourceBounds": [
+          3,
+          6,
+          166,
+          166
+        ],
+        "opaqueCoverage": 1.0,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 64,
+          "south": 64,
+          "west": 64
+        }
+      },
+      {
+        "column": 0,
+        "row": 4,
+        "sourceBounds": [
+          15,
+          0,
+          177,
+          181
+        ],
+        "opaqueCoverage": 0.9219,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 59,
+          "south": 64,
+          "west": 59
+        }
+      },
+      {
+        "column": 1,
+        "row": 4,
+        "sourceBounds": [
+          13,
+          0,
+          176,
+          181
+        ],
+        "opaqueCoverage": 0.9219,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 59,
+          "south": 64,
+          "west": 59
+        }
+      },
+      {
+        "column": 2,
+        "row": 4,
+        "sourceBounds": [
+          11,
+          0,
+          174,
+          181
+        ],
+        "opaqueCoverage": 0.9219,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 59,
+          "south": 64,
+          "west": 59
+        }
+      },
+      {
+        "column": 3,
+        "row": 4,
+        "sourceBounds": [
+          10,
+          0,
+          172,
+          181
+        ],
+        "opaqueCoverage": 0.9219,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 59,
+          "south": 64,
+          "west": 59
+        }
+      },
+      {
+        "column": 4,
+        "row": 4,
+        "sourceBounds": [
+          8,
+          0,
+          170,
+          181
+        ],
+        "opaqueCoverage": 0.9219,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 59,
+          "south": 64,
+          "west": 59
+        }
+      },
+      {
+        "column": 5,
+        "row": 4,
+        "sourceBounds": [
+          6,
+          0,
+          169,
+          181
+        ],
+        "opaqueCoverage": 0.9219,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 59,
+          "south": 64,
+          "west": 59
+        }
+      },
+      {
+        "column": 6,
+        "row": 4,
+        "sourceBounds": [
+          5,
+          0,
+          167,
+          181
+        ],
+        "opaqueCoverage": 0.9219,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 59,
+          "south": 64,
+          "west": 59
+        }
+      },
+      {
+        "column": 7,
+        "row": 4,
+        "sourceBounds": [
+          3,
+          0,
+          166,
+          181
+        ],
+        "opaqueCoverage": 0.9219,
+        "edgeOccupancy": {
+          "north": 64,
+          "east": 59,
+          "south": 64,
+          "west": 59
+        }
+      },
+      {
+        "column": 0,
+        "row": 5,
+        "sourceBounds": [
+          15,
+          0,
+          177,
+          164
+        ],
+        "opaqueCoverage": 0.8643,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 1,
+        "row": 5,
+        "sourceBounds": [
+          13,
+          0,
+          175,
+          164
+        ],
+        "opaqueCoverage": 0.8643,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 2,
+        "row": 5,
+        "sourceBounds": [
+          11,
+          0,
+          174,
+          164
+        ],
+        "opaqueCoverage": 0.8789,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 3,
+        "row": 5,
+        "sourceBounds": [
+          10,
+          0,
+          172,
+          164
+        ],
+        "opaqueCoverage": 0.8643,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 4,
+        "row": 5,
+        "sourceBounds": [
+          8,
+          0,
+          170,
+          164
+        ],
+        "opaqueCoverage": 0.8643,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 5,
+        "row": 5,
+        "sourceBounds": [
+          6,
+          0,
+          169,
+          164
+        ],
+        "opaqueCoverage": 0.8789,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 6,
+        "row": 5,
+        "sourceBounds": [
+          5,
+          0,
+          167,
+          164
+        ],
+        "opaqueCoverage": 0.8643,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      },
+      {
+        "column": 7,
+        "row": 5,
+        "sourceBounds": [
+          3,
+          0,
+          166,
+          164
+        ],
+        "opaqueCoverage": 0.8789,
+        "edgeOccupancy": {
+          "north": 0,
+          "east": 0,
+          "south": 0,
+          "west": 0
+        }
+      }
+    ]
+  }
+}

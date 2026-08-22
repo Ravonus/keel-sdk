@@ -1,0 +1,63 @@
+{
+  "schema": "vault-layer-review@1",
+  "semanticLayer": "base-body",
+  "candidateCharacterId": "b9c2e6c8-6b5e-4dbd-9b33-ce1ea5b3c54f",
+  "status": "rejected",
+  "generationAllowed": false,
+  "checks": [
+    {
+      "id": "atlas-registration",
+      "label": "120 registered 48px cells",
+      "status": "passed",
+      "evidence": "decoded WebP audit: 120 populated and grounded cells"
+    },
+    {
+      "id": "blank-head",
+      "label": "Blank head volume only",
+      "status": "failed",
+      "evidence": "eyes and face details are baked into the source character"
+    },
+    {
+      "id": "empty-back-plane",
+      "label": "No backpack or back attachment",
+      "status": "failed",
+      "evidence": "backpack is baked into north/side views"
+    },
+    {
+      "id": "no-torso-armor",
+      "label": "No torso or shoulder armor",
+      "status": "failed",
+      "evidence": "armor plates are baked into the base silhouette"
+    },
+    {
+      "id": "no-leg-equipment",
+      "label": "No leg armor or boots",
+      "status": "failed",
+      "evidence": "leg and boot equipment are baked into the base"
+    },
+    {
+      "id": "no-weapon",
+      "label": "No weapon geometry",
+      "status": "passed",
+      "evidence": "no weapon is baked into the turnaround"
+    },
+    {
+      "id": "bilateral-walk",
+      "label": "Walk alternates both feet",
+      "status": "failed",
+      "evidence": "south, west, and north reuse one lead foot"
+    },
+    {
+      "id": "firearm-action",
+      "label": "Fire action uses empty gun anchors",
+      "status": "failed",
+      "evidence": "current attack does not read as firearm gameplay"
+    },
+    {
+      "id": "damage-action",
+      "label": "Damage action reads without effects",
+      "status": "failed",
+      "evidence": "current hit pose does not visibly communicate impact"
+    }
+  ]
+}

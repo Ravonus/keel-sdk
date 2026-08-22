@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Original Preserved</title>
+  <style>
+    :root{color-scheme:dark}html,body{height:100%;margin:0;background:#09090b;font-family:system-ui,sans-serif}
+    main{position:relative;width:100%;height:100%;display:grid;place-items:center;overflow:hidden}
+    img{display:block;width:100%;height:100%;object-fit:contain}
+    nav{position:absolute;right:12px;bottom:12px;display:flex;gap:8px;opacity:0;transition:opacity .18s}
+    main:hover nav,nav:focus-within{opacity:1}a{color:white;background:#18181bcc;padding:8px 11px;border:1px solid #ffffff2b;border-radius:999px;text-decoration:none;backdrop-filter:blur(12px)}
+  </style>
+</head>
+<body>
+  <main aria-label="Original Preserved" data-description="WebP display with exact SVG original download">
+    <picture><source srcset="/content/preview" type="image/webp"><img src="/content/original" alt="Original Preserved"></picture>
+    <nav><a href="/content/original" download>Download original</a></nav>
+  </main>
+</body>
+</html>

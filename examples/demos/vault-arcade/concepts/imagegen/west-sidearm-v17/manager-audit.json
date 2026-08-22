@@ -1,0 +1,142 @@
+{
+  "schema": "vault-gun-animation-candidate-audit@1",
+  "candidateId": "v17",
+  "candidate": "west-east-motion-conditioned-9-frame-strip.png",
+  "reference": "../../pixellab/9e6e4de8/sidearm-mask-guide-v12/east-row.png",
+  "columns": 9,
+  "expectedCell": [
+    92,
+    92
+  ],
+  "actualImage": [
+    2106,
+    747
+  ],
+  "hasAlpha": false,
+  "frames": [
+    {
+      "frame": 0,
+      "sha256": "e0fa00edaf3d3ef11fa647b25613131e9e7a8474a575caa48b8da8b04950e822",
+      "opaquePixels": 174798,
+      "magentaSocketPixels": 80,
+      "bounds": [
+        0,
+        0,
+        233,
+        746
+      ],
+      "groundY": 746
+    },
+    {
+      "frame": 1,
+      "sha256": "3b920c3c812343951489f3eb7403b28b771653db9687186e5cc8ef19efa50fad",
+      "opaquePixels": 174798,
+      "magentaSocketPixels": 76,
+      "bounds": [
+        0,
+        0,
+        233,
+        746
+      ],
+      "groundY": 746
+    },
+    {
+      "frame": 2,
+      "sha256": "b61276d4dfcf90ade9d618c1562db832885f2b8495028af67694b8cc81fbbc7a",
+      "opaquePixels": 174798,
+      "magentaSocketPixels": 15,
+      "bounds": [
+        0,
+        0,
+        233,
+        746
+      ],
+      "groundY": 746
+    },
+    {
+      "frame": 3,
+      "sha256": "6ed2829fc03664a3d14fda88d2de664ccfd9b5d923011b56a54ec30f94c98892",
+      "opaquePixels": 174798,
+      "magentaSocketPixels": 2,
+      "bounds": [
+        0,
+        0,
+        233,
+        746
+      ],
+      "groundY": 746
+    },
+    {
+      "frame": 4,
+      "sha256": "35c071478f2a8c8d88c1c9c77641d87011902349a576a98b87059920a968ce88",
+      "opaquePixels": 174798,
+      "magentaSocketPixels": 0,
+      "bounds": [
+        0,
+        0,
+        233,
+        746
+      ],
+      "groundY": 746
+    },
+    {
+      "frame": 5,
+      "sha256": "0f562b82b2f2f60e299097d30871b64beee4132a9c26489a5652cc02d5bfc0a3",
+      "opaquePixels": 174798,
+      "magentaSocketPixels": 17,
+      "bounds": [
+        0,
+        0,
+        233,
+        746
+      ],
+      "groundY": 746
+    },
+    {
+      "frame": 6,
+      "sha256": "7b7ba6a658c8cef49e3eb8282c8a6ec217667473e2f9cc0ede397147f1319aea",
+      "opaquePixels": 174798,
+      "magentaSocketPixels": 73,
+      "bounds": [
+        0,
+        0,
+        233,
+        746
+      ],
+      "groundY": 746
+    },
+    {
+      "frame": 7,
+      "sha256": "d674291b3a7e4de65d5d0816c3bf86f19c81885d7ed1ae1c9eba71d14730ee63",
+      "opaquePixels": 174798,
+      "magentaSocketPixels": 1,
+      "bounds": [
+        0,
+        0,
+        233,
+        746
+      ],
+      "groundY": 746
+    },
+    {
+      "frame": 8,
+      "sha256": "a936995fd28b3e2fad214d1145012e37c5e1457784f05e232000f7cb4020de48",
+      "opaquePixels": 174798,
+      "magentaSocketPixels": 69,
+      "bounds": [
+        0,
+        0,
+        233,
+        746
+      ],
+      "groundY": 746
+    }
+  ],
+  "uniqueFrames": 9,
+  "failures": [
+    "wrong geometry 2106x747; expected 828x92 (9 square cells)",
+    "background is opaque; transparent sprite output is mandatory"
+  ],
+  "decision": "rejected-before-visual-review",
+  "passed": false
+}

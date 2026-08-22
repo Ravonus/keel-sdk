@@ -1,0 +1,1180 @@
+{
+  "schema": "keel-creative-lab-release@1",
+  "network": "Local Anvil · real contracts",
+  "chainId": 31337,
+  "rpcUrl": "http://127.0.0.1:8545",
+  "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+  "collection": "0xddccd588b77d63d219c69c62f1d07e7ffba237e7",
+  "keelHold": "0xb7f8bc63bbcad18155201308c8f3540b07f84f5e",
+  "keelIndex": "0x0dcd1bf9a1b36ce34237eeafef220932846bcd82",
+  "graphRegistry": "0x8cea85ec7f3d314c4d144e34f2206c8ac0bbada1",
+  "libraryRegistry": "0x29023de63d7075b4cc2ce30b55f050f9c67548d4",
+  "libraries": [
+    {
+      "id": "p5-1-11-3",
+      "assetId": "0x8e68bc3b817a67ed1dec0bc8c5e8ecb0788ad38e0a988437e7c096ad4095a197",
+      "graphId": "0x1b7805f742c9d364b2a48404e4465b51dd9722c3e7b65f9fe0fc129313de9798",
+      "graphVersion": 1,
+      "manifestDigest": "0x8a287eb5ed21dcf53f7091e1bd133dc5cc0238ef0ab5e02932cee71eaeecea7d",
+      "objectId": "0x55fd027830baca2aa344c031512a0eba794bf22867cc67ff1ab7efbe29eab299",
+      "decodedSha256": "0xaf51e6211e061b5ae463fbc5c3c1c272e5ca67fa560ed3513fde17325d837506",
+      "decodedByteLength": 1056654,
+      "storedByteLength": 197609,
+      "compression": "brotli",
+      "logicalObjectId": "0xbec8153a6c091128805f7e8f571862706ce6595cdc876aac78e610b837be51d5",
+      "objectRevision": 1,
+      "linkRegistry": "0x4a679253410272dd5232b3ff7cf5dbb88f295319",
+      "ipfsCid": "bafkreic7yubkezagvk6egyiyzs5x3me72dxk73l352rd2ixk33grofm7cu",
+      "ipfsUri": "ipfs://bafkreic7yubkezagvk6egyiyzs5x3me72dxk73l352rd2ixk33grofm7cu",
+      "ipfsStoredDigest": "0x5fc502a26406aabc436118ccbb7db09fd0eeafed7beea23d22eadecd17159f15",
+      "deliveryProfiles": [
+        "onchain-recursive",
+        "ordered-url-ipfs-then-onchain-gateway"
+      ],
+      "activeDeliveryProfile": "onchain-recursive",
+      "storageAuthentication": "onchain-immutable-bytes",
+      "runtimeVerification": "recursive-decoded-sha256",
+      "sourceBuildVerification": "exact-source-output",
+      "sourceReceipt": {
+        "protocol": "keel-source-receipt@1",
+        "source": {
+          "algorithm": "sha256",
+          "digest": "0xaf51e6211e061b5ae463fbc5c3c1c272e5ca67fa560ed3513fde17325d837506",
+          "byteLength": 1056654
+        },
+        "output": {
+          "algorithm": "sha256",
+          "digest": "0xaf51e6211e061b5ae463fbc5c3c1c272e5ca67fa560ed3513fde17325d837506",
+          "byteLength": 1056654
+        },
+        "report": {
+          "protocol": "keel-source-analysis@1",
+          "analyzer": {
+            "name": "keel-source-readability",
+            "version": "1.0.0"
+          },
+          "mediaType": "text/javascript",
+          "classification": "minified",
+          "readabilityScore": 30,
+          "metrics": {
+            "characters": 1054948,
+            "lines": 2,
+            "longestLine": 1054910,
+            "averageLine": 527474,
+            "whitespaceRatioPermille": 22,
+            "commentCharacters": 990855,
+            "identifiers": 150490,
+            "shortIdentifierRatioPermille": 554,
+            "dynamicCodeCalls": 6,
+            "encodedLiteralCharacters": 0
+          },
+          "reasons": [
+            "Most code is concentrated into unusually long lines with little whitespace.",
+            "Dynamic code construction is present and requires reviewer attention.",
+            "Source retains comments that can aid review."
+          ]
+        },
+        "reportDigest": "0x31b8daf1b287f00525ddeaf64b8fabc7a1910455573cb233e76e6db56c86e104",
+        "disposition": "exact-source-output"
+      },
+      "exactDistributionUrl": "https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js",
+      "readableSourceTreeUrl": "https://github.com/processing/p5.js/tree/3c9de136e36912d6ced8b71a81e7413f3eab8b61/src"
+    },
+    {
+      "id": "three-r180-module",
+      "assetId": "0xf863d3985eb36505c131dababf10aef0dfe06e670fb83e1a3d4fcf15c6a0ff62",
+      "graphId": "0x93335604fd7ea325f5aec8a001405854ac0bacf8b8cd97444e9dfd80ecf9071c",
+      "graphVersion": 1,
+      "manifestDigest": "0x882e6b860843ac51f24658a4b8f3046678994722daa0ac55687da2e8eef57dc7",
+      "objectId": "0xc32e2c545544c22e591f7a0930299f49abbb16afc48e6cc36cde2a17678ba4da",
+      "decodedSha256": "0x3cd014e8adad7a6bc02a9bf103aa877fc714650ebe229412c4417904832965df",
+      "decodedByteLength": 338922,
+      "storedByteLength": 66484,
+      "compression": "brotli",
+      "logicalObjectId": "0x2f1995e11a3b9a089d294fae49a91297e95f0a7974cbdba65f5a2606c20eb74a",
+      "objectRevision": 1,
+      "linkRegistry": "0x4a679253410272dd5232b3ff7cf5dbb88f295319",
+      "ipfsCid": "bafkreigiggzcjalyj4ug3ud54vlmxs24ss7tb3fgu2f6cw5vxt7popnz64",
+      "ipfsUri": "ipfs://bafkreigiggzcjalyj4ug3ud54vlmxs24ss7tb3fgu2f6cw5vxt7popnz64",
+      "ipfsStoredDigest": "0xc831b22481784f286dd07de556cbcb5c94bf30eca6a68be15bb5bcfef73db9f7",
+      "deliveryProfiles": [
+        "onchain-recursive",
+        "ordered-url-ipfs-then-onchain-gateway"
+      ],
+      "activeDeliveryProfile": "onchain-recursive",
+      "storageAuthentication": "onchain-immutable-bytes",
+      "runtimeVerification": "recursive-decoded-sha256",
+      "sourceBuildVerification": "reproducible-build",
+      "sourceReceipt": {
+        "protocol": "keel-source-receipt@1",
+        "source": {
+          "algorithm": "sha256",
+          "digest": "0xe2b5ee6bccd38fd6d8a2428546b83c5f2426d84b152ef82be8055556e3b40eb6",
+          "byteLength": 338908
+        },
+        "output": {
+          "algorithm": "sha256",
+          "digest": "0x3cd014e8adad7a6bc02a9bf103aa877fc714650ebe229412c4417904832965df",
+          "byteLength": 338922
+        },
+        "report": {
+          "protocol": "keel-source-analysis@1",
+          "analyzer": {
+            "name": "keel-source-readability",
+            "version": "1.0.0"
+          },
+          "mediaType": "text/javascript",
+          "classification": "minified",
+          "readabilityScore": 50,
+          "metrics": {
+            "characters": 338908,
+            "lines": 7,
+            "longestLine": 338815,
+            "averageLine": 48415,
+            "whitespaceRatioPermille": 52,
+            "commentCharacters": 323556,
+            "identifiers": 43397,
+            "shortIdentifierRatioPermille": 530,
+            "dynamicCodeCalls": 0,
+            "encodedLiteralCharacters": 0
+          },
+          "reasons": [
+            "Most code is concentrated into unusually long lines with little whitespace.",
+            "Source retains comments that can aid review."
+          ]
+        },
+        "reportDigest": "0xff760cd54823d521ec2708e7e13d444d14ea7950238bb21c537577faa6e00386",
+        "repository": {
+          "url": "https://github.com/mrdoob/three.js",
+          "revision": "r180",
+          "path": "build/three.module.min.js"
+        },
+        "buildRecipeDigest": "0xdfb9cb8d9c2ec93e44949a7829b96c64d739c2886ed8339888f1038500c9d70b",
+        "disposition": "reproducible-build",
+        "verification": {
+          "protocol": "keel-source-build-verification@1",
+          "verifier": {
+            "name": "keel-deterministic-rewrite",
+            "version": "1.0.0"
+          },
+          "buildRecipeDigest": "0xdfb9cb8d9c2ec93e44949a7829b96c64d739c2886ed8339888f1038500c9d70b",
+          "rebuiltOutput": {
+            "algorithm": "sha256",
+            "digest": "0x3cd014e8adad7a6bc02a9bf103aa877fc714650ebe229412c4417904832965df",
+            "byteLength": 338922
+          }
+        }
+      },
+      "exactDistributionUrl": "https://raw.githubusercontent.com/mrdoob/three.js/r180/build/three.module.min.js",
+      "readableSourceTreeUrl": "https://github.com/mrdoob/three.js/tree/r180/src"
+    },
+    {
+      "id": "three-r180-core",
+      "assetId": "0x83e6fd04e4966afec0b88192b39bf476492700a887b49b415f96a561a86303ff",
+      "graphId": "0xce4b3358c83523eb5c002dbe0004e1b848fb70910e3a078d00958672b5aa843c",
+      "graphVersion": 1,
+      "manifestDigest": "0xe27e984f1cac91c45b825d4ea819b406c51361ad4e50d56e96027ae0505885d8",
+      "objectId": "0xd4cfea0ad865253e58f40eb2ab65373fccd9e56d30fa7187e50b126072cf5429",
+      "decodedSha256": "0x61ba0df005b05991361d040d8ff670e1aadfd0ce7aeebd1fdb0725957a8957de",
+      "decodedByteLength": 381124,
+      "storedByteLength": 81286,
+      "compression": "brotli",
+      "logicalObjectId": "0x4a5af1b465898415a48456154080105924c6b75684fa9d8f9ebb9026003ddfa4",
+      "objectRevision": 1,
+      "linkRegistry": "0x4a679253410272dd5232b3ff7cf5dbb88f295319",
+      "ipfsCid": "bafkreib2gpvpu7skgqhefmvjdxh453zmxmw73ztphyoqjbo7ezsiny7jfu",
+      "ipfsUri": "ipfs://bafkreib2gpvpu7skgqhefmvjdxh453zmxmw73ztphyoqjbo7ezsiny7jfu",
+      "ipfsStoredDigest": "0x3a33eafa7e4a340e42b2a91dcfceef2cbb2dfde66f3e1d0485df266486e3e92d",
+      "deliveryProfiles": [
+        "onchain-recursive",
+        "ordered-url-ipfs-then-onchain-gateway"
+      ],
+      "activeDeliveryProfile": "onchain-recursive",
+      "storageAuthentication": "onchain-immutable-bytes",
+      "runtimeVerification": "recursive-decoded-sha256",
+      "sourceBuildVerification": "exact-source-output",
+      "sourceReceipt": {
+        "protocol": "keel-source-receipt@1",
+        "source": {
+          "algorithm": "sha256",
+          "digest": "0x61ba0df005b05991361d040d8ff670e1aadfd0ce7aeebd1fdb0725957a8957de",
+          "byteLength": 381124
+        },
+        "output": {
+          "algorithm": "sha256",
+          "digest": "0x61ba0df005b05991361d040d8ff670e1aadfd0ce7aeebd1fdb0725957a8957de",
+          "byteLength": 381124
+        },
+        "report": {
+          "protocol": "keel-source-analysis@1",
+          "analyzer": {
+            "name": "keel-source-readability",
+            "version": "1.0.0"
+          },
+          "mediaType": "text/javascript",
+          "classification": "minified",
+          "readabilityScore": 50,
+          "metrics": {
+            "characters": 381124,
+            "lines": 7,
+            "longestLine": 381031,
+            "averageLine": 54446,
+            "whitespaceRatioPermille": 20,
+            "commentCharacters": 355462,
+            "identifiers": 53014,
+            "shortIdentifierRatioPermille": 645,
+            "dynamicCodeCalls": 0,
+            "encodedLiteralCharacters": 0
+          },
+          "reasons": [
+            "Most code is concentrated into unusually long lines with little whitespace.",
+            "Source retains comments that can aid review."
+          ]
+        },
+        "reportDigest": "0xc7b97a6cccdf10ca31296604015921aa9fda44a077569b0856d54f02fd35b3bc",
+        "repository": {
+          "url": "https://github.com/mrdoob/three.js",
+          "revision": "r180",
+          "path": "build/three.core.min.js"
+        },
+        "disposition": "exact-source-output"
+      },
+      "exactDistributionUrl": "https://raw.githubusercontent.com/mrdoob/three.js/r180/build/three.core.min.js",
+      "readableSourceTreeUrl": "https://github.com/mrdoob/three.js/tree/r180/src"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "p5-one",
+      "collectorUrl": "http://127.0.0.1:3000/collect/31337/0xddCCd588B77D63D219c69C62f1D07E7FFba237e7/1",
+      "collection": "0xddccd588b77d63d219c69c62f1d07e7ffba237e7",
+      "tokenURICallData": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000001",
+      "viewerBuilds": {
+        "protocol": "keel-standalone-viewer@1",
+        "entrypoint": "scene-document",
+        "profiles": {
+          "onchain": {
+            "deliveryProfile": "onchain-recursive",
+            "file": "generated/p5-one-r1.onchain.html",
+            "integrity": {
+              "algorithm": "sha256",
+              "digest": "0x1a313f15ba7af1f82bba125a258727e5534aa8f99988773b3075d7bbb967c0c9",
+              "byteLength": 295986
+            },
+            "compressedFile": "generated/p5-one-r1.onchain.html.br",
+            "compressedIntegrity": {
+              "algorithm": "sha256",
+              "digest": "0xaf0d338002aa77cce93e8aac2a4a16d289a00ecae54a52b4e84f37dfe064d677",
+              "byteLength": 111315
+            }
+          },
+          "url": {
+            "deliveryProfile": "ordered-url",
+            "sources": "creator mirror then canonical Keel onchain gateway",
+            "file": "generated/p5-one-r1.url.html",
+            "integrity": {
+              "algorithm": "sha256",
+              "digest": "0xbc0050f82dc7e8e24d4b43926f0ffd70dab895783e2bb45c6da2f33e94ea4da0",
+              "byteLength": 295921
+            },
+            "compressedFile": "generated/p5-one-r1.url.html.br",
+            "compressedIntegrity": {
+              "algorithm": "sha256",
+              "digest": "0x8e8d91eb52f175d15b85bed7ff605fd66ff0475c3bd420319a498304017d6dc9",
+              "byteLength": 111349
+            }
+          }
+        },
+        "runtimeByteLength": 292574,
+        "brotliDecoder": {
+          "byteLength": 208439,
+          "digest": "0x79b29cb1790560f0a0f32b4a31d935e2782875e4a367fde23c81d986b327ec3f"
+        },
+        "sourceReceipt": {
+          "protocol": "keel-source-receipt@1",
+          "source": {
+            "algorithm": "sha256",
+            "digest": "0x323071af3c66e4118b894783a39342d34cd86b09307b095e09cac9e9bb152d0f",
+            "byteLength": 11312
+          },
+          "output": {
+            "algorithm": "sha256",
+            "digest": "0x1a313f15ba7af1f82bba125a258727e5534aa8f99988773b3075d7bbb967c0c9",
+            "byteLength": 295986
+          },
+          "report": {
+            "protocol": "keel-source-analysis@1",
+            "analyzer": {
+              "name": "keel-source-readability",
+              "version": "1.0.0"
+            },
+            "mediaType": "text/javascript",
+            "classification": "readable",
+            "readabilityScore": 88,
+            "metrics": {
+              "characters": 11312,
+              "lines": 230,
+              "longestLine": 667,
+              "averageLine": 49,
+              "whitespaceRatioPermille": 153,
+              "commentCharacters": 0,
+              "identifiers": 950,
+              "shortIdentifierRatioPermille": 34,
+              "dynamicCodeCalls": 0,
+              "encodedLiteralCharacters": 0
+            },
+            "reasons": [
+              "Layout and identifier signals are consistent with human-readable source."
+            ]
+          },
+          "reportDigest": "0xddc075be9aa14fdcd9bcf4c5fd4c082f665ffbe6050e357fcd4de1d0f179f381",
+          "buildRecipeDigest": "0xe5773bbf2f90775dd92b75c2a679f9a96ba38679c78331e0345798e7a5f98ffb",
+          "disposition": "reproducible-build",
+          "verification": {
+            "protocol": "keel-source-build-verification@1",
+            "verifier": {
+              "name": "keel-viewer-builder",
+              "version": "1.0.0"
+            },
+            "buildRecipeDigest": "0xe5773bbf2f90775dd92b75c2a679f9a96ba38679c78331e0345798e7a5f98ffb",
+            "rebuiltOutput": {
+              "algorithm": "sha256",
+              "digest": "0x1a313f15ba7af1f82bba125a258727e5534aa8f99988773b3075d7bbb967c0c9",
+              "byteLength": 295986
+            }
+          }
+        }
+      },
+      "revisions": []
+    },
+    {
+      "id": "p5-seeded",
+      "collectorUrl": "http://127.0.0.1:3000/collect/31337/0xddCCd588B77D63D219c69C62f1D07E7FFba237e7/2",
+      "collection": "0xddccd588b77d63d219c69c62f1d07e7ffba237e7",
+      "tokenURICallData": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000002",
+      "viewerBuilds": {
+        "protocol": "keel-standalone-viewer@1",
+        "entrypoint": "scene-document",
+        "profiles": {
+          "onchain": {
+            "deliveryProfile": "onchain-recursive",
+            "file": "generated/p5-seeded-r1.onchain.html",
+            "integrity": {
+              "algorithm": "sha256",
+              "digest": "0xadbf94ede1eccfa149769a6ce20caec62d1b176e824e136e80f3bd409b498093",
+              "byteLength": 295985
+            },
+            "compressedFile": "generated/p5-seeded-r1.onchain.html.br",
+            "compressedIntegrity": {
+              "algorithm": "sha256",
+              "digest": "0x9f1c740d63b3730b7472fa7f954913af19116ebdd0fc23bf83968ffc3abb8c7b",
+              "byteLength": 111302
+            }
+          },
+          "url": {
+            "deliveryProfile": "ordered-url",
+            "sources": "creator mirror then canonical Keel onchain gateway",
+            "file": "generated/p5-seeded-r1.url.html",
+            "integrity": {
+              "algorithm": "sha256",
+              "digest": "0x2f1ccbc5fa4e8c0297ab0350548e7e411fba01f3654858888e2732c94e6b9538",
+              "byteLength": 295920
+            },
+            "compressedFile": "generated/p5-seeded-r1.url.html.br",
+            "compressedIntegrity": {
+              "algorithm": "sha256",
+              "digest": "0x692d377131c2105e88a0a98ee4b80700daf47a4fc07bc255bcd349cc1ea45435",
+              "byteLength": 111303
+            }
+          }
+        },
+        "runtimeByteLength": 292574,
+        "brotliDecoder": {
+          "byteLength": 208439,
+          "digest": "0x79b29cb1790560f0a0f32b4a31d935e2782875e4a367fde23c81d986b327ec3f"
+        },
+        "sourceReceipt": {
+          "protocol": "keel-source-receipt@1",
+          "source": {
+            "algorithm": "sha256",
+            "digest": "0x323071af3c66e4118b894783a39342d34cd86b09307b095e09cac9e9bb152d0f",
+            "byteLength": 11312
+          },
+          "output": {
+            "algorithm": "sha256",
+            "digest": "0xadbf94ede1eccfa149769a6ce20caec62d1b176e824e136e80f3bd409b498093",
+            "byteLength": 295985
+          },
+          "report": {
+            "protocol": "keel-source-analysis@1",
+            "analyzer": {
+              "name": "keel-source-readability",
+              "version": "1.0.0"
+            },
+            "mediaType": "text/javascript",
+            "classification": "readable",
+            "readabilityScore": 88,
+            "metrics": {
+              "characters": 11312,
+              "lines": 230,
+              "longestLine": 667,
+              "averageLine": 49,
+              "whitespaceRatioPermille": 153,
+              "commentCharacters": 0,
+              "identifiers": 950,
+              "shortIdentifierRatioPermille": 34,
+              "dynamicCodeCalls": 0,
+              "encodedLiteralCharacters": 0
+            },
+            "reasons": [
+              "Layout and identifier signals are consistent with human-readable source."
+            ]
+          },
+          "reportDigest": "0xddc075be9aa14fdcd9bcf4c5fd4c082f665ffbe6050e357fcd4de1d0f179f381",
+          "buildRecipeDigest": "0x6a958cb7e97a38405b20825138ca7d5f466c22b010e49267bcf8c2fcd5ee8442",
+          "disposition": "reproducible-build",
+          "verification": {
+            "protocol": "keel-source-build-verification@1",
+            "verifier": {
+              "name": "keel-viewer-builder",
+              "version": "1.0.0"
+            },
+            "buildRecipeDigest": "0x6a958cb7e97a38405b20825138ca7d5f466c22b010e49267bcf8c2fcd5ee8442",
+            "rebuiltOutput": {
+              "algorithm": "sha256",
+              "digest": "0xadbf94ede1eccfa149769a6ce20caec62d1b176e824e136e80f3bd409b498093",
+              "byteLength": 295985
+            }
+          }
+        }
+      },
+      "revisions": []
+    },
+    {
+      "id": "p5-edit",
+      "collectorUrl": "http://127.0.0.1:3000/collect/31337/0xddCCd588B77D63D219c69C62f1D07E7FFba237e7/3",
+      "collection": "0xddccd588b77d63d219c69c62f1d07e7ffba237e7",
+      "tokenURICallData": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000003",
+      "viewerBuilds": {
+        "protocol": "keel-standalone-viewer@1",
+        "entrypoint": "scene-document",
+        "profiles": {
+          "onchain": {
+            "deliveryProfile": "onchain-recursive",
+            "file": "generated/p5-edit-r1.onchain.html",
+            "integrity": {
+              "algorithm": "sha256",
+              "digest": "0x114171020cc8e7c3e3573e9146ab534b24f9c4d082462d01428aa39f89f4231b",
+              "byteLength": 295985
+            },
+            "compressedFile": "generated/p5-edit-r1.onchain.html.br",
+            "compressedIntegrity": {
+              "algorithm": "sha256",
+              "digest": "0xeb70f977ec1952c6178e943002435097241990842b69f02f2e1c660719a1b72a",
+              "byteLength": 111239
+            }
+          },
+          "url": {
+            "deliveryProfile": "ordered-url",
+            "sources": "creator mirror then canonical Keel onchain gateway",
+            "file": "generated/p5-edit-r1.url.html",
+            "integrity": {
+              "algorithm": "sha256",
+              "digest": "0x53efe4f63ac40f50bfbbd65472d7e2f968f5737138bc0d8e8b6439b0ca31d00d",
+              "byteLength": 295920
+            },
+            "compressedFile": "generated/p5-edit-r1.url.html.br",
+            "compressedIntegrity": {
+              "algorithm": "sha256",
+              "digest": "0xa05baa29e675c415d804f7773d9de3405022d83d723e5e8e38ac302aafb6de99",
+              "byteLength": 111293
+            }
+          }
+        },
+        "runtimeByteLength": 292574,
+        "brotliDecoder": {
+          "byteLength": 208439,
+          "digest": "0x79b29cb1790560f0a0f32b4a31d935e2782875e4a367fde23c81d986b327ec3f"
+        },
+        "sourceReceipt": {
+          "protocol": "keel-source-receipt@1",
+          "source": {
+            "algorithm": "sha256",
+            "digest": "0x323071af3c66e4118b894783a39342d34cd86b09307b095e09cac9e9bb152d0f",
+            "byteLength": 11312
+          },
+          "output": {
+            "algorithm": "sha256",
+            "digest": "0x114171020cc8e7c3e3573e9146ab534b24f9c4d082462d01428aa39f89f4231b",
+            "byteLength": 295985
+          },
+          "report": {
+            "protocol": "keel-source-analysis@1",
+            "analyzer": {
+              "name": "keel-source-readability",
+              "version": "1.0.0"
+            },
+            "mediaType": "text/javascript",
+            "classification": "readable",
+            "readabilityScore": 88,
+            "metrics": {
+              "characters": 11312,
+              "lines": 230,
+              "longestLine": 667,
+              "averageLine": 49,
+              "whitespaceRatioPermille": 153,
+              "commentCharacters": 0,
+              "identifiers": 950,
+              "shortIdentifierRatioPermille": 34,
+              "dynamicCodeCalls": 0,
+              "encodedLiteralCharacters": 0
+            },
+            "reasons": [
+              "Layout and identifier signals are consistent with human-readable source."
+            ]
+          },
+          "reportDigest": "0xddc075be9aa14fdcd9bcf4c5fd4c082f665ffbe6050e357fcd4de1d0f179f381",
+          "buildRecipeDigest": "0xe3abf98aa397e840a1859602d22ba492f463cd0c5a5df670ee8d853d2563fcdc",
+          "disposition": "reproducible-build",
+          "verification": {
+            "protocol": "keel-source-build-verification@1",
+            "verifier": {
+              "name": "keel-viewer-builder",
+              "version": "1.0.0"
+            },
+            "buildRecipeDigest": "0xe3abf98aa397e840a1859602d22ba492f463cd0c5a5df670ee8d853d2563fcdc",
+            "rebuiltOutput": {
+              "algorithm": "sha256",
+              "digest": "0x114171020cc8e7c3e3573e9146ab534b24f9c4d082462d01428aa39f89f4231b",
+              "byteLength": 295985
+            }
+          }
+        }
+      },
+      "revisions": [
+        {
+          "revision": 2,
+          "attributes": {
+            "seed": 8451,
+            "background": "#07150f",
+            "accent": "#a8ff4f"
+          },
+          "viewerBuilds": {
+            "protocol": "keel-standalone-viewer@1",
+            "entrypoint": "scene-document",
+            "profiles": {
+              "onchain": {
+                "deliveryProfile": "onchain-recursive",
+                "file": "generated/p5-edit-r2.onchain.html",
+                "integrity": {
+                  "algorithm": "sha256",
+                  "digest": "0xd86f5b734714596d18843c4c13495bb3943e9812e36468ea316c1abed8330aeb",
+                  "byteLength": 295985
+                },
+                "compressedFile": "generated/p5-edit-r2.onchain.html.br",
+                "compressedIntegrity": {
+                  "algorithm": "sha256",
+                  "digest": "0x9ef1f7587cebb5dc98c273fc7abc1feffaebdbb0341c470a67052505c72fc43b",
+                  "byteLength": 111340
+                }
+              },
+              "url": {
+                "deliveryProfile": "ordered-url",
+                "sources": "creator mirror then canonical Keel onchain gateway",
+                "file": "generated/p5-edit-r2.url.html",
+                "integrity": {
+                  "algorithm": "sha256",
+                  "digest": "0x16bcbf33e5d6a8719f8df3f9fe9e5c1ca1514477729ee99cd94e29bfe3a27b5d",
+                  "byteLength": 295920
+                },
+                "compressedFile": "generated/p5-edit-r2.url.html.br",
+                "compressedIntegrity": {
+                  "algorithm": "sha256",
+                  "digest": "0xbab6612101bc99d1b86a0d8a0fc737a7d8624af07ddfa739cabe91cb7393beaf",
+                  "byteLength": 111235
+                }
+              }
+            },
+            "runtimeByteLength": 292574,
+            "brotliDecoder": {
+              "byteLength": 208439,
+              "digest": "0x79b29cb1790560f0a0f32b4a31d935e2782875e4a367fde23c81d986b327ec3f"
+            },
+            "sourceReceipt": {
+              "protocol": "keel-source-receipt@1",
+              "source": {
+                "algorithm": "sha256",
+                "digest": "0x323071af3c66e4118b894783a39342d34cd86b09307b095e09cac9e9bb152d0f",
+                "byteLength": 11312
+              },
+              "output": {
+                "algorithm": "sha256",
+                "digest": "0xd86f5b734714596d18843c4c13495bb3943e9812e36468ea316c1abed8330aeb",
+                "byteLength": 295985
+              },
+              "report": {
+                "protocol": "keel-source-analysis@1",
+                "analyzer": {
+                  "name": "keel-source-readability",
+                  "version": "1.0.0"
+                },
+                "mediaType": "text/javascript",
+                "classification": "readable",
+                "readabilityScore": 88,
+                "metrics": {
+                  "characters": 11312,
+                  "lines": 230,
+                  "longestLine": 667,
+                  "averageLine": 49,
+                  "whitespaceRatioPermille": 153,
+                  "commentCharacters": 0,
+                  "identifiers": 950,
+                  "shortIdentifierRatioPermille": 34,
+                  "dynamicCodeCalls": 0,
+                  "encodedLiteralCharacters": 0
+                },
+                "reasons": [
+                  "Layout and identifier signals are consistent with human-readable source."
+                ]
+              },
+              "reportDigest": "0xddc075be9aa14fdcd9bcf4c5fd4c082f665ffbe6050e357fcd4de1d0f179f381",
+              "buildRecipeDigest": "0x00e0839b805db9357160df2b333e3110350a6e55701b70784b210160b80c5a52",
+              "disposition": "reproducible-build",
+              "verification": {
+                "protocol": "keel-source-build-verification@1",
+                "verifier": {
+                  "name": "keel-viewer-builder",
+                  "version": "1.0.0"
+                },
+                "buildRecipeDigest": "0x00e0839b805db9357160df2b333e3110350a6e55701b70784b210160b80c5a52",
+                "rebuiltOutput": {
+                  "algorithm": "sha256",
+                  "digest": "0xd86f5b734714596d18843c4c13495bb3943e9812e36468ea316c1abed8330aeb",
+                  "byteLength": 295985
+                }
+              }
+            }
+          },
+          "collectorUrl": "http://127.0.0.1:3000/collect/31337/0xddCCd588B77D63D219c69C62f1D07E7FFba237e7/3",
+          "transactions": [
+            {
+              "from": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+              "to": "0x0dcd1bf9a1b36ce34237eeafef220932846bcd82",
+              "data": "0xa5d0f29f000000000000000000000000ddccd588b77d63d219c69c62f1d07e7ffba237e700000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000002",
+              "value": "0x0"
+            }
+          ],
+          "proofReads": [
+            {
+              "label": "active presentation r2",
+              "to": "0x0dcd1bf9a1b36ce34237eeafef220932846bcd82",
+              "data": "0xa3c675ad000000000000000000000000ddccd588b77d63d219c69c62f1d07e7ffba237e700000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000001",
+              "sha256": "0x1c3e8951155e0034e9d45329bdc7e642206d546824c92b17e2e81f733022bd59"
+            },
+            {
+              "label": "manifest object r2",
+              "to": "0xb7f8bc63bbcad18155201308c8f3540b07f84f5e",
+              "data": "0x051448575af3dd75ddd8467e75af37755c0aba537f43ec1827b796c0c9f9b619474ab663",
+              "sha256": "0xd931c93afc1883f90b68d57e3fcec7e36c77a74be9d85aecb3c87075bdf1cd51"
+            },
+            {
+              "label": "p5-1-11-3 Library asset",
+              "to": "0x29023de63d7075b4cc2ce30b55f050f9c67548d4",
+              "data": "0x8539ccf48e68bc3b817a67ed1dec0bc8c5e8ecb0788ad38e0a988437e7c096ad4095a197",
+              "sha256": "0xf82fd23731750bc9aa0860b49f62017552b9f653701704dea5042bf34e05d7e2"
+            },
+            {
+              "label": "p5-1-11-3 recursive graph",
+              "to": "0x8cea85ec7f3d314c4d144e34f2206c8ac0bbada1",
+              "data": "0xfaf83b6e1b7805f742c9d364b2a48404e4465b51dd9722c3e7b65f9fe0fc129313de97980000000000000000000000000000000000000000000000000000000000000001",
+              "sha256": "0x1f75d83232e4aef17925f298b193fe562bcfb2c5ca74336fb952bb1290df3df5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "three-one",
+      "collectorUrl": "http://127.0.0.1:3000/collect/31337/0xddCCd588B77D63D219c69C62f1D07E7FFba237e7/4",
+      "collection": "0xddccd588b77d63d219c69c62f1d07e7ffba237e7",
+      "tokenURICallData": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000004",
+      "viewerBuilds": {
+        "protocol": "keel-standalone-viewer@1",
+        "entrypoint": "scene-document",
+        "profiles": {
+          "onchain": {
+            "deliveryProfile": "onchain-recursive",
+            "file": "generated/three-one-r1.onchain.html",
+            "integrity": {
+              "algorithm": "sha256",
+              "digest": "0x4ac1258634bb85056618bca3803d9194ecac83e667f3794c93aad067048e0fa5",
+              "byteLength": 296937
+            },
+            "compressedFile": "generated/three-one-r1.onchain.html.br",
+            "compressedIntegrity": {
+              "algorithm": "sha256",
+              "digest": "0xc9a11053b3b8cd47eea8db71b3fb99dc0f3478ea79c2126804b8ec8da99c87f9",
+              "byteLength": 111422
+            }
+          },
+          "url": {
+            "deliveryProfile": "ordered-url",
+            "sources": "creator mirror then canonical Keel onchain gateway",
+            "file": "generated/three-one-r1.url.html",
+            "integrity": {
+              "algorithm": "sha256",
+              "digest": "0x0e8b870e43912830fa63b325b3a375fa0a56715200a016a3244310a0d7818701",
+              "byteLength": 296872
+            },
+            "compressedFile": "generated/three-one-r1.url.html.br",
+            "compressedIntegrity": {
+              "algorithm": "sha256",
+              "digest": "0x8bb0ddfbdcd7e3ea35d7b7bfcfd92c3ddb31704082d1947dfa671b2c0c5142a3",
+              "byteLength": 111406
+            }
+          }
+        },
+        "runtimeByteLength": 292574,
+        "brotliDecoder": {
+          "byteLength": 208439,
+          "digest": "0x79b29cb1790560f0a0f32b4a31d935e2782875e4a367fde23c81d986b327ec3f"
+        },
+        "sourceReceipt": {
+          "protocol": "keel-source-receipt@1",
+          "source": {
+            "algorithm": "sha256",
+            "digest": "0x323071af3c66e4118b894783a39342d34cd86b09307b095e09cac9e9bb152d0f",
+            "byteLength": 11312
+          },
+          "output": {
+            "algorithm": "sha256",
+            "digest": "0x4ac1258634bb85056618bca3803d9194ecac83e667f3794c93aad067048e0fa5",
+            "byteLength": 296937
+          },
+          "report": {
+            "protocol": "keel-source-analysis@1",
+            "analyzer": {
+              "name": "keel-source-readability",
+              "version": "1.0.0"
+            },
+            "mediaType": "text/javascript",
+            "classification": "readable",
+            "readabilityScore": 88,
+            "metrics": {
+              "characters": 11312,
+              "lines": 230,
+              "longestLine": 667,
+              "averageLine": 49,
+              "whitespaceRatioPermille": 153,
+              "commentCharacters": 0,
+              "identifiers": 950,
+              "shortIdentifierRatioPermille": 34,
+              "dynamicCodeCalls": 0,
+              "encodedLiteralCharacters": 0
+            },
+            "reasons": [
+              "Layout and identifier signals are consistent with human-readable source."
+            ]
+          },
+          "reportDigest": "0xddc075be9aa14fdcd9bcf4c5fd4c082f665ffbe6050e357fcd4de1d0f179f381",
+          "buildRecipeDigest": "0xf5adccb9f5df5862e04e76fd358e5444aa6856020ca99392d39801eb18ef6de5",
+          "disposition": "reproducible-build",
+          "verification": {
+            "protocol": "keel-source-build-verification@1",
+            "verifier": {
+              "name": "keel-viewer-builder",
+              "version": "1.0.0"
+            },
+            "buildRecipeDigest": "0xf5adccb9f5df5862e04e76fd358e5444aa6856020ca99392d39801eb18ef6de5",
+            "rebuiltOutput": {
+              "algorithm": "sha256",
+              "digest": "0x4ac1258634bb85056618bca3803d9194ecac83e667f3794c93aad067048e0fa5",
+              "byteLength": 296937
+            }
+          }
+        }
+      },
+      "revisions": []
+    },
+    {
+      "id": "three-seeded",
+      "collectorUrl": "http://127.0.0.1:3000/collect/31337/0xddCCd588B77D63D219c69C62f1D07E7FFba237e7/5",
+      "collection": "0xddccd588b77d63d219c69c62f1d07e7ffba237e7",
+      "tokenURICallData": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000005",
+      "viewerBuilds": {
+        "protocol": "keel-standalone-viewer@1",
+        "entrypoint": "scene-document",
+        "profiles": {
+          "onchain": {
+            "deliveryProfile": "onchain-recursive",
+            "file": "generated/three-seeded-r1.onchain.html",
+            "integrity": {
+              "algorithm": "sha256",
+              "digest": "0x1fe18dcecc39808c363215a71c33a7b3a7ca0044369f9e0fdc282f881648686c",
+              "byteLength": 296938
+            },
+            "compressedFile": "generated/three-seeded-r1.onchain.html.br",
+            "compressedIntegrity": {
+              "algorithm": "sha256",
+              "digest": "0x9043dfd97e53d6d672542c8673d7e634c879e7bdb5b9873424919c4b931eceb1",
+              "byteLength": 111475
+            }
+          },
+          "url": {
+            "deliveryProfile": "ordered-url",
+            "sources": "creator mirror then canonical Keel onchain gateway",
+            "file": "generated/three-seeded-r1.url.html",
+            "integrity": {
+              "algorithm": "sha256",
+              "digest": "0x1b5ffe7aa2616b8fb2f682e86d1f92d352e2e02ddb41a51a18e0026f7db4a914",
+              "byteLength": 296873
+            },
+            "compressedFile": "generated/three-seeded-r1.url.html.br",
+            "compressedIntegrity": {
+              "algorithm": "sha256",
+              "digest": "0x267c378c888f229febc3f1703bf7fa57693557c23a801c4bc96df0a3d528d0a9",
+              "byteLength": 111475
+            }
+          }
+        },
+        "runtimeByteLength": 292574,
+        "brotliDecoder": {
+          "byteLength": 208439,
+          "digest": "0x79b29cb1790560f0a0f32b4a31d935e2782875e4a367fde23c81d986b327ec3f"
+        },
+        "sourceReceipt": {
+          "protocol": "keel-source-receipt@1",
+          "source": {
+            "algorithm": "sha256",
+            "digest": "0x323071af3c66e4118b894783a39342d34cd86b09307b095e09cac9e9bb152d0f",
+            "byteLength": 11312
+          },
+          "output": {
+            "algorithm": "sha256",
+            "digest": "0x1fe18dcecc39808c363215a71c33a7b3a7ca0044369f9e0fdc282f881648686c",
+            "byteLength": 296938
+          },
+          "report": {
+            "protocol": "keel-source-analysis@1",
+            "analyzer": {
+              "name": "keel-source-readability",
+              "version": "1.0.0"
+            },
+            "mediaType": "text/javascript",
+            "classification": "readable",
+            "readabilityScore": 88,
+            "metrics": {
+              "characters": 11312,
+              "lines": 230,
+              "longestLine": 667,
+              "averageLine": 49,
+              "whitespaceRatioPermille": 153,
+              "commentCharacters": 0,
+              "identifiers": 950,
+              "shortIdentifierRatioPermille": 34,
+              "dynamicCodeCalls": 0,
+              "encodedLiteralCharacters": 0
+            },
+            "reasons": [
+              "Layout and identifier signals are consistent with human-readable source."
+            ]
+          },
+          "reportDigest": "0xddc075be9aa14fdcd9bcf4c5fd4c082f665ffbe6050e357fcd4de1d0f179f381",
+          "buildRecipeDigest": "0xc7b10951e42a76ac5707bcd7c5c560b491836db35e6564c5d66eeed9ff6dca3f",
+          "disposition": "reproducible-build",
+          "verification": {
+            "protocol": "keel-source-build-verification@1",
+            "verifier": {
+              "name": "keel-viewer-builder",
+              "version": "1.0.0"
+            },
+            "buildRecipeDigest": "0xc7b10951e42a76ac5707bcd7c5c560b491836db35e6564c5d66eeed9ff6dca3f",
+            "rebuiltOutput": {
+              "algorithm": "sha256",
+              "digest": "0x1fe18dcecc39808c363215a71c33a7b3a7ca0044369f9e0fdc282f881648686c",
+              "byteLength": 296938
+            }
+          }
+        }
+      },
+      "revisions": []
+    },
+    {
+      "id": "three-edit",
+      "collectorUrl": "http://127.0.0.1:3000/collect/31337/0xddCCd588B77D63D219c69C62f1D07E7FFba237e7/6",
+      "collection": "0xddccd588b77d63d219c69c62f1d07e7ffba237e7",
+      "tokenURICallData": "0xc87b56dd0000000000000000000000000000000000000000000000000000000000000006",
+      "viewerBuilds": {
+        "protocol": "keel-standalone-viewer@1",
+        "entrypoint": "scene-document",
+        "profiles": {
+          "onchain": {
+            "deliveryProfile": "onchain-recursive",
+            "file": "generated/three-edit-r1.onchain.html",
+            "integrity": {
+              "algorithm": "sha256",
+              "digest": "0x8e65d585c64406f7985a34d250cf855291101a8310078b7cca108fbd5ee56a54",
+              "byteLength": 296942
+            },
+            "compressedFile": "generated/three-edit-r1.onchain.html.br",
+            "compressedIntegrity": {
+              "algorithm": "sha256",
+              "digest": "0x1785a8fdb5b4603e17b4e59c342fc785da29ac7197081ef0cb1c48c6ba298eea",
+              "byteLength": 111537
+            }
+          },
+          "url": {
+            "deliveryProfile": "ordered-url",
+            "sources": "creator mirror then canonical Keel onchain gateway",
+            "file": "generated/three-edit-r1.url.html",
+            "integrity": {
+              "algorithm": "sha256",
+              "digest": "0x1a80dd963a8b27d67adc3b8dc32aca412087a289bb1333170d7dcf5c82203c9f",
+              "byteLength": 296877
+            },
+            "compressedFile": "generated/three-edit-r1.url.html.br",
+            "compressedIntegrity": {
+              "algorithm": "sha256",
+              "digest": "0xab8f1b0f0ae1905655dd3e6b6a20c23a22255f1e34a8ef5c2e088ad8eb05d8ba",
+              "byteLength": 111448
+            }
+          }
+        },
+        "runtimeByteLength": 292574,
+        "brotliDecoder": {
+          "byteLength": 208439,
+          "digest": "0x79b29cb1790560f0a0f32b4a31d935e2782875e4a367fde23c81d986b327ec3f"
+        },
+        "sourceReceipt": {
+          "protocol": "keel-source-receipt@1",
+          "source": {
+            "algorithm": "sha256",
+            "digest": "0x323071af3c66e4118b894783a39342d34cd86b09307b095e09cac9e9bb152d0f",
+            "byteLength": 11312
+          },
+          "output": {
+            "algorithm": "sha256",
+            "digest": "0x8e65d585c64406f7985a34d250cf855291101a8310078b7cca108fbd5ee56a54",
+            "byteLength": 296942
+          },
+          "report": {
+            "protocol": "keel-source-analysis@1",
+            "analyzer": {
+              "name": "keel-source-readability",
+              "version": "1.0.0"
+            },
+            "mediaType": "text/javascript",
+            "classification": "readable",
+            "readabilityScore": 88,
+            "metrics": {
+              "characters": 11312,
+              "lines": 230,
+              "longestLine": 667,
+              "averageLine": 49,
+              "whitespaceRatioPermille": 153,
+              "commentCharacters": 0,
+              "identifiers": 950,
+              "shortIdentifierRatioPermille": 34,
+              "dynamicCodeCalls": 0,
+              "encodedLiteralCharacters": 0
+            },
+            "reasons": [
+              "Layout and identifier signals are consistent with human-readable source."
+            ]
+          },
+          "reportDigest": "0xddc075be9aa14fdcd9bcf4c5fd4c082f665ffbe6050e357fcd4de1d0f179f381",
+          "buildRecipeDigest": "0xcafd448a9862a0137be70ae94e2e6f98a69c20261ce8d1fa9fdf4db6445944d1",
+          "disposition": "reproducible-build",
+          "verification": {
+            "protocol": "keel-source-build-verification@1",
+            "verifier": {
+              "name": "keel-viewer-builder",
+              "version": "1.0.0"
+            },
+            "buildRecipeDigest": "0xcafd448a9862a0137be70ae94e2e6f98a69c20261ce8d1fa9fdf4db6445944d1",
+            "rebuiltOutput": {
+              "algorithm": "sha256",
+              "digest": "0x8e65d585c64406f7985a34d250cf855291101a8310078b7cca108fbd5ee56a54",
+              "byteLength": 296942
+            }
+          }
+        }
+      },
+      "revisions": [
+        {
+          "revision": 2,
+          "attributes": {
+            "seed": 90210,
+            "background": "#102538",
+            "accent": "#74ffd0"
+          },
+          "viewerBuilds": {
+            "protocol": "keel-standalone-viewer@1",
+            "entrypoint": "scene-document",
+            "profiles": {
+              "onchain": {
+                "deliveryProfile": "onchain-recursive",
+                "file": "generated/three-edit-r2.onchain.html",
+                "integrity": {
+                  "algorithm": "sha256",
+                  "digest": "0xb997371ca3aec8c95bf6ae17ab470b881a117a38d12637f4834c712cf8cf61cd",
+                  "byteLength": 296942
+                },
+                "compressedFile": "generated/three-edit-r2.onchain.html.br",
+                "compressedIntegrity": {
+                  "algorithm": "sha256",
+                  "digest": "0xfaa7473db7f34a02768006b5ea084533fdeffc56d620f9759f668ef173f21efa",
+                  "byteLength": 111509
+                }
+              },
+              "url": {
+                "deliveryProfile": "ordered-url",
+                "sources": "creator mirror then canonical Keel onchain gateway",
+                "file": "generated/three-edit-r2.url.html",
+                "integrity": {
+                  "algorithm": "sha256",
+                  "digest": "0xd47433b17493b7de680262779466cf7adb66aa4e2f1c57fedfd6d6d47323820b",
+                  "byteLength": 296877
+                },
+                "compressedFile": "generated/three-edit-r2.url.html.br",
+                "compressedIntegrity": {
+                  "algorithm": "sha256",
+                  "digest": "0x512f276d58b2b18ba8c2471d82912a5943d5dfb1c74112bfb1e0dd0c582874e5",
+                  "byteLength": 111560
+                }
+              }
+            },
+            "runtimeByteLength": 292574,
+            "brotliDecoder": {
+              "byteLength": 208439,
+              "digest": "0x79b29cb1790560f0a0f32b4a31d935e2782875e4a367fde23c81d986b327ec3f"
+            },
+            "sourceReceipt": {
+              "protocol": "keel-source-receipt@1",
+              "source": {
+                "algorithm": "sha256",
+                "digest": "0x323071af3c66e4118b894783a39342d34cd86b09307b095e09cac9e9bb152d0f",
+                "byteLength": 11312
+              },
+              "output": {
+                "algorithm": "sha256",
+                "digest": "0xb997371ca3aec8c95bf6ae17ab470b881a117a38d12637f4834c712cf8cf61cd",
+                "byteLength": 296942
+              },
+              "report": {
+                "protocol": "keel-source-analysis@1",
+                "analyzer": {
+                  "name": "keel-source-readability",
+                  "version": "1.0.0"
+                },
+                "mediaType": "text/javascript",
+                "classification": "readable",
+                "readabilityScore": 88,
+                "metrics": {
+                  "characters": 11312,
+                  "lines": 230,
+                  "longestLine": 667,
+                  "averageLine": 49,
+                  "whitespaceRatioPermille": 153,
+                  "commentCharacters": 0,
+                  "identifiers": 950,
+                  "shortIdentifierRatioPermille": 34,
+                  "dynamicCodeCalls": 0,
+                  "encodedLiteralCharacters": 0
+                },
+                "reasons": [
+                  "Layout and identifier signals are consistent with human-readable source."
+                ]
+              },
+              "reportDigest": "0xddc075be9aa14fdcd9bcf4c5fd4c082f665ffbe6050e357fcd4de1d0f179f381",
+              "buildRecipeDigest": "0xd7ad6ba10bffa2ceb358ca073a9b4df8e81565bf0c0e0e711ba724bb7fafba68",
+              "disposition": "reproducible-build",
+              "verification": {
+                "protocol": "keel-source-build-verification@1",
+                "verifier": {
+                  "name": "keel-viewer-builder",
+                  "version": "1.0.0"
+                },
+                "buildRecipeDigest": "0xd7ad6ba10bffa2ceb358ca073a9b4df8e81565bf0c0e0e711ba724bb7fafba68",
+                "rebuiltOutput": {
+                  "algorithm": "sha256",
+                  "digest": "0xb997371ca3aec8c95bf6ae17ab470b881a117a38d12637f4834c712cf8cf61cd",
+                  "byteLength": 296942
+                }
+              }
+            }
+          },
+          "collectorUrl": "http://127.0.0.1:3000/collect/31337/0xddCCd588B77D63D219c69C62f1D07E7FFba237e7/6",
+          "transactions": [
+            {
+              "from": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+              "to": "0x0dcd1bf9a1b36ce34237eeafef220932846bcd82",
+              "data": "0xa5d0f29f000000000000000000000000ddccd588b77d63d219c69c62f1d07e7ffba237e700000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000002",
+              "value": "0x0"
+            }
+          ],
+          "proofReads": [
+            {
+              "label": "active presentation r2",
+              "to": "0x0dcd1bf9a1b36ce34237eeafef220932846bcd82",
+              "data": "0xa3c675ad000000000000000000000000ddccd588b77d63d219c69c62f1d07e7ffba237e700000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000001",
+              "sha256": "0x1c3e8951155e0034e9d45329bdc7e642206d546824c92b17e2e81f733022bd59"
+            },
+            {
+              "label": "manifest object r2",
+              "to": "0xb7f8bc63bbcad18155201308c8f3540b07f84f5e",
+              "data": "0x05144857d747f36c0d9b467d0949ae80c6f423a2e3e7b59941f3fb1934832464a5b11786",
+              "sha256": "0xd75eed58fbc0886620779129c73ae4ea149d79841e9497fa106915e5e0c789c4"
+            },
+            {
+              "label": "three-r180-core Library asset",
+              "to": "0x29023de63d7075b4cc2ce30b55f050f9c67548d4",
+              "data": "0x8539ccf483e6fd04e4966afec0b88192b39bf476492700a887b49b415f96a561a86303ff",
+              "sha256": "0x4487de8449837ecf2c28a630080cd3dff3ac20781151833e5f1013e4e51fac19"
+            },
+            {
+              "label": "three-r180-core recursive graph",
+              "to": "0x8cea85ec7f3d314c4d144e34f2206c8ac0bbada1",
+              "data": "0xfaf83b6ece4b3358c83523eb5c002dbe0004e1b848fb70910e3a078d00958672b5aa843c0000000000000000000000000000000000000000000000000000000000000001",
+              "sha256": "0x596b02bab8d185f864090beb490df513ef08470666c8d06b16424e00b7506d3d"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "transactions": [
+    "0x1fa57b12a42927762fd7f4c093f6d0db3447dcbc23b1e474bd43b68170764d41",
+    "0xa1d6fa15f99228aa2d1412c79e4a0bc4a2e46debe80f2d8893f970e6d52034d3",
+    "0xf680842230a7259f12c7cf6076ea807a8a2443be38f0eac305f158b3d5098110",
+    "0xc0e8d5fa145df6226f2ba310dd56a59c0596feaeb924cd1c416ffc4e802e3fbc",
+    "0xd6eaa85cf8b945dfe09fddbc76d4b107bb8ba9756662cae40155c903c0e7929e",
+    "0xa75bf9db5af6370d96067b160ce2030ceecaddf79311fb43bdc5e8d32ca49987",
+    "0x201873d6a41a9807b7aefeb5ee03d9da58530ee536aa858279b492d383e4313b",
+    "0x9393dee5a678969b29d9831949d927c1aacec3aae1f67e1e247fb25e87fd7af7",
+    "0x84315947d2240bb792f414f47dc0d021db6f90e3047f41674164ce66c863ac71",
+    "0x9feea589822a2d22a88b0466b7c9a4338b910c25acff8233cf101d0232e6a35e",
+    "0xe0cd205c1a61067fb08a21d36fa2d70b3cf8b0cbf11f472eb387b45c28d8354c",
+    "0xc5a65d5212c36c628ab70710ec7a6fe896fd9b50a9a72e5d49bd7e70dfb84811",
+    "0x1d315e435d005f140254ed353be5704928af136eb10a016834d7df030718b920",
+    "0x2421805290e74afb0ac08653f933c65fda3490b8ff5c289b0689c6128abbdabb",
+    "0x52e9f8bc86eef2f1433d0a47d96304ed67fdb05d90efdeffa3b670b122f59009",
+    "0x756af3f201408da724aad1b57508270c6413f11be36433cb417944249c8b594e",
+    "0xc5aff4f8b0ae4b1f08da650354246fba556df541d69182ca49b4d714cc30182a",
+    "0x0c563752ac98134087c8388ff166dc9859db3fd97a820e4b8d14d15866cea423",
+    "0xb455964fb20cc3b342ce4ec4a8e7d1f97eee47adc1d95d59f77024f67737c042",
+    "0x3a3bb4b2567082ad6c046eccfd5c0d78377c6dd75bbb23a27ddf4d0571f719b1",
+    "0xcda5f411ab9e4abd064fac65f8920e510ac4c5142189f8876edcff4290062a9d",
+    "0x36018b5e6e8944825a3a74a6394a7639fab55ce041741d8856ff71532ca15f65",
+    "0xe6b31b8ce0a88dab059f3098137283d5ef7fa967516fc8cb99f9fca7cedc8d1c",
+    "0xb890f536a97e75b3ca4cc2c49507ad896761d66a75099a1485377c9f8fd591b3",
+    "0xc50d697d77da21054d08fe7706d55fefe25b5b14bf4c0b3aff5a096ba1962a74",
+    "0x65d7827bdd5bb79b2423ad095b2b512aafec6f3b913365397eee719f60362a59",
+    "0x7816f61db3fd9c62e3ce3717b51f5983e04513d8eaf5f289fd1666da5f25ff6f",
+    "0xd2156cf584c8886652d4c605b84935b7a313a730c23d456bb091238d1880f276",
+    "0xa459191e33423f46fbf2f5eaca387327118f5b1f6a8a8141a31739be3db6a467",
+    "0xefbd41434ffdc79060a1abadcee143bfff26622e4c38b6e2adec8049ed89f4ca",
+    "0xb252b9676657eb5e3a2d8fe4fbfd13ff4b767017ace05480100f8113aabea025",
+    "0x89fc5190437e4a0621737bbaee8315f0fac9b7376356f8c4c68fd40e92b60125"
+  ]
+}

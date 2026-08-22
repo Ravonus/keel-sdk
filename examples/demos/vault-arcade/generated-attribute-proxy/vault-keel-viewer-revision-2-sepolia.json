@@ -1,0 +1,27 @@
+{
+  "schema": "vault-keel-viewer-revision@2",
+  "chainId": 11155111,
+  "network": "Ethereum Sepolia",
+  "publisher": "0x1bF2d0B339b5850F88eCe7b14a2497c3Dc821C90",
+  "parent": {
+    "objectId": "0x1a371abce1850bdabbc2fd4e93dad560044f89a7eb3b4639d63b6488d65ee2d9",
+    "digest": "0x970128e550207f9245f41ab7b95c9495be2ca6668f209e9f7367d6f7260dd93f",
+    "byteLength": 682478
+  },
+  "boot": {
+    "contentObjectId": "0x59747dc8fbc39e59eeee365c7e252c464a0c93f528bdc742aae20afefd103d26",
+    "digest": "0x4d8ea3087a6bdaa140714085fcaf91b572fe37d82b7ab55390e207ecdd15bce4",
+    "byteLength": 3519,
+    "slugId": "0x79d4d019da786c3a4238447bd6491abd88ca17578b195272fd8406853d1c9463"
+  },
+  "logicalObject": {
+    "objectId": "0xdbc37b9024bf07eb5ee1086613b02f31b8aa9d21f07dd5c7c585a2a9af43279b",
+    "revision": 1,
+    "policy": "creator",
+    "salt": "0x9007fdf93ae7db4fbcb36ebccc8e1d53a510e5c0411774e20e9105259615ade8"
+  },
+  "htmlBuilder": "0x10727f2AC4E4416bAe15BDD96311Bfc006706042",
+  "keelHold": "0x2621C924aDfeac2b761B2DDc6611A9581120d439",
+  "artifactRegistry": "0x95161Bd877Ed9300397e179bae6a10178C6d6D8b",
+  "createdAt": "2026-08-13T23:34:38.552Z"
+}

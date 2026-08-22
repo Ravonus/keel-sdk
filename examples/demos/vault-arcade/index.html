@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Vault Arcade · Endless Arena</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #05050a;
+      }
+      body {
+        display: grid;
+        place-items: center;
+      }
+      #game {
+        width: 100%;
+        height: 100%;
+        display: block;
+        image-rendering: pixelated;
+        cursor: crosshair;
+      }
+      #hud {
+        position: fixed;
+        inset: 14px 14px auto;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        pointer-events: none;
+      }
+      .panel {
+        border: 1px solid #ffffff20;
+        border-radius: 13px;
+        background: #070812d9;
+        padding: 10px 13px;
+        box-shadow: 0 12px 40px #0008;
+        backdrop-filter: blur(10px);
+      }
+      #brand {
+        color: #8df5dd;
+        font:
+          800 10px/1.2 ui-monospace,
+          monospace;
+        letter-spacing: 0.18em;
+      }
+      #stats {
+        margin-top: 5px;
+        color: #fff;
+        font:
+          700 13px/1.3 ui-monospace,
+          monospace;
+      }
+      #character {
+        margin-top: 5px;
+        color: #8df5dd;
+        font:
+          700 9px/1.35 ui-monospace,
+          monospace;
+        letter-spacing: 0.05em;
+      }
+      #map {
+        color: #d2ccff;
+        font:
+          700 11px/1.35 ui-monospace,
+          monospace;
+        text-align: right;
+      }
+      #help {
+        position: fixed;
+        left: 50%;
+        bottom: 14px;
+        transform: translateX(-50%);
+        color: #d6d6df;
+        font:
+          650 10px/1.4 ui-monospace,
+          monospace;
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+      }
+      #boot {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 50% 42%, #22143d, #05050a 64%);
+      }
+      #boot button {
+        border: 1px solid #7ce7c477;
+        border-radius: 999px;
+        color: #07110f;
+        background: #7ce7c4;
+        padding: 13px 21px;
+        font:
+          900 12px ui-monospace,
+          monospace;
+        letter-spacing: 0.12em;
+        cursor: pointer;
+      }
+      #boot p {
+        max-width: 430px;
+        margin: 14px auto 0;
+        color: #aaaabd;
+        font-size: 12px;
+        line-height: 1.6;
+        text-align: center;
+      }
+      #boot[hidden] {
+        display: none;
+      }
+      #damage {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        box-shadow: inset 0 0 90px transparent;
+        transition: box-shadow 0.12s;
+      }
+      #damage.hit {
+        box-shadow: inset 0 0 90px #ff356b99;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas
+      id="game"
+      width="960"
+      height="540"
+      tabindex="0"
+      aria-label="Vault Arcade endless arena"
+    ></canvas>
+    <div id="hud">
+      <div class="panel">
+        <div id="brand">VAULT ARCADE · ENDLESS ARENA</div>
+        <div id="stats">WAVE 1 · SCORE 0 · HP 100</div>
+        <div id="character">LOADING MINT CATALOGUE…</div>
+      </div>
+      <div class="panel" id="map">DEFAULT VAULT<br />MAP REVISION 1</div>
+    </div>
+    <div class="panel" id="help">
+      WASD / ARROWS MOVE · MOUSE AIM · CLICK / SPACE ATTACK · 8 DIRECTIONS
+    </div>
+    <div id="damage"></div>
+    <div id="boot">
+      <div>
+        <button id="start" type="button">ENTER THE VAULT</button>
+        <p>
+          One map seed creates the same infinite wave sequence for everyone.
+          Click once to focus the verified game frame.
+        </p>
+      </div>
+    </div>
+    <script type="module" src="/content/game.js"></script>
+  </body>
+</html>

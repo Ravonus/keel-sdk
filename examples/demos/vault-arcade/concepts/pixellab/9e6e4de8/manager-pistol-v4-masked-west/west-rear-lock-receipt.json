@@ -1,0 +1,69 @@
+{
+  "schema": "vault-direction-lock-mask@1",
+  "direction": "west",
+  "rule": "west-forward-action-rear-approved-base-lock",
+  "anatomicalFiringHand": "right",
+  "anatomicalSupportHand": "left",
+  "base": {
+    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-firearm-v2-source/True_Modular_Base/rotations/west.png",
+    "sha256": "83334d9fb04bbe73f79525ef5b0e52187932b9055c735e0a9a580f96eafb7ec7"
+  },
+  "inputDirectory": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-pistol-v3-source/True_Modular_Base/animations/manager-pistol-v3/west",
+  "outputDirectory": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-pistol-v4-masked-west",
+  "lockFromX": 45,
+  "lockedColumns": [
+    45,
+    91
+  ],
+  "mask": {
+    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-pistol-v4-masked-west/west-rear-lock-mask.png",
+    "sha256": "f920b8ed8bd80b8349f6eb35df7280a17a42f385a1bbd3059ceefbc6021ad920"
+  },
+  "frames": [
+    {
+      "file": "frame_000.png",
+      "inputSha256": "83334d9fb04bbe73f79525ef5b0e52187932b9055c735e0a9a580f96eafb7ec7",
+      "outputSha256": "d4d88bf7eaae021c3c2d3359743660a7994fc05c8af4af36e104d86521bf4a14"
+    },
+    {
+      "file": "frame_001.png",
+      "inputSha256": "967fe79dd1008aea3ef6d1dc8fd730029fea1cd7b421c33757bd15ef67fa4d39",
+      "outputSha256": "28dc735e2de9425515aab056f9e135a7c0fa7a1efede9d6f73b20377a5697578"
+    },
+    {
+      "file": "frame_002.png",
+      "inputSha256": "6a6e196a1d7e6e400fda248a5bc90b69894f2a4272c7e32a26415b058aba3842",
+      "outputSha256": "95f24563cd41fd99b29cb80018f8f2dfb7ef626c50bb759500d1e8d78cd25e7d"
+    },
+    {
+      "file": "frame_003.png",
+      "inputSha256": "ac375af83638fd0592a5b2c8f13484a642bc8c5e581ecd52d286e950c8140749",
+      "outputSha256": "f9f0f326b5e87f4680f6884b6a3a8d7d8c147452d1b596db07ab037e46f23fae"
+    },
+    {
+      "file": "frame_004.png",
+      "inputSha256": "3608b5fa5516a64f793171688f07c9ade85a13507e59461a89518d76aeb40126",
+      "outputSha256": "4924eb74e91b4ddce2cd4f67b91a074360625d3932b073270b6fc71eb5c85c92"
+    },
+    {
+      "file": "frame_005.png",
+      "inputSha256": "96006332cd2c9696f9805e43713f8a3de62df1a4d979711494f30cccdbbab978",
+      "outputSha256": "3afb8767fcdccea9173d57ea6ca1dc9670b816b0a38bdca77cb07d7955369253"
+    },
+    {
+      "file": "frame_006.png",
+      "inputSha256": "1b7f25c7760cd79b1dcead9861e67279f526c3f1d8f77053e8007f9fd1d1ab6c",
+      "outputSha256": "78cb5c859fe8f1f8ac870d098d61df373dd4f5edca9bb918717fca66acaf2258"
+    },
+    {
+      "file": "frame_007.png",
+      "inputSha256": "152579373f652033494b998824d7c8ae4604a66a2930b9bd2c007756d4612184",
+      "outputSha256": "a109d327490c7a4087e5cc5d0eabeef9f1133ba7b66cc7b5de43bb7af7ed9116"
+    },
+    {
+      "file": "frame_008.png",
+      "inputSha256": "d8b320b7b3d4fa0ad52e0ffb07a157ce871966527711089800ba57588ffd689b",
+      "outputSha256": "88ad405295d68a7aebc7c0ee151d31f75f75b369b31e389513402421cf84e735"
+    }
+  ]
+}

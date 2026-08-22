@@ -1,0 +1,668 @@
+{
+  "schema": "vault-manager-action-audit@1",
+  "authority": "vault-asset-manager@1",
+  "characterId": "9e6e4de8-ba5b-4f35-aaac-c8bbdb92695c",
+  "animationGroupId": "943e2b10-e602-4080-b3d2-510a31ff26f0",
+  "clip": "firearm-fire",
+  "selectedFrames": 8,
+  "skippedReferenceFrames": 1,
+  "directions": [
+    {
+      "direction": "south",
+      "frames": [
+        {
+          "frame": 0,
+          "sha256": "e763da64aa794d8893c4e755b45976720553e9f6247b891ca9f554c51b9f1e01",
+          "bounds": [
+            31,
+            23,
+            59,
+            68
+          ],
+          "width": 29,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 45,
+          "lowerBodyCentroidX": 45.5,
+          "upperBodyCentroidY": 40.012,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 1,
+          "sha256": "d6fcc70cb7c225f89ea19b1e506767f33a1cec2b40e3f097109192bcaf059803",
+          "bounds": [
+            34,
+            24,
+            57,
+            68
+          ],
+          "width": 24,
+          "height": 45,
+          "groundY": 68,
+          "silhouetteCenterX": 45.5,
+          "lowerBodyCentroidX": 45.507,
+          "upperBodyCentroidY": 39.975,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 2,
+          "sha256": "35d1fb92739694267b0b8a8b923a66feb6c8c3d51a31f5d983a29aedc9b1aa66",
+          "bounds": [
+            34,
+            24,
+            57,
+            68
+          ],
+          "width": 24,
+          "height": 45,
+          "groundY": 68,
+          "silhouetteCenterX": 45.5,
+          "lowerBodyCentroidX": 45.507,
+          "upperBodyCentroidY": 39.686,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 3,
+          "sha256": "2e7406cb3a5de921dcc9f8f7a2adf8ff48ea1234f0255634c2d8fcc3992145fe",
+          "bounds": [
+            34,
+            24,
+            57,
+            68
+          ],
+          "width": 24,
+          "height": 45,
+          "groundY": 68,
+          "silhouetteCenterX": 45.5,
+          "lowerBodyCentroidX": 45.507,
+          "upperBodyCentroidY": 39.686,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 4,
+          "sha256": "46d48e004c0f11509614dbdb69af9759252f22c54baa67a92e6de65d59d5f819",
+          "bounds": [
+            34,
+            24,
+            57,
+            68
+          ],
+          "width": 24,
+          "height": 45,
+          "groundY": 68,
+          "silhouetteCenterX": 45.5,
+          "lowerBodyCentroidX": 45.507,
+          "upperBodyCentroidY": 39.686,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 5,
+          "sha256": "0068f74677750d665037cf5facebc40f78d854812944d17ac836ea063abb25a2",
+          "bounds": [
+            34,
+            24,
+            57,
+            68
+          ],
+          "width": 24,
+          "height": 45,
+          "groundY": 68,
+          "silhouetteCenterX": 45.5,
+          "lowerBodyCentroidX": 45.507,
+          "upperBodyCentroidY": 39.686,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 6,
+          "sha256": "7906abeb4924a03c27f561a63ae514ac990341d7b300e7b5f2b6229f4a072c3d",
+          "bounds": [
+            33,
+            23,
+            58,
+            68
+          ],
+          "width": 26,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 45.5,
+          "lowerBodyCentroidX": 45.5,
+          "upperBodyCentroidY": 39.69,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 7,
+          "sha256": "3e3eff669373d76c5de8da9d0d3a2b999ed5fad9f921b5f6181747a53b69f254",
+          "bounds": [
+            31,
+            23,
+            61,
+            68
+          ],
+          "width": 31,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 46,
+          "lowerBodyCentroidX": 45.484,
+          "upperBodyCentroidY": 40.04,
+          "saturatedPixelRatio": 0
+        }
+      ],
+      "uniqueFrames": 8,
+      "groundSpan": 0,
+      "widthSpan": 7,
+      "heightSpan": 1,
+      "rootTravel": 0.022999999999996135,
+      "upperBodyTravel": 0.3539999999999992,
+      "maximumSaturatedPixelRatio": 0,
+      "passed": true,
+      "failures": []
+    },
+    {
+      "direction": "west",
+      "frames": [
+        {
+          "frame": 0,
+          "sha256": "00632cfed5577a3314129b4dbd0496a4989f8c559c23793ff522ddc66943ef79",
+          "bounds": [
+            36,
+            23,
+            51,
+            68
+          ],
+          "width": 16,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 43.5,
+          "lowerBodyCentroidX": 44.101,
+          "upperBodyCentroidY": 37.883,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 1,
+          "sha256": "c65635b885dc30369dc48c0b69c8a07033c202a432efaa29a1d0dc2df2361e26",
+          "bounds": [
+            26,
+            23,
+            52,
+            68
+          ],
+          "width": 27,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 39,
+          "lowerBodyCentroidX": 44.292,
+          "upperBodyCentroidY": 38.617,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 2,
+          "sha256": "b7af9942d82bdbde88c8819d9ce4a31f04a5acac8f6ce2a081ce3af96fd6e885",
+          "bounds": [
+            23,
+            23,
+            53,
+            68
+          ],
+          "width": 31,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 38,
+          "lowerBodyCentroidX": 43.85,
+          "upperBodyCentroidY": 38.037,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 3,
+          "sha256": "2f494da7f82eb5ee00df5b52e8e0bbf2b3f5cb823008f726ad2aa5245bfca501",
+          "bounds": [
+            21,
+            25,
+            56,
+            68
+          ],
+          "width": 36,
+          "height": 44,
+          "groundY": 68,
+          "silhouetteCenterX": 38.5,
+          "lowerBodyCentroidX": 43.617,
+          "upperBodyCentroidY": 39.097,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 4,
+          "sha256": "c710779f309583ace3057e32eba628c37061ac501e415171229d2c9c9d91d952",
+          "bounds": [
+            23,
+            25,
+            56,
+            68
+          ],
+          "width": 34,
+          "height": 44,
+          "groundY": 68,
+          "silhouetteCenterX": 39.5,
+          "lowerBodyCentroidX": 43.601,
+          "upperBodyCentroidY": 39.031,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 5,
+          "sha256": "8d4c7469e486f62252e98e25c68943b7fdd7406ae10a45a960a3f5b64698dd1a",
+          "bounds": [
+            26,
+            25,
+            55,
+            68
+          ],
+          "width": 30,
+          "height": 44,
+          "groundY": 68,
+          "silhouetteCenterX": 40.5,
+          "lowerBodyCentroidX": 43.601,
+          "upperBodyCentroidY": 39.18,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 6,
+          "sha256": "7837443ed47471aaf33d107f4cdbd7147193fbbf522dafd789280351c0206e03",
+          "bounds": [
+            26,
+            24,
+            54,
+            68
+          ],
+          "width": 29,
+          "height": 45,
+          "groundY": 68,
+          "silhouetteCenterX": 40,
+          "lowerBodyCentroidX": 44.149,
+          "upperBodyCentroidY": 38.879,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 7,
+          "sha256": "aadade49ee6b985cad45a872a5e4384f8099eab21c8f05eac35d178551cf9423",
+          "bounds": [
+            34,
+            23,
+            52,
+            68
+          ],
+          "width": 19,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 43,
+          "lowerBodyCentroidX": 44,
+          "upperBodyCentroidY": 38.506,
+          "saturatedPixelRatio": 0
+        }
+      ],
+      "uniqueFrames": 8,
+      "groundSpan": 0,
+      "widthSpan": 20,
+      "heightSpan": 2,
+      "rootTravel": 0.6910000000000025,
+      "upperBodyTravel": 1.296999999999997,
+      "maximumSaturatedPixelRatio": 0,
+      "passed": true,
+      "failures": []
+    },
+    {
+      "direction": "north",
+      "frames": [
+        {
+          "frame": 0,
+          "sha256": "6dd3fbd9806c5646a7fad001b0300742f8a7fcd6544b36e3976d225fbb351e44",
+          "bounds": [
+            32,
+            24,
+            59,
+            67
+          ],
+          "width": 28,
+          "height": 44,
+          "groundY": 67,
+          "silhouetteCenterX": 45.5,
+          "lowerBodyCentroidX": 45.659,
+          "upperBodyCentroidY": 40.492,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 1,
+          "sha256": "77b90f088aa5a888537f7563d96262310ab3c159799bb3fe4336a76b0d730384",
+          "bounds": [
+            32,
+            24,
+            58,
+            67
+          ],
+          "width": 27,
+          "height": 44,
+          "groundY": 67,
+          "silhouetteCenterX": 45,
+          "lowerBodyCentroidX": 45.358,
+          "upperBodyCentroidY": 40.421,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 2,
+          "sha256": "4f51d859579a04e2063df8ad3c8113cd4c1e005991442e1ab4983864f70d40ea",
+          "bounds": [
+            34,
+            23,
+            57,
+            67
+          ],
+          "width": 24,
+          "height": 45,
+          "groundY": 67,
+          "silhouetteCenterX": 45.5,
+          "lowerBodyCentroidX": 45.5,
+          "upperBodyCentroidY": 38.509,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 3,
+          "sha256": "12dbd54c8e16ac212afb15167bd3d754746dc414b95f88fb54c7b14a70f9ece4",
+          "bounds": [
+            34,
+            23,
+            57,
+            67
+          ],
+          "width": 24,
+          "height": 45,
+          "groundY": 67,
+          "silhouetteCenterX": 45.5,
+          "lowerBodyCentroidX": 45.5,
+          "upperBodyCentroidY": 38.58,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 4,
+          "sha256": "0a066fc14532d16cc6603110773dfae49b2fd7b680ca27d256a293a2c6cd090b",
+          "bounds": [
+            34,
+            23,
+            57,
+            67
+          ],
+          "width": 24,
+          "height": 45,
+          "groundY": 67,
+          "silhouetteCenterX": 45.5,
+          "lowerBodyCentroidX": 45.5,
+          "upperBodyCentroidY": 38.725,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 5,
+          "sha256": "1aa3e93d869f298f7c445f0822d02e3d8123dd637605cbc3436ad62f8f4f872b",
+          "bounds": [
+            34,
+            23,
+            57,
+            67
+          ],
+          "width": 24,
+          "height": 45,
+          "groundY": 67,
+          "silhouetteCenterX": 45.5,
+          "lowerBodyCentroidX": 45.5,
+          "upperBodyCentroidY": 38.725,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 6,
+          "sha256": "c3152d0191aaabadc3e32024faf85a67bbcd3b9559ee2eae23113cefb8e1023f",
+          "bounds": [
+            33,
+            23,
+            58,
+            67
+          ],
+          "width": 26,
+          "height": 45,
+          "groundY": 67,
+          "silhouetteCenterX": 45.5,
+          "lowerBodyCentroidX": 45.5,
+          "upperBodyCentroidY": 38.82,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 7,
+          "sha256": "db8278f155d383656321a6d532a9507566dab9f290c2fa889b22fc77203dc117",
+          "bounds": [
+            33,
+            23,
+            58,
+            67
+          ],
+          "width": 26,
+          "height": 45,
+          "groundY": 67,
+          "silhouetteCenterX": 45.5,
+          "lowerBodyCentroidX": 45.5,
+          "upperBodyCentroidY": 39.457,
+          "saturatedPixelRatio": 0
+        }
+      ],
+      "uniqueFrames": 8,
+      "groundSpan": 0,
+      "widthSpan": 4,
+      "heightSpan": 1,
+      "rootTravel": 0.30100000000000193,
+      "upperBodyTravel": 1.982999999999997,
+      "maximumSaturatedPixelRatio": 0,
+      "passed": true,
+      "failures": []
+    },
+    {
+      "direction": "east",
+      "frames": [
+        {
+          "frame": 0,
+          "sha256": "87daf5140bfc3c1eba643764ee0542e0d201c2a0703eaaaa9a690e7fe0bbecbe",
+          "bounds": [
+            40,
+            23,
+            57,
+            68
+          ],
+          "width": 18,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 48.5,
+          "lowerBodyCentroidX": 46.103,
+          "upperBodyCentroidY": 38.298,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 1,
+          "sha256": "f819d117877fb36698653b20faa5eb49261546709b8a88d1fe64c0e14da5ced2",
+          "bounds": [
+            40,
+            23,
+            60,
+            68
+          ],
+          "width": 21,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 50,
+          "lowerBodyCentroidX": 46.103,
+          "upperBodyCentroidY": 38.549,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 2,
+          "sha256": "4509030ace32638d23631673ea24b66f193adb28f43778ecb1391703bfbbb92c",
+          "bounds": [
+            40,
+            23,
+            64,
+            68
+          ],
+          "width": 25,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 52,
+          "lowerBodyCentroidX": 46.478,
+          "upperBodyCentroidY": 38.326,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 3,
+          "sha256": "a699f1de533565488dcd5d680f31f496304c9e577f96e0601338dc71ef36ac31",
+          "bounds": [
+            41,
+            24,
+            76,
+            68
+          ],
+          "width": 36,
+          "height": 45,
+          "groundY": 68,
+          "silhouetteCenterX": 58.5,
+          "lowerBodyCentroidX": 47.311,
+          "upperBodyCentroidY": 38.755,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 4,
+          "sha256": "2d3ecf660dfc1836ae2f3ad282336e192804d3ba44ca1dfd5dc97433510e7408",
+          "bounds": [
+            40,
+            23,
+            72,
+            68
+          ],
+          "width": 33,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 56,
+          "lowerBodyCentroidX": 46.103,
+          "upperBodyCentroidY": 38.385,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 5,
+          "sha256": "0a8fb89190d4f17e69273763eee47ce58d075012a530f57ab067873a291fd820",
+          "bounds": [
+            40,
+            23,
+            65,
+            68
+          ],
+          "width": 26,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 52.5,
+          "lowerBodyCentroidX": 46.103,
+          "upperBodyCentroidY": 38.381,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 6,
+          "sha256": "37cf8c31caf55c34d767f430299b4cef46f5f8a58857ab8be058645c98c6173d",
+          "bounds": [
+            40,
+            23,
+            60,
+            68
+          ],
+          "width": 21,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 50,
+          "lowerBodyCentroidX": 46.103,
+          "upperBodyCentroidY": 38.389,
+          "saturatedPixelRatio": 0
+        },
+        {
+          "frame": 7,
+          "sha256": "8cb449f32f7d5a69d2d924f053c326260cfe9f1ca5a01876af6013d0f1e20164",
+          "bounds": [
+            39,
+            23,
+            58,
+            68
+          ],
+          "width": 20,
+          "height": 46,
+          "groundY": 68,
+          "silhouetteCenterX": 48.5,
+          "lowerBodyCentroidX": 46.103,
+          "upperBodyCentroidY": 38.598,
+          "saturatedPixelRatio": 0
+        }
+      ],
+      "uniqueFrames": 8,
+      "groundSpan": 0,
+      "widthSpan": 18,
+      "heightSpan": 1,
+      "rootTravel": 1.2079999999999984,
+      "upperBodyTravel": 0.45700000000000074,
+      "maximumSaturatedPixelRatio": 0,
+      "passed": true,
+      "failures": []
+    }
+  ],
+  "sourceContactSheet": {
+    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-firearm-v2-audit/firearm-fire-source-contact-sheet.png",
+    "sha256": "9014ebe6bb5fc005c96931cb26d381271d77dcc8558ef6b70b568d6545f5ebac"
+  },
+  "mathDecision": "approved",
+  "visualDecision": "rejected",
+  "managerDecision": "rejected",
+  "requiredVisualChecks": [
+    "blank head and neutral body identity preserved",
+    "no weapon, backpack, face, armor, clothing, or effects introduced",
+    "action reads as aim, recoil, settle, and recovery",
+    "hands remain empty so weapon is a separate overlay",
+    "left and right forearms never cross the body centerline",
+    "the rear silhouette never gains a backpack or other equipment protrusion"
+  ],
+  "visualChecks": [
+    {
+      "id": "identity-preserved",
+      "status": "passed",
+      "evidence": "All four rows preserve the approved blank modular head and neutral base body."
+    },
+    {
+      "id": "separate-equipment-layers",
+      "status": "passed",
+      "evidence": "No face, backpack, armor, clothing, weapon, projectile, muzzle flash, or colored effect was baked into the body frames."
+    },
+    {
+      "id": "two-hand-firearm-motion",
+      "status": "failed",
+      "evidence": "South and north cross the forearms over the torso instead of exposing clean gun attachment anchors."
+    },
+    {
+      "id": "no-backpack-silhouette",
+      "status": "failed",
+      "evidence": "West adds a tall rear protrusion that reads as a baked backpack; equipment layers must remain absent from the base rig."
+    },
+    {
+      "id": "registered-root",
+      "status": "passed",
+      "evidence": "All 32 frames hold the ground line; lower-body centroid travel remains at or below 1.208 source pixels."
+    }
+  ],
+  "directionDecisions": {
+    "south": "rejected-crossed-forearms",
+    "west": "rejected-backpack-silhouette",
+    "north": "rejected-crossed-forearms",
+    "east": "provisionally-usable-only"
+  },
+  "packedAtlas": {
+    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-firearm-v2-audit/firearm-fire-packed-q50.webp",
+    "format": "image/webp",
+    "quality": 50,
+    "cell": [48, 48],
+    "grid": [8, 4],
+    "bytes": 12988,
+    "sha256": "ed8d029524076a721cbeaccd4369f26dd33212ea649e2a5404733e356ac50e5b"
+  }
+}

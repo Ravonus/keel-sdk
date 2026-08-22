@@ -1,0 +1,249 @@
+{
+  "schema": "oca-semi-bone-rig@1",
+  "id": "vault-humanoid-rig-v1",
+  "cell": [48, 48],
+  "origin": [24, 31],
+  "rules": {
+    "motion": "authored-keyframes-runtime-angle-interpolation",
+    "anatomy": "bone identity never swaps when direction mirrors",
+    "equipment": "assets bind to named sockets or registered raster pose cells"
+  },
+  "bones": [
+    {
+      "id": "root",
+      "parent": null,
+      "anchor": [0, 0],
+      "length": 0,
+      "restAngle": 0,
+      "side": "center"
+    },
+    {
+      "id": "torso",
+      "parent": "root",
+      "anchor": [0, 0],
+      "length": 10,
+      "restAngle": -1.5708,
+      "side": "center",
+      "socket": "torso"
+    },
+    {
+      "id": "head",
+      "parent": "torso",
+      "anchor": [1, 0],
+      "length": 4,
+      "restAngle": 0,
+      "side": "center",
+      "socket": "head"
+    },
+    {
+      "id": "right-upper-arm",
+      "parent": "torso",
+      "anchor": [0.78, -2],
+      "length": 6,
+      "restAngle": 3.1416,
+      "side": "right"
+    },
+    {
+      "id": "right-forearm",
+      "parent": "right-upper-arm",
+      "anchor": [1, 0],
+      "length": 6,
+      "restAngle": 0,
+      "side": "right"
+    },
+    {
+      "id": "right-hand",
+      "parent": "right-forearm",
+      "anchor": [1, 0],
+      "length": 2.5,
+      "restAngle": 0,
+      "side": "right",
+      "socket": "weapon-primary"
+    },
+    {
+      "id": "left-upper-arm",
+      "parent": "torso",
+      "anchor": [0.78, 2],
+      "length": 6,
+      "restAngle": 3.1416,
+      "side": "left"
+    },
+    {
+      "id": "left-forearm",
+      "parent": "left-upper-arm",
+      "anchor": [1, 0],
+      "length": 6,
+      "restAngle": 0,
+      "side": "left"
+    },
+    {
+      "id": "left-hand",
+      "parent": "left-forearm",
+      "anchor": [1, 0],
+      "length": 2.5,
+      "restAngle": 0,
+      "side": "left",
+      "socket": "weapon-support"
+    },
+    {
+      "id": "right-thigh",
+      "parent": "root",
+      "anchor": [0, -2],
+      "length": 8,
+      "restAngle": 1.35,
+      "side": "right"
+    },
+    {
+      "id": "right-shin",
+      "parent": "right-thigh",
+      "anchor": [1, 0],
+      "length": 8,
+      "restAngle": 0.3,
+      "side": "right"
+    },
+    {
+      "id": "left-thigh",
+      "parent": "root",
+      "anchor": [0, 2],
+      "length": 8,
+      "restAngle": 1.8,
+      "side": "left"
+    },
+    {
+      "id": "left-shin",
+      "parent": "left-thigh",
+      "anchor": [1, 0],
+      "length": 8,
+      "restAngle": -0.3,
+      "side": "left"
+    }
+  ],
+  "animations": {
+    "walk": {
+      "fps": 10,
+      "keyframes": [
+        {
+          "at": 0,
+          "angles": {
+            "right-upper-arm": -0.35,
+            "left-upper-arm": 0.35,
+            "right-thigh": 0.3,
+            "right-shin": -0.15,
+            "left-thigh": -0.3,
+            "left-shin": 0.15
+          }
+        },
+        {
+          "at": 0.2,
+          "angles": {
+            "right-upper-arm": -0.1,
+            "left-upper-arm": 0.1,
+            "right-thigh": 0.1,
+            "right-shin": 0.05,
+            "left-thigh": -0.1,
+            "left-shin": -0.05
+          }
+        },
+        {
+          "at": 0.4,
+          "angles": {
+            "right-upper-arm": 0.35,
+            "left-upper-arm": -0.35,
+            "right-thigh": -0.3,
+            "right-shin": 0.15,
+            "left-thigh": 0.3,
+            "left-shin": -0.15
+          }
+        },
+        {
+          "at": 0.6,
+          "angles": {
+            "right-upper-arm": 0.1,
+            "left-upper-arm": -0.1,
+            "right-thigh": -0.1,
+            "right-shin": -0.05,
+            "left-thigh": 0.1,
+            "left-shin": 0.05
+          }
+        },
+        {
+          "at": 0.8,
+          "angles": {
+            "right-upper-arm": -0.35,
+            "left-upper-arm": 0.35,
+            "right-thigh": 0.3,
+            "right-shin": -0.15,
+            "left-thigh": -0.3,
+            "left-shin": 0.15
+          }
+        },
+        {
+          "at": 1,
+          "angles": {
+            "right-upper-arm": -0.35,
+            "left-upper-arm": 0.35,
+            "right-thigh": 0.3,
+            "right-shin": -0.15,
+            "left-thigh": -0.3,
+            "left-shin": 0.15
+          }
+        }
+      ]
+    },
+    "sidearm": {
+      "fps": 12,
+      "keyframes": [
+        {
+          "at": 0,
+          "angles": {
+            "right-upper-arm": 0,
+            "right-forearm": 0,
+            "left-upper-arm": 0,
+            "left-forearm": 0
+          }
+        },
+        {
+          "at": 0.22,
+          "angles": {
+            "right-upper-arm": -0.75,
+            "right-forearm": 0.15,
+            "torso": -0.04
+          }
+        },
+        {
+          "at": 0.45,
+          "angles": {
+            "right-upper-arm": -1.5708,
+            "right-forearm": 0,
+            "torso": -0.06
+          }
+        },
+        {
+          "at": 0.58,
+          "angles": {
+            "right-upper-arm": -1.7,
+            "right-forearm": -0.08,
+            "torso": 0.05
+          }
+        },
+        {
+          "at": 0.72,
+          "angles": {
+            "right-upper-arm": -1.5708,
+            "right-forearm": 0,
+            "torso": -0.03
+          }
+        },
+        {
+          "at": 1,
+          "angles": {
+            "right-upper-arm": 0,
+            "right-forearm": 0,
+            "left-upper-arm": 0,
+            "left-forearm": 0
+          }
+        }
+      ]
+    }
+  }
+}

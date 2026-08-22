@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs><radialGradient id="a"><stop stop-color="#3858b7"/><stop offset="1" stop-color="#080a11"/></radialGradient></defs>
+  <rect width="1200" height="630" fill="url(#a)"/><circle cx="930" cy="120" r="250" fill="#d34c9b" opacity=".3"/>
+  <text x="84" y="315" fill="#fff" font-family="system-ui" font-weight="800" font-size="104">KEEL MARKET</text>
+  <text x="90" y="380" fill="#a9b9ed" font-family="monospace" font-size="28">VERIFIED CONTRACT PLUGIN · V1</text>
+</svg>

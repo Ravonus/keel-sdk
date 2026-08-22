@@ -1,0 +1,11 @@
+{
+  "schema": "keel-map-modifier@1",
+  "id": "chroma-rift",
+  "name": "Chroma Rift",
+  "compatibility": "vault-arena-runtime@2",
+  "changes": {
+    "shader": { "palette": ["#23f4ff", "#ff3bc8", "#8b5cff"], "trailPersistence": 0.72, "bloom": 0.64 },
+    "particles": { "enemyDeath": "rift-shards", "pickup": "orbit-sparks" }
+  },
+  "changesGameplay": false
+}

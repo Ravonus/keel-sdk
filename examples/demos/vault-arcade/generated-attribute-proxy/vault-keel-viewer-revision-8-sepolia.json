@@ -1,0 +1,28 @@
+{
+  "schema": "vault-keel-viewer-revision@8",
+  "chainId": 11155111,
+  "network": "Ethereum Sepolia",
+  "publisher": "0x1bF2d0B339b5850F88eCe7b14a2497c3Dc821C90",
+  "source": "previous authored Keel boot + shared Gyro projectile runtime",
+  "logicalObject": {
+    "objectId": "0xdbc37b9024bf07eb5ee1086613b02f31b8aa9d21f07dd5c7c585a2a9af43279b",
+    "revision": 7,
+    "parentRevision": 6,
+    "policy": "creator"
+  },
+  "parent": {
+    "objectId": "0xcaea725757b7b259e083f4cb75b633fe932d0a0a34502bb7d8436b81dba4aaa6",
+    "digest": "0x30880796f74529c5e8246d3f1a184c6bd306d1a5ad956017f4f41f1f937e5295"
+  },
+  "content": {
+    "contentObjectId": "0x42303345a0dc2f7151f6083f121bcfe710baa7852ca0240ac97ffe27e6150536",
+    "digest": "0x2bffd811d02188246b8f597e2438f64ad538143c0c41d02aa9052fd533f09cc8",
+    "byteLength": 3677,
+    "slugId": "0xdf7d37bc5232dfab40cda5e5533fdf22f1706d58d2ff0080233dd275eddfd785"
+  },
+  "appendTransaction": "0x55d704107c44516aba123cd2a3beb9be660b44230d147ea8ff1df2245e68e245",
+  "htmlBuilder": "0x10727f2AC4E4416bAe15BDD96311Bfc006706042",
+  "keelHold": "0x2621C924aDfeac2b761B2DDc6611A9581120d439",
+  "artifactRegistry": "0x95161Bd877Ed9300397e179bae6a10178C6d6D8b",
+  "createdAt": "2026-08-14T03:07:37.169Z"
+}

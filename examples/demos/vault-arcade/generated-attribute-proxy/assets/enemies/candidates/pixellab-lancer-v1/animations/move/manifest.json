@@ -1,0 +1,51 @@
+{
+  "schema": "vault-pixellab-enemy-animation@1",
+  "asset": "pixellab-lancer-v1",
+  "animation": "move",
+  "state": "candidate-mechanical-pass-visual-review-required",
+  "provenance": {
+    "provider": "PixelLabs",
+    "objectId": "2f972c44-fc7c-41b5-bfe4-ac868c25711b",
+    "sourceDirectory": "Seamless_forward_movement_glide_loop_in_the_curren"
+  },
+  "cellSize": 68,
+  "directions": [
+    "south",
+    "south-west",
+    "west",
+    "north-west",
+    "north",
+    "north-east",
+    "east",
+    "south-east"
+  ],
+  "frameCount": 9,
+  "layout": {
+    "columns": 9,
+    "rows": 8,
+    "width": 612,
+    "height": 544
+  },
+  "source": {
+    "file": "source.png",
+    "sha256": "0xbf1cf429bab9396aab09d096dd4eaad1d9e314d40e922911df08ad8fbac60c97"
+  },
+  "materialMap": {
+    "file": "material-id-map.png",
+    "sha256": "0x381754726c3a3a2a426f678cb874319bd9039d4c9e4aa35884e2a340c18e481e",
+    "regions": {
+      "transparent": 245804,
+      "locked-outline": 26833,
+      "seam": 15663,
+      "armor-dark": 11675,
+      "armor-mid": 14408,
+      "armor-light": 9899,
+      "highlight": 6009,
+      "emissive-core": 2637
+    }
+  },
+  "paletteProof": {
+    "file": "palette-proof.png",
+    "sha256": "0xf909195a4d7f98f41ad806595a22585de08c88b41e6bb1656f38add11e461cfb"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "vault-character-render-stack@1",
+  "seedDomain": "vault-character-render-stack",
+  "rules": {
+    "requiredBaseRoles": ["skin-body", "base-clothes"],
+    "frameRegistration": "vault-sprite-generation-bible@1",
+    "missingRequiredLayer": "reject-render",
+    "missingOptionalLayer": "skip-layer",
+    "materialIsolation": "each layer resolves its own material profile before compositing"
+  },
+  "layers": [
+    {
+      "id": "back-equipment",
+      "role": "equipment",
+      "plane": "behind-body",
+      "order": 30,
+      "compositeOrder": 10,
+      "required": false,
+      "seedDomain": "equipment.back"
+    },
+    {
+      "id": "skin-body",
+      "role": "skin-body",
+      "plane": "body",
+      "order": 10,
+      "compositeOrder": 20,
+      "required": true,
+      "seedDomain": "body.skin",
+      "materialProfile": "skin-material-profile"
+    },
+    {
+      "id": "base-clothes",
+      "role": "base-clothes",
+      "plane": "body",
+      "order": 20,
+      "compositeOrder": 30,
+      "required": true,
+      "seedDomain": "clothes.base",
+      "materialProfile": "base-clothes-material-profile"
+    },
+    {
+      "id": "legs-boots",
+      "role": "equipment",
+      "plane": "body",
+      "order": 40,
+      "compositeOrder": 40,
+      "required": false,
+      "seedDomain": "equipment.legs"
+    },
+    {
+      "id": "torso-armor",
+      "role": "equipment",
+      "plane": "body",
+      "order": 50,
+      "compositeOrder": 50,
+      "required": false,
+      "seedDomain": "equipment.torso"
+    },
+    {
+      "id": "face",
+      "role": "identity",
+      "plane": "front-of-body",
+      "order": 60,
+      "compositeOrder": 60,
+      "required": false,
+      "seedDomain": "identity.face"
+    },
+    {
+      "id": "hair-head",
+      "role": "equipment",
+      "plane": "front-of-body",
+      "order": 70,
+      "compositeOrder": 70,
+      "required": false,
+      "seedDomain": "equipment.head"
+    },
+    {
+      "id": "weapon-mask",
+      "role": "generation-mask",
+      "plane": "front-of-body",
+      "order": 80,
+      "compositeOrder": 80,
+      "required": false,
+      "reservedColor": "#FF00FF",
+      "runtimeVisible": false
+    },
+    {
+      "id": "weapon",
+      "role": "equipment",
+      "plane": "front-of-body",
+      "order": 90,
+      "compositeOrder": 90,
+      "required": false,
+      "seedDomain": "equipment.weapon",
+      "replacesMask": "weapon-mask"
+    },
+    {
+      "id": "front-effects",
+      "role": "effect",
+      "plane": "front-of-body",
+      "order": 100,
+      "compositeOrder": 100,
+      "required": false,
+      "seedDomain": "effects.front"
+    }
+  ]
+}

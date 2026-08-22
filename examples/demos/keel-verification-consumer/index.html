@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Keel verification consumer matrix</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <p class="eyebrow">KEEL CONSUMER TEST APP</p>
+          <h1>Break the inputs. Watch the same shell decide.</h1>
+          <p>Every runtime case below is wrapped by the canonical Keel verifier. The chain selector changes the contract lane being audited; it never substitutes another verifier.</p>
+        </div>
+        <label class="chain"><span>Contract lane</span><select id="chain"><option value="evm">EVM</option><option value="tezos">Tezos</option></select></label>
+      </header>
+      <section class="workspace">
+        <aside>
+          <div class="aside-head"><div><strong>Cases</strong><span id="run-summary">0 / 18 run</span></div><button id="run-all" type="button">Run all</button></div>
+          <p class="legend"><i></i> Valid inputs must verify. <b></b> Hostile inputs must be rejected.</p>
+          <div id="cases" class="cases"></div>
+        </aside>
+        <section class="viewer-wrap">
+          <div id="test-verdict" class="test-verdict" data-state="running"><span>TEST STATUS</span><strong>Waiting for a case</strong></div>
+          <iframe id="viewer" title="Canonical Keel verifier edge-case viewer"></iframe>
+          <footer>
+            <div><span>Observed</span><strong id="observed">Waiting</strong></div>
+            <div><span>Expected action</span><strong id="expected">—</strong></div>
+            <div><span>Chain proof</span><strong id="chain-proof">—</strong></div>
+          </footer>
+        </section>
+      </section>
+      <section class="detail">
+        <div><p class="eyebrow">ACTIVE MUTATION</p><h2 id="title">Choose a case</h2><p id="description"></p><button id="repair-toggle" class="repair-toggle" type="button" hidden>Apply fix &amp; recheck</button>
+          <section id="live-controls" class="live-controls" hidden>
+            <p class="eyebrow">VERIFIED LIVE CONTROLS · SAME TOKEN</p>
+            <div id="live-control-buttons" class="live-control-buttons"></div>
+          </section>
+          <section id="game-controls" class="game-controls" hidden>
+            <p class="eyebrow">VAULT GAME TOKEN TARGET</p>
+            <div class="game-control-grid">
+              <label><span>Token ID</span><input id="target-token-id" inputmode="numeric" pattern="[0-9]+" value="7" /></label>
+              <label><span>Seed source</span><select id="seed-source"><option value="mint-derived">Current mint data</option><option value="chainlink-vrf">Chainlink VRF word · EVM</option><option value="commit-reveal">Commit/reveal word · Tezos</option></select></label>
+            </div>
+            <label><span id="entropy-label">Automatic contract mint receipt</span><input id="seed-entropy" class="seed-entropy" value="0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" disabled /></label>
+            <button id="apply-game-target" class="repair-toggle" type="button">Resolve seed &amp; recheck game</button>
+            <p class="control-note">Current mint data is automatic: minter, recipient, token ID, mint nonce, block/level, time, chain, collection, and block entropy are committed before every trait byte is expanded. The input is enabled only for optional VRF or commit/reveal entropy.</p>
+          </section>
+        </div>
+        <pre id="receipt">No case has run.</pre>
+      </section>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

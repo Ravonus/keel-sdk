@@ -1,0 +1,11 @@
+{
+  "schema": "keel-map-modifier@1",
+  "id": "glass-cannon",
+  "name": "Glass Cannon Rules",
+  "compatibility": "vault-arena-runtime@2",
+  "changes": {
+    "rules": { "playerHealth": 35, "attackMultiplier": 2.5, "enemySpeedMultiplier": 1.2, "healingDisabled": true },
+    "score": { "multiplier": 2.25, "leaderboardNamespace": "glass-cannon" }
+  },
+  "changesGameplay": true
+}

@@ -1,0 +1,51 @@
+{
+  "schema": "vault-pixellab-enemy-animation@1",
+  "asset": "pixellab-lancer-v1",
+  "animation": "death",
+  "state": "candidate-mechanical-pass-visual-review-required",
+  "provenance": {
+    "provider": "PixelLabs",
+    "objectId": "2f972c44-fc7c-41b5-bfe4-ac868c25711b",
+    "sourceDirectory": "Death_animation._The_core_flickers_and_dims_the_r"
+  },
+  "cellSize": 68,
+  "directions": [
+    "south",
+    "south-west",
+    "west",
+    "north-west",
+    "north",
+    "north-east",
+    "east",
+    "south-east"
+  ],
+  "frameCount": 9,
+  "layout": {
+    "columns": 9,
+    "rows": 8,
+    "width": 612,
+    "height": 544
+  },
+  "source": {
+    "file": "source.png",
+    "sha256": "0x9691c2271f1544c05a009ebb8b601d4eea72bb70abfd5757c4a70bb36f78b54f"
+  },
+  "materialMap": {
+    "file": "material-id-map.png",
+    "sha256": "0x573f65da3321304583a3338acc0d40ae7f0497ebde4c94e8a71980170de5fffd",
+    "regions": {
+      "transparent": 244747,
+      "locked-outline": 25613,
+      "seam": 15992,
+      "armor-dark": 11816,
+      "armor-mid": 15008,
+      "armor-light": 10894,
+      "highlight": 6161,
+      "emissive-core": 2697
+    }
+  },
+  "paletteProof": {
+    "file": "palette-proof.png",
+    "sha256": "0xf4f33ef386f36470fcc1764815157beabcd3f0d16fcc95ad4233bade1db29c42"
+  }
+}

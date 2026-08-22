@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="data:," />
+    <title>Keel Creative Lab</title>
+    <link rel="stylesheet" href="./lab.css" />
+    <style>
+      .library-receipt{display:grid;gap:6px;margin:0 0 16px;padding:13px;border:1px solid rgba(109,245,186,.2);border-radius:14px;background:rgba(109,245,186,.055)}
+      .library-receipt>span{font:800 8px/1 ui-monospace,monospace;letter-spacing:.16em;color:#75f6bd}.library-receipt strong{font-size:11px}
+      .library-receipt code{display:block;overflow:hidden;text-overflow:ellipsis;color:#aab3c5;font-size:9px}.library-receipt small{color:#7f899b;font-size:9px;line-height:1.45}
+      .library-receipt a{width:max-content;color:#d7ff63;font-size:9px;text-decoration:none}.library-receipt a:hover{text-decoration:underline}
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="masthead">
+        <div>
+          <p class="eyebrow">KEEL CREATIVE LIBRARY</p>
+          <h1>Code as collectible material.</h1>
+          <p class="intro">Pinned p5.js and Three.js libraries, recursive scene graphs, and tracked token presentation revisions.</p>
+        </div>
+        <div class="network" id="network-state" data-tone="idle">
+          <span class="pulse"></span>
+          <span>Local preview</span>
+        </div>
+      </header>
+
+      <section class="shell">
+        <div class="stage-wrap">
+          <iframe id="scene-frame" title="Selected creative coding scene" src="./viewer.html?build=creative-lab-edge-v2&amp;scene=p5-one&amp;seed=4078&amp;background=%23090819&amp;accent=%23ff5fba"></iframe>
+          <div class="stage-chrome">
+            <div>
+              <span id="scene-runtime">p5.js · fixed 1/1</span>
+              <strong id="scene-title">Signal Bloom</strong>
+            </div>
+            <a id="collector-link" hidden target="_blank" rel="noreferrer">Open verified viewer ↗</a>
+          </div>
+        </div>
+
+        <aside class="controls">
+          <div class="control-head">
+            <p class="eyebrow">SCENE EDITION</p>
+            <span id="edition-kind">Fixed composition</span>
+          </div>
+          <div class="scene-grid" id="scene-grid" aria-label="Creative scenes"></div>
+
+          <div class="field-grid">
+            <label>
+              <span>Seed</span>
+              <input id="seed" type="number" min="0" max="4294967295" value="4078" />
+            </label>
+            <label>
+              <span>Background</span>
+              <input id="background" type="color" value="#090819" />
+            </label>
+            <label>
+              <span>Accent</span>
+              <input id="accent" type="color" value="#ff5fba" />
+            </label>
+          </div>
+
+          <div class="notice" id="revision-notice">
+            <strong>Preview only</strong>
+            <span>These controls have not changed the token. Publishing requires a deployment-bound revision receipt.</span>
+          </div>
+
+          <div class="library-receipt" id="library-receipt" hidden>
+            <span>KEEL SOURCE VERIFICATION</span>
+            <strong id="library-name"></strong>
+            <code id="library-digest"></code>
+            <small id="library-storage"></small>
+            <a id="library-distribution" target="_blank" rel="noreferrer">Inspect exact upstream distribution ↗</a>
+            <a id="library-source" target="_blank" rel="noreferrer">Browse readable source tree ↗</a>
+          </div>
+
+          <button class="primary" id="publish" type="button" disabled>Publish tracked revision</button>
+          <button class="secondary" id="connect" type="button" hidden>Connect wallet</button>
+          <p class="status" id="status">Waiting for an on-chain Creative Lab release.</p>
+        </aside>
+      </section>
+
+      <section class="proof-panel">
+        <div>
+          <p class="eyebrow">WHAT CHANGES ON CHAIN</p>
+          <h2>One edit. A complete, inspectable lineage.</h2>
+        </div>
+        <ol>
+          <li><span>01</span><div><strong>Scene attributes</strong><p>Palette and background become committed manifest data, not URL decoration.</p></div></li>
+          <li><span>02</span><div><strong>Recursive objects</strong><p>The viewer, scene module, library graph, and data object are digest checked.</p></div></li>
+          <li><span>03</span><div><strong>Presentation revision</strong><p>KeelIndex appends and activates the next token-scoped revision.</p></div></li>
+          <li><span>04</span><div><strong>tokenURI proof</strong><p>The page reads tokenURI before and after, then opens the chain-bound collector viewer.</p></div></li>
+        </ol>
+        <div class="proof-log" id="proof-log" aria-live="polite"><span>No on-chain proof has run.</span></div>
+      </section>
+    </main>
+    <script type="module" src="./lab.js"></script>
+  </body>
+</html>

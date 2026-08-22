@@ -1,0 +1,28 @@
+{
+  "codec": "oca-material-bits@1",
+  "setId": 1,
+  "setWeight": 1,
+  "regions": [
+    {
+      "regionId": 1,
+      "weight": 1,
+      "rule": {
+        "mode": "range",
+        "hue": [
+          0,
+          359
+        ],
+        "saturation": [
+          48,
+          92
+        ],
+        "lightness": [
+          38,
+          62
+        ],
+        "darken": 24,
+        "lighten": 28
+      }
+    }
+  ]
+}

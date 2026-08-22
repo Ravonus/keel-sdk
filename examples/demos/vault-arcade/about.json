@@ -1,0 +1,14 @@
+{
+  "schema": "keel-vault-arcade@2",
+  "genre": "top-down eight-direction roguelike arena fighter",
+  "progression": "infinite deterministic waves",
+  "waveDerivation": "hash(mapSeed,mapRevision,waveNumber)",
+  "controls": {
+    "move": "WASD or arrow keys",
+    "aim": "mouse",
+    "attack": "mouse button or Space",
+    "start": "click the game"
+  },
+  "customMaps": "A map presentation may retain this default game or replace its exact scripts, shaders, assets, rules, and renderer with another verified resource graph.",
+  "historicalSource": "The archived Vault of the Fallen build remains separately preserved under examples/keel/historical/game-comparison."
+}

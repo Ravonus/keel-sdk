@@ -1,0 +1,26 @@
+{
+  "name": "@keel/protocol",
+  "version": "0.3.0",
+  "description": "Typed manifest, integrity, canonicalization, and byte-aware composition primitives for Keel artifacts.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsc -p tsconfig.json"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT"
+}

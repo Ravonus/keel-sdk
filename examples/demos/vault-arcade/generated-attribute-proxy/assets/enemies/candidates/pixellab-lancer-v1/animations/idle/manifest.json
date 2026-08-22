@@ -1,0 +1,51 @@
+{
+  "schema": "vault-pixellab-enemy-animation@1",
+  "asset": "pixellab-lancer-v1",
+  "animation": "idle",
+  "state": "candidate-mechanical-pass-visual-review-required",
+  "provenance": {
+    "provider": "PixelLabs",
+    "objectId": "2f972c44-fc7c-41b5-bfe4-ac868c25711b",
+    "sourceDirectory": "Seamless_idle_hover_loop._The_drone_gently_floats"
+  },
+  "cellSize": 68,
+  "directions": [
+    "south",
+    "south-west",
+    "west",
+    "north-west",
+    "north",
+    "north-east",
+    "east",
+    "south-east"
+  ],
+  "frameCount": 5,
+  "layout": {
+    "columns": 5,
+    "rows": 8,
+    "width": 340,
+    "height": 544
+  },
+  "source": {
+    "file": "source.png",
+    "sha256": "0x6c97430fe9f0e95aacc7981b97041e01930f87b59f55fa411b6a173a65cfea89"
+  },
+  "materialMap": {
+    "file": "material-id-map.png",
+    "sha256": "0x9bf2900cd6eada6ee0e98e7f5788cd6220d1d8ca8870a638a04eed109b78caeb",
+    "regions": {
+      "transparent": 136986,
+      "locked-outline": 14734,
+      "seam": 8632,
+      "armor-dark": 6049,
+      "armor-mid": 8007,
+      "armor-light": 5685,
+      "highlight": 3345,
+      "emissive-core": 1522
+    }
+  },
+  "paletteProof": {
+    "file": "palette-proof.png",
+    "sha256": "0xffdf5f4cdafbe238ee9705c93edd19d0289cc72cb060f0c9ad5b800a68dd42f8"
+  }
+}

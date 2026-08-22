@@ -1,0 +1,22 @@
+{
+  "chainId": 11155111,
+  "keelHold": "0xe795c99e4e4438434958799dfb6c4ca8f43d9bc8",
+  "attestations": "0x47251e76e1d913ace1b37bbbc12aa8a7665711d3",
+  "commitments": "0xbc8a183dfc098a187e7348d58f359c54e2a73817",
+  "factory": "0x0bcede48c8963a41a1bed190035e0ebd56f2ea70",
+  "ledger": "0xeac95d77ae13155dff81591bba944b17e3559dee",
+  "bounty": "0x9ecafddc0bdbe2af4621e519a72c69f8d73d8384",
+  "bayc": "0xc4a7997fc770bb9f6804b73597affd1f7335797e",
+  "metadataObject": "0x45271b1bdcd5558d5066e237d2d00f720f78cf3224beb545aebf8b9ad74cce5a",
+  "imageObject": "0x388c06eb23fa78e783e244d4e909bf040527d4214a30ce4504cf8eacaa37ec42",
+  "directoryObject": "0xc8ba035332e126339af7412cfe3401f49ed8e2f76f3325f1cd8ecd19ac8f5dd4",
+  "backpack": "0xC55d1F6e296df77425474B8376DFF98E2Fe7B66B",
+  "shellPrefixObject": "0xfe4001c5419c85278dd8f46136af2d1c354daeb319ff218d4932a47875bc31d9",
+  "shellSuffixObject": "0xe521fdff95167efbe016284124e01101100b53455beb8904d3e3c620c2e0b914",
+  "viewerBuilder": "0x3cbbba4142c0f599b0147f4cb29f5e9296e2dd1b",
+  "supersededBackpack": "0xD8e521850CA1c802611A75EB8a6684b7cEbA9402",
+  "entryFragmentObject": "0xba4f6e9996f28caa011d6ae23b0857ae8c9204074a1f1436f88c650ec190be2d",
+  "apeFragmentObject": "0xeefceca58972838289b21025bf8842a34009fc1e0eec0774919a150a7131a52f",
+  "viewerObject": "0x2e6ffc283d2ce4c4917105d8ee836e43d490ce6344b2f9a6edec280ff04bc36d",
+  "viewerDigest": "0x3ca6930c0165b846036f46e9213d76efeff26d5cee8a9b27fcffbdea5f1cc009"
+}

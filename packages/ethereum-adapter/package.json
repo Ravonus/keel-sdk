@@ -1,0 +1,23 @@
+{
+  "name": "@keel/ethereum-adapter",
+  "version": "0.3.0",
+  "description": "Offline Ethereum KeelHold calldata adapter with injected Keccak and ABI codecs.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {"build": "tsc -p tsconfig.json", "clean": "rm -rf dist"},
+  "engines": {"node": ">=22"},
+  "license": "MIT",
+  "dependencies": {
+    "@keel/protocol": "workspace:*",
+    "@keel/sdk": "workspace:*",
+    "viem": "^2.55.0"
+  }
+}

@@ -1,0 +1,327 @@
+{
+  "schema": "vault-sprite-generation-bible@1",
+  "status": "binding",
+  "authoredCell": [48, 48],
+  "displayCell": [96, 96],
+  "directions": [
+    "south",
+    "south-west",
+    "west",
+    "north-west",
+    "north",
+    "north-east",
+    "east",
+    "south-east"
+  ],
+  "directionRows": {
+    "south": 0,
+    "south-west": 1,
+    "west": 2,
+    "north-west": 3,
+    "north": 4,
+    "north-east": 5,
+    "east": 6,
+    "south-east": 7
+  },
+  "clips": {
+    "idle": { "frames": 4, "fps": 6 },
+    "walk": { "frames": 6, "fps": 10 },
+    "gun-body-socket": { "frames": 8, "fps": 12 },
+    "take-damage": { "frames": 4, "fps": 12 },
+    "death": { "frames": 8, "fps": 8 }
+  },
+  "origin": [24, 46],
+  "pipelineGate": {
+    "requiredOrder": [
+      "turnaround-complete",
+      "semantic-layer-audit-passed",
+      "manager-visual-approval-recorded",
+      "animation-generation-allowed"
+    ],
+    "rule": "Pixel dimensions, alpha containment, and ground registration never imply semantic approval.",
+    "currentGenerationAllowed": true,
+    "currentReview": "generated-attribute-proxy/base-layer-review.json"
+  },
+  "semanticLayerContract": {
+    "renderOrder": [
+      "behind-body equipment",
+      "skin/body base",
+      "base clothes",
+      "body equipment overlays",
+      "face and hair",
+      "hands and weapon socket",
+      "weapon art replacing weapon mask",
+      "front effects"
+    ],
+    "base-body": {
+      "allowed": [
+        "neutral grayscale under-suit",
+        "blank head volume",
+        "plain neutral hands",
+        "plain neutral feet"
+      ],
+      "forbidden": [
+        "face details",
+        "hair or headgear",
+        "torso armor",
+        "leg armor or boots",
+        "backpack or back attachment",
+        "weapon or holster",
+        "cape, aura, or effect"
+      ]
+    },
+    "skin-body-base": {
+      "owns": ["skin regions", "blank head", "hands", "body silhouette"],
+      "materialMode": "seeded-skin-palette-with-preserved-shading",
+      "rule": "Skin selection happens before clothes and equipment; it never recolors reserved clothing, equipment, or fixed-accent regions."
+    },
+    "base-clothes": {
+      "owns": [
+        "required under-shirt",
+        "required under-pants",
+        "required under-shoes"
+      ],
+      "materialMode": "seeded-base-clothing-palette-with-preserved-shading",
+      "rule": "Every mint receives a complete base outfit. Equipment overlays may cover it without modifying the base pixels."
+    },
+    "face": {
+      "owns": ["eyes", "nose", "mouth", "ears", "expression", "mask", "visor"]
+    },
+    "back-equipment": {
+      "owns": ["backpack", "cape back", "wings", "back-mounted equipment"],
+      "renderPass": "behind-body"
+    },
+    "torso-armor": {
+      "owns": ["shirt", "chest armor", "shoulder armor", "belt attachment"]
+    },
+    "legs-boots": {
+      "owns": ["leg armor", "knees", "boots"]
+    },
+    "weapon": {
+      "owns": ["gun geometry", "weapon fixed accents"],
+      "forbidden": ["hands", "arms", "armor", "body"]
+    },
+    "weapon-mask": {
+      "reservedColor": "#FF00FF",
+      "generationOnly": true,
+      "owns": [
+        "temporary weapon silhouette used by PixelLab pose and animation generation"
+      ],
+      "extraction": "Every exact reserved-color pixel is removed from the body output and emitted as an aligned binary weapon-slot mask.",
+      "runtime": "The selected weapon attribute is shaded, recolored, and composited through this mask; the magenta guide is never rendered."
+    }
+  },
+  "gunStanceSystem": {
+    "schema": "vault-gun-stance-profiles@1",
+    "profileSource": "../rig/gun-stance-profiles-v1.json",
+    "promptSource": "../rig/generated-gun-stance-prompts-v1.json",
+    "profiles": [
+      "sidearm-one-hand",
+      "compact-two-hand",
+      "long-gun-two-hand",
+      "heavy-shoulder"
+    ],
+    "invariants": [
+      "each weapon definition selects exactly one compatible body socket profile",
+      "profiles never share a generic gun pose",
+      "anatomical right hand remains the trigger hand in every direction",
+      "left hand behavior is profile-specific",
+      "body socket pixels never contain the weapon, muzzle effect, projectile, face, backpack, armor, or clothing",
+      "weapon and effects are separate registered animation layers"
+    ],
+    "directionRepair": {
+      "allowed": true,
+      "schema": "vault-single-direction-repair-board@1",
+      "boardStatus": "approved-generation-input-not-approved-art",
+      "rules": [
+        "generate only the failed direction; never regenerate passing directions",
+        "one clean static target-direction stance owns the view angle and limb layering",
+        "one approved opposite-direction reference row owns character identity and action chronology",
+        "output lane owns exact cell count, boundaries, and output dimensions",
+        "the board contains visual references, frame labels, and output cells but no behavioral instructions",
+        "the separate prompt owns left/right anatomy, near/far occlusion, one-hand stance, and explicit failure clauses",
+        "the board and exact prompt must be submitted together",
+        "mechanical normalization never counts as visual approval"
+      ],
+      "westSidearm": {
+        "board": "../generated-attribute-proxy/west-sidearm-repair-board-v1.png",
+        "prompt": "../rig/west-sidearm-repair-prompt-v1.txt",
+        "direction": "west",
+        "frames": 9,
+        "cell": [92, 92],
+        "output": [828, 92],
+        "boundaries": [0, 92, 184, 276, 368, 460, 552, 644, 736, 828],
+        "rightHand": "far-rear-firing-arm-screen-left",
+        "leftHand": "near-foreground-neutral-down",
+        "occlusionTest": "near left arm overlaps torso edge; rear right firing arm originates behind it"
+      },
+      "requirements": [
+        "same approved character identity",
+        "same profile id and frame count",
+        "same locked root and ground line",
+        "manager compares repaired direction with all other directions before promotion"
+      ]
+    },
+    "proceduralStillRig": {
+      "schema": "oca-procedural-sprite-rig@1",
+      "runtime": "../../procedural-sprite-rig.js",
+      "timeline": "../../sidearm-still-rig.json",
+      "storage": "one still per approved layer and direction plus compact transforms",
+      "generatedAtReadTime": true,
+      "frames": 9,
+      "phases": [
+        "ready",
+        "draw",
+        "raise",
+        "aim",
+        "fire",
+        "recoil",
+        "settle",
+        "lower",
+        "return"
+      ],
+      "requiredLayers": [
+        "armless-body",
+        "anatomical-right-firing-arm",
+        "anatomical-left-neutral-arm",
+        "weapon"
+      ],
+      "eastOrder": ["left-arm", "body", "right-arm", "weapon"],
+      "westOrder": ["right-arm", "body", "left-arm", "weapon"],
+      "rule": "the generator supplies isolated stills; verified runtime code owns animation, handedness and depth"
+    },
+    "temporaryPoseGuidePipeline": {
+      "allowed": true,
+      "purpose": "give the generator a concrete object around which to coordinate both arms",
+      "status": "never-approvable-intermediate",
+      "requirements": [
+        "guide weapon is generated only to establish arm and hand geometry",
+        "guide pixels are isolated by an explicit per-direction mask",
+        "masked removal preserves both hands, both forearms, body identity, root and ground line",
+        "final body socket has zero weapon, muzzle, projectile, glow or detached-effect pixels",
+        "manager shows the guide and weapon-free result side by side before promotion"
+      ]
+    }
+  },
+  "generation": {
+    "provider": "pixellab-mcp",
+    "providerWorkflow": "create-character-once-then-animate-same-character",
+    "characterId": "9e6e4de8-ba5b-4f35-aaac-c8bbdb92695c",
+    "characterStatus": "manager-approved-cardinal-base-and-walk; eight-direction extension is a visual-review candidate",
+    "rejectedCharacterId": "b9c2e6c8-6b5e-4dbd-9b33-ce1ea5b3c54f",
+    "animationGroups": {
+      "idle": "1eeceb9f-25fa-4a73-8b4b-edc3f6b159fe",
+      "walk": "6b9f01b7-4932-4fb2-bb91-6c6639fd9134",
+      "hit": "d01c9cbc-b6b5-40f2-bf37-2e16507dee1b",
+      "death": "6d81714d-71e5-45a5-9939-37a98ca612fc",
+      "attack": "15d00752-7688-4784-9426-6c6d944785b2"
+    },
+    "canceledAnimationGroups": {
+      "walkBilateral": "51862693-05c3-449b-a1a4-f7333835ebe1",
+      "firearmFire": "f7dcd398-0399-4531-97cf-dc4f448e7807",
+      "takeDamage": "589387fc-2374-4098-9fb2-56c7331ce888"
+    },
+    "rejectedCurrentClips": {
+      "walkOneFootGait": "6b9f01b7-4932-4fb2-bb91-6c6639fd9134",
+      "attackNotFirearmCompatible": "15d00752-7688-4784-9426-6c6d944785b2",
+      "hitDoesNotReadAsDamage": "d01c9cbc-b6b5-40f2-bf37-2e16507dee1b"
+    },
+    "currentClipCandidate": {
+      "clip": "walk",
+      "animationGroupId": "81920513-ab90-4941-a062-3b7503251aed",
+      "template": "walking-6-frames",
+      "directions": [
+        "south",
+        "south-west",
+        "west",
+        "north-west",
+        "north",
+        "north-east",
+        "east",
+        "south-east"
+      ],
+      "status": "mechanically-passed-pending-manager-visual-approval",
+      "cardinalFramesPreserved": true,
+      "auditSha256": "1a4bf941d050001794d65ea3e433ae559be6d42c72a955280cd200ca34063915",
+      "packedBytesQ50": 19208,
+      "packedSha256": "b2cb8f49320c8ec2acac2404c978cbb337db5fa03f96e82b8753ddaccd26faec"
+    },
+    "gunStanceProfiles": {
+      "sidearm-one-hand": {
+        "status": "repairing",
+        "directions": {
+          "south": "rejected",
+          "west": "rejected",
+          "north": "provisional",
+          "east": "approved"
+        }
+      },
+      "compact-two-hand": { "status": "temporary-guide-processing" },
+      "long-gun-two-hand": { "status": "partial-state-candidate" },
+      "heavy-shoulder": { "status": "rejected-baked-equipment" }
+    },
+    "rejectedFirearmAttempts": [
+      {
+        "animationGroupId": "4f27523f-deed-4ad2-a6be-23817d116ca7",
+        "reason": "arm spread and gesture motion failed compact two-hand pistol grip visual review",
+        "providerGroupDeleted": true
+      }
+    ],
+    "rejectedAnimationGroups": {
+      "stockIdleIdentityAndProportionDrift": "7fbf7732-1cf5-4d78-a149-944c1da91b2f",
+      "stockWalkProportionDrift": "39586f0c-b2d5-4d76-aaa0-d857dab7c3a6",
+      "stockHitIdentityDrift": "defbb882-3783-4669-a7f6-401f291729fd",
+      "stockDeathIdentityDrift": "c1ad40a2-51e9-471a-a4a0-4abbc4f9d5f6"
+    },
+    "walkCandidate": {
+      "sourceCanvas": [92, 92],
+      "sourceCrop": [22, "ground-anchored", 48, 48],
+      "groundY": 46,
+      "maxAlphaBounds": [32, 47],
+      "packedBytesQ50": 11076,
+      "packedSha256": "e336d702e1d37acb3a87767c9f28f33ed045f0cd70e84f0bb3ed9d03cc43938d",
+      "accepted": false
+    },
+    "rejectedProvidersForFinalCharacterSheets": ["generic-image-generation"],
+    "acceptedFourDirectionTurnaroundRequired": true,
+    "oneProfilePerAnimationGroup": true,
+    "separateDirectionGenerationPermitted": true,
+    "poseGuideRequired": true,
+    "occupancyMaskRequired": true,
+    "baseCharacterMaskMode": "safe-box",
+    "maskDilationPixelsAt48": 4,
+    "safeInsetPixelsAt48": 5,
+    "poseGuideArtScale": 0.75,
+    "gridRequired": true,
+    "sameDesignReferenceRequired": true,
+    "transparentOutputRequired": true,
+    "programmaticArtPermitted": false,
+    "programmaticLayoutAndValidationRequired": true
+  },
+  "walkColumns": [
+    "left-contact",
+    "left-down",
+    "passing",
+    "right-contact",
+    "right-down",
+    "passing-recovery"
+  ],
+  "layerPlanes": ["behind-body", "body", "front-of-body"],
+  "rejection": {
+    "bakedFaceDetails": true,
+    "baseHeadMustBeBlankVolumeOnly": true,
+    "currentGenericWalkSheetRejected": true,
+    "noVisibleFootMotion": true,
+    "duplicateFrames": true,
+    "alphaOutsideMask": true,
+    "wrongRowsOrColumns": true,
+    "characterDesignDrift": true,
+    "footOriginDriftOverPixels": 1,
+    "visibleBoundsDriftOverPixels": 2,
+    "directionGeneratedSeparately": true,
+    "northReusesFrontFace": true,
+    "croppedFrame": true,
+    "bakedBackground": true
+  },
+  "attributeRule": "Every attribute is authored against the accepted base-character sheet and the exact same grid, mask, origin, clip, direction, and frame registration."
+}

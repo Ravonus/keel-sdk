@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750" role="img" aria-labelledby="title desc">
+  <title id="title">Community Signal</title><desc id="desc">Lime and violet preservation rings around the words Carry one piece.</desc>
+  <defs>
+    <radialGradient id="bg"><stop stop-color="#292044"/><stop offset=".48" stop-color="#101314"/><stop offset="1" stop-color="#080a0b"/></radialGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="13" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse"><path d="M42 0H0V42" fill="none" stroke="#fff" stroke-opacity=".045"/></pattern>
+  </defs>
+  <rect width="1200" height="750" fill="url(#bg)"/><rect width="1200" height="750" fill="url(#grid)"/>
+  <g fill="none" transform="translate(820 374)"><circle r="258" stroke="#fff" stroke-opacity=".12"/><circle r="176" stroke="#fff" stroke-opacity=".1"/><path d="M-258 0a258 258 0 0 0 516 0" stroke="#d7ff63" stroke-width="3" filter="url(#glow)"/><path d="M-176 0a176 176 0 0 1 352 0" stroke="#9d7cff" stroke-width="3" filter="url(#glow)"/><circle cx="-258" r="10" fill="#d7ff63"/><circle cx="176" r="10" fill="#9d7cff"/></g>
+  <g font-family="Inter,Arial,sans-serif"><text x="92" y="114" fill="#d7ff63" font-size="18" font-weight="800" letter-spacing="4">COMMUNITY PRESERVATION</text><text x="84" y="330" fill="#f4f1e8" font-size="104" font-weight="900" letter-spacing="-8">Carry one</text><text x="84" y="432" fill="#9d7cff" font-size="104" font-weight="900" letter-spacing="-8">piece.</text><text x="92" y="506" fill="#a8aaa5" font-size="22">Exact bytes. Separate reservations. Verified credit.</text></g>
+  <g transform="translate(92 602)" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="700"><rect width="176" height="48" rx="24" fill="#fff" fill-opacity=".07"/><text x="28" y="30" fill="#f4f1e8">ETHEREUM</text><rect x="190" width="150" height="48" rx="24" fill="#fff" fill-opacity=".07"/><text x="223" y="30" fill="#f4f1e8">TEZOS</text></g>
+</svg>

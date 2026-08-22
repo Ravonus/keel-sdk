@@ -1,0 +1,10 @@
+{
+  "schema": "oca-manifest-integrity@2",
+  "manifest": "manifest.json",
+  "canonicalization": "RFC8785",
+  "integrity": {
+    "algorithm": "sha256",
+    "digest": "0x65f572f507048748031f3928a0d73cee4280b8820b343dadc58c15c87ad48d1d",
+    "byteLength": 2556
+  }
+}

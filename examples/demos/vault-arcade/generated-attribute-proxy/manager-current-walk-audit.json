@@ -1,0 +1,420 @@
+{
+  "schema": "vault-manager-clip-audit@1",
+  "authority": "vault-asset-manager@1",
+  "characterId": "9e6e4de8-ba5b-4f35-aaac-c8bbdb92695c",
+  "animationGroupId": "81920513-ab90-4941-a062-3b7503251aed",
+  "clip": "walk",
+  "expected": {
+    "directions": [
+      "south",
+      "west",
+      "north",
+      "east"
+    ],
+    "framesPerDirection": 6,
+    "sourceCell": [
+      92,
+      92
+    ]
+  },
+  "checks": {
+    "exactFrameGrid": true,
+    "alphaNonempty": true,
+    "minimumUniqueFrames": 5,
+    "maximumSourceGroundSpan": 4,
+    "bilateralContactMinimumPixelChange": 3,
+    "minimumSideProfileFootContactTravel": 1.5,
+    "frontBackRule": "bilateral contact pixels must both change; symmetric gait may preserve centroid"
+  },
+  "directions": [
+    {
+      "direction": "south",
+      "frames": [
+        {
+          "frame": 0,
+          "sha256": "a74ba923a8d8b0988e31aed5d7ce6c8b8e4c66f25c4a40b1bedafb522cb361bc",
+          "bounds": [
+            33,
+            23,
+            58,
+            68
+          ],
+          "groundY": 68,
+          "leftFootPixels": 94,
+          "rightFootPixels": 83,
+          "footCentroidX": 45.463
+        },
+        {
+          "frame": 1,
+          "sha256": "ce95feecd49c9700e3deefe93d3fe173d2d24ddae252750ea66158c2561766b1",
+          "bounds": [
+            33,
+            23,
+            58,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 61,
+          "rightFootPixels": 85,
+          "footCentroidX": 46.479
+        },
+        {
+          "frame": 2,
+          "sha256": "22a4a142cabec6819a10327420b61700b95ebb09301903d2491d07864b25852f",
+          "bounds": [
+            33,
+            23,
+            58,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 50,
+          "rightFootPixels": 88,
+          "footCentroidX": 46.565
+        },
+        {
+          "frame": 3,
+          "sha256": "16d63b1bfcf5deb3eef9385d9e2530bd62b616341c90886e779347d06f5bf135",
+          "bounds": [
+            33,
+            23,
+            59,
+            68
+          ],
+          "groundY": 68,
+          "leftFootPixels": 95,
+          "rightFootPixels": 94,
+          "footCentroidX": 45.958
+        },
+        {
+          "frame": 4,
+          "sha256": "a5e8b2dfabd7eac6c81494270c535d8dbae53f8d21b3c5ebe37bfc4c4bedb405",
+          "bounds": [
+            33,
+            23,
+            59,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 81,
+          "rightFootPixels": 59,
+          "footCentroidX": 45.457
+        },
+        {
+          "frame": 5,
+          "sha256": "ea7f5b94116059869b6ce1e303542e7cfbb383a1925ceb592d6d72c3d4274a4a",
+          "bounds": [
+            33,
+            23,
+            59,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 80,
+          "rightFootPixels": 53,
+          "footCentroidX": 45.053
+        }
+      ],
+      "uniqueFrames": 6,
+      "groundSpan": 1,
+      "leftFootMotion": 45,
+      "rightFootMotion": 41,
+      "contactTravel": 1.5120000000000005,
+      "passed": true,
+      "failures": []
+    },
+    {
+      "direction": "west",
+      "frames": [
+        {
+          "frame": 0,
+          "sha256": "9721dfbeb1ccec3d4237963e58dbb24c37c000ca27ad467bff313f6a03bac730",
+          "bounds": [
+            38,
+            23,
+            50,
+            68
+          ],
+          "groundY": 68,
+          "leftFootPixels": 37,
+          "rightFootPixels": 57,
+          "footCentroidX": 44.213
+        },
+        {
+          "frame": 1,
+          "sha256": "b56fb0ed0cbb3b7a84c10b5b30a793cd8dc0c9299d9c5a7c66a7cff92a7a1cad",
+          "bounds": [
+            35,
+            24,
+            54,
+            68
+          ],
+          "groundY": 68,
+          "leftFootPixels": 82,
+          "rightFootPixels": 80,
+          "footCentroidX": 44.79
+        },
+        {
+          "frame": 2,
+          "sha256": "2b9b7d3c5e0f5337aa560fc575e2c265fb4326525d12f000ae3c87ca2bdd357e",
+          "bounds": [
+            38,
+            23,
+            55,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 85,
+          "rightFootPixels": 56,
+          "footCentroidX": 45.496
+        },
+        {
+          "frame": 3,
+          "sha256": "4e1731817c204db428f31c14547f16618d62b0a6fa5f0c5a472580c05cf755c6",
+          "bounds": [
+            38,
+            23,
+            50,
+            68
+          ],
+          "groundY": 68,
+          "leftFootPixels": 23,
+          "rightFootPixels": 69,
+          "footCentroidX": 45.174
+        },
+        {
+          "frame": 4,
+          "sha256": "eb270a87446fff56242c69b5ef003e437aa29f9eb0f3523d6951ecb176337c66",
+          "bounds": [
+            35,
+            24,
+            54,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 65,
+          "rightFootPixels": 82,
+          "footCentroidX": 44.905
+        },
+        {
+          "frame": 5,
+          "sha256": "c0381bbd61c2e7365345dfa7238ec30c47f0e5fca428beeac9b7d6f93cdc4bc6",
+          "bounds": [
+            35,
+            24,
+            55,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 53,
+          "rightFootPixels": 87,
+          "footCentroidX": 46.5
+        }
+      ],
+      "uniqueFrames": 6,
+      "groundSpan": 1,
+      "leftFootMotion": 62,
+      "rightFootMotion": 31,
+      "contactTravel": 2.286999999999999,
+      "passed": true,
+      "failures": []
+    },
+    {
+      "direction": "north",
+      "frames": [
+        {
+          "frame": 0,
+          "sha256": "e33f2ce9a8eb3ec9282fc267d43a01690ef8982e93a492430e1888289ed49346",
+          "bounds": [
+            33,
+            23,
+            59,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 52,
+          "rightFootPixels": 77,
+          "footCentroidX": 46
+        },
+        {
+          "frame": 1,
+          "sha256": "d2d297e10b2dae26ad75a56b961257a5baa15064e319a586acc14d25bafeb34f",
+          "bounds": [
+            33,
+            24,
+            58,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 55,
+          "rightFootPixels": 82,
+          "footCentroidX": 45.774
+        },
+        {
+          "frame": 2,
+          "sha256": "beeae40949cd0f70cc67af40b4d48d46b387625e6c451d7e6b85bcfcdf02fbca",
+          "bounds": [
+            33,
+            23,
+            59,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 56,
+          "rightFootPixels": 75,
+          "footCentroidX": 46.107
+        },
+        {
+          "frame": 3,
+          "sha256": "7026f039d3085de139197e7289468659fabbe32c3cf9b8984e3f83c132e92b1e",
+          "bounds": [
+            32,
+            23,
+            59,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 75,
+          "rightFootPixels": 50,
+          "footCentroidX": 45.528
+        },
+        {
+          "frame": 4,
+          "sha256": "ce0d333b750b5ef4d8d635d5f17a73b64d4d71cd23dfe59187945d28f7f45448",
+          "bounds": [
+            32,
+            24,
+            59,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 79,
+          "rightFootPixels": 54,
+          "footCentroidX": 45.662
+        },
+        {
+          "frame": 5,
+          "sha256": "fa027ae8d0f8c9062721dd86bf8cccf754da2ead3573beb3007f3835f969afe2",
+          "bounds": [
+            32,
+            24,
+            59,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 71,
+          "rightFootPixels": 66,
+          "footCentroidX": 45.964
+        }
+      ],
+      "uniqueFrames": 6,
+      "groundSpan": 0,
+      "leftFootMotion": 27,
+      "rightFootMotion": 32,
+      "contactTravel": 0.5790000000000006,
+      "passed": true,
+      "failures": []
+    },
+    {
+      "direction": "east",
+      "frames": [
+        {
+          "frame": 0,
+          "sha256": "763bb68655fd91a897df4bdf81d63e52801f4a78cb08df63419b7ab821d75216",
+          "bounds": [
+            41,
+            24,
+            54,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 62,
+          "rightFootPixels": 40,
+          "footCentroidX": 46.676
+        },
+        {
+          "frame": 1,
+          "sha256": "78e4ad459779d251e6c1e204e87fecbd8e0e05e2240e9ef16e8a2e13ffd1da38",
+          "bounds": [
+            38,
+            24,
+            57,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 80,
+          "rightFootPixels": 65,
+          "footCentroidX": 46.993
+        },
+        {
+          "frame": 2,
+          "sha256": "e2ff423e08a8ed715952a0aada92eb8da4b76ef83aa03713b26042697b1847a0",
+          "bounds": [
+            37,
+            24,
+            54,
+            69
+          ],
+          "groundY": 69,
+          "leftFootPixels": 76,
+          "rightFootPixels": 65,
+          "footCentroidX": 45.22
+        },
+        {
+          "frame": 3,
+          "sha256": "7b51fb786801c3817ae3cd7055cf2ead4c13640052dee54dc7520227324613f0",
+          "bounds": [
+            41,
+            24,
+            53,
+            68
+          ],
+          "groundY": 68,
+          "leftFootPixels": 47,
+          "rightFootPixels": 56,
+          "footCentroidX": 46.922
+        },
+        {
+          "frame": 4,
+          "sha256": "8cb6cbd40b4b99cf147cd01e3a9ce75b9391a54a17adbfbaf22e4f5f46c996a1",
+          "bounds": [
+            38,
+            24,
+            57,
+            68
+          ],
+          "groundY": 68,
+          "leftFootPixels": 75,
+          "rightFootPixels": 79,
+          "footCentroidX": 47.026
+        },
+        {
+          "frame": 5,
+          "sha256": "80a6ae92961be24f61d31f85ff011fd1aea0f717e9488e0b3cf2f35c8a8eb601",
+          "bounds": [
+            37,
+            24,
+            55,
+            68
+          ],
+          "groundY": 68,
+          "leftFootPixels": 65,
+          "rightFootPixels": 80,
+          "footCentroidX": 45.6
+        }
+      ],
+      "uniqueFrames": 6,
+      "groundSpan": 1,
+      "leftFootMotion": 33,
+      "rightFootMotion": 40,
+      "contactTravel": 1.8060000000000045,
+      "passed": true,
+      "failures": []
+    }
+  ],
+  "sourceContactSheet": {
+    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-walk-v1-audit/walk-source-contact-sheet.png",
+    "sha256": "69ee85f917133638294932645faeb9ed0b35b570d53848f207be8aee25587e6f"
+  },
+  "decision": "approved"
+}

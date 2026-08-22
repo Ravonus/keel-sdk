@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Vault Weapon Region Debugger</title>
+    <style>
+      :root{color-scheme:dark;font:15px Inter,ui-sans-serif,system-ui,sans-serif;background:#050b0b;color:#effffb}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 25% -10%,#173f36,transparent 42%),#050b0b;min-height:100vh}header{padding:24px clamp(18px,4vw,54px);border-bottom:1px solid #ffffff1c;display:flex;justify-content:space-between;gap:20px;align-items:center}h1,h2,p{margin:0}h1{font-size:clamp(28px,4vw,52px);letter-spacing:-.04em}header p{color:#9cb9b2;margin-top:6px}a{color:#7ef2c9}.controls,.status,main{max-width:1260px;margin-inline:auto}.controls{padding:18px 22px;display:flex;gap:10px;flex-wrap:wrap;align-items:end}.controls label{display:grid;gap:6px;color:#9cb8b1}.controls select,.controls button{font:inherit;color:#effffb;background:#0d1817;border:1px solid #ffffff25;border-radius:10px;padding:10px 12px}.controls button{cursor:pointer}.controls button[aria-pressed=true]{border-color:#73f2c6;color:#73f2c6;background:#102722}.status{padding:0 22px 18px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.metric{padding:12px;border:1px solid #ffffff1c;border-radius:12px;background:#091311}.metric b{display:block;font:800 18px ui-monospace,monospace}.metric span{color:#91aaa4;font-size:12px}.workspace{padding:0 22px 48px;display:grid;grid-template-columns:minmax(380px,1fr) minmax(320px,.9fr);gap:18px}.panel{border:1px solid #ffffff20;border-radius:18px;background:#081210;overflow:hidden}.panel h2{padding:14px 16px;font-size:17px;border-bottom:1px solid #ffffff18}.stage{padding:16px;background:#020606;display:grid;place-items:center;min-height:560px}.stage canvas{width:min(100%,720px);height:auto;image-rendering:pixelated;cursor:crosshair}.readout{padding:12px 16px;color:#a8c0ba;font:13px ui-monospace,monospace;border-top:1px solid #ffffff18}.legend{padding:14px 16px;display:flex;gap:8px;flex-wrap:wrap}.legend button{font:inherit;color:#eafff9;background:#0c1715;border:1px solid #ffffff1e;border-radius:999px;padding:7px 10px;cursor:pointer}.legend button[aria-pressed=true]{outline:2px solid var(--region-color)}.swatch{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--region-color);margin-right:6px}.isolations{padding:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.isolation{border:1px solid #ffffff18;border-radius:12px;overflow:hidden;background:#030707}.isolation strong{display:block;padding:8px 10px;font-size:12px}.isolation canvas{display:block;width:100%;height:auto;image-rendering:pixelated;background:#020505}.note{grid-column:1/-1;padding:12px 16px;color:#9db8b1;line-height:1.5;border-top:1px solid #ffffff18}.note b{color:#effffb}@media(max-width:900px){.workspace{grid-template-columns:1fr}.status{grid-template-columns:repeat(2,1fr)}}
+    </style>
+  </head>
+  <body>
+    <header><div><h1>Weapon region debugger</h1><p>Source pixels and runtime masks share the same resolver. No hidden second mapping.</p></div><div><a href="./weapon-mask-editor.html">Open editor</a> · <a href="./weapon-range.html">Weapon range</a></div></header>
+    <section class="controls">
+      <label>Weapon<select id="debug-weapon"><option value="gyro">Gyro Saw</option><option value="rift">Rift Fork</option><option value="needle">Needle Array</option><option value="bloom">Aegis Star</option></select></label>
+      <label>Frame<select id="debug-frame"><option value="base">Base master</option></select></label>
+      <button type="button" data-mode="overlay" aria-pressed="true">Mask overlay</button>
+      <button type="button" data-mode="source" aria-pressed="false">Source only</button>
+      <button type="button" data-mode="mask" aria-pressed="false">Mask only</button>
+      <button type="button" id="debug-grid" aria-pressed="true">Pixel grid</button>
+    </section>
+    <section class="status">
+      <div class="metric"><b id="metric-colorable">—</b><span>colorable source pixels</span></div>
+      <div class="metric"><b id="metric-assigned">—</b><span>assigned exactly once</span></div>
+      <div class="metric"><b id="metric-unassigned">—</b><span>unassigned pixels</span></div>
+      <div class="metric"><b id="metric-regions">—</b><span>semantic regions</span></div>
+    </section>
+    <main class="workspace">
+      <section class="panel"><h2>Combined boundary view</h2><div class="stage"><canvas id="debug-canvas" width="768" height="768"></canvas></div><div class="readout" id="pixel-readout">Move over a source pixel to inspect its exact region.</div><div class="legend" id="debug-legend"></div></section>
+      <section class="panel"><h2>Region isolation — each part must stand alone</h2><div class="isolations" id="debug-isolations"></div><p class="note"><b>Acceptance rule:</b> every visible material pixel belongs to one named region; black outlines remain untouched. Select a legend chip to isolate that region in the large view.</p></section>
+    </main>
+    <script type="module" src="./weapon-mask-debug.js"></script>
+  </body>
+</html>

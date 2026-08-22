@@ -1,0 +1,202 @@
+{
+  "schema": "pixellab-base-atlas@1",
+  "characterId": "b9c2e6c8-6b5e-4dbd-9b33-ce1ea5b3c54f",
+  "directions": [
+    "south",
+    "west",
+    "north",
+    "east"
+  ],
+  "clips": [
+    {
+      "id": "idle",
+      "frames": 4
+    },
+    {
+      "id": "walk",
+      "frames": 6
+    },
+    {
+      "id": "attack",
+      "frames": 8
+    },
+    {
+      "id": "hit",
+      "frames": 4
+    },
+    {
+      "id": "death",
+      "frames": 8
+    }
+  ],
+  "cell": [
+    48,
+    48
+  ],
+  "origin": [
+    24,
+    46
+  ],
+  "dimensions": [
+    384,
+    960
+  ],
+  "cells": 120,
+  "audit": {
+    "populatedCells": 120,
+    "groundedCells": 120,
+    "rows": [
+      {
+        "clip": "idle",
+        "direction": "south",
+        "populatedFrames": 4,
+        "uniqueFrames": 4,
+        "groundedFrames": 4
+      },
+      {
+        "clip": "idle",
+        "direction": "west",
+        "populatedFrames": 4,
+        "uniqueFrames": 4,
+        "groundedFrames": 4
+      },
+      {
+        "clip": "idle",
+        "direction": "north",
+        "populatedFrames": 4,
+        "uniqueFrames": 4,
+        "groundedFrames": 4
+      },
+      {
+        "clip": "idle",
+        "direction": "east",
+        "populatedFrames": 4,
+        "uniqueFrames": 4,
+        "groundedFrames": 4
+      },
+      {
+        "clip": "walk",
+        "direction": "south",
+        "populatedFrames": 6,
+        "uniqueFrames": 6,
+        "groundedFrames": 6
+      },
+      {
+        "clip": "walk",
+        "direction": "west",
+        "populatedFrames": 6,
+        "uniqueFrames": 6,
+        "groundedFrames": 6
+      },
+      {
+        "clip": "walk",
+        "direction": "north",
+        "populatedFrames": 6,
+        "uniqueFrames": 6,
+        "groundedFrames": 6
+      },
+      {
+        "clip": "walk",
+        "direction": "east",
+        "populatedFrames": 6,
+        "uniqueFrames": 6,
+        "groundedFrames": 6
+      },
+      {
+        "clip": "attack",
+        "direction": "south",
+        "populatedFrames": 8,
+        "uniqueFrames": 8,
+        "groundedFrames": 8
+      },
+      {
+        "clip": "attack",
+        "direction": "west",
+        "populatedFrames": 8,
+        "uniqueFrames": 8,
+        "groundedFrames": 8
+      },
+      {
+        "clip": "attack",
+        "direction": "north",
+        "populatedFrames": 8,
+        "uniqueFrames": 8,
+        "groundedFrames": 8
+      },
+      {
+        "clip": "attack",
+        "direction": "east",
+        "populatedFrames": 8,
+        "uniqueFrames": 8,
+        "groundedFrames": 8
+      },
+      {
+        "clip": "hit",
+        "direction": "south",
+        "populatedFrames": 4,
+        "uniqueFrames": 4,
+        "groundedFrames": 4
+      },
+      {
+        "clip": "hit",
+        "direction": "west",
+        "populatedFrames": 4,
+        "uniqueFrames": 4,
+        "groundedFrames": 4
+      },
+      {
+        "clip": "hit",
+        "direction": "north",
+        "populatedFrames": 4,
+        "uniqueFrames": 4,
+        "groundedFrames": 4
+      },
+      {
+        "clip": "hit",
+        "direction": "east",
+        "populatedFrames": 4,
+        "uniqueFrames": 4,
+        "groundedFrames": 4
+      },
+      {
+        "clip": "death",
+        "direction": "south",
+        "populatedFrames": 8,
+        "uniqueFrames": 8,
+        "groundedFrames": 8
+      },
+      {
+        "clip": "death",
+        "direction": "west",
+        "populatedFrames": 8,
+        "uniqueFrames": 8,
+        "groundedFrames": 8
+      },
+      {
+        "clip": "death",
+        "direction": "north",
+        "populatedFrames": 8,
+        "uniqueFrames": 8,
+        "groundedFrames": 8
+      },
+      {
+        "clip": "death",
+        "direction": "east",
+        "populatedFrames": 8,
+        "uniqueFrames": 8,
+        "groundedFrames": 8
+      }
+    ]
+  },
+  "png": {
+    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/b9c2e6c8/packed/base-character-atlas-v1.png",
+    "bytes": 90928,
+    "sha256": "8a18b2fb1cc7ee928690e635219b2b214faebed73a30c3bbf8ac2c0a990641a5"
+  },
+  "webp": {
+    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/b9c2e6c8/packed/base-character-atlas-v1-q50.webp",
+    "quality": 50,
+    "bytes": 54576,
+    "sha256": "160223f69b5dd7ecfaca7683fa707db2cbba518c37e1c90d36eb9a411ee10366"
+  }
+}

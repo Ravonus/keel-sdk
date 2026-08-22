@@ -1,0 +1,30 @@
+{
+  "name": "@keel/mcp",
+  "version": "0.4.0",
+  "description": "Offline Model Context Protocol bridge for the Keel/Keel builder and wallet request envelopes.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsc -p tsconfig.json"
+  },
+  "engines": { "node": ">=22" },
+  "license": "MIT",
+  "dependencies": {
+    "@keel/builder": "workspace:*",
+    "@keel/ethereum-adapter": "workspace:*",
+    "@keel/protocol": "workspace:*",
+    "@keel/sdk": "workspace:*"
+  },
+  "bin": {
+    "oca-mcp": "./dist/cli.js"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "codec": "oca-json-sprite-atlas@1",
+  "image": {
+    "width": 128,
+    "height": 16
+  },
+  "frames": [
+    { "id": "idle-0", "x": 0, "y": 0, "width": 16, "height": 16, "durationMs": 125 },
+    { "id": "idle-1", "x": 16, "y": 0, "width": 16, "height": 16, "durationMs": 125 },
+    { "id": "walk-0", "x": 32, "y": 0, "width": 16, "height": 16, "durationMs": 125 },
+    { "id": "walk-1", "x": 48, "y": 0, "width": 16, "height": 16, "durationMs": 125 },
+    { "id": "walk-2", "x": 64, "y": 0, "width": 16, "height": 16, "durationMs": 125 },
+    { "id": "walk-3", "x": 80, "y": 0, "width": 16, "height": 16, "durationMs": 125 },
+    { "id": "action-0", "x": 96, "y": 0, "width": 16, "height": 16, "durationMs": 125 },
+    { "id": "action-1", "x": 112, "y": 0, "width": 16, "height": 16, "durationMs": 125 }
+  ]
+}
+

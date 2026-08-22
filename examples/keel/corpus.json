@@ -1,0 +1,446 @@
+{
+  "schema": "keel-b85-corpus@1",
+  "provenance": {
+    "project": "ChainRouge Solidity / Keel",
+    "snapshot": "September 2023 inventory tree",
+    "scope": "the 19 top-level .b85 files",
+    "excluded": [
+      "test/twgl.b85"
+    ]
+  },
+  "discovery": "top-level .b85 files only",
+  "pipeline": [
+    "preserved source file",
+    "legacy <b85> wrapper extraction when declared",
+    "Z85 decode",
+    "Brotli decompress",
+    "fatal UTF-8 validation without execution"
+  ],
+  "totals": {
+    "files": 19,
+    "sourceBytes": 96390,
+    "encodedCharacters": 96379,
+    "decodedBytes": 77096,
+    "decompressedBytes": 349365
+  },
+  "artifacts": [
+    {
+      "name": "bab-start",
+      "sourceFile": "b85/bab-start.b85",
+      "decodedFile": "decoded/bab-start.br",
+      "decompressedFile": "decompressed/bab-start.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 1593,
+        "encodedCharacters": 1593,
+        "decodedBytes": 1274,
+        "decompressedBytes": 4243
+      },
+      "digests": {
+        "sourceSha256": "0x91488989e6c7b40d7db2b24aac9f70ae56d8e689bdb57901b8bce9a846e8fece",
+        "payloadSha256": "0x91488989e6c7b40d7db2b24aac9f70ae56d8e689bdb57901b8bce9a846e8fece",
+        "decodedSha256": "0xd6323cdc523a067dc073e948dd8224128cd7b14dd35e0e5f0cef3d44d80b9c4e",
+        "decompressedSha256": "0x54d739ab1ddaad976639273d964538a756f7b759f6128699e6ac2f17a5865afe"
+      }
+    },
+    {
+      "name": "fluid-capture.all",
+      "sourceFile": "b85/fluid-capture.all.b85",
+      "decodedFile": "decoded/fluid-capture.all.br",
+      "decompressedFile": "decompressed/fluid-capture.all.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 13217,
+        "encodedCharacters": 13217,
+        "decodedBytes": 10573,
+        "decompressedBytes": 40834
+      },
+      "digests": {
+        "sourceSha256": "0x8e08295ecfd9853e469a3b87563d44d8cce4b8f630170b792159f98929d1241f",
+        "payloadSha256": "0x8e08295ecfd9853e469a3b87563d44d8cce4b8f630170b792159f98929d1241f",
+        "decodedSha256": "0x5d30796430ec1177529c07e6fb6803981de06d969d8dbc5625d1f11da1c26929",
+        "decompressedSha256": "0x75481147aeee8e8658da49c8e95a499d1d288ee52bb7f3af5b4bf4b1457296f9"
+      }
+    },
+    {
+      "name": "fluid-dat.gui",
+      "sourceFile": "b85/fluid-dat.gui.b85",
+      "decodedFile": "decoded/fluid-dat.gui.br",
+      "decompressedFile": "decompressed/fluid-dat.gui.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 16334,
+        "encodedCharacters": 16334,
+        "decodedBytes": 13067,
+        "decompressedBytes": 56669
+      },
+      "digests": {
+        "sourceSha256": "0x2da09c348c736232c336990854c85c223f1eb26946aa44600093ff03aaa68758",
+        "payloadSha256": "0x2da09c348c736232c336990854c85c223f1eb26946aa44600093ff03aaa68758",
+        "decodedSha256": "0xa880e73e327f582b730b1f64ba0c7930688ce1a6bc39823b1139a2f1c7402a1b",
+        "decompressedSha256": "0xece111b4674e34d11dc878a4d61c468d7bfcfa1d1b9eec856e51712e01c42227"
+      }
+    },
+    {
+      "name": "fluid-init",
+      "sourceFile": "b85/fluid-init.b85",
+      "decodedFile": "decoded/fluid-init.br",
+      "decompressedFile": "decompressed/fluid-init.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 2085,
+        "encodedCharacters": 2085,
+        "decodedBytes": 1668,
+        "decompressedBytes": 5484
+      },
+      "digests": {
+        "sourceSha256": "0x976f17a421c3963d08084f3a257d74868f6d4b97e4e47edb37786470ec570a59",
+        "payloadSha256": "0x976f17a421c3963d08084f3a257d74868f6d4b97e4e47edb37786470ec570a59",
+        "decodedSha256": "0x0a2aa2879d71236fb2212b05bcfb7bb59ff9fecf86795f6df73480fe479d35ce",
+        "decompressedSha256": "0x2def94a873ac6f9ea7b432fe6453cea7ab7bc0949e7aa6eda987dfbf08e5b12b"
+      }
+    },
+    {
+      "name": "fluid-main",
+      "sourceFile": "b85/fluid-main.b85",
+      "decodedFile": "decoded/fluid-main.br",
+      "decompressedFile": "decompressed/fluid-main.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 3029,
+        "encodedCharacters": 3029,
+        "decodedBytes": 2423,
+        "decompressedBytes": 10688
+      },
+      "digests": {
+        "sourceSha256": "0xe67dee3d465d1982d60caf0c724c157520d8edfc52efdc05e1892e9e553e2423",
+        "payloadSha256": "0xe67dee3d465d1982d60caf0c724c157520d8edfc52efdc05e1892e9e553e2423",
+        "decodedSha256": "0xd86b71d556a277427b6ccf0a2929030d4e97638af5d50dc58921e825cbdc67b7",
+        "decompressedSha256": "0x7d16295bc2e6d7cbb5a6cfb923866e18a179dd9072a8cf49328ad57bb43655ea"
+      }
+    },
+    {
+      "name": "fluid-render",
+      "sourceFile": "b85/fluid-render.b85",
+      "decodedFile": "decoded/fluid-render.br",
+      "decompressedFile": "decompressed/fluid-render.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 3080,
+        "encodedCharacters": 3080,
+        "decodedBytes": 2464,
+        "decompressedBytes": 8086
+      },
+      "digests": {
+        "sourceSha256": "0x1db1db33b58151199e0910af786eded92abaa51fea65451dca2738a515894330",
+        "payloadSha256": "0x1db1db33b58151199e0910af786eded92abaa51fea65451dca2738a515894330",
+        "decodedSha256": "0x6ce261cfd12e7c41a3e9c0992e7f87de3d6ffdcf2b63fc59579eb591bbdac16e",
+        "decompressedSha256": "0x83730fb5752b61db5ec83929e00c92f52c6e7bed3624cd5532028437aa4be336"
+      }
+    },
+    {
+      "name": "fluid-shaders",
+      "sourceFile": "b85/fluid-shaders.b85",
+      "decodedFile": "decoded/fluid-shaders.br",
+      "decompressedFile": "decompressed/fluid-shaders.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 4208,
+        "encodedCharacters": 4208,
+        "decodedBytes": 3366,
+        "decompressedBytes": 20848
+      },
+      "digests": {
+        "sourceSha256": "0x7a9833ec8550f204d3d88d169040d11d8b0294499b587b7685b06e06cf109a81",
+        "payloadSha256": "0x7a9833ec8550f204d3d88d169040d11d8b0294499b587b7685b06e06cf109a81",
+        "decodedSha256": "0xf0dc4af72e00b9a5a047e3e0f8de086fb31aaf845937c2393f5156bf878c7fb6",
+        "decompressedSha256": "0x052f45c7e0979945cda1120c0500124544f80cb7b6eb58825bbb1ce735863436"
+      }
+    },
+    {
+      "name": "fluid-utils",
+      "sourceFile": "b85/fluid-utils.b85",
+      "decodedFile": "decoded/fluid-utils.br",
+      "decompressedFile": "decompressed/fluid-utils.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 2637,
+        "encodedCharacters": 2637,
+        "decodedBytes": 2109,
+        "decompressedBytes": 8752
+      },
+      "digests": {
+        "sourceSha256": "0x8efe5305d1826f26ece5f49752c074ad45ec0f150524ad9ae7810ae6ad7a8286",
+        "payloadSha256": "0x8efe5305d1826f26ece5f49752c074ad45ec0f150524ad9ae7810ae6ad7a8286",
+        "decodedSha256": "0xf90c89ff6cbdbab8789dc53120146f8c966a20c41c6542e7f1e601d83a550e1b",
+        "decompressedSha256": "0x8c43ff99166d74cfb0a675f7de0c9fd41b58079c4d9bf2bc04ba656165fe0650"
+      }
+    },
+    {
+      "name": "shader-1",
+      "sourceFile": "b85/shader-1.b85",
+      "decodedFile": "decoded/shader-1.br",
+      "decompressedFile": "decompressed/shader-1.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 1223,
+        "encodedCharacters": 1223,
+        "decodedBytes": 978,
+        "decompressedBytes": 3399
+      },
+      "digests": {
+        "sourceSha256": "0x22b6b1b77d1e70116964bed69acacfec33fa8413181434a401b70c8a96025e78",
+        "payloadSha256": "0x22b6b1b77d1e70116964bed69acacfec33fa8413181434a401b70c8a96025e78",
+        "decodedSha256": "0x92ddedb4a04c3477ee0842422b3593375fb36514eb957ae86cf7deeb4ddb3701",
+        "decompressedSha256": "0x57d616922ff9c10fb25e12354c433f630aaec8d9a9ac4496d13a4d86f2b1ec8b"
+      }
+    },
+    {
+      "name": "start-genart",
+      "sourceFile": "b85/start-genart.b85",
+      "decodedFile": "decoded/start-genart.br",
+      "decompressedFile": "decompressed/start-genart.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 1673,
+        "encodedCharacters": 1673,
+        "decodedBytes": 1338,
+        "decompressedBytes": 3494
+      },
+      "digests": {
+        "sourceSha256": "0x8324fc921f0baf7a66fc6aca9db8632d57b1c63e60702c0165be61dcd7b0a922",
+        "payloadSha256": "0x8324fc921f0baf7a66fc6aca9db8632d57b1c63e60702c0165be61dcd7b0a922",
+        "decodedSha256": "0x2801cf64d6c345e32a86c379beb7537bedae005c756ec77d8833f03a25f60ef6",
+        "decompressedSha256": "0xaece1284ebcda0e0b04e0fcd7ed3c4e1d2f296b64c970afe05b53c5074c14652"
+      }
+    },
+    {
+      "name": "start-gpu",
+      "sourceFile": "b85/start-gpu.b85",
+      "decodedFile": "decoded/start-gpu.br",
+      "decompressedFile": "decompressed/start-gpu.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 3402,
+        "encodedCharacters": 3402,
+        "decodedBytes": 2721,
+        "decompressedBytes": 11737
+      },
+      "digests": {
+        "sourceSha256": "0xb904aff9fea1ff00d64bfe3345b3fa65b135de05d4689ce876a577b3b3c7a7ba",
+        "payloadSha256": "0xb904aff9fea1ff00d64bfe3345b3fa65b135de05d4689ce876a577b3b3c7a7ba",
+        "decodedSha256": "0xcd580db0506615ecc4e9585b97d04e6a7556e08fb0fef4f94ec2176e8fb6e4b8",
+        "decompressedSha256": "0x2e1cb8d86a0311157126495120cafab4976dea058853839d87d575cd4f28f2ac"
+      }
+    },
+    {
+      "name": "start-p5",
+      "sourceFile": "b85/start-p5.b85",
+      "decodedFile": "decoded/start-p5.br",
+      "decompressedFile": "decompressed/start-p5.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 2047,
+        "encodedCharacters": 2047,
+        "decodedBytes": 1637,
+        "decompressedBytes": 6153
+      },
+      "digests": {
+        "sourceSha256": "0x485f742eb215733048a00ce9426b307aa8eb9ed3bdd2ea2ac8e04bc7b3455fad",
+        "payloadSha256": "0x485f742eb215733048a00ce9426b307aa8eb9ed3bdd2ea2ac8e04bc7b3455fad",
+        "decodedSha256": "0xf945fe0596c553e93f800dd2143aeb8fd94baa4814dd40b4fede5fad2e7b4a7c",
+        "decompressedSha256": "0x2039f5baa6ded146bc87f72e65ebe53e1e388798fe87c30eca586d6a47edbd7b"
+      }
+    },
+    {
+      "name": "start-sphere",
+      "sourceFile": "b85/start-sphere.b85",
+      "decodedFile": "decoded/start-sphere.br",
+      "decompressedFile": "decompressed/start-sphere.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 1247,
+        "encodedCharacters": 1247,
+        "decodedBytes": 997,
+        "decompressedBytes": 3073
+      },
+      "digests": {
+        "sourceSha256": "0xd3cf4cb84fc32182c15dce69bb71c4f8a084b4a6f166b786d241eb4334fa524a",
+        "payloadSha256": "0xd3cf4cb84fc32182c15dce69bb71c4f8a084b4a6f166b786d241eb4334fa524a",
+        "decodedSha256": "0x7c244a02b2e1cf365147b0d846889cb18c867c968265b8a5aaa16551b223808e",
+        "decompressedSha256": "0xb502b1f7f444416ed68c419c865137cbdcc514f5d5bdd75794286ab8086c38d8"
+      }
+    },
+    {
+      "name": "start-three",
+      "sourceFile": "b85/start-three.b85",
+      "decodedFile": "decoded/start-three.br",
+      "decompressedFile": "decompressed/start-three.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 2452,
+        "encodedCharacters": 2452,
+        "decodedBytes": 1961,
+        "decompressedBytes": 8004
+      },
+      "digests": {
+        "sourceSha256": "0x7c80941eb879259f2bc15fa93639a7de044a504623c6cdac4f6e16fff7f5825b",
+        "payloadSha256": "0x7c80941eb879259f2bc15fa93639a7de044a504623c6cdac4f6e16fff7f5825b",
+        "decodedSha256": "0x5afd7cb51b3a8f718c1c6aa2737bb011974c935d083923c14438b3d27b9c49ed",
+        "decompressedSha256": "0x22df03e5af24fbc54735cb81c137a68bbad7a0002e0aa4604267fa4b4cad205f"
+      }
+    },
+    {
+      "name": "start-twgl",
+      "sourceFile": "b85/start-twgl.b85",
+      "decodedFile": "decoded/start-twgl.br",
+      "decompressedFile": "decompressed/start-twgl.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 1223,
+        "encodedCharacters": 1223,
+        "decodedBytes": 978,
+        "decompressedBytes": 2860
+      },
+      "digests": {
+        "sourceSha256": "0x7b0df88750638328beb1261ed948a50c3ec8b3c8c7e594a3dbc0ede97cd21e3e",
+        "payloadSha256": "0x7b0df88750638328beb1261ed948a50c3ec8b3c8c7e594a3dbc0ede97cd21e3e",
+        "decodedSha256": "0x8db6aa6c0dab4195465c6cf312ab932ef462ffb0b057261a3d99ad190eb84241",
+        "decompressedSha256": "0x515d01fc7b2c2e7eaedee3aea334dc4e3f6b22ab3a8a436618f6350f9f341b31"
+      }
+    },
+    {
+      "name": "start-twgl2",
+      "sourceFile": "b85/start-twgl2.b85",
+      "decodedFile": "decoded/start-twgl2.br",
+      "decompressedFile": "decompressed/start-twgl2.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 1428,
+        "encodedCharacters": 1428,
+        "decodedBytes": 1142,
+        "decompressedBytes": 3879
+      },
+      "digests": {
+        "sourceSha256": "0xf888f849a1cb05d2b10f61ddaac2707173ac5f870451ea9aa1f30294957071ef",
+        "payloadSha256": "0xf888f849a1cb05d2b10f61ddaac2707173ac5f870451ea9aa1f30294957071ef",
+        "decodedSha256": "0xe5fd7706d01110412a9a2ed53738f5f3377a6ad9039e8701ded54dfe2a61b929",
+        "decompressedSha256": "0x228734302943f0d378e1ee70a41dc1ff4c5ed3daa6fa2edfe2c0be259f1b3014"
+      }
+    },
+    {
+      "name": "start",
+      "sourceFile": "b85/start.b85",
+      "decodedFile": "decoded/start.br",
+      "decompressedFile": "decompressed/start.js",
+      "wrapper": "legacy-b85-tag",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 1511,
+        "encodedCharacters": 1500,
+        "decodedBytes": 1200,
+        "decompressedBytes": 4857
+      },
+      "digests": {
+        "sourceSha256": "0xd9f39a0a45e9deeee016515a5f110463e75b8002062bef29b7041c162bad4652",
+        "payloadSha256": "0x975d85b5103ff80b65850fa32be06616780f16c0306b4c1203c60a00d715d21b",
+        "decodedSha256": "0x8b5ad7e143c1e229636ec8be776cd83619872e7a228fbd70fde721dfe233916d",
+        "decompressedSha256": "0x4c813564e39973110edf46fe8610f4bacd55954036fd4700aa46d6e8b54eaa40"
+      }
+    },
+    {
+      "name": "twgl",
+      "sourceFile": "b85/twgl.b85",
+      "decodedFile": "decoded/twgl.br",
+      "decompressedFile": "decompressed/twgl.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 24153,
+        "encodedCharacters": 24153,
+        "decodedBytes": 19322,
+        "decompressedBytes": 93431
+      },
+      "digests": {
+        "sourceSha256": "0xe206da9c6c8aa9e6c3c9603224ad10c2db6e4736439cc8734b880c411ca3fd24",
+        "payloadSha256": "0xe206da9c6c8aa9e6c3c9603224ad10c2db6e4736439cc8734b880c411ca3fd24",
+        "decodedSha256": "0x14da0df505402df5cce01c66c180732372b98ac3182d6d72d03880134b246c19",
+        "decompressedSha256": "0xd83039f9ccbe772d9656fd46dffb4abf4d6f4fb8b182c00f485216dd52fd5865"
+      }
+    },
+    {
+      "name": "webMatrix",
+      "sourceFile": "b85/webMatrix.b85",
+      "decodedFile": "decoded/webMatrix.br",
+      "decompressedFile": "decompressed/webMatrix.js",
+      "wrapper": "bare-z85",
+      "compression": "brotli",
+      "mediaType": "application/javascript",
+      "canonicalReencode": true,
+      "sizes": {
+        "sourceBytes": 9848,
+        "encodedCharacters": 9848,
+        "decodedBytes": 7878,
+        "decompressedBytes": 52874
+      },
+      "digests": {
+        "sourceSha256": "0x5b7288e060756f3557a0a6a6f0a51ffefa0136335550351900f232f320814efc",
+        "payloadSha256": "0x5b7288e060756f3557a0a6a6f0a51ffefa0136335550351900f232f320814efc",
+        "decodedSha256": "0x409a891b5c8ab9a6c63d32f5837f672ff8edc8a1e005225e8690aa3ccf8172d7",
+        "decompressedSha256": "0x0853440c2ec1e5c1b04c719a404da2b6929bdddddd57a3f4fcb2c0dedae479da"
+      }
+    }
+  ]
+}

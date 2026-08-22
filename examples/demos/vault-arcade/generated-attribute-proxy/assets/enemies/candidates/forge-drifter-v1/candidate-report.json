@@ -1,0 +1,158 @@
+{
+  "schema": "vault-enemy-candidate-report@1",
+  "asset": "forge-drifter-v1",
+  "state": "candidate-mechanical-pass-visual-review-required",
+  "source": {
+    "file": "eight-direction-master.png",
+    "width": 1717,
+    "height": 916,
+    "sha256": "0xad5e6b86d765b4e80cfa6692814eaaa3cdd9c81073fda367f3e86f063dfbbfd2"
+  },
+  "normalized": {
+    "file": "eight-direction-48.png",
+    "width": 192,
+    "height": 96,
+    "cellSize": 48,
+    "sha256": "0x59bd991ed753a8e9060e6d67b5087e9a23c218b4062f80476ba027dfbe399ae9"
+  },
+  "materialMap": {
+    "file": "material-id-map-48.png",
+    "sha256": "0x469d54174b8a7482d34ed35137a2416879b7c2b3014142f6efda736d0b996edf",
+    "regions": {
+      "transparent": 8815,
+      "locked-outline": 2232,
+      "seam": 1309,
+      "armor-dark": 2224,
+      "armor-mid": 1722,
+      "armor-light": 1697,
+      "highlight": 341,
+      "emissive-core": 92
+    }
+  },
+  "paletteProof": {
+    "file": "palette-proof-48.png",
+    "sha256": "0x781ef93c40a587485a99bf183d8ab3d82d15d6ba0753908caba6a6905d66a331"
+  },
+  "cells": [
+    {
+      "index": 0,
+      "sourceBounds": [
+        123,
+        114,
+        372,
+        372
+      ],
+      "normalizedBounds": [
+        3,
+        2,
+        44,
+        45
+      ]
+    },
+    {
+      "index": 1,
+      "sourceBounds": [
+        502,
+        108,
+        769,
+        368
+      ],
+      "normalizedBounds": [
+        50,
+        3,
+        93,
+        45
+      ]
+    },
+    {
+      "index": 2,
+      "sourceBounds": [
+        909,
+        124,
+        1184,
+        368
+      ],
+      "normalizedBounds": [
+        98,
+        7,
+        141,
+        45
+      ]
+    },
+    {
+      "index": 3,
+      "sourceBounds": [
+        1327,
+        114,
+        1589,
+        372
+      ],
+      "normalizedBounds": [
+        146,
+        3,
+        189,
+        45
+      ]
+    },
+    {
+      "index": 4,
+      "sourceBounds": [
+        128,
+        512,
+        376,
+        773
+      ],
+      "normalizedBounds": [
+        3,
+        50,
+        44,
+        93
+      ]
+    },
+    {
+      "index": 5,
+      "sourceBounds": [
+        502,
+        522,
+        765,
+        777
+      ],
+      "normalizedBounds": [
+        50,
+        51,
+        93,
+        93
+      ]
+    },
+    {
+      "index": 6,
+      "sourceBounds": [
+        917,
+        530,
+        1190,
+        777
+      ],
+      "normalizedBounds": [
+        98,
+        54,
+        141,
+        93
+      ]
+    },
+    {
+      "index": 7,
+      "sourceBounds": [
+        1327,
+        521,
+        1595,
+        777
+      ],
+      "normalizedBounds": [
+        146,
+        52,
+        189,
+        93
+      ]
+    }
+  ]
+}

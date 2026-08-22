@@ -1,0 +1,21 @@
+{
+  "schema": "oca-sprite-library-source@1",
+  "id": "vault-assets-v1",
+  "bundles": [
+    { "bundleId": 1, "revision": 1, "key": "character-orb", "role": "standalone-character-body-material-panels-directions", "source": "character-orb.sprite.json", "lock": "character-orb.sprite.lock.json", "dependencies": [] },
+    { "bundleId": 2, "revision": 1, "key": "shared-weapons", "role": "shared-weapons-projectiles-and-weapon-fx", "source": "weapons.sprite.json", "lock": "weapons.sprite.lock.json", "dependencies": [] },
+    { "bundleId": 3, "revision": 1, "key": "world-tiles", "role": "world-floors-and-walls-209px", "source": "world-tiles.sprite.json", "lock": "world-tiles.sprite.lock.json", "dependencies": [] },
+    { "bundleId": 4, "revision": 1, "key": "world-entities", "role": "world-props-pickups-mobs-and-boss-parts-209px", "source": "world-entities.sprite.json", "lock": "world-entities.sprite.lock.json", "dependencies": [{ "bundleId": 3, "revision": 1 }] },
+    { "bundleId": 5, "revision": 1, "key": "world-fx", "role": "particles-and-world-fx-209px", "source": "world-fx.sprite.json", "lock": "world-fx.sprite.lock.json", "dependencies": [{ "bundleId": 4, "revision": 1 }] }
+  ],
+  "profiles": [
+    { "id": "unstaked-character", "revision": 1, "roots": [{ "bundleId": 1, "revision": 1 }, { "bundleId": 2, "revision": 1 }] },
+    { "id": "staked-map", "revision": 1, "roots": [{ "bundleId": 1, "revision": 1 }, { "bundleId": 2, "revision": 1 }, { "bundleId": 5, "revision": 1 }] }
+  ],
+  "inventoryRoots": [
+    { "path": "../../../examples/demos/vault-arcade/assets", "label": "legacy canonical Vault atlas sources" },
+    { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy", "label": "current generated Vault canonical and candidate sources" },
+    { "path": "../../../examples/demos/vault-arcade/concepts", "label": "unapproved concept provenance" },
+    { "path": "../../../examples/demos/vault-arcade/asset-lab", "label": "benchmark-only atlas candidates" }
+  ]
+}

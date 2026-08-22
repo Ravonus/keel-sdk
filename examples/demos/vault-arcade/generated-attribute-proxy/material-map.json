@@ -1,0 +1,76 @@
+{
+  "codec": "oca-atlas-material-map@1",
+  "unmatched": "preserve",
+  "targets": [
+    {
+      "targetId": 1,
+      "label": "fixed cyan accent",
+      "action": "preserve",
+      "red": [
+        0,
+        134
+      ],
+      "green": [
+        96,
+        255
+      ],
+      "blue": [
+        106,
+        255
+      ],
+      "alpha": [
+        1,
+        255
+      ],
+      "shade": "blue",
+      "priority": 255
+    },
+    {
+      "targetId": 2,
+      "label": "fixed amber accent",
+      "action": "preserve",
+      "red": [
+        146,
+        255
+      ],
+      "green": [
+        71,
+        255
+      ],
+      "blue": [
+        0,
+        89
+      ],
+      "alpha": [
+        1,
+        255
+      ],
+      "shade": "red",
+      "priority": 254
+    },
+    {
+      "targetId": 3,
+      "label": "seeded primary material",
+      "action": "material",
+      "materialRegionId": 1,
+      "red": [
+        0,
+        255
+      ],
+      "green": [
+        0,
+        255
+      ],
+      "blue": [
+        0,
+        255
+      ],
+      "alpha": [
+        1,
+        255
+      ],
+      "shade": "luminance",
+      "priority": 0
+    }
+  ]
+}

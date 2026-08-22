@@ -1,0 +1,68 @@
+{
+  "schema": "vault-generation-bible@1",
+  "camera": {
+    "projection": "three-quarter-top-down-twin-stick",
+    "directions": ["south", "south-west", "west", "north-west", "north", "north-east", "east", "south-east"],
+    "spriteCell": [48, 48],
+    "runtimeScale": 2,
+    "groundAnchor": [24, 41]
+  },
+  "enemyMaster": {
+    "grid": [4, 2],
+    "identityRule": "one canonical silhouette rotated through all eight views",
+    "requiredRegions": ["locked-outline", "seam", "armor-dark", "armor-mid", "armor-light", "highlight", "emissive-core"],
+    "optionalRegions": ["secondary-emissive", "elite-trim", "damage-wear", "particle-socket", "weakpoint"],
+    "maskMarkers": {
+      "locked-outline": "#13171b",
+      "seam": "#52417e",
+      "armor-dark": "#236aa4",
+      "armor-mid": "#2ebe89",
+      "armor-light": "#f1bf4b",
+      "highlight": "#f8efd5",
+      "emissive-core": "#ff00ff"
+    },
+    "runtimeRule": "The shipped sprite is transparent grayscale plus an exact per-pixel material ID map. Palette changes address IDs independently and never flatten the complete enemy to one tint.",
+    "checks": {
+      "exactGrid": true,
+      "transparentBackground": true,
+      "cellOccupancyRange": [0.12, 0.62],
+      "maximumSilhouetteAreaVariance": 0.22,
+      "maximumGroundAnchorVariance": 2,
+      "minimumDistinctMaterialBands": 5,
+      "manualEightViewApproval": true
+    }
+  },
+  "encounterTiers": {
+    "light": { "scale": 0.82, "kitSlots": 1, "read": "fast swarm silhouette" },
+    "standard": { "scale": 1, "kitSlots": 2, "read": "baseline combatant" },
+    "heavy": { "scale": 1.28, "kitSlots": 3, "read": "armored middle threat" },
+    "elite": { "scale": 1.35, "kitSlots": 4, "read": "material variant plus aura" },
+    "miniboss": { "scale": 1.8, "kitSlots": 5, "read": "named silhouette and phase ring" },
+    "boss": { "scale": 2.6, "kitSlots": 6, "read": "targetable multi-part encounter" }
+  },
+  "tileGrammar": {
+    "tileSize": 64,
+    "adjacencyBits": { "north": 1, "east": 2, "south": 4, "west": 8 },
+    "requiredMasks": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    "families": ["floor", "wall", "inner-corner", "outer-corner", "door", "water-edge", "water-corner", "hazard", "decal", "animated-prop"],
+    "rules": [
+      "doors bind exactly one graph edge and never open into solid tiles",
+      "water forms coherent fields and receives shoreline transitions",
+      "corridors have deliberate width and terminate at room thresholds",
+      "large surfaces use material bands, decals, damage, and props to break repetition",
+      "every palette is applied through semantic grayscale targets, never a one-color tint"
+    ]
+  },
+  "worldGrammar": {
+    "worldTiles": { "minimum": [88, 56], "maximum": [104, 68] },
+    "roomCount": [10, 14],
+    "criticalBeats": ["entry", "mission", "junction", "miniboss", "final-holdout", "exit"],
+    "optionalBeats": ["cache", "signal-puzzle", "story-terminal", "elite-hunt"],
+    "algorithms": ["binary-space-partition", "minimum-spanning-room-graph", "A-star-corridors", "graph-distance-pacing", "fractal-gradient-material-fields", "adjacency-autotiling"],
+    "forbidden": ["independent random prop scatter", "single-screen world", "unreachable room", "unlocked final bypass", "untyped one-color enemy"]
+  },
+  "approval": {
+    "states": ["draft", "candidate", "mechanical-pass", "visual-pass", "approved", "rejected"],
+    "rule": "No generated asset enters the production atlas until mechanical checks and a separate visual approval both pass."
+  }
+}

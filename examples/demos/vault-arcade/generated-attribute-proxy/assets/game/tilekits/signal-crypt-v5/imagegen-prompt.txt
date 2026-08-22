@@ -1,0 +1,20 @@
+Create one square 1024x1024 grayscale pixel-art MATERIAL REFERENCE ATLAS for a top-down diagonal sci-fi occult dungeon called Signal Crypt. This is texture material only, NOT map layout and NOT a spritesheet of independent objects.
+
+Strict constraints:
+- pure grayscale only: black, charcoal, gray, white; no colored pixels
+- transparent background wherever there is no material
+- crisp low-resolution pixel-art language designed to be sampled into 64x64 game cells
+- no text, labels, numbers, characters, weapons, creatures, runes centered in every tile, badges, icons, perspective rooms, or complete map
+- no visible outer frame around the whole image
+- materials must be seamless and edge-to-edge so adjacent clipped cells read as one continuous constructed surface
+- restrained texture density; broad calm areas plus sparse scratches, seams, rivets, occult circuit traces, soot and worn metal
+- lighting from upper-left, consistent across all regions
+- avoid a repeated square-tile look
+
+Organize the image as a clean 4x4 reference atlas with invisible cell boundaries (do not draw grid lines), each 256x256 region containing a distinct but related grayscale material swatch:
+row 1: calm crypt floor, worn floor variant, subtle circuit floor, fog-stained floor
+row 2: macro interior floor, macro edge transition, one-cell transition collar, dark deep-wall field
+row 3: bulkhead wall face, recessed wall lip, corner plate material, sparse structural rib material
+row 4: horizontal gate jamb/panel surface, horizontal gate grayscale energy-core mask, vertical gate jamb/panel surface, vertical gate grayscale energy-core mask
+
+The macro-edge and collar regions must visually bridge ornate macro material into calm floor without a hard square luminance boundary. Wall and gate surfaces must feel like one shared authored industrial-occult kit. Energy-core masks stay grayscale so runtime tinting can recolor them. This is a candidate texture source that code will clip through exact topology masks; never alter geometry.

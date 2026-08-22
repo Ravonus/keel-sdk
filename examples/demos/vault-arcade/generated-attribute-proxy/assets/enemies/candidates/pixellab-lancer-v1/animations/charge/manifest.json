@@ -1,0 +1,51 @@
+{
+  "schema": "vault-pixellab-enemy-animation@1",
+  "asset": "pixellab-lancer-v1",
+  "animation": "charge",
+  "state": "candidate-mechanical-pass-visual-review-required",
+  "provenance": {
+    "provider": "PixelLabs",
+    "objectId": "2f972c44-fc7c-41b5-bfe4-ac868c25711b",
+    "sourceDirectory": "One_complete_charge_attack_loop_anticipation_with"
+  },
+  "cellSize": 68,
+  "directions": [
+    "south",
+    "south-west",
+    "west",
+    "north-west",
+    "north",
+    "north-east",
+    "east",
+    "south-east"
+  ],
+  "frameCount": 9,
+  "layout": {
+    "columns": 9,
+    "rows": 8,
+    "width": 612,
+    "height": 544
+  },
+  "source": {
+    "file": "source.png",
+    "sha256": "0xf694874f7046640a69bfb59529ef898c7cb7d32c6d9be27152423ab01926e1cd"
+  },
+  "materialMap": {
+    "file": "material-id-map.png",
+    "sha256": "0xee2c3c450883e72be50e42aac3332e633e69faa67e6d50c4c23fe926cef1a5d9",
+    "regions": {
+      "transparent": 248773,
+      "locked-outline": 25475,
+      "seam": 14775,
+      "armor-dark": 10480,
+      "armor-mid": 15458,
+      "armor-light": 9428,
+      "highlight": 5975,
+      "emissive-core": 2564
+    }
+  },
+  "paletteProof": {
+    "file": "palette-proof.png",
+    "sha256": "0xc127ccd6c218527d2613666113aa467543fc5e11372b7369d0da490230a3c031"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "@keel/sandbox-sdk",
+  "version": "0.1.0",
+  "description": "Production-path Keel/Keel project inspection, preparation, and sandbox tooling for developers and AI agents.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
+    }
+  },
+  "bin": {
+    "oca-sandbox": "./dist/cli.js"
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsc -p tsconfig.json"
+  },
+  "engines": { "node": ">=22" },
+  "license": "MIT",
+  "dependencies": {
+    "@keel/protocol": "workspace:*",
+    "@keel/viewer": "workspace:*"
+  },
+  "peerDependencies": {
+    "@keel/studio-core": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@keel/studio-core": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@keel/studio-core": "workspace:*"
+  }
+}

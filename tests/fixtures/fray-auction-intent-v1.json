@@ -1,0 +1,71 @@
+{
+  "schema": "fray-auction-intent-vectors@1",
+  "vectors": [
+    {
+      "name": "ethereum-quick-test",
+      "intent": {
+        "protocol": "fray-auction-intent@1",
+        "source": { "algorithm": "sha256", "digest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "byteLength": 123456 },
+        "chain": { "family": "ethereum", "network": "sepolia", "chainId": 11155111, "nativeCurrency": { "symbol": "ETH", "unit": "wei", "decimals": 18 } },
+        "policy": { "protocol": "fray-auction-policy@1", "presetId": 1, "presetKey": "quick-test" },
+        "terms": { "releaseOutcome": "bidder", "startDelaySeconds": 300, "durationSeconds": 3600, "reserveAtomic": "10000000000000000", "bidIncrementAtomic": "5000000000000000", "royaltyBps": 500, "minimumPatronCapAtomic": "0", "maximumEditionSize": 0, "maximumPatronPriceAtomic": "0", "patronPricingMode": "economic", "extensionSeconds": 900, "maximumExtensionSeconds": 3600 }
+      },
+      "integrity": { "algorithm": "sha256", "digest": "0x7d9bd173b0d2938d6b0750ed0ef6dcc46a1028b6ce077ed7a8fb68a89a5c6b01", "byteLength": 724 }
+    },
+    {
+      "name": "ethereum-standard",
+      "intent": {
+        "protocol": "fray-auction-intent@1",
+        "source": { "algorithm": "sha256", "digest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "byteLength": 123456 },
+        "chain": { "family": "ethereum", "network": "sepolia", "chainId": 11155111, "nativeCurrency": { "symbol": "ETH", "unit": "wei", "decimals": 18 } },
+        "policy": { "protocol": "fray-auction-policy@1", "presetId": 2, "presetKey": "standard" },
+        "terms": { "releaseOutcome": "patrons", "startDelaySeconds": 300, "durationSeconds": 86400, "reserveAtomic": "100000000000000000", "bidIncrementAtomic": "20000000000000000", "royaltyBps": 500, "minimumPatronCapAtomic": "10000000000000000", "maximumEditionSize": 10, "maximumPatronPriceAtomic": "0", "patronPricingMode": "economic", "extensionSeconds": 900, "maximumExtensionSeconds": 3600 }
+      },
+      "integrity": { "algorithm": "sha256", "digest": "0xdc8675dfa43b16bd84c187862090448c5eda0c104e094abda78f47f1b3053e9a", "byteLength": 743 }
+    },
+    {
+      "name": "ethereum-collector",
+      "intent": {
+        "protocol": "fray-auction-intent@1",
+        "source": { "algorithm": "sha256", "digest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "byteLength": 123456 },
+        "chain": { "family": "ethereum", "network": "sepolia", "chainId": 11155111, "nativeCurrency": { "symbol": "ETH", "unit": "wei", "decimals": 18 } },
+        "policy": { "protocol": "fray-auction-policy@1", "presetId": 3, "presetKey": "collector" },
+        "terms": { "releaseOutcome": "patrons", "startDelaySeconds": 300, "durationSeconds": 259200, "reserveAtomic": "250000000000000000", "bidIncrementAtomic": "50000000000000000", "royaltyBps": 750, "minimumPatronCapAtomic": "20000000000000000", "maximumEditionSize": 25, "maximumPatronPriceAtomic": "500000000000000000", "patronPricingMode": "demand", "extensionSeconds": 1800, "maximumExtensionSeconds": 7200 }
+      },
+      "integrity": { "algorithm": "sha256", "digest": "0x41197cc18ffde8f04b861b76ffc3317a5d5f30d979edbb637219807307462bfd", "byteLength": 761 }
+    },
+    {
+      "name": "tezos-quick-test",
+      "intent": {
+        "protocol": "fray-auction-intent@1",
+        "source": { "algorithm": "sha256", "digest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "byteLength": 123456 },
+        "chain": { "family": "tezos", "network": "shadownet", "nativeCurrency": { "symbol": "ꜩ", "unit": "mutez", "decimals": 6 } },
+        "policy": { "protocol": "fray-auction-policy@1", "presetId": 1, "presetKey": "quick-test" },
+        "terms": { "releaseOutcome": "bidder", "startDelaySeconds": 300, "durationSeconds": 3600, "reserveAtomic": "100000", "bidIncrementAtomic": "20000", "royaltyBps": 500, "minimumPatronCapAtomic": "0", "maximumEditionSize": 0, "maximumPatronPriceAtomic": "0", "patronPricingMode": "economic", "extensionSeconds": 900, "maximumExtensionSeconds": 3600 }
+      },
+      "integrity": { "algorithm": "sha256", "digest": "0x8641d103c34b2074e6385aa9625c4aec0fbd9dc5b65473309f8c6ab96a3971ae", "byteLength": 683 }
+    },
+    {
+      "name": "tezos-standard",
+      "intent": {
+        "protocol": "fray-auction-intent@1",
+        "source": { "algorithm": "sha256", "digest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "byteLength": 123456 },
+        "chain": { "family": "tezos", "network": "shadownet", "nativeCurrency": { "symbol": "ꜩ", "unit": "mutez", "decimals": 6 } },
+        "policy": { "protocol": "fray-auction-policy@1", "presetId": 2, "presetKey": "standard" },
+        "terms": { "releaseOutcome": "patrons", "startDelaySeconds": 300, "durationSeconds": 86400, "reserveAtomic": "1000000", "bidIncrementAtomic": "200000", "royaltyBps": 500, "minimumPatronCapAtomic": "100000", "maximumEditionSize": 10, "maximumPatronPriceAtomic": "0", "patronPricingMode": "economic", "extensionSeconds": 900, "maximumExtensionSeconds": 3600 }
+      },
+      "integrity": { "algorithm": "sha256", "digest": "0x5ba578237925dcb1e4f809add3cf09b836d07a0637961a1ede0102612fefaa25", "byteLength": 691 }
+    },
+    {
+      "name": "tezos-collector",
+      "intent": {
+        "protocol": "fray-auction-intent@1",
+        "source": { "algorithm": "sha256", "digest": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "byteLength": 123456 },
+        "chain": { "family": "tezos", "network": "shadownet", "nativeCurrency": { "symbol": "ꜩ", "unit": "mutez", "decimals": 6 } },
+        "policy": { "protocol": "fray-auction-policy@1", "presetId": 3, "presetKey": "collector" },
+        "terms": { "releaseOutcome": "patrons", "startDelaySeconds": 300, "durationSeconds": 259200, "reserveAtomic": "2500000", "bidIncrementAtomic": "500000", "royaltyBps": 750, "minimumPatronCapAtomic": "200000", "maximumEditionSize": 25, "maximumPatronPriceAtomic": "5000000", "patronPricingMode": "demand", "extensionSeconds": 1800, "maximumExtensionSeconds": 7200 }
+      },
+      "integrity": { "algorithm": "sha256", "digest": "0xc64619f249dfff5932ad5b0ac4c1968fa1ec7d592cf2dcb650e7ce4bfd2fcab2", "byteLength": 698 }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "name": "@keel/sprite-codex",
+  "version": "0.1.0",
+  "description": "Deterministic lossless WebP sprite atlases, compact semantic mask codices, and browser-safe loading.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
+    }
+  },
+  "bin": {
+    "sprite-codex": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsc -p tsconfig.json",
+    "test": "pnpm build && node --test ../../tests/sprite-codex.test.mjs",
+    "build:vault": "pnpm build && node dist/cli.js library vault/vault-library.sprite.json --out vault/generated/library --lock vault/vault-library.sprite.lock.json"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "sharp": "^0.34.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "typescript": "^5.9.0"
+  }
+}

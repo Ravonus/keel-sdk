@@ -1,0 +1,37 @@
+{
+  "schema": "keel-web3-adapter-sepolia@1",
+  "chainId": 11155111,
+  "deployer": "0x404A6bd65EF48AE85Da7b0E9358715a34A401b05",
+  "keelHold": "0x417cfdf69ed808b7e6e6c5d974c27bb8ccffbec5",
+  "keelHoldTx": "0x0cbac84a4d634c350d0ec5d61490f3e2b6a03c9cc31879fd91d3f54267782293",
+  "keelHoldDeployGas": "1550338",
+  "adapter": "0x6b5a95a1dfa9122f45c81b1c5a43d0496a027eb7",
+  "adapterTx": "0x89658e44ee89d2e742c6773becfd18f4fcdf38e2f6fc4e4211aace8d618a9288",
+  "adapterDeployGas": "1267289",
+  "resolveMode": "5219",
+  "testObject": {
+    "objectId": "0x4c2cdd5d0f491946a060b1964a9e42c01c69d4f69ca61e4f2ae278eb46d81748",
+    "byteLength": 197,
+    "chunkCount": 3,
+    "mediaType": "text/html",
+    "digest": "0xd92fed1eb621b7abda547c19e76805c98be73c91822f4d361d0093fb7452b26d",
+    "slugIds": [
+      "0x250e7f75df7c3e85edf415b8cb65ea37ed772e5d06c1d827cd1bb3dd9fbfaeec",
+      "0x8149d95b514c3a6db60dec80cc768a14ba7a47ad5dd3dcc4a6a4f04e6b8286f9",
+      "0x91a0c7216f32c16901583eadb272753c4a93d557bae2350a21a3963e780e4775"
+    ],
+    "castSlugsTx": "0x03f003792d2beb33ae1b2fb90cef23d2ecb8edfeacad7261eb2daabd9f6eeee9",
+    "createObjectTx": "0xe7b6ce1a3a4f0daac0b7974b1acb89cbd2138d65561e81c483792238d4155468"
+  },
+  "gasObservations": {
+    "eth_estimateGas readChunk(objectId,2)": "33519",
+    "eth_estimateGas request(chunk 0)": "89553"
+  },
+  "exampleUrls": {
+    "indexedRead": "web3://0x417cfdf69ed808b7e6e6c5d974c27bb8ccffbec5:11155111/readChunk/0x4c2cdd5d0f491946a060b1964a9e42c01c69d4f69ca61e4f2ae278eb46d81748/1?returns=(bytes,bool)",
+    "indexedCount": "web3://0x417cfdf69ed808b7e6e6c5d974c27bb8ccffbec5:11155111/flatSlugCount/0x4c2cdd5d0f491946a060b1964a9e42c01c69d4f69ca61e4f2ae278eb46d81748?returns=(uint256)",
+    "wholeObject": "web3://0x417cfdf69ed808b7e6e6c5d974c27bb8ccffbec5:11155111/haulObject/0x4c2cdd5d0f491946a060b1964a9e42c01c69d4f69ca61e4f2ae278eb46d81748",
+    "streamStart": "web3://0x6b5a95a1dfa9122f45c81b1c5a43d0496a027eb7:11155111/object/0x4c2cdd5d0f491946a060b1964a9e42c01c69d4f69ca61e4f2ae278eb46d81748",
+    "streamContinuationHeader": "/object/0x4c2cdd5d0f491946a060b1964a9e42c01c69d4f69ca61e4f2ae278eb46d81748/1"
+  }
+}

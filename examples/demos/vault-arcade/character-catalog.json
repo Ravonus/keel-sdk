@@ -1,0 +1,2748 @@
+{
+  "codec": "oca-trait-catalog-bits@3",
+  "revision": 1,
+  "rejectExactDuplicates": true,
+  "attributes": [
+    {
+      "attributeId": 0,
+      "introducedAt": 1,
+      "entropyDomain": 467448794,
+      "coreSlot": 0,
+      "required": true,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 1,
+      "introducedAt": 1,
+      "entropyDomain": 934897588,
+      "coreSlot": 1,
+      "required": true,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 2,
+      "introducedAt": 1,
+      "entropyDomain": 1264923218,
+      "coreSlot": 2,
+      "required": true,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 3,
+      "introducedAt": 1,
+      "entropyDomain": 1869795176,
+      "coreSlot": 3,
+      "required": true,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 4,
+      "introducedAt": 1,
+      "entropyDomain": 2324665442,
+      "coreSlot": 4,
+      "required": true,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 5,
+      "introducedAt": 1,
+      "entropyDomain": 2529846436,
+      "coreSlot": 5,
+      "required": true,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 6,
+      "introducedAt": 1,
+      "entropyDomain": 4210481978,
+      "coreSlot": 6,
+      "required": true,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 7,
+      "introducedAt": 1,
+      "entropyDomain": 3739590352,
+      "coreSlot": 7,
+      "required": true,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 8,
+      "introducedAt": 1,
+      "entropyDomain": 985225978,
+      "coreSlot": 8,
+      "required": true,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 9,
+      "introducedAt": 1,
+      "entropyDomain": 354363588,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 10,
+      "introducedAt": 1,
+      "entropyDomain": 222529538,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 11,
+      "introducedAt": 1,
+      "entropyDomain": 764725576,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 12,
+      "introducedAt": 1,
+      "entropyDomain": 3290983058,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 13,
+      "introducedAt": 1,
+      "entropyDomain": 4125996660,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 14,
+      "introducedAt": 1,
+      "entropyDomain": 2643524890,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 15,
+      "introducedAt": 1,
+      "entropyDomain": 3184213408,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 16,
+      "introducedAt": 1,
+      "entropyDomain": 1694983642,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 17,
+      "introducedAt": 1,
+      "entropyDomain": 1970451956,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 18,
+      "introducedAt": 1,
+      "entropyDomain": 1318981074,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 19,
+      "introducedAt": 1,
+      "entropyDomain": 708727176,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 20,
+      "introducedAt": 1,
+      "entropyDomain": 115040578,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 21,
+      "introducedAt": 1,
+      "entropyDomain": 445059076,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 22,
+      "introducedAt": 1,
+      "entropyDomain": 1054130554,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 23,
+      "introducedAt": 1,
+      "entropyDomain": 1529451152,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 24,
+      "introducedAt": 1,
+      "entropyDomain": 1735140922,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    },
+    {
+      "attributeId": 25,
+      "introducedAt": 1,
+      "entropyDomain": 2286998820,
+      "required": false,
+      "options": [
+        {
+          "optionId": 0,
+          "weight": 64,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 1,
+          "weight": 58,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 2,
+          "weight": 52,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 3,
+          "weight": 46,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 4,
+          "weight": 40,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 5,
+          "weight": 35,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 6,
+          "weight": 30,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 7,
+          "weight": 26,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 8,
+          "weight": 22,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 9,
+          "weight": 18,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 10,
+          "weight": 14,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 11,
+          "weight": 11,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 12,
+          "weight": 8,
+          "materialProfileId": 0,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 13,
+          "weight": 5,
+          "materialProfileId": 1,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 14,
+          "weight": 3,
+          "materialProfileId": 2,
+          "introducedAt": 1
+        },
+        {
+          "optionId": 15,
+          "weight": 1,
+          "materialProfileId": 3,
+          "introducedAt": 1
+        }
+      ]
+    }
+  ],
+  "labels": {
+    "0": "hair-head",
+    "1": "body",
+    "2": "legs",
+    "3": "shirt-armor",
+    "4": "complete-face",
+    "5": "weapon",
+    "6": "addon-one",
+    "7": "addon-two",
+    "8": "addon-three",
+    "9": "species-lineage",
+    "10": "idle-scene",
+    "11": "aura",
+    "12": "movement-trail",
+    "13": "projectile-style",
+    "14": "voice-set",
+    "15": "music-theme",
+    "16": "attack-animation",
+    "17": "damage-effect",
+    "18": "death-effect",
+    "19": "emote-set",
+    "20": "vault-affinity",
+    "21": "shader-profile",
+    "22": "sound-effect-profile",
+    "23": "presentation-scene",
+    "24": "particle-color",
+    "25": "sprite-fx-profile"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "vault-character-gallery-viewer-sepolia@2",
+  "chainId": 11155111,
+  "keelHold": "0x2621C924aDfeac2b761B2DDc6611A9581120d439",
+  "htmlBuilder": "0x10727f2AC4E4416bAe15BDD96311Bfc006706042",
+  "characterCollection": "0xf9EaE6838C718BbeF224c4846b01e35306B60520",
+  "objectId": "0xab03113436c87f81280377cee37861eba5f8d7cdd07ef73ee744b7d2c31015ef",
+  "digest": "0x04ce8ffc817b2afd45f072aa0aec1941da18fe648d4292cd057c37f1ca10b2a7",
+  "byteLength": 98704,
+  "mediaType": "text/html",
+  "slugIds": [
+    "0xd6ff2162033c984f393344e57a397539ddf3b4ec8236b80b1ddb240168540d44",
+    "0x18185eda201ed60b976a40ac90847281887e5ac99ba5192919388382e7e20dfc",
+    "0xa5075c0d83d3c0a29a1d4abe2e9bf84264c1e23a42e238dbf6990017d39f2566",
+    "0xe4a553047e577e102e1254c37435bd8df1831cdd506736aae391549440010f7c",
+    "0x6000c59ee5adb29bfd246dde7cbe198c3c7b678dd9fde71802bc65bb89d0cd05"
+  ],
+  "parentObjectId": "0xf5db7fcb7b9ec9098a89f0b2ea94fd55b94d55699a4cd4646d6c5d59c402c1b8",
+  "parentDigest": "0xb246ea655315c451c6b66d2170c91ed4287f001261ecd01e2a3a12e06ee08248",
+  "parentByteLength": 98498,
+  "reusedSlugIds": [
+    "0xd6ff2162033c984f393344e57a397539ddf3b4ec8236b80b1ddb240168540d44",
+    "0x18185eda201ed60b976a40ac90847281887e5ac99ba5192919388382e7e20dfc",
+    "0xa5075c0d83d3c0a29a1d4abe2e9bf84264c1e23a42e238dbf6990017d39f2566",
+    "0xe4a553047e577e102e1254c37435bd8df1831cdd506736aae391549440010f7c"
+  ],
+  "newSlugIds": [
+    "0x6000c59ee5adb29bfd246dde7cbe198c3c7b678dd9fde71802bc65bb89d0cd05"
+  ],
+  "revisionKind": "leaf-revision-reusing-content-addressed-chunks",
+  "transactions": [
+    "0xec1c1c4ad424655ace5fcd3924169f151576930f0c8cd6c49c85e6651149336f",
+    "0xfdaa8b37663099dc6e264c1cdf8981a3a1a38150aed716aaa17cc12c8c0fb4e8"
+  ],
+  "publisher": "0x1bF2d0B339b5850F88eCe7b14a2497c3Dc821C90",
+  "verifiedAtBlock": "11483016"
+}

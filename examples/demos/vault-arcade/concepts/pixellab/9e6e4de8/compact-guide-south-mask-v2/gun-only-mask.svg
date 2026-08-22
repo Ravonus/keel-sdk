@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="92" height="92" viewBox="0 0 92 92">
+  <rect width="92" height="92" fill="#000"/>
+  <!-- Narrow temporary-guide corridor only. Head, torso, legs and outer arms stay frozen. -->
+  <polygon points="36,38 40,35 57,48 54,54 42,48" fill="#fff"/>
+  <polygon points="52,47 65,51 65,56 52,53" fill="#fff"/>
+</svg>

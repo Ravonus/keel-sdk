@@ -1,0 +1,10 @@
+{
+  "schema": "vault-keel-base-deployment@1",
+  "network": "Ethereum Sepolia",
+  "chainId": 11155111,
+  "contracts": {
+    "keelHold": "0x2621c924adfeac2b761b2ddc6611a9581120d439",
+    "keelIndex": "0xec0cecb2a16f5da78810b6b060f5ad83ee211a74",
+    "artifactRegistry": "0x95161bd877ed9300397e179bae6a10178c6d6d8b"
+  }
+}

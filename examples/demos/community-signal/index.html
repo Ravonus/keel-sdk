@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Community Signal</title>
+  <style>
+    :root{color-scheme:dark;--ink:#080a0b;--paper:#f4f1e8;--lime:#d7ff63;--violet:#9d7cff}
+    *{box-sizing:border-box}html,body{height:100%;margin:0}body{overflow:hidden;background:var(--ink);color:var(--paper);font:500 16px/1.4 Inter,ui-sans-serif,system-ui,sans-serif}
+    main{position:relative;display:grid;height:100%;min-height:480px;place-items:center;isolation:isolate;background:radial-gradient(circle at 74% 22%,#9d7cff2b,transparent 28%),radial-gradient(circle at 23% 74%,#d7ff6320,transparent 28%),#080a0b}
+    .grid{position:absolute;inset:-20%;z-index:-3;background-image:linear-gradient(#ffffff0a 1px,transparent 1px),linear-gradient(90deg,#ffffff0a 1px,transparent 1px);background-size:42px 42px;transform:perspective(720px) rotateX(58deg) translateY(22%);mask-image:linear-gradient(transparent,#000 28%,#000 72%,transparent)}
+    .orbit{position:absolute;width:min(72vw,760px);aspect-ratio:1;border:1px solid #ffffff18;border-radius:50%;animation:turn 28s linear infinite}.orbit:before,.orbit:after{content:"";position:absolute;top:50%;width:16px;aspect-ratio:1;border-radius:50%;box-shadow:0 0 36px currentColor;background:currentColor}.orbit:before{left:-8px;color:var(--lime)}.orbit:after{right:-8px;color:var(--violet)}
+    .orbit.two{width:min(48vw,520px);animation-direction:reverse;animation-duration:19s;transform:rotate(38deg)}
+    .card{width:min(86vw,720px);padding:clamp(28px,6vw,72px);border:1px solid #ffffff1c;border-radius:clamp(28px,5vw,54px);background:#0e1112c9;box-shadow:0 48px 120px #0009;backdrop-filter:blur(22px)}
+    .eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 26px;color:var(--lime);font-size:11px;font-weight:900;letter-spacing:.2em;text-transform:uppercase}.pulse{width:8px;aspect-ratio:1;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 #d7ff6373;animation:pulse 2s ease-out infinite}
+    h1{max-width:620px;margin:0;font-size:clamp(48px,9vw,112px);font-weight:950;letter-spacing:-.075em;line-height:.82}h1 span{color:var(--violet)}
+    .copy{max-width:520px;margin:32px 0 0;color:#b9b9b2;font-size:clamp(14px,2vw,18px)}
+    .proof{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:38px}.proof div{padding:14px;border:1px solid #ffffff14;border-radius:16px;background:#0003}.proof b{display:block;color:#fff;font-size:12px}.proof small{color:#747774;font-size:9px;letter-spacing:.08em;text-transform:uppercase}
+    @keyframes turn{to{transform:rotate(1turn)}}@keyframes pulse{70%{box-shadow:0 0 0 16px #d7ff6300}}
+    @media(max-width:560px){.proof{grid-template-columns:1fr}.proof div{display:flex;justify-content:space-between}.orbit{width:130vw}.orbit.two{width:90vw}}
+    @media(prefers-reduced-motion:reduce){.orbit,.pulse{animation:none}}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="grid" aria-hidden="true"></div><div class="orbit" aria-hidden="true"></div><div class="orbit two" aria-hidden="true"></div>
+    <article class="card">
+      <p class="eyebrow"><span class="pulse"></span> Community preservation is live</p>
+      <h1>Carry one <span>piece.</span></h1>
+      <p class="copy">This exact artwork can be reconstructed from its committed bytes. Helpers reserve separate pieces, publish them, and earn credit only after the chain verifies the result.</p>
+      <div class="proof" aria-label="Preservation rules">
+        <div><b>One reservation</b><small>No chunk races</small></div>
+        <div><b>Exact readback</b><small>Bytes must match</small></div>
+        <div><b>Every revision</b><small>Carriers persist</small></div>
+      </div>
+    </article>
+  </main>
+</body>
+</html>

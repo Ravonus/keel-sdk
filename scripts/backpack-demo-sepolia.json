@@ -1,0 +1,36 @@
+{
+  "chainId": 11155111,
+  "rpc": "https://ethereum-sepolia-rpc.publicnode.com",
+  "explorer": "https://sepolia.etherscan.io",
+  "keelHold": "0xe795c99e4e4438434958799dfb6c4ca8f43d9bc8",
+  "collection": "0xc4a7997fc770bb9f6804b73597affd1f7335797e",
+  "factory": "0xea3f44d409f58310f8075a1910b1f832564cd87c",
+  "ledger": "0x1c0e3f4c6fa08d2fcd35450aba38bc9483c15d00",
+  "backpack": "0x59D931Ba2267DF0a8828597Fc27B91CaC7b8295C",
+  "viewerObject": "0x6b20038357a04fea5f6723ae7e30b7b4d0629f20089d1f407d1d22808814e21a",
+  "viewerDigest": "0x8444342328357f7253e72859107ba7adec35300e52a433d2db8acdbbb0a45d05",
+  "directoryObject": "0xc8ba035332e126339af7412cfe3401f49ed8e2f76f3325f1cd8ecd19ac8f5dd4",
+  "deployer": "0x404A6bd65EF48AE85Da7b0E9358715a34A401b05",
+  "tester": "0x764E3EE7A844d9165937c41fd08086e43b997149",
+  "route": "ipfs://QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq/{id}",
+  "tokens": [
+    {
+      "id": 1,
+      "note": "deployer — emptied, wears the red curved frame",
+      "metadataObject": "0x45271b1bdcd5558d5066e237d2d00f720f78cf3224beb545aebf8b9ad74cce5a",
+      "imageObject": "0x388c06eb23fa78e783e244d4e909bf040527d4214a30ce4504cf8eacaa37ec42",
+      "hint": 45,
+      "backdrop": {
+        "shape": 3,
+        "x": 0,
+        "y": 0,
+        "w": 1000,
+        "h": 1000,
+        "r": 39
+      }
+    }
+  ],
+  "artObject": "0x5887a694107c6c9afac7c86be484428f43428cbef7211ae6390f8540686f86c1",
+  "builder": "0xd75184d8075f384a85684e3f8fc36ad70060a464",
+  "renderFor": 4
+}

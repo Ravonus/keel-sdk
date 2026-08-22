@@ -1,0 +1,13 @@
+DO NOT GENERATE FROM THIS BOARD.
+
+The East row in the current board is a rejected firing experiment, not an approved motion authority. It does not preserve the required body socket through all nine cells. Using it to generate West would reproduce invalid motion.
+
+The replacement workflow must generate and approve three independent transparent layers before composition:
+
+1. an armless body layer;
+2. one anatomical-right firing-arm layer with nine action frames;
+3. one anatomical-left neutral-arm layer with nine action frames.
+
+The West composite draws the right firing arm behind the body and the left neutral arm in front. The East composite draws the left neutral arm behind the body and the right firing arm in front. A full-character generator is not allowed to choose or reinterpret the firing hand.
+
+Generation may resume only after the manager contains an approved East action cycle with named phases and all nine body-socket checks passing.

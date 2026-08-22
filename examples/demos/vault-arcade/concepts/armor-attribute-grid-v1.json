@@ -1,0 +1,151 @@
+{
+  "schema": "oca-directional-attribute-grid@1",
+  "frameWidth": 48,
+  "frameHeight": 48,
+  "imageWidth": 384,
+  "imageHeight": 960,
+  "columns": 8,
+  "rows": [
+    {
+      "clipId": "idle",
+      "direction": "south",
+      "row": 0,
+      "frameOffset": 0,
+      "frameCount": 4
+    },
+    {
+      "clipId": "idle",
+      "direction": "west",
+      "row": 1,
+      "frameOffset": 4,
+      "frameCount": 4
+    },
+    {
+      "clipId": "idle",
+      "direction": "north",
+      "row": 2,
+      "frameOffset": 8,
+      "frameCount": 4
+    },
+    {
+      "clipId": "idle",
+      "direction": "east",
+      "row": 3,
+      "frameOffset": 12,
+      "frameCount": 4
+    },
+    {
+      "clipId": "walk",
+      "direction": "south",
+      "row": 4,
+      "frameOffset": 16,
+      "frameCount": 6
+    },
+    {
+      "clipId": "walk",
+      "direction": "west",
+      "row": 5,
+      "frameOffset": 22,
+      "frameCount": 6
+    },
+    {
+      "clipId": "walk",
+      "direction": "north",
+      "row": 6,
+      "frameOffset": 28,
+      "frameCount": 6
+    },
+    {
+      "clipId": "walk",
+      "direction": "east",
+      "row": 7,
+      "frameOffset": 34,
+      "frameCount": 6
+    },
+    {
+      "clipId": "attack",
+      "direction": "south",
+      "row": 8,
+      "frameOffset": 40,
+      "frameCount": 8
+    },
+    {
+      "clipId": "attack",
+      "direction": "west",
+      "row": 9,
+      "frameOffset": 48,
+      "frameCount": 8
+    },
+    {
+      "clipId": "attack",
+      "direction": "north",
+      "row": 10,
+      "frameOffset": 56,
+      "frameCount": 8
+    },
+    {
+      "clipId": "attack",
+      "direction": "east",
+      "row": 11,
+      "frameOffset": 64,
+      "frameCount": 8
+    },
+    {
+      "clipId": "hit",
+      "direction": "south",
+      "row": 12,
+      "frameOffset": 72,
+      "frameCount": 3
+    },
+    {
+      "clipId": "hit",
+      "direction": "west",
+      "row": 13,
+      "frameOffset": 75,
+      "frameCount": 3
+    },
+    {
+      "clipId": "hit",
+      "direction": "north",
+      "row": 14,
+      "frameOffset": 78,
+      "frameCount": 3
+    },
+    {
+      "clipId": "hit",
+      "direction": "east",
+      "row": 15,
+      "frameOffset": 81,
+      "frameCount": 3
+    },
+    {
+      "clipId": "death",
+      "direction": "south",
+      "row": 16,
+      "frameOffset": 84,
+      "frameCount": 8
+    },
+    {
+      "clipId": "death",
+      "direction": "west",
+      "row": 17,
+      "frameOffset": 92,
+      "frameCount": 8
+    },
+    {
+      "clipId": "death",
+      "direction": "north",
+      "row": 18,
+      "frameOffset": 100,
+      "frameCount": 8
+    },
+    {
+      "clipId": "death",
+      "direction": "east",
+      "row": 19,
+      "frameOffset": 108,
+      "frameCount": 8
+    }
+  ],
+  "frameCount": 116
+}

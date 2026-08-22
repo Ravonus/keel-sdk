@@ -1,0 +1,115 @@
+{
+  "schema": "vault-weapon-generation@1",
+  "status": "runtime-candidates",
+  "sourceMode": "openai-imagegen-grayscale-masters-with-pixellab-animation",
+  "logicalSize": 96,
+  "camera": "high-top-down-twin-stick",
+  "materialZones": [
+    "body",
+    "trim",
+    "core",
+    "fixed-dark"
+  ],
+  "attributeCatalog": {
+    "file": "../../../weapon-attributes-v1.json",
+    "schema": "vault-weapon-attributes@1",
+    "sha256": "021965186f323bd30a34d93738f821f43391506393247c3985509438c15f101a",
+    "maximumAttributesPerWeapon": 7,
+    "forcedLink": "character.core-light",
+    "particleColorAttribute": "character.particle-color",
+    "projectileStyleAttribute": "weapon.projectile-style"
+  },
+  "regionLayouts": {
+    "file": "../../../weapon-region-layouts-v2.json",
+    "schema": "vault-weapon-region-layouts@2",
+    "sha256": "519860e1cdcfb8bafe33cee1e87ab3d7e1146daf307e842126828525a1f28c89",
+    "debugger": "../../../weapon-mask-debug.html",
+    "editor": "../../../weapon-mask-editor.html",
+    "editorSha256": "2e23b65f385c907afa72e9039dae4bdc0cce2de3a06e29873c4e44f39af5644b",
+    "editorRuntime": "../../../weapon-mask-editor.js",
+    "editorRuntimeSha256": "65486cfd4edd3418b619535408629f36000b5be7de18fe4cdc7b40a06882fe74",
+    "overrideDefaults": "../../../weapon-region-overrides-v1.json",
+    "overrideDefaultsSha256": "c238c649eb55de3507e8dac61eb9b6961dc55cb87862e74a46de1ed36ad7d08a",
+    "overrideSchema": "vault-weapon-region-overrides@1",
+    "resolver": "../../../weapon-region-resolver.js",
+    "resolverSha256": "32bf66ecb715f5390c64ac7430e7ca8f3d41a108be18b95b14a4ec93df95eb9e",
+    "resolverMode": "shared-with-runtime"
+  },
+  "weapons": {
+    "gyro-saw": {
+      "source": "gyro-saw-96.png",
+      "directions": "radially-symmetric-single-view",
+      "animationJob": "5a40eeb2-58f4-49db-8bc0-b70442f8a485",
+      "animation": "8-frame-clockwise-spin-loop",
+      "frames": "gyro-saw-spin/frame-0.png..frame-8.png",
+      "review": "candidate",
+      "sourceSha256": "576170f1846adfc20a63b17d47396414a374de75e05f5720d5e65222b1babdb3"
+    },
+    "rift-fork": {
+      "source": "rift-fork-96.png",
+      "rejectedUnneededObjectJob": "3224978e-4df6-49ac-a6dd-cbe07ebfb084",
+      "directions": "flat-source-rotates-to-aim",
+      "animationJob": "8fdb0819-7a41-416c-b519-9a0f6084690d",
+      "animation": "8-frame-charge-recoil-settle-loop",
+      "frames": "rift-fork-fire-grayscale/frame-0.png..frame-8.png",
+      "review": "candidate",
+      "normalization": "PixelLab blue energy pixels desaturated to grayscale for runtime targeting",
+      "sourceSha256": "e61515004cd97275d7588a6130a2c0fccf31a8591a42ff345dd18afb6ad97653"
+    },
+    "needle-array": {
+      "source": "needle-array-96.png",
+      "rejectedUnneededObjectJob": "7d13efa8-c1d2-4695-9145-e8a4cdeee224",
+      "directions": "flat-source-rotates-to-aim",
+      "animationJob": "ee0892e3-6343-46c2-a71a-de19aa9d304b",
+      "animation": "8-frame-sequential-barrel-recoil-loop",
+      "frames": "needle-array-fire/frame-0.png..frame-8.png",
+      "review": "candidate",
+      "sourceSha256": "f127c5c703baeffbac6aac139cb2b26ae3c3b7b1c91288417e23e14bede67db2"
+    },
+    "aegis-star": {
+      "source": "aegis-star-96.png",
+      "sourceSha256": "2e239ca60bd32dd2ca94086d2f55a8a2922524e5c9b04e6875f0d6548443d39b",
+      "sourceMaster": "source-masters/aegis-star-master.png",
+      "generationPrompt": "aegis-star-imagegen-prompt.txt",
+      "directions": "radially-symmetric-single-view",
+      "runtimeName": "Aegis Star",
+      "animationJob": "264e7368-1cdf-4d56-ba7f-f9e80431feb3",
+      "animationSeed": 8173,
+      "animation": "8-frame-radial-charge-release-pulse",
+      "frames": "aegis-star-pulse/frame-0.png..frame-8.png",
+      "rawProviderFrames": "aegis-star-pulse-pixellab-raw/frame-0.png..frame-8.png",
+      "normalization": "approved center aperture alpha mask is reapplied to every PixelLab frame so the linked runtime attribute exclusively owns the core light",
+      "runtimeLight": "character.core-light drives center glow, charge energy and particles",
+      "rotation": "physical vanes pulse without aim direction; runtime energy nodes orbit independently",
+      "projectiles": "one radial orb launches from each visible energy node",
+      "review": "user-approved",
+      "reason": "approved non-spherical eight-vane weapon silhouette; the physical master keeps an open center for programmatic light"
+    }
+  },
+  "retiredCandidates": {
+    "bloom-cannon": {
+      "source": "bloom-cannon-96.png",
+      "rejectedObjectJob": "789a9d7e-3737-47a5-96f0-6ad93cbecd30",
+      "rejectedEvidence": "bloom-cannon-directions-rejected-pixellab",
+      "turnaroundJob": "477ee3c0-7ab2-45ad-8044-cccf244bdf87",
+      "turnaroundSheet": "bloom-cannon-turnaround-pixellab.png",
+      "rotationDirectory": "bloom-cannon-directions",
+      "status": "retired-from-runtime",
+      "reason": "the physical petals required directional perspective when orbiting behind the owner",
+      "sourceSha256": "787cdfb25fca26863dcc6d1d16e7a1b35e66a312f5010e98d6923f0adb9e6c3d"
+    },
+    "nova-core": {
+      "source": "nova-core-96.png",
+      "sourceSha256": "64dcab7625f25c2e10463a3d8f695579f2c4651496cadae519c2d521126ef5e8",
+      "sourceMaster": "source-masters/nova-core-master.png",
+      "generationPrompt": "nova-core-imagegen-prompt.txt",
+      "directions": "view-invariant-spherical-single-view",
+      "runtimeName": "Nova Core",
+      "rotation": "six runtime energy nodes orbit a stable physical shell",
+      "projectiles": "one radial orb launches from each visible energy node",
+      "review": "candidate",
+      "reason": "replaced by the user-approved Aegis Star; retained as provenance and rollback art",
+      "status": "retired-from-runtime"
+    }
+  }
+}

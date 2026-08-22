@@ -1,0 +1,50 @@
+{
+  "schema": "keel-vault-asset-profile@2",
+  "parentManifest": "asset-manifest.json",
+  "status": "next-revision",
+  "resolvedTokenBudgetBytes": 2500000,
+  "selectedAssetTargetBytes": 1000000,
+  "budgetScope": "one resolved character or map; the complete reusable catalogue may be larger",
+  "sharedRuntimeReserveBytes": 500000,
+  "gameplayCellSize": 96,
+  "portraitCellSize": 168,
+  "directions": 4,
+  "directionOrder": ["south", "west", "north", "east"],
+  "universalCodec": "image/webp",
+  "universalQuality": 50,
+  "optionalAlternateCodec": "image/avif",
+  "optionalAlternateQuality": 50,
+  "traitCodec": "oca-trait-catalog-bits@3",
+  "loading": "selected-options-only",
+  "packageRule": "One selected full-motion package per visual attribute. Every equipped visual attribute covers all 30 frames in all 4 directions (120 cells); nine attributes resolve 1080 cells.",
+  "fullMotionProxy48": {
+    "directions": 4,
+    "cells": 120,
+    "displayCellSize": 96,
+    "completeCharacterWebpQ50Bytes": 57228,
+    "status": "new-art repeated-pose motion proxy, not final authored animation art"
+  },
+  "resolvedNineAttributeFloor": {
+    "attributeCount": 9,
+    "cells": 1080,
+    "independentWebpQ50Bytes": 97512,
+    "withSharedRuntimeReserveBytes": 597512,
+    "warning": "This is a repeated-pose compression floor, not a final-art forecast."
+  },
+  "newArtProxy": {
+    "source": "concepts/character-topdown-4dir-gun-48-dithered.png",
+    "manifest": "generated-attribute-proxy/manifest.json",
+    "authoredCellSize": 48,
+    "displayCellSize": 96,
+    "directions": 4,
+    "framesPerDirection": 30,
+    "cellsPerAttribute": 120,
+    "attributeCount": 9,
+    "webpQ50TotalBytes": 97512,
+    "completeCharacterWebpQ50Bytes": 57228,
+    "compactMaterialMapBytes": 108,
+    "compactMaterialProfileBytes": 21,
+    "status": "new-art layer and motion proxy; final in-between animation art not authored"
+  },
+  "benchmark": "asset-lab/report.json"
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@keel/viewer",
+  "version": "0.3.0",
+  "description": "Audited recursive resolver and sandboxed browser runtime for Keel artifacts.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./wrapper-viewer": {
+      "types": "./dist/wrapper-viewer.d.ts",
+      "import": "./dist/wrapper-viewer.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsc -p tsconfig.json && node scripts/build-wrapper-viewer.mjs",
+    "build:wrapper-viewer": "node scripts/build-wrapper-viewer.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@keel/protocol": "workspace:*"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

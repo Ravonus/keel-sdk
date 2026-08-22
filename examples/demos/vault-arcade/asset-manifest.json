@@ -1,0 +1,169 @@
+{
+  "schema": "keel-sprite-atlas@1",
+  "decodedRuntimeBudgetBytes": 8388608,
+  "proceduralAnimation": {
+    "runtime": "procedural-sprite-rig.js",
+    "rig": "sidearm-still-rig.json",
+    "input": "one still per layer and direction",
+    "output": "nine deterministic action frames generated in the verified browser",
+    "storageRule": "store directional stills plus the compact pose timeline, not pre-rendered action sheets",
+    "handednessRule": "right-arm and left-arm are isolated assets with direction-specific depth order; the generator never chooses the hand"
+  },
+  "mintCatalogue": {
+    "humanSource": "character-catalog.json",
+    "compactCodec": "character-catalog.octr",
+    "codec": "oca-trait-catalog-bits@3",
+    "catalogRevision": 1,
+    "coreSlots": 9,
+    "customAttributes": 17,
+    "discreteCombinations": "20282409603651670423947251286016",
+    "exactDuplicatePolicy": "reject-onchain",
+    "materialProfiles": [
+      "character-material-0.ocmp",
+      "character-material-1.ocmp",
+      "character-material-2.ocmp",
+      "character-material-3.ocmp"
+    ],
+    "materialCodec": "oca-material-bits@1",
+    "colorModes": ["locked", "palette", "ramp", "range"]
+  },
+  "soundSystem": {
+    "characterAttribute": "sound-effect-profile",
+    "spriteSchema": "oca-sprite-sounds@1",
+    "soundCodec": "oca-sonant-bits@1",
+    "reader": "createAudioReader",
+    "storage": "keel-object-revision",
+    "assignmentRule": "Every sprite asset pins an exact sound profile; gameplay events resolve deterministic variations from that profile."
+  },
+  "directionOrder": [
+    "south",
+    "southwest",
+    "west",
+    "northwest",
+    "north",
+    "northeast",
+    "east",
+    "southeast"
+  ],
+  "atlases": [
+    {
+      "id": "character-parts-eight-direction-168.webp",
+      "grid": { "columns": 8, "rows": 9, "cellWidth": 168, "cellHeight": 168 },
+      "poseSet": "starter-static-pose@1",
+      "animationCoverage": "directional-pose-only; production clips are separate direction-by-frame atlases",
+      "layers": [
+        {
+          "row": 0,
+          "slot": "body",
+          "contractSlot": 1,
+          "renderPass": "body",
+          "color": { "mode": "palette", "valuesCommittedByCatalog": true }
+        },
+        {
+          "row": 1,
+          "slot": "legs",
+          "contractSlot": 2,
+          "renderPass": "body",
+          "color": {
+            "mode": "material-ramp",
+            "default": ["#12162c", "#5268b5", "#c5d4ff"],
+            "preserveSaturatedAccents": true
+          }
+        },
+        {
+          "row": 2,
+          "slot": "shirt",
+          "contractSlot": 3,
+          "renderPass": "body",
+          "color": {
+            "mode": "material-ramp",
+            "default": ["#24102f", "#7d3b96", "#f3b9ff"],
+            "preserveSaturatedAccents": true
+          }
+        },
+        {
+          "row": 3,
+          "slot": "hair-head",
+          "contractSlot": 0,
+          "renderPass": "body",
+          "color": {
+            "mode": "material-ramp",
+            "default": ["#090b14", "#343a59", "#b7c3ef"],
+            "preserveSaturatedAccents": true
+          }
+        },
+        {
+          "row": 4,
+          "slot": "face",
+          "contractSlot": 4,
+          "renderPass": "foreground",
+          "includes": ["eyes", "nose", "mouth", "ears", "visor"],
+          "color": {
+            "mode": "palette",
+            "valuesCommittedByCatalog": true,
+            "fixedAccentMask": true
+          }
+        },
+        {
+          "row": 5,
+          "slot": "weapon",
+          "contractSlot": 5,
+          "renderPass": "foreground",
+          "color": { "mode": "tintable", "fixedAccentMask": true }
+        },
+        {
+          "row": 6,
+          "slot": "addon-one",
+          "contractSlot": 6,
+          "renderPass": "foreground",
+          "color": { "mode": "palette", "valuesCommittedByCatalog": true }
+        },
+        {
+          "row": 7,
+          "slot": "addon-two",
+          "contractSlot": 7,
+          "renderPass": "foreground",
+          "color": { "mode": "palette", "valuesCommittedByCatalog": true }
+        },
+        {
+          "row": 8,
+          "slot": "addon-three",
+          "contractSlot": 8,
+          "renderPass": "background",
+          "supportsSplitPasses": true,
+          "color": {
+            "mode": "material-ramp",
+            "default": ["#111528", "#375c78", "#d7f7ff"],
+            "preserveSaturatedAccents": true
+          }
+        }
+      ],
+      "rarity": {
+        "algorithm": "weighted-set-traits-pinned-epoch@2",
+        "weightsDigestRequired": true,
+        "setAffinityDigestRequired": true,
+        "rule": "rarity is authored per item and color range; no global color rarity"
+      }
+    },
+    {
+      "id": "vault-tiles.webp",
+      "grid": { "columns": 8, "rows": 6 },
+      "animations": {
+        "ambient": { "rows": [0, 1, 2, 3, 4, 5], "fps": 6, "loop": true }
+      },
+      "color": { "mode": "fixed" }
+    },
+    {
+      "id": "tintable-kit.webp",
+      "grid": { "columns": 8, "rows": 6 },
+      "animations": {
+        "ambient": { "rows": [0, 1, 2, 3, 4, 5], "fps": 6, "loop": true }
+      },
+      "color": {
+        "mode": "tintable",
+        "default": "#f2f4ff",
+        "algorithm": "luminance-multiply"
+      }
+    }
+  ]
+}

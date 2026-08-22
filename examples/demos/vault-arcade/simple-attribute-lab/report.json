@@ -1,0 +1,299 @@
+{
+  "schema": "keel-simple-attribute-size-lab@1",
+  "status": "legacy-art-structural-proxy-not-final-animation-art",
+  "note": "Uses the original 16px layer art and deterministic motion offsets. It measures the simple-art compression class but not authored in-between frame entropy.",
+  "codec": {
+    "mediaType": "image/webp",
+    "quality": 70
+  },
+  "directionOrder": [
+    "south",
+    "west",
+    "north",
+    "east"
+  ],
+  "clips": [
+    {
+      "id": "idle",
+      "frames": 4
+    },
+    {
+      "id": "walk",
+      "frames": 6
+    },
+    {
+      "id": "attack",
+      "frames": 8
+    },
+    {
+      "id": "hit",
+      "frames": 3
+    },
+    {
+      "id": "death",
+      "frames": 8
+    }
+  ],
+  "results": [
+    {
+      "authoredCellSize": 32,
+      "displayCellSize": 96,
+      "directions": 4,
+      "framesPerDirection": 29,
+      "cellsPerAttribute": 116,
+      "attributeCount": 9,
+      "packages": [
+        {
+          "attribute": "body",
+          "fileName": "body-full-motion-q70.webp",
+          "byteLength": 1528,
+          "sha256": "0x77dc320843e3e959dffaa491623a237c9d8c9d33b7864154c015e823979e17fe"
+        },
+        {
+          "attribute": "legs",
+          "fileName": "legs-full-motion-q70.webp",
+          "byteLength": 1494,
+          "sha256": "0xb62fb89e7a99175cd5f1e3bcd0e656b51251377077303408ca1dd7d608d51ecb"
+        },
+        {
+          "attribute": "armor",
+          "fileName": "armor-full-motion-q70.webp",
+          "byteLength": 2538,
+          "sha256": "0x175a6bf0aa17452d1a0358f2e67d898fcf932f3492fa807656eabd7b5a389b88"
+        },
+        {
+          "attribute": "hair",
+          "fileName": "hair-full-motion-q70.webp",
+          "byteLength": 2594,
+          "sha256": "0x342f68e92217036437142fb8337e5ec8dd22f216ad268b16d3d408f4b218aabc"
+        },
+        {
+          "attribute": "face",
+          "fileName": "face-full-motion-q70.webp",
+          "byteLength": 700,
+          "sha256": "0x128c3e16b8f56c8631b089b03afde093578e73f1d9c47ce0e0ae82cb3e1ad89e"
+        },
+        {
+          "attribute": "weapon",
+          "fileName": "weapon-full-motion-q70.webp",
+          "byteLength": 2196,
+          "sha256": "0x91515bd60ab2a6d2abefb9b7c29d5a674a9ab048908baca7e51e95fd8b5e2522"
+        },
+        {
+          "attribute": "addon-one",
+          "fileName": "addon-one-full-motion-q70.webp",
+          "byteLength": 7690,
+          "sha256": "0xd7692c8d6bd23a1192b6a7d5a8fd7a45a54f2b6d661eda6bba0348ce85008037"
+        },
+        {
+          "attribute": "addon-two",
+          "fileName": "addon-two-full-motion-q70.webp",
+          "byteLength": 2992,
+          "sha256": "0x266f77eef7dc380963830cb9925e265323ef1eca9671229f86176c0e910e60a3"
+        },
+        {
+          "attribute": "addon-three",
+          "fileName": "addon-three-full-motion-q70.webp",
+          "byteLength": 1604,
+          "sha256": "0x9e97dd004cb63463bd15aa8223f42cbd38930ed867241b1ec519ae6fa6eba23c"
+        }
+      ],
+      "totalBytes": 23336
+    },
+    {
+      "authoredCellSize": 48,
+      "displayCellSize": 96,
+      "directions": 4,
+      "framesPerDirection": 29,
+      "cellsPerAttribute": 116,
+      "attributeCount": 9,
+      "packages": [
+        {
+          "attribute": "body",
+          "fileName": "body-full-motion-q70.webp",
+          "byteLength": 2256,
+          "sha256": "0x60fb8e3ec279f56bca3e60e4bf293247515c6ba7303fc5af915d9fa1dfa761f3"
+        },
+        {
+          "attribute": "legs",
+          "fileName": "legs-full-motion-q70.webp",
+          "byteLength": 2018,
+          "sha256": "0x30559a4c484b0d6b2995bad903a3b5b2eed8b17bc5afac2fafafb9b677f37233"
+        },
+        {
+          "attribute": "armor",
+          "fileName": "armor-full-motion-q70.webp",
+          "byteLength": 3570,
+          "sha256": "0xf387dc3d6ecc345b897c87e2b7c0601e4a793386cea667f39ad329b5855b3601"
+        },
+        {
+          "attribute": "hair",
+          "fileName": "hair-full-motion-q70.webp",
+          "byteLength": 3710,
+          "sha256": "0xc0a1a38593482447bb66f59d1c4df88ce40feef7d17e76f882ab46831a2709c2"
+        },
+        {
+          "attribute": "face",
+          "fileName": "face-full-motion-q70.webp",
+          "byteLength": 1230,
+          "sha256": "0x88f1b645fe7b9aa23a66aacca080caa4ba60173d084ed0ee5ff4800d6cb9674f"
+        },
+        {
+          "attribute": "weapon",
+          "fileName": "weapon-full-motion-q70.webp",
+          "byteLength": 3714,
+          "sha256": "0xd18a2989d2775e91b0b9331ac86d0c887b726f3b412c38f0deec822e8a90ce68"
+        },
+        {
+          "attribute": "addon-one",
+          "fileName": "addon-one-full-motion-q70.webp",
+          "byteLength": 11920,
+          "sha256": "0x8a21bbb767ce4dc19a9149a56b0c0e2cc7acc481c43780c98eceb48758952dce"
+        },
+        {
+          "attribute": "addon-two",
+          "fileName": "addon-two-full-motion-q70.webp",
+          "byteLength": 5348,
+          "sha256": "0x14622c5149381b3b5a592c8a02177003838afe2d2493b843aa20e32ba70591d4"
+        },
+        {
+          "attribute": "addon-three",
+          "fileName": "addon-three-full-motion-q70.webp",
+          "byteLength": 2926,
+          "sha256": "0xe05f88f17fb266051efb9fcfba0a0465c3fd7691279f01e85c34e8ef39009851"
+        }
+      ],
+      "totalBytes": 36692
+    },
+    {
+      "authoredCellSize": 64,
+      "displayCellSize": 96,
+      "directions": 4,
+      "framesPerDirection": 29,
+      "cellsPerAttribute": 116,
+      "attributeCount": 9,
+      "packages": [
+        {
+          "attribute": "body",
+          "fileName": "body-full-motion-q70.webp",
+          "byteLength": 2684,
+          "sha256": "0x23c919046d58460f6f8ee7bcd4e8c5e05bcde1db438fef08962fb596f8d4e72c"
+        },
+        {
+          "attribute": "legs",
+          "fileName": "legs-full-motion-q70.webp",
+          "byteLength": 2912,
+          "sha256": "0x80a0fac4fce25152e1f12a004426c4a8e9d9b8c281186bf890bcb8f115aa51c2"
+        },
+        {
+          "attribute": "armor",
+          "fileName": "armor-full-motion-q70.webp",
+          "byteLength": 4260,
+          "sha256": "0x8aafc3693966c000c442836c4e3d664b6e4e2b7095de632e467d0f57ae0d4818"
+        },
+        {
+          "attribute": "hair",
+          "fileName": "hair-full-motion-q70.webp",
+          "byteLength": 4766,
+          "sha256": "0xc9d8e718907b4048aaef3d5f8c19c346219adc4c06546a48c457748838f19a71"
+        },
+        {
+          "attribute": "face",
+          "fileName": "face-full-motion-q70.webp",
+          "byteLength": 1774,
+          "sha256": "0xfc42644896a364da17367e6e28f5b62716c4ced185f78ed8b930cbfd634b340a"
+        },
+        {
+          "attribute": "weapon",
+          "fileName": "weapon-full-motion-q70.webp",
+          "byteLength": 4408,
+          "sha256": "0xd3bd89348f53d4fde14cecea8ac69b75f3fa7d2d6712a4e96af3ae388ec5175b"
+        },
+        {
+          "attribute": "addon-one",
+          "fileName": "addon-one-full-motion-q70.webp",
+          "byteLength": 12454,
+          "sha256": "0x6680958e019767dc73285cc88225ba7e0740f8afbc73fae7cf76a7477c3ccc34"
+        },
+        {
+          "attribute": "addon-two",
+          "fileName": "addon-two-full-motion-q70.webp",
+          "byteLength": 4298,
+          "sha256": "0x42ebb3844212fb988ac038faed128e0d6d9888141e3fae7677317dc6da66bfb7"
+        },
+        {
+          "attribute": "addon-three",
+          "fileName": "addon-three-full-motion-q70.webp",
+          "byteLength": 3286,
+          "sha256": "0xe4d4a071f0b5a6c657ea479ff0c01e13894824744f412727dcf04c9ad39d5cd0"
+        }
+      ],
+      "totalBytes": 40842
+    },
+    {
+      "authoredCellSize": 96,
+      "displayCellSize": 96,
+      "directions": 4,
+      "framesPerDirection": 29,
+      "cellsPerAttribute": 116,
+      "attributeCount": 9,
+      "packages": [
+        {
+          "attribute": "body",
+          "fileName": "body-full-motion-q70.webp",
+          "byteLength": 4738,
+          "sha256": "0x3582032f38782b2cdcd6c1e68b92dfb11a43002ea22db2bbe145952f58a07186"
+        },
+        {
+          "attribute": "legs",
+          "fileName": "legs-full-motion-q70.webp",
+          "byteLength": 5038,
+          "sha256": "0x5aad452ba3328fe739f8133cf6a4cd1cc3e9373ef6d1d0bca970a0c6b3abb550"
+        },
+        {
+          "attribute": "armor",
+          "fileName": "armor-full-motion-q70.webp",
+          "byteLength": 7114,
+          "sha256": "0xa3c29567dfd9e5ed1dbb3109f2f01a10f9ee236391a45a6b310fe237a974a936"
+        },
+        {
+          "attribute": "hair",
+          "fileName": "hair-full-motion-q70.webp",
+          "byteLength": 7766,
+          "sha256": "0x32bb510ef4942bb441c882e2f460a8bb6a028802a989b535c162f7e280d36431"
+        },
+        {
+          "attribute": "face",
+          "fileName": "face-full-motion-q70.webp",
+          "byteLength": 3480,
+          "sha256": "0x114d9aa428bddcb03353c8edbbe592f6ee4d702e1155adb60afb29594a132665"
+        },
+        {
+          "attribute": "weapon",
+          "fileName": "weapon-full-motion-q70.webp",
+          "byteLength": 7244,
+          "sha256": "0xd729e31c35476f5874d5e9333fcbca5ce83877d575fc5e0d1ae0d36c4200b375"
+        },
+        {
+          "attribute": "addon-one",
+          "fileName": "addon-one-full-motion-q70.webp",
+          "byteLength": 22390,
+          "sha256": "0x8cc6f3dde2e29f721a7c43e0c63029588da12aa222c8453765f51b903134d223"
+        },
+        {
+          "attribute": "addon-two",
+          "fileName": "addon-two-full-motion-q70.webp",
+          "byteLength": 7310,
+          "sha256": "0x84f338d486702e71e7116439362cf50b30a18de722d569066cfaa6a0131aaa17"
+        },
+        {
+          "attribute": "addon-three",
+          "fileName": "addon-three-full-motion-q70.webp",
+          "byteLength": 6174,
+          "sha256": "0x48d1f53dbe0ca13cd3c8a956b1ed7cc78ac2fa546b7ef3cda3cddfbd41c1439d"
+        }
+      ],
+      "totalBytes": 71254
+    }
+  ]
+}

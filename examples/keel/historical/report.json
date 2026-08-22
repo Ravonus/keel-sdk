@@ -1,0 +1,1109 @@
+{
+  "schema": "keel-historical-evidence@1",
+  "proofBoundary": {
+    "sourceBytes": "verified-against-local-author-archives",
+    "fragmentAssembly": "byte-identical-offchain",
+    "onchainPublication": "not-in-this-report",
+    "browserRendering": "reported-separately",
+    "licensing": "research-only-until-each-third-party-dependency-is-pinned"
+  },
+  "corpus": {
+    "schema": "keel-b85-corpus@1",
+    "pipeline": [
+      "preserved source file",
+      "legacy <b85> wrapper extraction when declared",
+      "Z85 decode",
+      "Brotli decompress",
+      "fatal UTF-8 validation without execution"
+    ],
+    "totals": {
+      "files": 19,
+      "sourceBytes": 96390,
+      "encodedCharacters": 96379,
+      "decodedBytes": 77096,
+      "decompressedBytes": 349365
+    },
+    "artifactCount": 19,
+    "artifacts": [
+      {
+        "name": "bab-start",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 1593,
+          "encodedCharacters": 1593,
+          "decodedBytes": 1274,
+          "decompressedBytes": 4243
+        },
+        "digests": {
+          "sourceSha256": "0x91488989e6c7b40d7db2b24aac9f70ae56d8e689bdb57901b8bce9a846e8fece",
+          "payloadSha256": "0x91488989e6c7b40d7db2b24aac9f70ae56d8e689bdb57901b8bce9a846e8fece",
+          "decodedSha256": "0xd6323cdc523a067dc073e948dd8224128cd7b14dd35e0e5f0cef3d44d80b9c4e",
+          "decompressedSha256": "0x54d739ab1ddaad976639273d964538a756f7b759f6128699e6ac2f17a5865afe"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "fluid-capture.all",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 13217,
+          "encodedCharacters": 13217,
+          "decodedBytes": 10573,
+          "decompressedBytes": 40834
+        },
+        "digests": {
+          "sourceSha256": "0x8e08295ecfd9853e469a3b87563d44d8cce4b8f630170b792159f98929d1241f",
+          "payloadSha256": "0x8e08295ecfd9853e469a3b87563d44d8cce4b8f630170b792159f98929d1241f",
+          "decodedSha256": "0x5d30796430ec1177529c07e6fb6803981de06d969d8dbc5625d1f11da1c26929",
+          "decompressedSha256": "0x75481147aeee8e8658da49c8e95a499d1d288ee52bb7f3af5b4bf4b1457296f9"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "fluid-dat.gui",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 16334,
+          "encodedCharacters": 16334,
+          "decodedBytes": 13067,
+          "decompressedBytes": 56669
+        },
+        "digests": {
+          "sourceSha256": "0x2da09c348c736232c336990854c85c223f1eb26946aa44600093ff03aaa68758",
+          "payloadSha256": "0x2da09c348c736232c336990854c85c223f1eb26946aa44600093ff03aaa68758",
+          "decodedSha256": "0xa880e73e327f582b730b1f64ba0c7930688ce1a6bc39823b1139a2f1c7402a1b",
+          "decompressedSha256": "0xece111b4674e34d11dc878a4d61c468d7bfcfa1d1b9eec856e51712e01c42227"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "fluid-init",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 2085,
+          "encodedCharacters": 2085,
+          "decodedBytes": 1668,
+          "decompressedBytes": 5484
+        },
+        "digests": {
+          "sourceSha256": "0x976f17a421c3963d08084f3a257d74868f6d4b97e4e47edb37786470ec570a59",
+          "payloadSha256": "0x976f17a421c3963d08084f3a257d74868f6d4b97e4e47edb37786470ec570a59",
+          "decodedSha256": "0x0a2aa2879d71236fb2212b05bcfb7bb59ff9fecf86795f6df73480fe479d35ce",
+          "decompressedSha256": "0x2def94a873ac6f9ea7b432fe6453cea7ab7bc0949e7aa6eda987dfbf08e5b12b"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "fluid-main",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 3029,
+          "encodedCharacters": 3029,
+          "decodedBytes": 2423,
+          "decompressedBytes": 10688
+        },
+        "digests": {
+          "sourceSha256": "0xe67dee3d465d1982d60caf0c724c157520d8edfc52efdc05e1892e9e553e2423",
+          "payloadSha256": "0xe67dee3d465d1982d60caf0c724c157520d8edfc52efdc05e1892e9e553e2423",
+          "decodedSha256": "0xd86b71d556a277427b6ccf0a2929030d4e97638af5d50dc58921e825cbdc67b7",
+          "decompressedSha256": "0x7d16295bc2e6d7cbb5a6cfb923866e18a179dd9072a8cf49328ad57bb43655ea"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "fluid-render",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 3080,
+          "encodedCharacters": 3080,
+          "decodedBytes": 2464,
+          "decompressedBytes": 8086
+        },
+        "digests": {
+          "sourceSha256": "0x1db1db33b58151199e0910af786eded92abaa51fea65451dca2738a515894330",
+          "payloadSha256": "0x1db1db33b58151199e0910af786eded92abaa51fea65451dca2738a515894330",
+          "decodedSha256": "0x6ce261cfd12e7c41a3e9c0992e7f87de3d6ffdcf2b63fc59579eb591bbdac16e",
+          "decompressedSha256": "0x83730fb5752b61db5ec83929e00c92f52c6e7bed3624cd5532028437aa4be336"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "fluid-shaders",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 4208,
+          "encodedCharacters": 4208,
+          "decodedBytes": 3366,
+          "decompressedBytes": 20848
+        },
+        "digests": {
+          "sourceSha256": "0x7a9833ec8550f204d3d88d169040d11d8b0294499b587b7685b06e06cf109a81",
+          "payloadSha256": "0x7a9833ec8550f204d3d88d169040d11d8b0294499b587b7685b06e06cf109a81",
+          "decodedSha256": "0xf0dc4af72e00b9a5a047e3e0f8de086fb31aaf845937c2393f5156bf878c7fb6",
+          "decompressedSha256": "0x052f45c7e0979945cda1120c0500124544f80cb7b6eb58825bbb1ce735863436"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "fluid-utils",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 2637,
+          "encodedCharacters": 2637,
+          "decodedBytes": 2109,
+          "decompressedBytes": 8752
+        },
+        "digests": {
+          "sourceSha256": "0x8efe5305d1826f26ece5f49752c074ad45ec0f150524ad9ae7810ae6ad7a8286",
+          "payloadSha256": "0x8efe5305d1826f26ece5f49752c074ad45ec0f150524ad9ae7810ae6ad7a8286",
+          "decodedSha256": "0xf90c89ff6cbdbab8789dc53120146f8c966a20c41c6542e7f1e601d83a550e1b",
+          "decompressedSha256": "0x8c43ff99166d74cfb0a675f7de0c9fd41b58079c4d9bf2bc04ba656165fe0650"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "shader-1",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 1223,
+          "encodedCharacters": 1223,
+          "decodedBytes": 978,
+          "decompressedBytes": 3399
+        },
+        "digests": {
+          "sourceSha256": "0x22b6b1b77d1e70116964bed69acacfec33fa8413181434a401b70c8a96025e78",
+          "payloadSha256": "0x22b6b1b77d1e70116964bed69acacfec33fa8413181434a401b70c8a96025e78",
+          "decodedSha256": "0x92ddedb4a04c3477ee0842422b3593375fb36514eb957ae86cf7deeb4ddb3701",
+          "decompressedSha256": "0x57d616922ff9c10fb25e12354c433f630aaec8d9a9ac4496d13a4d86f2b1ec8b"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "start-genart",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 1673,
+          "encodedCharacters": 1673,
+          "decodedBytes": 1338,
+          "decompressedBytes": 3494
+        },
+        "digests": {
+          "sourceSha256": "0x8324fc921f0baf7a66fc6aca9db8632d57b1c63e60702c0165be61dcd7b0a922",
+          "payloadSha256": "0x8324fc921f0baf7a66fc6aca9db8632d57b1c63e60702c0165be61dcd7b0a922",
+          "decodedSha256": "0x2801cf64d6c345e32a86c379beb7537bedae005c756ec77d8833f03a25f60ef6",
+          "decompressedSha256": "0xaece1284ebcda0e0b04e0fcd7ed3c4e1d2f296b64c970afe05b53c5074c14652"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "start-gpu",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 3402,
+          "encodedCharacters": 3402,
+          "decodedBytes": 2721,
+          "decompressedBytes": 11737
+        },
+        "digests": {
+          "sourceSha256": "0xb904aff9fea1ff00d64bfe3345b3fa65b135de05d4689ce876a577b3b3c7a7ba",
+          "payloadSha256": "0xb904aff9fea1ff00d64bfe3345b3fa65b135de05d4689ce876a577b3b3c7a7ba",
+          "decodedSha256": "0xcd580db0506615ecc4e9585b97d04e6a7556e08fb0fef4f94ec2176e8fb6e4b8",
+          "decompressedSha256": "0x2e1cb8d86a0311157126495120cafab4976dea058853839d87d575cd4f28f2ac"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "start-p5",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 2047,
+          "encodedCharacters": 2047,
+          "decodedBytes": 1637,
+          "decompressedBytes": 6153
+        },
+        "digests": {
+          "sourceSha256": "0x485f742eb215733048a00ce9426b307aa8eb9ed3bdd2ea2ac8e04bc7b3455fad",
+          "payloadSha256": "0x485f742eb215733048a00ce9426b307aa8eb9ed3bdd2ea2ac8e04bc7b3455fad",
+          "decodedSha256": "0xf945fe0596c553e93f800dd2143aeb8fd94baa4814dd40b4fede5fad2e7b4a7c",
+          "decompressedSha256": "0x2039f5baa6ded146bc87f72e65ebe53e1e388798fe87c30eca586d6a47edbd7b"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "start-sphere",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 1247,
+          "encodedCharacters": 1247,
+          "decodedBytes": 997,
+          "decompressedBytes": 3073
+        },
+        "digests": {
+          "sourceSha256": "0xd3cf4cb84fc32182c15dce69bb71c4f8a084b4a6f166b786d241eb4334fa524a",
+          "payloadSha256": "0xd3cf4cb84fc32182c15dce69bb71c4f8a084b4a6f166b786d241eb4334fa524a",
+          "decodedSha256": "0x7c244a02b2e1cf365147b0d846889cb18c867c968265b8a5aaa16551b223808e",
+          "decompressedSha256": "0xb502b1f7f444416ed68c419c865137cbdcc514f5d5bdd75794286ab8086c38d8"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "start-three",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 2452,
+          "encodedCharacters": 2452,
+          "decodedBytes": 1961,
+          "decompressedBytes": 8004
+        },
+        "digests": {
+          "sourceSha256": "0x7c80941eb879259f2bc15fa93639a7de044a504623c6cdac4f6e16fff7f5825b",
+          "payloadSha256": "0x7c80941eb879259f2bc15fa93639a7de044a504623c6cdac4f6e16fff7f5825b",
+          "decodedSha256": "0x5afd7cb51b3a8f718c1c6aa2737bb011974c935d083923c14438b3d27b9c49ed",
+          "decompressedSha256": "0x22df03e5af24fbc54735cb81c137a68bbad7a0002e0aa4604267fa4b4cad205f"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "start-twgl",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 1223,
+          "encodedCharacters": 1223,
+          "decodedBytes": 978,
+          "decompressedBytes": 2860
+        },
+        "digests": {
+          "sourceSha256": "0x7b0df88750638328beb1261ed948a50c3ec8b3c8c7e594a3dbc0ede97cd21e3e",
+          "payloadSha256": "0x7b0df88750638328beb1261ed948a50c3ec8b3c8c7e594a3dbc0ede97cd21e3e",
+          "decodedSha256": "0x8db6aa6c0dab4195465c6cf312ab932ef462ffb0b057261a3d99ad190eb84241",
+          "decompressedSha256": "0x515d01fc7b2c2e7eaedee3aea334dc4e3f6b22ab3a8a436618f6350f9f341b31"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "start-twgl2",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 1428,
+          "encodedCharacters": 1428,
+          "decodedBytes": 1142,
+          "decompressedBytes": 3879
+        },
+        "digests": {
+          "sourceSha256": "0xf888f849a1cb05d2b10f61ddaac2707173ac5f870451ea9aa1f30294957071ef",
+          "payloadSha256": "0xf888f849a1cb05d2b10f61ddaac2707173ac5f870451ea9aa1f30294957071ef",
+          "decodedSha256": "0xe5fd7706d01110412a9a2ed53738f5f3377a6ad9039e8701ded54dfe2a61b929",
+          "decompressedSha256": "0x228734302943f0d378e1ee70a41dc1ff4c5ed3daa6fa2edfe2c0be259f1b3014"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "start",
+        "wrapper": "legacy-b85-tag",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 1511,
+          "encodedCharacters": 1500,
+          "decodedBytes": 1200,
+          "decompressedBytes": 4857
+        },
+        "digests": {
+          "sourceSha256": "0xd9f39a0a45e9deeee016515a5f110463e75b8002062bef29b7041c162bad4652",
+          "payloadSha256": "0x975d85b5103ff80b65850fa32be06616780f16c0306b4c1203c60a00d715d21b",
+          "decodedSha256": "0x8b5ad7e143c1e229636ec8be776cd83619872e7a228fbd70fde721dfe233916d",
+          "decompressedSha256": "0x4c813564e39973110edf46fe8610f4bacd55954036fd4700aa46d6e8b54eaa40"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "twgl",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 24153,
+          "encodedCharacters": 24153,
+          "decodedBytes": 19322,
+          "decompressedBytes": 93431
+        },
+        "digests": {
+          "sourceSha256": "0xe206da9c6c8aa9e6c3c9603224ad10c2db6e4736439cc8734b880c411ca3fd24",
+          "payloadSha256": "0xe206da9c6c8aa9e6c3c9603224ad10c2db6e4736439cc8734b880c411ca3fd24",
+          "decodedSha256": "0x14da0df505402df5cce01c66c180732372b98ac3182d6d72d03880134b246c19",
+          "decompressedSha256": "0xd83039f9ccbe772d9656fd46dffb4abf4d6f4fb8b182c00f485216dd52fd5865"
+        },
+        "canonicalReencode": true
+      },
+      {
+        "name": "webMatrix",
+        "wrapper": "bare-z85",
+        "compression": "brotli",
+        "sizes": {
+          "sourceBytes": 9848,
+          "encodedCharacters": 9848,
+          "decodedBytes": 7878,
+          "decompressedBytes": 52874
+        },
+        "digests": {
+          "sourceSha256": "0x5b7288e060756f3557a0a6a6f0a51ffefa0136335550351900f232f320814efc",
+          "payloadSha256": "0x5b7288e060756f3557a0a6a6f0a51ffefa0136335550351900f232f320814efc",
+          "decodedSha256": "0x409a891b5c8ab9a6c63d32f5837f672ff8edc8a1e005225e8690aa3ccf8172d7",
+          "decompressedSha256": "0x0853440c2ec1e5c1b04c719a404da2b6929bdddddd57a3f4fcb2c0dedae479da"
+        },
+        "canonicalReencode": true
+      }
+    ]
+  },
+  "comet": {
+    "schema": "keel-historical-comet-evidence@1",
+    "archive": {
+      "byteLength": 6157,
+      "integrity": {
+        "algorithm": "sha256",
+        "digest": "0x7b10e18bc083678e649574590ca3c46fe82f3e6d7f3326592bd9096dded0601d",
+        "byteLength": 6157
+      }
+    },
+    "historicalIndexConvention": {
+      "objectIds": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "packedWord": "0x0000000000000006000000000005000000000004000000000003000000000002",
+      "byteToIdMapping": "not-proven-by-retained-chain-state"
+    },
+    "emittedRuntimeOrder": [
+      "brotli-loader",
+      "de85",
+      "seedGen",
+      "p5@1.7.0",
+      "start-p5",
+      "seed"
+    ],
+    "startP5PayloadMatchesCorpus": true,
+    "externalRuntimeDependenciesPinnedLocally": false,
+    "injectedLiveField": "block.timestamp as decimal extras[0]",
+    "modernFixtureMapping": {
+      "status": "reference-only-not-historical-chain-state",
+      "entries": [
+        "2=decoder compatibility",
+        "3=de85",
+        "4=seedGen",
+        "5=p5@1.7.0",
+        "6=start-p5"
+      ]
+    },
+    "renderStatus": "blocked-until-p5-1.7.0-is-pinned-with-redistribution-notice"
+  },
+  "three": {
+    "schema": "keel-historical-three-evidence@1",
+    "raw": {
+      "byteLength": 728973,
+      "integrity": {
+        "algorithm": "sha256",
+        "digest": "0xf06c5cc1f6c61db82465d17c07ef4d8ae1a2ec598fc664182eaec5bb62494e85",
+        "byteLength": 728973
+      },
+      "historicalChunkBytes": 23000,
+      "historicalChunkCount": 32
+    },
+    "rootSerialized": {
+      "source": {
+        "byteLength": 166734,
+        "integrity": {
+          "algorithm": "sha256",
+          "digest": "0xe91f81911f7621faea537d010352ed7f02cc42066ea8d3630034bdffaea009d6",
+          "byteLength": 166734
+        }
+      },
+      "storedBrotli": {
+        "byteLength": 133387,
+        "integrity": {
+          "algorithm": "sha256",
+          "digest": "0x9526b2bd367ea103cc2f2909d38dd4b993da73d7917e5b02fcac69cce0b5dcc6",
+          "byteLength": 133387
+        }
+      },
+      "resolved": {
+        "byteLength": 728974,
+        "integrity": {
+          "algorithm": "sha256",
+          "digest": "0x81df68653bf0e9262e059f68ed74dc1c13046865cc5a14b60e49cd5d82d970e6",
+          "byteLength": 728974
+        }
+      },
+      "filenameCompressionLabel": "misleading-deflate-name",
+      "differsFromRawByLeadingCarriageReturnOnly": true
+    },
+    "alternateSerialized": {
+      "source": {
+        "byteLength": 167465,
+        "integrity": {
+          "algorithm": "sha256",
+          "digest": "0xf40f3a9a90685d07e20c0efb37e64f0117571ba5e2899e6d924384cc8058ec4c",
+          "byteLength": 167465
+        }
+      },
+      "storedBrotli": {
+        "byteLength": 133972,
+        "integrity": {
+          "algorithm": "sha256",
+          "digest": "0xb3b88132183f187f37fd302890136df2065d4b5bebb2b0bdc3e8f6e43adfb6cb",
+          "byteLength": 133972
+        }
+      },
+      "resolved": {
+        "byteLength": 731716,
+        "integrity": {
+          "algorithm": "sha256",
+          "digest": "0xd85ca4ef8509fd7229669ed1267ac455ce92f058e3656d1fa29663f73d990203",
+          "byteLength": 731716
+        }
+      },
+      "filenameCompressionLabel": "misleading-deflate-name",
+      "sourceDriftBytes": 731
+    },
+    "libraryVersion": "r154",
+    "license": "MIT",
+    "renderStatus": "blocked-until-compatible-OrbitControls-and-ARButton-are-pinned"
+  },
+  "fluid": {
+    "emittedOrder": [
+      "fluid-capture.all",
+      "fluid-dat.gui",
+      "fluid-init",
+      "fluid-shaders",
+      "fluid-utils",
+      "fluid-render",
+      "fluid-main"
+    ],
+    "modules": [
+      {
+        "name": "fluid-capture.all",
+        "sourceBytes": 13217,
+        "storedBrotliBytes": 10573,
+        "resolvedJavaScriptBytes": 40834,
+        "sourceDigest": "0x8e08295ecfd9853e469a3b87563d44d8cce4b8f630170b792159f98929d1241f",
+        "storedDigest": "0x5d30796430ec1177529c07e6fb6803981de06d969d8dbc5625d1f11da1c26929",
+        "resolvedDigest": "0x75481147aeee8e8658da49c8e95a499d1d288ee52bb7f3af5b4bf4b1457296f9"
+      },
+      {
+        "name": "fluid-dat.gui",
+        "sourceBytes": 16334,
+        "storedBrotliBytes": 13067,
+        "resolvedJavaScriptBytes": 56669,
+        "sourceDigest": "0x2da09c348c736232c336990854c85c223f1eb26946aa44600093ff03aaa68758",
+        "storedDigest": "0xa880e73e327f582b730b1f64ba0c7930688ce1a6bc39823b1139a2f1c7402a1b",
+        "resolvedDigest": "0xece111b4674e34d11dc878a4d61c468d7bfcfa1d1b9eec856e51712e01c42227"
+      },
+      {
+        "name": "fluid-init",
+        "sourceBytes": 2085,
+        "storedBrotliBytes": 1668,
+        "resolvedJavaScriptBytes": 5484,
+        "sourceDigest": "0x976f17a421c3963d08084f3a257d74868f6d4b97e4e47edb37786470ec570a59",
+        "storedDigest": "0x0a2aa2879d71236fb2212b05bcfb7bb59ff9fecf86795f6df73480fe479d35ce",
+        "resolvedDigest": "0x2def94a873ac6f9ea7b432fe6453cea7ab7bc0949e7aa6eda987dfbf08e5b12b"
+      },
+      {
+        "name": "fluid-shaders",
+        "sourceBytes": 4208,
+        "storedBrotliBytes": 3366,
+        "resolvedJavaScriptBytes": 20848,
+        "sourceDigest": "0x7a9833ec8550f204d3d88d169040d11d8b0294499b587b7685b06e06cf109a81",
+        "storedDigest": "0xf0dc4af72e00b9a5a047e3e0f8de086fb31aaf845937c2393f5156bf878c7fb6",
+        "resolvedDigest": "0x052f45c7e0979945cda1120c0500124544f80cb7b6eb58825bbb1ce735863436"
+      },
+      {
+        "name": "fluid-utils",
+        "sourceBytes": 2637,
+        "storedBrotliBytes": 2109,
+        "resolvedJavaScriptBytes": 8752,
+        "sourceDigest": "0x8efe5305d1826f26ece5f49752c074ad45ec0f150524ad9ae7810ae6ad7a8286",
+        "storedDigest": "0xf90c89ff6cbdbab8789dc53120146f8c966a20c41c6542e7f1e601d83a550e1b",
+        "resolvedDigest": "0x8c43ff99166d74cfb0a675f7de0c9fd41b58079c4d9bf2bc04ba656165fe0650"
+      },
+      {
+        "name": "fluid-render",
+        "sourceBytes": 3080,
+        "storedBrotliBytes": 2464,
+        "resolvedJavaScriptBytes": 8086,
+        "sourceDigest": "0x1db1db33b58151199e0910af786eded92abaa51fea65451dca2738a515894330",
+        "storedDigest": "0x6ce261cfd12e7c41a3e9c0992e7f87de3d6ffdcf2b63fc59579eb591bbdac16e",
+        "resolvedDigest": "0x83730fb5752b61db5ec83929e00c92f52c6e7bed3624cd5532028437aa4be336"
+      },
+      {
+        "name": "fluid-main",
+        "sourceBytes": 3029,
+        "storedBrotliBytes": 2423,
+        "resolvedJavaScriptBytes": 10688,
+        "sourceDigest": "0xe67dee3d465d1982d60caf0c724c157520d8edfc52efdc05e1892e9e553e2423",
+        "storedDigest": "0xd86b71d556a277427b6ccf0a2929030d4e97638af5d50dc58921e825cbdc67b7",
+        "resolvedDigest": "0x7d16295bc2e6d7cbb5a6cfb923866e18a179dd9072a8cf49328ad57bb43655ea"
+      }
+    ],
+    "totals": {
+      "sourceBytes": 44590,
+      "storedBrotliBytes": 35670,
+      "resolvedJavaScriptBytes": 151361
+    },
+    "renderStatus": "source-graph-verified-browser-and-license-gates-open",
+    "requiredCapability": "WebGPU"
+  },
+  "breadth": [
+    {
+      "id": "genart",
+      "status": "runnable-compatibility-candidate",
+      "dependencies": [
+        "seedGen",
+        "start-genart"
+      ]
+    },
+    {
+      "id": "twgl",
+      "status": "blocked-license-provenance",
+      "dependencies": [
+        "twgl",
+        "start-twgl"
+      ]
+    },
+    {
+      "id": "matrix",
+      "status": "blocked-unpinned-dependencies",
+      "dependencies": [
+        "Babylon 6.19.1",
+        "texture",
+        "bab-start"
+      ]
+    },
+    {
+      "id": "gpu",
+      "status": "blocked-license-and-WebGPU-proof",
+      "dependencies": [
+        "webMatrix",
+        "start-gpu"
+      ]
+    },
+    {
+      "id": "sphere",
+      "status": "blocked-incomplete-shader-graph",
+      "dependencies": [
+        "twgl",
+        "start-sphere",
+        "vs",
+        "fs"
+      ]
+    }
+  ],
+  "game": {
+    "sourceFileCount": 97,
+    "standardCaptures": 93,
+    "unsupportedTokenIds": [
+      6,
+      7,
+      8,
+      9
+    ],
+    "blackAndWhiteCaptures": 23,
+    "rainbowStrobeCaptures": 0,
+    "selectedTokenIds": [
+      11,
+      14,
+      18,
+      20,
+      21,
+      33,
+      36,
+      46,
+      47,
+      52
+    ],
+    "selected": {
+      "schema": "keel-historical-game-evidence@1",
+      "tokenCount": 10,
+      "tokens": [
+        {
+          "tokenId": "11",
+          "byteLength": 40830,
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0xb401e58c3a304062900485c84e19525c7039f2e8d975c485909dfd8c1794de71",
+            "byteLength": 40830
+          },
+          "reassembledIntegrity": {
+            "algorithm": "sha256",
+            "digest": "0xb401e58c3a304062900485c84e19525c7039f2e8d975c485909dfd8c1794de71",
+            "byteLength": 40830
+          },
+          "reassembledByteIdentical": true,
+          "offsets": {
+            "headEnd": 735,
+            "atlasEnd": 7879,
+            "tokenEnd": 8284,
+            "fullEnd": 40830
+          },
+          "fragmentDigests": [
+            "0x081093fd9c10d0c1c3c42c0c97721a8ef47da1f5f54c5280c2d8a1eef24a424e",
+            "0xb65b43dce3b1cfb1c2944b9cd95e6080d6561dd35cf88481fa66178113d216ec",
+            "0xb3a9eabcd1d97dae463b854b44cb8235d20ef2c8c0d9cff15826f697db3f0ace",
+            "0xc32cbd3fb53ee176ac8bf4d16a34aeccc567b8e789b757673f4e4327906729ca"
+          ]
+        },
+        {
+          "tokenId": "14",
+          "byteLength": 40830,
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0xc6a47c17b8a8abcd3bb09a284597b26cb6ad591f49d0b391298d04da138d27b8",
+            "byteLength": 40830
+          },
+          "reassembledIntegrity": {
+            "algorithm": "sha256",
+            "digest": "0xc6a47c17b8a8abcd3bb09a284597b26cb6ad591f49d0b391298d04da138d27b8",
+            "byteLength": 40830
+          },
+          "reassembledByteIdentical": true,
+          "offsets": {
+            "headEnd": 735,
+            "atlasEnd": 7879,
+            "tokenEnd": 8284,
+            "fullEnd": 40830
+          },
+          "fragmentDigests": [
+            "0x081093fd9c10d0c1c3c42c0c97721a8ef47da1f5f54c5280c2d8a1eef24a424e",
+            "0xb65b43dce3b1cfb1c2944b9cd95e6080d6561dd35cf88481fa66178113d216ec",
+            "0xf7381decc29983ef4fde750393c5bdef30e4971619562c7520b69a82c852c4ae",
+            "0xc32cbd3fb53ee176ac8bf4d16a34aeccc567b8e789b757673f4e4327906729ca"
+          ]
+        },
+        {
+          "tokenId": "18",
+          "byteLength": 40831,
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0x0e55495a1b8999c8fb6cae274d54cce0b4fa03d0956dd507f046897a4de305bb",
+            "byteLength": 40831
+          },
+          "reassembledIntegrity": {
+            "algorithm": "sha256",
+            "digest": "0x0e55495a1b8999c8fb6cae274d54cce0b4fa03d0956dd507f046897a4de305bb",
+            "byteLength": 40831
+          },
+          "reassembledByteIdentical": true,
+          "offsets": {
+            "headEnd": 735,
+            "atlasEnd": 7879,
+            "tokenEnd": 8285,
+            "fullEnd": 40831
+          },
+          "fragmentDigests": [
+            "0x081093fd9c10d0c1c3c42c0c97721a8ef47da1f5f54c5280c2d8a1eef24a424e",
+            "0xb65b43dce3b1cfb1c2944b9cd95e6080d6561dd35cf88481fa66178113d216ec",
+            "0x909b9fd39aa1e6ae6a00d3328c800c3cdd86c87651e162e37aaa3c65ac21887d",
+            "0xc32cbd3fb53ee176ac8bf4d16a34aeccc567b8e789b757673f4e4327906729ca"
+          ]
+        },
+        {
+          "tokenId": "20",
+          "byteLength": 40830,
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0x53724673cc54d6a3f075a4bf3b9bd735c818c42f2fa4211347186cdcf01b7201",
+            "byteLength": 40830
+          },
+          "reassembledIntegrity": {
+            "algorithm": "sha256",
+            "digest": "0x53724673cc54d6a3f075a4bf3b9bd735c818c42f2fa4211347186cdcf01b7201",
+            "byteLength": 40830
+          },
+          "reassembledByteIdentical": true,
+          "offsets": {
+            "headEnd": 735,
+            "atlasEnd": 7879,
+            "tokenEnd": 8284,
+            "fullEnd": 40830
+          },
+          "fragmentDigests": [
+            "0x081093fd9c10d0c1c3c42c0c97721a8ef47da1f5f54c5280c2d8a1eef24a424e",
+            "0xb65b43dce3b1cfb1c2944b9cd95e6080d6561dd35cf88481fa66178113d216ec",
+            "0x96975d698e142413a8d21e1b211dfbfdd933c6bbc6e89d44970c754793b0b3bd",
+            "0xc32cbd3fb53ee176ac8bf4d16a34aeccc567b8e789b757673f4e4327906729ca"
+          ]
+        },
+        {
+          "tokenId": "21",
+          "byteLength": 40830,
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0xfb0ff152ed8127db52a6a3cd072f2ebd6a520bc13fe1715ce020d54d76eb89c8",
+            "byteLength": 40830
+          },
+          "reassembledIntegrity": {
+            "algorithm": "sha256",
+            "digest": "0xfb0ff152ed8127db52a6a3cd072f2ebd6a520bc13fe1715ce020d54d76eb89c8",
+            "byteLength": 40830
+          },
+          "reassembledByteIdentical": true,
+          "offsets": {
+            "headEnd": 735,
+            "atlasEnd": 7879,
+            "tokenEnd": 8284,
+            "fullEnd": 40830
+          },
+          "fragmentDigests": [
+            "0x081093fd9c10d0c1c3c42c0c97721a8ef47da1f5f54c5280c2d8a1eef24a424e",
+            "0xb65b43dce3b1cfb1c2944b9cd95e6080d6561dd35cf88481fa66178113d216ec",
+            "0xcf5f9abf7e575b281a762825ee6aca28217810889759e979cd3dc1d51e9b7786",
+            "0xc32cbd3fb53ee176ac8bf4d16a34aeccc567b8e789b757673f4e4327906729ca"
+          ]
+        },
+        {
+          "tokenId": "33",
+          "byteLength": 40830,
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0x3297d0922dce3844c9a0fc42306ae58453e78bc98bd116fc0158c07b458d16bd",
+            "byteLength": 40830
+          },
+          "reassembledIntegrity": {
+            "algorithm": "sha256",
+            "digest": "0x3297d0922dce3844c9a0fc42306ae58453e78bc98bd116fc0158c07b458d16bd",
+            "byteLength": 40830
+          },
+          "reassembledByteIdentical": true,
+          "offsets": {
+            "headEnd": 735,
+            "atlasEnd": 7879,
+            "tokenEnd": 8284,
+            "fullEnd": 40830
+          },
+          "fragmentDigests": [
+            "0x081093fd9c10d0c1c3c42c0c97721a8ef47da1f5f54c5280c2d8a1eef24a424e",
+            "0xb65b43dce3b1cfb1c2944b9cd95e6080d6561dd35cf88481fa66178113d216ec",
+            "0x5c88695c23decef3db06c306753db4fb7bcb984dc8709cfff0164e07695aec74",
+            "0xc32cbd3fb53ee176ac8bf4d16a34aeccc567b8e789b757673f4e4327906729ca"
+          ]
+        },
+        {
+          "tokenId": "36",
+          "byteLength": 40830,
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0x7507f93ac63a7099fc71de58cabd23b4df0ce321496a775ccae6a38841d6a8a4",
+            "byteLength": 40830
+          },
+          "reassembledIntegrity": {
+            "algorithm": "sha256",
+            "digest": "0x7507f93ac63a7099fc71de58cabd23b4df0ce321496a775ccae6a38841d6a8a4",
+            "byteLength": 40830
+          },
+          "reassembledByteIdentical": true,
+          "offsets": {
+            "headEnd": 735,
+            "atlasEnd": 7879,
+            "tokenEnd": 8284,
+            "fullEnd": 40830
+          },
+          "fragmentDigests": [
+            "0x081093fd9c10d0c1c3c42c0c97721a8ef47da1f5f54c5280c2d8a1eef24a424e",
+            "0xb65b43dce3b1cfb1c2944b9cd95e6080d6561dd35cf88481fa66178113d216ec",
+            "0xc5a6bfb478b2a88e5ac675e34ded07988236b436b436dddcf85c33e018e98397",
+            "0xc32cbd3fb53ee176ac8bf4d16a34aeccc567b8e789b757673f4e4327906729ca"
+          ]
+        },
+        {
+          "tokenId": "46",
+          "byteLength": 40830,
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0x653ab6b45f128ba6a17a2f539470e0960ae5fb85dce496ef2b7b95de150169ff",
+            "byteLength": 40830
+          },
+          "reassembledIntegrity": {
+            "algorithm": "sha256",
+            "digest": "0x653ab6b45f128ba6a17a2f539470e0960ae5fb85dce496ef2b7b95de150169ff",
+            "byteLength": 40830
+          },
+          "reassembledByteIdentical": true,
+          "offsets": {
+            "headEnd": 735,
+            "atlasEnd": 7879,
+            "tokenEnd": 8284,
+            "fullEnd": 40830
+          },
+          "fragmentDigests": [
+            "0x081093fd9c10d0c1c3c42c0c97721a8ef47da1f5f54c5280c2d8a1eef24a424e",
+            "0xb65b43dce3b1cfb1c2944b9cd95e6080d6561dd35cf88481fa66178113d216ec",
+            "0x8b360a642ee763040ffa6e144c3c97f9b9a66965714ae105f691d937b63fcb5a",
+            "0xc32cbd3fb53ee176ac8bf4d16a34aeccc567b8e789b757673f4e4327906729ca"
+          ]
+        },
+        {
+          "tokenId": "47",
+          "byteLength": 40829,
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0xcee49034e28d9d1549b7be537bdf23dec0b56fedd06a9ea07ad53d52b77e1e6b",
+            "byteLength": 40829
+          },
+          "reassembledIntegrity": {
+            "algorithm": "sha256",
+            "digest": "0xcee49034e28d9d1549b7be537bdf23dec0b56fedd06a9ea07ad53d52b77e1e6b",
+            "byteLength": 40829
+          },
+          "reassembledByteIdentical": true,
+          "offsets": {
+            "headEnd": 735,
+            "atlasEnd": 7879,
+            "tokenEnd": 8283,
+            "fullEnd": 40829
+          },
+          "fragmentDigests": [
+            "0x081093fd9c10d0c1c3c42c0c97721a8ef47da1f5f54c5280c2d8a1eef24a424e",
+            "0xb65b43dce3b1cfb1c2944b9cd95e6080d6561dd35cf88481fa66178113d216ec",
+            "0x82c3ae9ea73a7483138f09991b15f3bb6bcfed25e7343dee50d3a524e5d63195",
+            "0xc32cbd3fb53ee176ac8bf4d16a34aeccc567b8e789b757673f4e4327906729ca"
+          ]
+        },
+        {
+          "tokenId": "52",
+          "byteLength": 40831,
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0xfd4e88d07796f3147d05c36d1801a3527a3ad1fe21108f9aabd9d832881199a0",
+            "byteLength": 40831
+          },
+          "reassembledIntegrity": {
+            "algorithm": "sha256",
+            "digest": "0xfd4e88d07796f3147d05c36d1801a3527a3ad1fe21108f9aabd9d832881199a0",
+            "byteLength": 40831
+          },
+          "reassembledByteIdentical": true,
+          "offsets": {
+            "headEnd": 735,
+            "atlasEnd": 7879,
+            "tokenEnd": 8285,
+            "fullEnd": 40831
+          },
+          "fragmentDigests": [
+            "0x081093fd9c10d0c1c3c42c0c97721a8ef47da1f5f54c5280c2d8a1eef24a424e",
+            "0xb65b43dce3b1cfb1c2944b9cd95e6080d6561dd35cf88481fa66178113d216ec",
+            "0x99cc1943b144f79eafbc78a9b78c2798fb80904908be8bbf15939bebb6723812",
+            "0xc32cbd3fb53ee176ac8bf4d16a34aeccc567b8e789b757673f4e4327906729ca"
+          ]
+        }
+      ],
+      "fragments": [
+        {
+          "digest": "0x081093fd9c10d0c1c3c42c0c97721a8ef47da1f5f54c5280c2d8a1eef24a424e",
+          "byteLength": 735,
+          "roles": [
+            "head"
+          ],
+          "tokenIds": [
+            "11",
+            "14",
+            "18",
+            "20",
+            "21",
+            "33",
+            "36",
+            "46",
+            "47",
+            "52"
+          ],
+          "fixtureFile": "game-fragments/head.htmlfrag"
+        },
+        {
+          "digest": "0x5c88695c23decef3db06c306753db4fb7bcb984dc8709cfff0164e07695aec74",
+          "byteLength": 405,
+          "roles": [
+            "token"
+          ],
+          "tokenIds": [
+            "33"
+          ],
+          "fixtureFile": "game-fragments/token-33.htmlfrag"
+        },
+        {
+          "digest": "0x82c3ae9ea73a7483138f09991b15f3bb6bcfed25e7343dee50d3a524e5d63195",
+          "byteLength": 404,
+          "roles": [
+            "token"
+          ],
+          "tokenIds": [
+            "47"
+          ],
+          "fixtureFile": "game-fragments/token-47.htmlfrag"
+        },
+        {
+          "digest": "0x8b360a642ee763040ffa6e144c3c97f9b9a66965714ae105f691d937b63fcb5a",
+          "byteLength": 405,
+          "roles": [
+            "token"
+          ],
+          "tokenIds": [
+            "46"
+          ],
+          "fixtureFile": "game-fragments/token-46.htmlfrag"
+        },
+        {
+          "digest": "0x909b9fd39aa1e6ae6a00d3328c800c3cdd86c87651e162e37aaa3c65ac21887d",
+          "byteLength": 406,
+          "roles": [
+            "token"
+          ],
+          "tokenIds": [
+            "18"
+          ],
+          "fixtureFile": "game-fragments/token-18.htmlfrag"
+        },
+        {
+          "digest": "0x96975d698e142413a8d21e1b211dfbfdd933c6bbc6e89d44970c754793b0b3bd",
+          "byteLength": 405,
+          "roles": [
+            "token"
+          ],
+          "tokenIds": [
+            "20"
+          ],
+          "fixtureFile": "game-fragments/token-20.htmlfrag"
+        },
+        {
+          "digest": "0x99cc1943b144f79eafbc78a9b78c2798fb80904908be8bbf15939bebb6723812",
+          "byteLength": 406,
+          "roles": [
+            "token"
+          ],
+          "tokenIds": [
+            "52"
+          ],
+          "fixtureFile": "game-fragments/token-52.htmlfrag"
+        },
+        {
+          "digest": "0xb3a9eabcd1d97dae463b854b44cb8235d20ef2c8c0d9cff15826f697db3f0ace",
+          "byteLength": 405,
+          "roles": [
+            "token"
+          ],
+          "tokenIds": [
+            "11"
+          ],
+          "fixtureFile": "game-fragments/token-11.htmlfrag"
+        },
+        {
+          "digest": "0xb65b43dce3b1cfb1c2944b9cd95e6080d6561dd35cf88481fa66178113d216ec",
+          "byteLength": 7144,
+          "roles": [
+            "atlas"
+          ],
+          "tokenIds": [
+            "11",
+            "14",
+            "18",
+            "20",
+            "21",
+            "33",
+            "36",
+            "46",
+            "47",
+            "52"
+          ],
+          "fixtureFile": "game-fragments/atlas.htmlfrag"
+        },
+        {
+          "digest": "0xc32cbd3fb53ee176ac8bf4d16a34aeccc567b8e789b757673f4e4327906729ca",
+          "byteLength": 32546,
+          "roles": [
+            "engine"
+          ],
+          "tokenIds": [
+            "11",
+            "14",
+            "18",
+            "20",
+            "21",
+            "33",
+            "36",
+            "46",
+            "47",
+            "52"
+          ],
+          "fixtureFile": "game-fragments/engine.htmlfrag"
+        },
+        {
+          "digest": "0xc5a6bfb478b2a88e5ac675e34ded07988236b436b436dddcf85c33e018e98397",
+          "byteLength": 405,
+          "roles": [
+            "token"
+          ],
+          "tokenIds": [
+            "36"
+          ],
+          "fixtureFile": "game-fragments/token-36.htmlfrag"
+        },
+        {
+          "digest": "0xcf5f9abf7e575b281a762825ee6aca28217810889759e979cd3dc1d51e9b7786",
+          "byteLength": 405,
+          "roles": [
+            "token"
+          ],
+          "tokenIds": [
+            "21"
+          ],
+          "fixtureFile": "game-fragments/token-21.htmlfrag"
+        },
+        {
+          "digest": "0xf7381decc29983ef4fde750393c5bdef30e4971619562c7520b69a82c852c4ae",
+          "byteLength": 405,
+          "roles": [
+            "token"
+          ],
+          "tokenIds": [
+            "14"
+          ],
+          "fixtureFile": "game-fragments/token-14.htmlfrag"
+        }
+      ],
+      "storage": {
+        "naiveFullBytes": 408301,
+        "uniqueFragmentBytes": 44476,
+        "bytesSaved": 363825,
+        "savingsRatio": 0.8910705582401218,
+        "uniqueFragmentCount": 13,
+        "sharedFragmentCount": 3,
+        "perTokenFragmentCount": 10,
+        "model": "shared-fragments-once-plus-per-token-fragment"
+      }
+    },
+    "comparison3And4": {
+      "byteLengthEach": 34566,
+      "differentBytePositions": 87,
+      "sharedFragmentBytes": 34160,
+      "tokenBytesEach": 406,
+      "digests": [
+        "0xf7581fbce8919f4307f94c1b665711f28d56f377005cde76e91e3f0e04eae4ad",
+        "0x2cd00e7784df5a8c2e21bdad1b7d16a1f6cc164b4532efb6769f2beb191989a0"
+      ]
+    },
+    "storageClaim": "fragment-byte measurement; onchain event/accounting proof is a separate deployment receipt"
+  }
+}

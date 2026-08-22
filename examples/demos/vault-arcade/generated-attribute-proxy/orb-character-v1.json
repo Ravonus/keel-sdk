@@ -1,0 +1,48 @@
+{
+  "schema": "vault-orb-character@1",
+  "identity": {
+    "name": "Orb Core V1",
+    "pixellabObjectId": "e1689862-b846-4ff1-af12-688d521043fc",
+    "camera": "high-top-down-twin-stick",
+    "directions": ["south", "south-west", "west", "north-west", "north", "north-east", "east", "south-east"]
+  },
+  "source": {
+    "turnaround": "orb-core-v1-turnaround.png",
+    "turnaroundSha256": "ccd1fad689c9a5d3b8444e625a1a4aca1a80e0dacfc6a418d0a5f15f758a1a72",
+    "materialMask": "orb-core-v1-material-mask.png",
+    "materialMaskSha256": "07d2cd2ea0b900b9c5f99100264d8ab40ae2448d5a6f5871642e18409ecbb608",
+    "panelMask": "orb-core-v1-panel-mask.png",
+    "panelMaskSha256": "5c650076bd71d35832c4ea4093d0985f519329b45700ca080e9864a9349a511e",
+    "attributeTargets": "orb-core-v1-attribute-targets.json",
+    "attributeTargetsSha256": "c9de754313c948155dec0b0cd9f611bdef594a67322958e9895bc9e17f56ddf3",
+    "cell": { "width": 34, "height": 34 }
+  },
+  "rolls": {
+    "primary": [
+      { "slot": "shell", "examples": ["smooth", "ribbed", "split"] },
+      { "slot": "visor", "region": "protruding-metal-rim", "roll": "independent-with-optional-matched-set", "examples": ["matched", "glass", "ruby", "sapphire", "brass", "ceramic", "prism"] },
+      { "slot": "core-light", "material": "painted-gradient-plus-runtime-emission", "examples": ["cyan", "amber", "magenta", "white", "plasma", "aurora", "eclipse", "starfire"] }
+      ,{ "slot": "rear-light", "visibility": "rear-five-directions", "roll": "compact-emitter-with-optional-core-link", "examples": ["reactor", "utility", "linked-light", "ion", "hazard", "void", "dormant"] }
+    ],
+    "bonus": {
+      "slot": "skin",
+      "role": "panel-boundary-to-filled-overlay",
+      "baseMaterial": "same-shell-body-material",
+      "colorRelationship": "effect-over-selected-shell-palette",
+      "examples": ["metal", "brushed", "battle-worn", "polished", "oxidized", "prism-light"]
+    }
+  },
+  "materialMask": {
+    "channels": ["black", "dark", "mid", "light", "white"],
+    "encodedLevels": [0, 64, 128, 192, 255],
+    "meaning": "All five channels are recolorable metal and highlight bands; no baked hue is authoritative."
+  },
+  "runtime": {
+    "materialModule": "orb-materials.mjs",
+    "shadow": "procedural",
+    "weapon": "detached-floating-slot",
+    "gravityFx": "detached-collectible-slot",
+    "aim": ["pointer", "touch-right-stick", "gamepad-right-stick"],
+    "directionReview": { "south": "approved", "south-west": "mask-repair", "west": "mask-repair", "north-west": "mask-repair", "north": "mask-repair", "north-east": "mask-repair", "east": "mask-repair", "south-east": "mask-repair" }
+  }
+}

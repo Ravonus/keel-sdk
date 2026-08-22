@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <title>Vault character onchain gallery preview</title>
+  <style>
+    :root{color-scheme:dark;background:#050806;--glow:#67f6c5}
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--glow) 10%,transparent),transparent 51%),linear-gradient(145deg,#0b110e,#030504 72%)}
+    body{display:grid;place-items:center}
+    canvas{display:block;width:100%;height:100%;image-rendering:pixelated;opacity:0;transition:opacity .25s ease}
+    html[data-vault-character-ready="true"] canvas{opacity:1}
+    #failure{position:absolute;inset:0;display:none;place-items:center;padding:12%;text-align:center;color:#ffd9d9;background:#170506;font:700 clamp(12px,2.6vw,18px)/1.35 ui-monospace,SFMono-Regular,monospace}
+    html[data-vault-gallery-state="failed"] #failure{display:grid}
+    html[data-vault-gallery-state="failed"] canvas{display:none}
+  </style>
+</head>
+<body>
+  <canvas id="vault-character" width="560" height="420" aria-label="Onchain rotating Vault character preview"></canvas>
+  <div id="failure" role="alert">ONCHAIN PREVIEW UNAVAILABLE</div>
+  <script type="module" src="/content/vault-character-gallery-viewer.js"></script>
+</body>
+</html>

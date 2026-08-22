@@ -1,0 +1,48 @@
+{
+  "schema": "oca-sprite-source@1",
+  "id": "vault-character-orb-v1",
+  "frame": { "width": 34, "height": 34 },
+  "defaultDisplaySize": 32,
+  "assets": [
+    {
+      "id": 1, "key": "orb-body", "label": "Orb Core body", "slot": 0, "frameCapacity": 8,
+      "frames": [
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-turnaround.png", "x": 0, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-turnaround.png", "x": 34, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-turnaround.png", "x": 68, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-turnaround.png", "x": 102, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-turnaround.png", "x": 136, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-turnaround.png", "x": 170, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-turnaround.png", "x": 204, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-turnaround.png", "x": 238, "y": 0 }
+      ]
+    },
+    {
+      "id": 2, "key": "orb-material", "label": "Orb Core five-band material layer", "slot": 1, "frameCapacity": 8,
+      "frames": [
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-material-mask.png", "x": 0, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-material-mask.png", "x": 34, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-material-mask.png", "x": 68, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-material-mask.png", "x": 102, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-material-mask.png", "x": 136, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-material-mask.png", "x": 170, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-material-mask.png", "x": 204, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-material-mask.png", "x": 238, "y": 0 }
+      ]
+    },
+    {
+      "id": 3, "key": "orb-panel", "label": "Orb Core component and skin panel layer", "slot": 2, "frameCapacity": 8,
+      "frames": [
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-panel-mask.png", "x": 0, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-panel-mask.png", "x": 34, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-panel-mask.png", "x": 68, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-panel-mask.png", "x": 102, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-panel-mask.png", "x": 136, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-panel-mask.png", "x": 170, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-panel-mask.png", "x": 204, "y": 0 },
+        { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-panel-mask.png", "x": 238, "y": 0 }
+      ]
+    }
+  ],
+  "selections": [{ "revision": 1, "activeAssetIds": [1, 2, 3] }]
+}

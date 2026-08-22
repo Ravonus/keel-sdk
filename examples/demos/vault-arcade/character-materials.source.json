@@ -1,0 +1,45 @@
+{
+  "schema": "vault-character-material-source@1",
+  "profiles": [
+    {
+      "name": "neon-vault",
+      "setId": 0,
+      "setWeight": 48,
+      "regions": [
+        { "regionId": 0, "weight": 1, "rule": { "mode": "locked", "color": [255, 214, 64] } },
+        { "regionId": 1, "weight": 8, "rule": { "mode": "range", "hue": [172, 228], "saturation": [48, 91], "lightness": [38, 63], "darken": 24, "lighten": 27 } },
+        { "regionId": 2, "weight": 5, "rule": { "mode": "range", "hue": [286, 338], "saturation": [52, 94], "lightness": [40, 66], "darken": 26, "lighten": 25 } }
+      ]
+    },
+    {
+      "name": "solar-forge",
+      "setId": 1,
+      "setWeight": 24,
+      "regions": [
+        { "regionId": 0, "weight": 1, "rule": { "mode": "locked", "color": [247, 249, 255] } },
+        { "regionId": 1, "weight": 8, "rule": { "mode": "range", "hue": [8, 48], "saturation": [58, 96], "lightness": [38, 62], "darken": 27, "lighten": 25 } },
+        { "regionId": 2, "weight": 5, "rule": { "mode": "palette", "colors": [{ "color": [250, 188, 45], "weight": 7 }, { "color": [218, 77, 32], "weight": 3 }, { "color": [255, 237, 166], "weight": 1 }] } }
+      ]
+    },
+    {
+      "name": "ghost-glass",
+      "setId": 2,
+      "setWeight": 12,
+      "regions": [
+        { "regionId": 0, "weight": 1, "rule": { "mode": "locked", "color": [126, 255, 239] } },
+        { "regionId": 1, "weight": 8, "rule": { "mode": "range", "hue": [155, 205], "saturation": [22, 68], "lightness": [52, 78], "darken": 31, "lighten": 19 } },
+        { "regionId": 2, "weight": 5, "rule": { "mode": "ramp", "dark": [14, 20, 36], "mid": [74, 108, 139], "light": [220, 247, 255] } }
+      ]
+    },
+    {
+      "name": "royal-anomaly",
+      "setId": 3,
+      "setWeight": 3,
+      "regions": [
+        { "regionId": 0, "weight": 1, "rule": { "mode": "locked", "color": [255, 91, 197] } },
+        { "regionId": 1, "weight": 8, "rule": { "mode": "range", "hue": [245, 319], "saturation": [68, 100], "lightness": [36, 61], "darken": 29, "lighten": 30 } },
+        { "regionId": 2, "weight": 5, "rule": { "mode": "palette", "colors": [{ "color": [91, 255, 224], "weight": 5 }, { "color": [255, 79, 184], "weight": 3 }, { "color": [255, 255, 255], "weight": 1 }] } }
+      ]
+    }
+  ]
+}

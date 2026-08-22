@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>Keel Verified Viewer Demo</title>
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <p class="eyebrow">Keel / KEEL MODERN</p>
+        <h1>Browser-native art, verified before it runs.</h1>
+        <p class="lede">This artifact is assembled from independent HTML, CSS, JavaScript, and SVG resources. Every byte is hashed and the runtime receives no same-origin privilege.</p>
+      </header>
+      <section class="grid">
+        <div id="viewer" class="viewer" aria-label="Verified artifact"></div>
+        <aside>
+          <div class="status"><span id="status-dot"></span><strong id="status">Resolving…</strong></div>
+          <dl id="summary"></dl>
+          <h2>Resolution audit</h2>
+          <div class="audit-wrap"><table><thead><tr><th>Resource</th><th>Source</th><th>Status</th><th>Bytes</th><th>Hash</th></tr></thead><tbody id="audit"></tbody></table></div>
+        </aside>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

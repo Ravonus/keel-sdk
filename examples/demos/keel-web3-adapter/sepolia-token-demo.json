@@ -1,0 +1,119 @@
+{
+  "schema": "keel-web3-token-demo-sepolia@1",
+  "chainId": 11155111,
+  "keelHold": "0x417cfdf69ed808b7e6e6c5d974c27bb8ccffbec5",
+  "adapter": "0x6b5a95a1dfa9122f45c81b1c5a43d0496a027eb7",
+  "collection": "0xbce62004766b4a86f3655bab7134b471c789f5d8",
+  "collectionTx": "0xba90f4210d8c4300127a92776380ec7a2863d5c9e9a473f6e29fcea9de27e695",
+  "mintTx": "0x5661dfe2f5b6bbf4f5f993b9282167573225dcb1ba4d118b572c4f982a0401ce",
+  "tokenId": 1,
+  "tokenUri": "https://0x6b5a95a1dfa9122f45c81b1c5a43d0496a027eb7.sep.w3link.io/object/0xf8c9a5d03108c196d1c72e94a9b14d35b1683df5c569bd289354012e1e6ba782",
+  "objects": {
+    "metadata": "0xf8c9a5d03108c196d1c72e94a9b14d35b1683df5c569bd289354012e1e6ba782",
+    "image": "0x7dbeb24e468931ce4c7e223f2262fd1b87a93ef66d5d52fdcf9d50d6f1ef5f63",
+    "animation": "0x73ca886f5d6fe8641df7b789060de2d45bdbf1c202aae689bfad5dbc00ad1863",
+    "animationChunks": 19
+  },
+  "urls": {
+    "checker": "https://onchainchecker.xyz/collection/sepolia/0xbce62004766b4a86f3655bab7134b471c789f5d8/1",
+    "metadata": "https://0x6b5a95a1dfa9122f45c81b1c5a43d0496a027eb7.sep.w3link.io/object/0xf8c9a5d03108c196d1c72e94a9b14d35b1683df5c569bd289354012e1e6ba782",
+    "image": "https://0x6b5a95a1dfa9122f45c81b1c5a43d0496a027eb7.sep.w3link.io/object/0x7dbeb24e468931ce4c7e223f2262fd1b87a93ef66d5d52fdcf9d50d6f1ef5f63",
+    "animation": "https://0x6b5a95a1dfa9122f45c81b1c5a43d0496a027eb7.sep.w3link.io/object/0x73ca886f5d6fe8641df7b789060de2d45bdbf1c202aae689bfad5dbc00ad1863",
+    "web3Metadata": "web3://0x6b5a95a1dfa9122f45c81b1c5a43d0496a027eb7:11155111/object/0xf8c9a5d03108c196d1c72e94a9b14d35b1683df5c569bd289354012e1e6ba782"
+  },
+  "tokens": {
+    "1": {
+      "uri": "https://0x6b5a95a1dfa9122f45c81b1c5a43d0496a027eb7.sep.w3link.io/object/0xf8c9a5d03108c196d1c72e94a9b14d35b1683df5c569bd289354012e1e6ba782",
+      "style": "https gateway tokenURI"
+    },
+    "2": {
+      "uri": "web3://0x6b5a95a1dfa9122f45c81b1c5a43d0496a027eb7:11155111/object/0xf8c9a5d03108c196d1c72e94a9b14d35b1683df5c569bd289354012e1e6ba782",
+      "tx": "0xd8fc6ca534b869b756b24f115d32c0ba9090f6021064afd31da51f81876f0f46",
+      "style": "native web3:// tokenURI"
+    },
+    "3": {
+      "uri": "data:application/json;base64,...",
+      "tx": "0x9b5d673e0043708f904eeb3315bae3275fafbbaf9169f5b7f937f9d904e34ce7",
+      "style": "data: metadata, gateway media"
+    }
+  },
+  "checkerUrls": {
+    "1": "https://onchainchecker.xyz/collection/sepolia/0xbce62004766b4a86f3655bab7134b471c789f5d8/1",
+    "2": "https://onchainchecker.xyz/collection/sepolia/0xbce62004766b4a86f3655bab7134b471c789f5d8/2",
+    "3": "https://onchainchecker.xyz/collection/sepolia/0xbce62004766b4a86f3655bab7134b471c789f5d8/3"
+  },
+  "v2": {
+    "collection": "0x87c96dc8b411da0cf5b1248b2c8b522ddaccbd66",
+    "deployTx": "0x5487787f2fec11cf7b1e7f69f04216d83db4074bee8da3db5627845b39140314",
+    "contractUri": "data:application/json;base64,... (ERC-7572)",
+    "imageRawObject": "0xbd7ad33ab616d23f6a39fd2227230557346271b8b7a13b85a3eeddff0b6b81fa",
+    "autoMetadataObject": "0x4d548ea2e1f14d9d94170613659c04587829cbc286afefa36c5f8b56843ce16e",
+    "tokens": {
+      "1": {
+        "uri": "web3://0x417cfdf69ed808b7e6e6c5d974c27bb8ccffbec5:11155111/haulObject/0x4d548ea2e1f14d9d94170613659c04587829cbc286afefa3",
+        "style": "auto-mode web3:// tokenURI"
+      },
+      "2": {
+        "uri": "data:application/json;base64,eyJuYW1lIjoiU3RyYXR1cyBXZWIzIFN0cmVhbSBEZW1vICMyIChkYXRhOiArIGdhdGV3YXkgbWVkaWEpIiwiZGVzY3J",
+        "style": "data: metadata, gateway media, web3_* natives"
+      },
+      "3": {
+        "uri": "web3://0x6b5a95a1dfa9122f45c81b1c5a43d0496a027eb7:11155111/object/0xf8c9a5d03108c196d1c72e94a9b14d35b1683df5c569bd289354",
+        "style": "ERC-6944 native (streaming clients only)"
+      }
+    },
+    "checkerUrls": {
+      "1": "https://onchainchecker.xyz/collection/sepolia/0x87c96dc8b411da0cf5b1248b2c8b522ddaccbd66/1",
+      "2": "https://onchainchecker.xyz/collection/sepolia/0x87c96dc8b411da0cf5b1248b2c8b522ddaccbd66/2",
+      "3": "https://onchainchecker.xyz/collection/sepolia/0x87c96dc8b411da0cf5b1248b2c8b522ddaccbd66/3"
+    },
+    "inspectorUrls": {
+      "1": "https://nftinspector.xyz/11155111/0x87c96dc8b411da0cf5b1248b2c8b522ddaccbd66/1",
+      "2": "https://nftinspector.xyz/11155111/0x87c96dc8b411da0cf5b1248b2c8b522ddaccbd66/2",
+      "3": "https://nftinspector.xyz/11155111/0x87c96dc8b411da0cf5b1248b2c8b522ddaccbd66/3"
+    }
+  },
+  "inline": {
+    "collection": "0xfa1df8e92b27a73ce67c79d77bad304fcfbaae69",
+    "deployTx": "0x4172087e79992315a4afe34325cea1ce139092ffc01440fb3358c5fe3bd2f756",
+    "mintTx": "0xf6b6814d93da62dbfb2757ba556633e117efe09e2031315d8cf5ee187bbe5a88",
+    "tokenId": 1,
+    "style": "on-chain materialized data: tokenURI (haulObject + Base64)",
+    "imageObject": "0xbd7ad33ab616d23f6a39fd2227230557346271b8b7a13b85a3eeddff0b6b81fa",
+    "animationObject": "0x73ca886f5d6fe8641df7b789060de2d45bdbf1c202aae689bfad5dbc00ad1863",
+    "inspectorUrl": "https://nftinspector.xyz/11155111/0xfa1df8e92b27a73ce67c79d77bad304fcfbaae69/1",
+    "checkerUrl": "https://onchainchecker.xyz/collection/sepolia/0xfa1df8e92b27a73ce67c79d77bad304fcfbaae69/1"
+  },
+  "v3": {
+    "collection": "0xeb21e154f113d5cbafd10676a0e4fed614d394bf",
+    "deployTx": "0xac338bb8910c8bd5e429f9027405d1dc0df2f8adb56532bed00a02026df594ba",
+    "fixes": [
+      "ERC-165 advertises ERC-7572",
+      "totalSupply"
+    ],
+    "tokens": {
+      "1": {
+        "style": "pure web3:// (standards test)",
+        "uri": "web3://0x417cfdf69ed808b7e6e6c5d974c27bb8ccffbec5:11155111/haulObject/0x4d548ea2e1f14d9d94170613659c04587829cbc286afefa3"
+      },
+      "2": {
+        "style": "pure web3:// + image_data fallback",
+        "uri": "web3://0x417cfdf69ed808b7e6e6c5d974c27bb8ccffbec5:11155111/haulObject/0xcd5f0570da802835331332765e6550298d52d122d2323354"
+      },
+      "3": {
+        "style": "data: metadata, gateway media",
+        "uri": "data:application/json;base64,eyJuYW1lIjoiU3RyYXR1cyBXZWIzIFN0cmVhbSBEZW1vICMzIChkYXRhOiArIGdhdGV3YXkgbWVkaWEpIiwiZGVzY3J"
+      },
+      "4": {
+        "style": "ERC-7617 3-hop chunk recursion",
+        "uri": "web3://0x417cfdf69ed808b7e6e6c5d974c27bb8ccffbec5:11155111/haulObject/0x084a89ce747c55573556fbc763dab4aa6d6b3f4d4b79dc3a"
+      }
+    },
+    "inspectorUrls": {
+      "1": "https://nftinspector.xyz/11155111/0xeb21e154f113d5cbafd10676a0e4fed614d394bf/1",
+      "2": "https://nftinspector.xyz/11155111/0xeb21e154f113d5cbafd10676a0e4fed614d394bf/2",
+      "3": "https://nftinspector.xyz/11155111/0xeb21e154f113d5cbafd10676a0e4fed614d394bf/3",
+      "4": "https://nftinspector.xyz/11155111/0xeb21e154f113d5cbafd10676a0e4fed614d394bf/4"
+    }
+  }
+}

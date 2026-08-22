@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>html,body,#stage{width:100%;height:100%;margin:0;overflow:hidden;background:#05060b}canvas{display:block}</style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <script type="importmap">
+      {"imports":{"/content/three.core.min.js":"../vendor/three.core.min.js"}}
+    </script>
+    <script type="module">
+      const input = new URLSearchParams(location.search);
+      const scene = input.get("scene") ?? "p5-one";
+      const sceneAssets = Object.freeze({
+        "p5-image-onchain": { id: "aurora-compact", uri: "./assets/aurora-data-horizon-onchain-v1.webp" },
+        "p5-image-hybrid": { id: "aurora-full", uri: "./assets/aurora-data-horizon-v1.png" },
+        "three-texture-onchain": { id: "mineral-compact", uri: "./assets/cosmic-mineral-field-onchain-v1.webp" },
+        "three-texture-hybrid": { id: "mineral-full", uri: "./assets/cosmic-mineral-field-v1.png" },
+        "three-mixed": { id: "mineral-full", uri: "./assets/cosmic-mineral-field-v1.png" },
+        "image-only": { id: "aurora-compact", uri: "./assets/aurora-data-horizon-onchain-v1.webp" },
+        "video-loop": { id: "aurora-video", uri: "./assets/aurora-signal-loop-v1.webm" },
+      });
+      const asset = sceneAssets[scene];
+      globalThis.__KEEL_SCENE_INPUT__ = Object.freeze({
+        scene,
+        seed: Number(input.get("seed") ?? 4078) >>> 0,
+        background: input.get("background") ?? "#090819",
+        accent: input.get("accent") ?? "#ff5fba",
+        assetId: asset?.id,
+        assetUri: asset?.uri,
+        apiSnapshot: scene === "api-weather" ? Object.freeze({
+          protocol: "keel-api-snapshot@1",
+          mediaType: "application/json",
+          sequence: 17,
+          sourceManifestDigest: "0x6b4b8f24e605c0f58e8f8daf3a8f91ba913a5a6d77aee28d875d21647d4b8ab7",
+          value: Object.freeze({ temperature: 21, wind: 3.4 }),
+        }) : undefined,
+      });
+      if (scene.startsWith("p5-")) {
+        // p5 1.11.3 carries an old Promise microtask shim that selects
+        // MutationObserver. Some sandboxed browser hosts wrap that constructor
+        // across realms, causing the shim's Text node to fail its realm check.
+        // Preserve the browser API for verifier instrumentation. If p5's old
+        // microtask shim hands the native observer a cross-realm Text node,
+        // service only that observer from a short timer instead of deleting
+        // MutationObserver globally or weakening the iframe sandbox.
+        const NativeMutationObserver = globalThis.MutationObserver;
+        const NativeWebKitMutationObserver = globalThis.WebKitMutationObserver;
+        class P5CompatibleMutationObserver {
+          #callback; #native; #timer;
+          constructor(callback) { this.#callback = callback; this.#native = new NativeMutationObserver(callback); }
+          observe(target, options) {
+            try { this.#native.observe(target, options); }
+            catch { this.#timer ??= setInterval(() => this.#callback([], this), 4); }
+          }
+          disconnect() { this.#native.disconnect(); if (this.#timer) clearInterval(this.#timer); this.#timer = undefined; }
+          takeRecords() { return this.#native.takeRecords(); }
+        }
+        globalThis.MutationObserver = P5CompatibleMutationObserver;
+        // p5's bundled microtask shim may prefer the WebKit alias when the
+        // iframe is sandboxed, so both names must resolve to the same guarded
+        // observer. Otherwise it can bypass the compatibility path above.
+        globalThis.WebKitMutationObserver = P5CompatibleMutationObserver;
+        const library = document.createElement("script");
+        library.src = "../vendor/p5.min.js";
+        library.onload = () => {
+          globalThis.MutationObserver = NativeMutationObserver;
+          globalThis.WebKitMutationObserver = NativeWebKitMutationObserver;
+          import("./creative-scenes.js").then(({ mountP5Scene }) => mountP5Scene());
+        };
+        library.onerror = () => document.body.dataset.loadError = "p5";
+        document.head.appendChild(library);
+      } else if (scene.startsWith("three-")) {
+        const [{ mountThreeScene }, THREE] = await Promise.all([
+          import("./creative-scenes.js"),
+          import("../vendor/three.min.js"),
+        ]);
+        mountThreeScene(THREE);
+      } else {
+        const scenes = await import("./creative-scenes.js");
+        if (scene === "image-only") scenes.mountImageScene();
+        else if (scene === "video-loop") scenes.mountVideoScene();
+        else if (scene === "script-pulse") scenes.mountClassicScriptScene();
+        else if (scene === "api-weather") scenes.mountApiWeatherScene();
+        else throw new Error(`Unsupported presentation module ${scene}`);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,178 @@
+{
+  "schema": "vault-layer-review@1",
+  "semanticLayer": "base-body",
+  "candidateCharacterId": "9e6e4de8-ba5b-4f35-aaac-c8bbdb92695c",
+  "status": "approved",
+  "generationAllowed": true,
+  "approval": {
+    "authority": "vault-asset-manager@1",
+    "decision": "approved-for-animation",
+    "turnaround": "true-modular-base-turnaround.png",
+    "turnaroundSha256": "6082160e926b6924c1f9e774ef2b3156104a907b137d088e66dddd2195efff2b",
+    "scope": "base turnaround only; every animation clip requires its own manager review"
+  },
+  "directionExtension": {
+    "status": "candidate-pending-manager-visual-approval",
+    "provider": "pixellab-mcp",
+    "characterId": "9e6e4de8-ba5b-4f35-aaac-c8bbdb92695c",
+    "directions": [
+      "south",
+      "south-west",
+      "west",
+      "north-west",
+      "north",
+      "north-east",
+      "east",
+      "south-east"
+    ],
+    "turnaround": "manager-current-turnaround-8dir.png",
+    "turnaroundSha256": "e1728f72cb86bb2a5937626ebe1688f86c450bd00fafce6e837851f4d063cc09",
+    "packedTurnaround": "manager-current-turnaround-8dir-q70.webp",
+    "packedTurnaroundBytes": 4728,
+    "packedTurnaroundSha256": "06b2586dba6d26ac19352aa32e53ea6bf4c563a0adb8f87a655244a89bbdb662"
+  },
+  "requiredOrder": [
+    "turnaround-complete",
+    "semantic-layer-audit-passed",
+    "manager-visual-approval-recorded",
+    "animation-generation-allowed"
+  ],
+  "checks": [
+    {
+      "id": "direction-completeness",
+      "label": "Four authored cardinal directions",
+      "status": "passed",
+      "evidence": "manager contact sheet contains south, west, north, and east views"
+    },
+    {
+      "id": "blank-head",
+      "label": "Blank head volume only",
+      "status": "passed",
+      "evidence": "manager visual audit found no eyes, nose, mouth, ears, hair, visor, or expression"
+    },
+    {
+      "id": "empty-back-plane",
+      "label": "No backpack or back attachment",
+      "status": "passed",
+      "evidence": "manager north and side views show an empty back plane"
+    },
+    {
+      "id": "no-torso-armor",
+      "label": "No torso or shoulder armor",
+      "status": "passed",
+      "evidence": "manager visual audit found only the neutral grayscale under-suit"
+    },
+    {
+      "id": "no-leg-equipment",
+      "label": "No leg armor or boots",
+      "status": "passed",
+      "evidence": "manager visual audit found plain neutral legs and feet"
+    },
+    {
+      "id": "no-weapon",
+      "label": "No weapon geometry",
+      "status": "passed",
+      "evidence": "manager visual audit found empty hands and no weapon or holster"
+    },
+    {
+      "id": "registration-envelope",
+      "label": "Turnaround fits the locked rig envelope",
+      "status": "passed",
+      "evidence": "all four views fit the 92x92 PixelLab source canvas and can be ground-packed into locked 48px cells"
+    }
+  ],
+  "clipReviews": {
+    "walk-8-direction-candidate": {
+      "status": "candidate-pending-manager-visual-approval",
+      "animationGroupId": "81920513-ab90-4941-a062-3b7503251aed",
+      "template": "walking-6-frames",
+      "directions": [
+        "south",
+        "south-west",
+        "west",
+        "north-west",
+        "north",
+        "north-east",
+        "east",
+        "south-east"
+      ],
+      "cardinalFramesPreserved": true,
+      "mechanicalDecision": "passed",
+      "managerDecision": "pending-visual-review",
+      "audit": "../concepts/pixellab/9e6e4de8/manager-walk-v2-audit/walk-manager-audit.json",
+      "auditSha256": "1a4bf941d050001794d65ea3e433ae559be6d42c72a955280cd200ca34063915",
+      "packedAtlas": "manager-current-walk-8dir-q50.webp",
+      "packedBytes": 19208,
+      "packedSha256": "b2cb8f49320c8ec2acac2404c978cbb337db5fa03f96e82b8753ddaccd26faec",
+      "sourceContactSheet": "../concepts/pixellab/9e6e4de8/manager-walk-v2-audit/walk-source-contact-sheet.png",
+      "sourceContactSheetSha256": "9caad3c6fd168af97aad3e7083779d7082259795598c8635965548aa9a921038"
+    },
+    "walk": {
+      "status": "approved",
+      "animationGroupId": "81920513-ab90-4941-a062-3b7503251aed",
+      "template": "walking-6-frames",
+      "directions": ["south", "west", "north", "east"],
+      "managerDecision": "approved",
+      "audit": "manager-current-walk-audit.json",
+      "auditSha256": "7eaa1d3a2512ec2c8b49c15fb4ff1750685092f521143619881c0bf14a6caf1a",
+      "packedAtlas": "manager-current-walk-q50.webp",
+      "packedBytes": 9796,
+      "packedSha256": "9d212f33dda520a4940332df13bc0005c97425ed165f1526c3096206e5a44e03",
+      "sourceContactSheet": "manager-current-walk-source.png",
+      "sourceContactSheetSha256": "69ee85f917133638294932645faeb9ed0b35b570d53848f207be8aee25587e6f"
+    },
+    "firearm-fire": {
+      "status": "partial-direction-result",
+      "animationGroupId": "dcb5b183-ea40-49b5-9d6a-e5fb8948056f",
+      "attempt": 10,
+      "mode": "v3-curated-one-hand-socket",
+      "frames": 8,
+      "directions": ["south", "west", "north", "east"],
+      "managerDecision": "partial-direction-approval",
+      "audit": "manager-working-pistol-v10-audit.json",
+      "auditSha256": "6ead799e15b28eba6d58496ca39d3ec349c6afc3834f7b2638f2c98bd3e6d7d0",
+      "packedAtlas": "manager-working-pistol-v10-q50.webp",
+      "packedBytes": 13384,
+      "packedSha256": "232f80757daf642a76de4b80082c5c9e6e0171e24f3f09b7591b2ab08c7fa683",
+      "sourceContactSheet": "manager-working-pistol-v10-source.png",
+      "sourceContactSheetSha256": "4adaccbaef71fa68201f1631b703b1d1becb213b7cf5e95f342ae9cfe94fdfe6",
+      "visualSummary": "East approved. North provisional. West rejected for wrong-hand ownership and baked firing pixels. South rejected for an unusable closed-fist silhouette.",
+      "directionDecisions": {
+        "south": "rejected-closed-fist-and-poor-silhouette",
+        "west": "rejected-wrong-hand-and-baked-fire-effect",
+        "north": "provisional",
+        "east": "approved"
+      },
+      "mathChecks": {
+        "decision": "approved",
+        "rootLocked": true,
+        "detachedEffects": 0,
+        "rearOverflowPixels": 0,
+        "packedCrop": "per-direction-union-contain"
+      },
+      "previousRejectedAttempts": [
+        {
+          "attempt": 2,
+          "animationGroupId": "943e2b10-e602-4080-b3d2-510a31ff26f0",
+          "reason": "south and north cross the forearms; west adds a baked backpack silhouette",
+          "sourceContactSheet": "rejected-firearm-v2-source.png",
+          "sourceContactSheetSha256": "9014ebe6bb5fc005c96931cb26d381271d77dcc8558ef6b70b568d6545f5ebac",
+          "audit": "rejected-firearm-v2-audit.json",
+          "auditSha256": "b58bb760462dfcbb030ec87da10b1c8579daa7b06c90b42b086ede932193974b"
+        },
+        {
+          "attempt": 1,
+          "animationGroupId": "4f27523f-deed-4ad2-a6be-23817d116ca7",
+          "reason": "south spreads both arms and side rows read as gesturing, not a one-hand pistol socket",
+          "sourceContactSheet": "rejected-firearm-v1-source.png",
+          "sourceContactSheetSha256": "f55cc4a0b29bf182d72a056c6fbdc122c3c9b9b2a8fe80d654c1e1776bcf4541",
+          "audit": "rejected-firearm-v1-audit.json",
+          "auditSha256": "11f86457ac0931f7f7fb5f657f6f089437f4d097b031020289145173fff46710",
+          "providerGroupDeleted": true
+        }
+      ]
+    },
+    "take-damage": "blocked-until-firearm-sockets-approved",
+    "death": "blocked-until-take-damage-approved"
+  }
+}

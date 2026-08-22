@@ -1,0 +1,16 @@
+{
+  "schema": "keel-map-modifier@1",
+  "id": "void-synth",
+  "name": "Void Synth SFX",
+  "compatibility": "vault-arena-runtime@2",
+  "changes": {
+    "audio": {
+      "codec": "sonant-x-compact@1",
+      "theme": "void-pulse",
+      "attack": "prism-cut",
+      "enemyDeath": "hollow-pop",
+      "waveStart": "vault-chord"
+    }
+  },
+  "changesGameplay": false
+}

@@ -1,0 +1,299 @@
+{
+  "schema": "keel-generated-attribute-proxy@1",
+  "status": "new-art-layer-and-motion-proxy-not-final-animation-art",
+  "authoredCellSize": 48,
+  "displayCellSize": 96,
+  "codec": {
+    "mediaType": "image/webp",
+    "quality": 50
+  },
+  "spriteAttributes": {
+    "schema": "../sprite-attribute-system-v1.json",
+    "effects": "../sprite-effects-v1.json",
+    "sounds": "weapon-sounds-v1.json",
+    "rule": "Every package is selected through a pinned Keel object revision and may supply its own exact-hex or tolerant-range target map plus FX profile."
+  },
+  "directions": [
+    "south",
+    "west",
+    "north",
+    "east"
+  ],
+  "clips": [
+    {
+      "id": "idle",
+      "frames": 4
+    },
+    {
+      "id": "walk",
+      "frames": 6
+    },
+    {
+      "id": "attack",
+      "frames": 8
+    },
+    {
+      "id": "hit",
+      "frames": 3
+    },
+    {
+      "id": "death",
+      "frames": 8
+    }
+  ],
+  "cellsPerAttribute": 116,
+  "drawOrder": [
+    "addon-three",
+    "body",
+    "legs",
+    "armor",
+    "hair-head",
+    "face",
+    "addon-one",
+    "addon-two",
+    "weapon"
+  ],
+  "packages": [
+    {
+      "attribute": "addon-three",
+      "colorMode": "material-ramp",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "addon-three-full-motion-q50.webp",
+      "byteLength": 3168,
+      "sha256": "0xeeb5d862c500b9a6c7e6d5c70f7b1af182041c443636a1d3938844c57052cc90",
+      "materialMap": "material-map.ocam",
+      "materialProfile": "material-profile.ocmp"
+    },
+    {
+      "attribute": "body",
+      "colorMode": "material-ramp",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "body-full-motion-q50.webp",
+      "byteLength": 20840,
+      "sha256": "0xc8e8aaed81234e7b389c5e92294f9dc63b29fbbff0dae99408aac025a5fc5b64",
+      "materialMap": "material-map.ocam",
+      "materialProfile": "material-profile.ocmp"
+    },
+    {
+      "attribute": "legs",
+      "colorMode": "material-ramp",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "legs-full-motion-q50.webp",
+      "byteLength": 14996,
+      "sha256": "0x64fd8538a3c9b97cedcf5cf2b625406bb51a851e1c5203a929e9ba923d9b4a50",
+      "materialMap": "material-map.ocam",
+      "materialProfile": "material-profile.ocmp"
+    },
+    {
+      "attribute": "armor",
+      "colorMode": "material-ramp",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "armor-full-motion-q50.webp",
+      "byteLength": 7800,
+      "sha256": "0x827cfc89fb6fee989e82906f33c867d6fa628180ec852010986834880bd17a42",
+      "materialMap": "material-map.ocam",
+      "materialProfile": "material-profile.ocmp"
+    },
+    {
+      "attribute": "hair-head",
+      "colorMode": "material-ramp",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "hair-head-full-motion-q50.webp",
+      "byteLength": 15314,
+      "sha256": "0xbf46c631127f58691af4dd499d800803c123d2d40e3787505cd2d37dfaecb5c3",
+      "materialMap": "material-map.ocam",
+      "materialProfile": "material-profile.ocmp"
+    },
+    {
+      "attribute": "face",
+      "colorMode": "fixed",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "face-full-motion-q50.webp",
+      "byteLength": 4566,
+      "sha256": "0xc86cf1b57120e2f9de29bce2725acdb48f7046789151cbc51d627a71953b778d"
+    },
+    {
+      "attribute": "addon-one",
+      "colorMode": "fixed",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "addon-one-full-motion-q50.webp",
+      "byteLength": 8514,
+      "sha256": "0x277618a76848da443a1b7b92d189182da126ce4ea49bb0bca2031825d26bb8aa"
+    },
+    {
+      "attribute": "addon-two",
+      "colorMode": "fixed",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "addon-two-full-motion-q50.webp",
+      "byteLength": 9854,
+      "sha256": "0x484f43cd76d04bf5cd5f0ed2b99e4b72b2453229008947577950b0174f92fb19"
+    },
+    {
+      "attribute": "weapon",
+      "colorMode": "material-ramp",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "weapon-full-motion-q50.webp",
+      "byteLength": 12460,
+      "sha256": "0x1420dd4471a5584e8a4bdd15ca10d29b98d66ac0ac889a2b19b8e348bf2a5ed7",
+      "materialMap": "material-map.ocam",
+      "materialProfile": "material-profile.ocmp"
+    }
+  ],
+  "totalBytes": 97512,
+  "q70Alternates": [
+    {
+      "attribute": "addon-three",
+      "colorMode": "material-ramp",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "addon-three-full-motion-q70.webp",
+      "byteLength": 3380,
+      "sha256": "0x5c730ed00635224e586cd87d34c8fe0053324f17ce38f5af928b00896ad23328"
+    },
+    {
+      "attribute": "body",
+      "colorMode": "material-ramp",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "body-full-motion-q70.webp",
+      "byteLength": 23534,
+      "sha256": "0x74bf4ce73dc263382d714c226c50c510b665e74c64483c80315377d201d6310e"
+    },
+    {
+      "attribute": "legs",
+      "colorMode": "material-ramp",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "legs-full-motion-q70.webp",
+      "byteLength": 17548,
+      "sha256": "0x022f0aab80e4d6d6aa708a59c782533b596317ae32618645832519a3c701a78f"
+    },
+    {
+      "attribute": "armor",
+      "colorMode": "material-ramp",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "armor-full-motion-q70.webp",
+      "byteLength": 8474,
+      "sha256": "0xea72a208426b185d71986a08fe266e277ff28903a55ae129b646bba503e24528"
+    },
+    {
+      "attribute": "hair-head",
+      "colorMode": "material-ramp",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "hair-head-full-motion-q70.webp",
+      "byteLength": 17260,
+      "sha256": "0x8e46902d519fb8e1b125e74b1c8686eacbc31455b27c5fdaafabcbbfc6b9ccb4"
+    },
+    {
+      "attribute": "face",
+      "colorMode": "fixed",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "face-full-motion-q70.webp",
+      "byteLength": 5180,
+      "sha256": "0xe93a1d1d2fd008c310ce94eaeb367ea1a90a012e126e084900270b9f563cb86a"
+    },
+    {
+      "attribute": "addon-one",
+      "colorMode": "fixed",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "addon-one-full-motion-q70.webp",
+      "byteLength": 10136,
+      "sha256": "0x1537ebb60178e29da0bff88bd7ad28f1d5a1217e4e1b372956b069d105a3873e"
+    },
+    {
+      "attribute": "addon-two",
+      "colorMode": "fixed",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "addon-two-full-motion-q70.webp",
+      "byteLength": 11786,
+      "sha256": "0x45e494c8fcb4b27181b0383d6c44d7cd794b2f7df401738822e48ec39d23950c"
+    },
+    {
+      "attribute": "weapon",
+      "colorMode": "material-ramp",
+      "fixedAccents": [
+        "cyan",
+        "amber"
+      ],
+      "fileName": "weapon-full-motion-q70.webp",
+      "byteLength": 14046,
+      "sha256": "0x457b85b9f71e8cc8d4e3f972c891220596d7ea29d9e3af06045c88a2ecadb12f"
+    }
+  ],
+  "q70TotalBytes": 111344,
+  "completeCharacterPreview": {
+    "fileName": "complete-character-full-motion-q50.webp",
+    "byteLength": 57228
+  },
+  "sharedReader": {
+    "fileName": "oca-readers.js",
+    "api": [
+      "decodeAtlasMaterialMapBits",
+      "decodeMaterialBits",
+      "resolveMaterialProfile",
+      "applyAtlasMaterialMap",
+      "encodeCharacterMetadataBits",
+      "decodeCharacterMetadataBits",
+      "parseSpriteSoundCatalog",
+      "resolveSpriteSound",
+      "createAudioReader"
+    ]
+  },
+  "materialSystem": {
+    "mapJson": "material-map.json",
+    "mapBits": "material-map.ocam",
+    "mapBytes": 108,
+    "profileJson": "material-profile.json",
+    "profileBits": "material-profile.ocmp",
+    "profileBytes": 21,
+    "note": "Fixed cyan and amber ranges override one seeded primary material. Additional named ranges may share or split materialRegionId values."
+  }
+}

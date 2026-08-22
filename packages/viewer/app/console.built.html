@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keel backpack console</title>
+<style>
+/* A driver's seat for the wrapper, not a product. Everything here is a direct
+   call to the contract with no library in between, so what you click is exactly
+   what the chain sees. */
+:root{
+  color-scheme:dark;
+  --bg:#050807; --card:#0a1512; --line:#ffffff14; --ink:#dff8f0; --dim:#7d968d;
+  --ok:#67f6c5; --warn:#ffca63; --bad:#ff6573; --ice:#8ab4ff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;padding:28px}
+h1{font-size:15px;letter-spacing:.14em;margin:0 0 4px}
+.sub{color:var(--dim);margin:0 0 22px}
+button{font:inherit;cursor:pointer;border-radius:8px;padding:8px 14px;
+  border:1px solid var(--line);background:#122019;color:var(--ink);transition:.15s}
+button:hover:not(:disabled){border-color:var(--ok);color:var(--ok)}
+button:disabled{opacity:.32;cursor:not-allowed}
+button.danger:hover:not(:disabled){border-color:var(--bad);color:var(--bad)}
+#connect{border-color:var(--ok);color:var(--ok);margin-bottom:24px}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card.mine{border-color:rgba(103,246,197,.3)}
+.card h2{font-size:13px;margin:0 0 2px;letter-spacing:.08em}
+.who{font-size:10px;letter-spacing:.14em;color:var(--dim);margin-bottom:12px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:5px 0;
+  border-bottom:1px dashed var(--line);font-size:12px}
+.row:last-of-type{border-bottom:0}
+.row span:first-child{color:var(--dim)}
+.pill{display:inline-block;padding:1px 9px;border-radius:999px;font-size:10px;
+  font-weight:700;letter-spacing:.1em;border:1px solid currentColor}
+.Sealed{color:var(--ok)} .Frozen{color:var(--ice)}
+.Hollow,.Compromised{color:var(--bad)} .None{color:var(--dim)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+a{color:var(--ok)}
+#log{margin-top:24px;padding:14px;background:var(--card);border:1px solid var(--line);
+  border-radius:12px;white-space:pre-wrap;font-size:11px;color:var(--dim);min-height:44px}
+.lab{margin-top:24px;padding:18px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.lab h2{font-size:12px;letter-spacing:.12em;margin:0 0 8px}
+.lab p{color:var(--dim);margin:0 0 14px;max-width:70ch}
+.lab b{color:var(--ink)}
+input,select{font:inherit;background:#0f1a16;color:var(--ink);border:1px solid var(--line);
+  border-radius:8px;padding:7px 10px}
+#bad-out{margin-top:14px;font-size:11px;white-space:pre-wrap;line-height:1.75}
+#bad-out .yes{color:var(--ok)} #bad-out .no{color:var(--bad)} #bad-out .k{color:var(--dim)}
+</style>
+</head>
+<body>
+<h1>KEEL BACKPACK CONSOLE</h1>
+<p class="sub">Sepolia. Every button is one call to the wrapper contract — no relayer, no backend.</p>
+<button id="connect" type="button">Connect wallet</button>
+<div class="grid" id="grid"></div>
+
+<section class="lab">
+  <h2>Mint your own</h2>
+  <p>The stand-in collection is open — anybody can mint any id from 1 to 10,000, and every
+     one of them has a real entry in the Bored Ape directory. Artwork for
+     <b>1, 2, 3, 4 and 5</b> is already on this chain, so those can be preserved
+     straight after wrapping. Any other id will wrap fine and sit at
+     <i>unproven</i> until somebody puts its bytes here.</p>
+  <div class="acts">
+    <input id="mint-id" type="number" min="1" max="10000" value="7" aria-label="token id">
+    <button id="mint" type="button">Mint to me</button>
+  </div>
+</section>
+
+<section class="lab">
+  <h2>Try to feed it bad data</h2>
+  <p>Drop in any image. The page hashes it exactly the way IPFS does and shows you the
+     name those bytes carry — a CID <i>is</i> the hash, so this is a sum you can do for
+     yourself with nothing to trust. Then ask the contract, for free and without sending
+     a transaction: it is offered another ape's artwork, which really is stored on this
+     chain, and it refuses. Provenance was never what was being checked.</p>
+  <div class="acts">
+    <input id="bad-file" type="file" accept="image/*" aria-label="a file to test">
+    <select id="bad-token" aria-label="which token to test against"></select>
+    <button id="bad-ask" type="button" disabled>Ask the contract</button>
+    <button id="bad-upload" type="button" class="danger" disabled>Upload it for real</button>
+  </div>
+  <div id="bad-out"></div>
+</section>
+
+<div id="log">reading Sepolia…</div>
+
+<!-- Written by scripts/keel-backpack-demo.mjs at deploy time, so this page
+     can never point at a deployment that is not the one it was built for. -->
+<script type="application/json" id="deployment">{"chainId":11155111,"rpc":"https://ethereum-sepolia-rpc.publicnode.com","explorer":"https://sepolia.etherscan.io","keelHold":"0xe795c99e4e4438434958799dfb6c4ca8f43d9bc8","collection":"0xc4a7997fc770bb9f6804b73597affd1f7335797e","factory":"0xed576fcae294399bdfd774e4fc60ce2a4076218a","ledger":"0xf6f8aa4ef619b07193f95c7f1a356846f1f5fec9","backpack":"0xAA8c93e155520B2d6A3AFf27B2743Db578f1ADa7","viewerObject":"0x6b20038357a04fea5f6723ae7e30b7b4d0629f20089d1f407d1d22808814e21a","viewerDigest":"0x8444342328357f7253e72859107ba7adec35300e52a433d2db8acdbbb0a45d05","directoryObject":"0xc8ba035332e126339af7412cfe3401f49ed8e2f76f3325f1cd8ecd19ac8f5dd4","deployer":"0x404A6bd65EF48AE85Da7b0E9358715a34A401b05","tester":"0x764E3EE7A844d9165937c41fd08086e43b997149","route":"ipfs://QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq/{id}","tokens":[{"id":1,"note":"deployer — emptied, wears the red curved frame","metadataObject":"0x45271b1bdcd5558d5066e237d2d00f720f78cf3224beb545aebf8b9ad74cce5a","imageObject":"0x388c06eb23fa78e783e244d4e909bf040527d4214a30ce4504cf8eacaa37ec42","hint":45,"backdrop":{"shape":3,"x":0,"y":0,"w":1000,"h":1000,"r":39}}],"artObject":"0x5887a694107c6c9afac7c86be484428f43428cbef7211ae6390f8540686f86c1","builder":"0xa35454881fafe8a6550d1bb34b4388076aa33a89","renderFor":4,"cids":{"1":"QmPbxeGcXhYQQNgsC6a36dDyYUcHgMLnGKnF8pVFmGsvqi","2":"QmcJYkCKK7QPmYWjp4FD2e3Lv5WCGFuHNUByvGKBaytif4","3":"QmYxT4LnK8sqLupjbS6eRvu1si7Ly2wFQAqFebxhWntcf6","4":"QmSg9bPzW9anFYc3wWU5KnvymwkxQTpmqcRSfYj7UmiBa7","5":"QmNwbd7ctEhGpVkP8nZvBBQfiNeFKRdxftJAxxEdkUKLcQ"}}</script>
+
+<script type="module">
+const D = JSON.parse(document.getElementById("deployment").textContent);
+
+const CHUNK_BYTES = 23_000;
+const MAX_UPLOAD_CHUNKS = 3;
+
+const SEL = {
+  custodyOf: "0x65269e47",
+  ownerOf: "0x6352211e",
+  withdraw: "0x2e1a7d4d",
+  freeze: "0xd7a78db8",
+  wrap: "0x13bac820",
+  safeTransferFrom: "0x42842e0e",
+  approve: "0x095ea7b3",
+  locked: "0xb45a3c0e",
+  ladderComplete: "0xda917d2d",
+  weakestLane: "0x9d84a67c",
+  pinObservation: "0x1d477b4c",
+  sealObservation: "0x00b76c95",
+  proveMetadataViaDirectory: "0x212e1be3",
+  bindAsset: "0x243ff80e",
+  bindBackdrop: "0x5bf61de8",
+  mint: "0x40c10f19",
+  castSlug: "0x1cd7f55e",
+  weldObject: "0xccb1a7b1",
+  slugPointer: "0x23cc7937",
+  getObject: "0x05144857",
+};
+const CUSTODY = ["None", "Sealed", "Frozen", "Hollow", "Compromised"];
+const LANE = ["unproven", "attested", "committed", "native"];
+const STAGE = {
+  "needs-metadata": "route not proven yet",
+  "artwork-open": "metadata proven · artwork open",
+  complete: "complete",
+};
+
+const word = (value) => BigInt(value).toString(16).padStart(64, "0");
+const addr = (value) => value.replace(/^0x/, "").toLowerCase().padStart(64, "0");
+const log = (message) => (document.getElementById("log").textContent = message);
+
+let wallet = null;
+
+async function rpc(method, params) {
+  return window.ethereum.request({ method, params });
+}
+
+/**
+ * A plain `eth_call`, over a public node until a wallet is connected.
+ *
+ * Every state on this page is public, so there is no reason to make somebody
+ * connect a wallet before they can see what the chain says. Signing is the only
+ * thing that needs one.
+ */
+let calls = 0;
+async function read(to, data) {
+  if (wallet) return rpc("eth_call", [{ to, data }, "latest"]);
+  const response = await fetch(D.rpc, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: ++calls, method: "eth_call", params: [{ to, data }, "latest"] }),
+  });
+  const body = await response.json();
+  if (body.error) throw new Error(body.error.message);
+  return body.result;
+}
+
+async function write(to, data, label) {
+  log(`${label} — confirm in your wallet…`);
+  const hash = await rpc("eth_sendTransaction", [{ from: wallet, to, data }]);
+  log(`${label} — sent ${hash}\nwaiting for it to be mined…`);
+  for (;;) {
+    const receipt = await rpc("eth_getTransactionReceipt", [hash]);
+    if (receipt) {
+      const ok = receipt.status === "0x1";
+      log(`${label} — ${ok ? "confirmed" : "REVERTED"}\n${D.explorer}/tx/${hash}`);
+      if (!ok) throw new Error("reverted");
+      break;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 2_000));
+  }
+  await refresh();
+}
+
+/**
+ * Read everything the wrapper will say about one token.
+ *
+ * Custody is derived from `ownerOf` on every call rather than stored, so this is
+ * genuinely live: the moment the original leaves, the answer changes.
+ */
+async function inspect(token) {
+  const id = word(token.id);
+  const state = { ...token };
+
+  // Nothing here is taken from configuration. Whether a wrapper exists is a
+  // question for the chain, asked fresh every refresh — otherwise a token you
+  // wrap yourself would keep reporting the state it had when this page loaded.
+  state.custody = CUSTODY[Number(await read(D.backpack, SEL.custodyOf + id).catch(() => "0x0"))] ?? "None";
+  state.wrapped = state.custody !== "None";
+  // A token that was never minted has no owner and `ownerOf` says so by
+  // reverting. That is a state worth showing, not an error worth throwing.
+  const held = await read(D.collection, SEL.ownerOf + id).catch(() => null);
+  state.minted = held !== null;
+  state.holder = held ? `0x${held.slice(-40)}` : null;
+
+  if (state.wrapped) {
+    state.owner = `0x${(await read(D.backpack, SEL.ownerOf + id)).slice(-40)}`;
+    state.locked = BigInt(await read(D.backpack, SEL.locked + id).catch(() => "0x0")) === 1n;
+    const pair = addr(D.backpack) + id;
+    state.proven = BigInt(await read(D.ledger, SEL.ladderComplete + pair)) === 1n;
+    state.lane = LANE[Number(await read(D.ledger, SEL.weakestLane + pair))] ?? "unproven";
+    state.stage = state.proven ? "complete" : await probe(state);
+  } else {
+    state.owner = state.holder;
+  }
+  return state;
+}
+
+function render(states) {
+  const grid = document.getElementById("grid");
+  grid.replaceChildren();
+  for (const s of states) {
+    const mine = wallet && s.owner && s.owner.toLowerCase() === wallet.toLowerCase();
+    const card = document.createElement("div");
+    card.className = `card${mine ? " mine" : ""}`;
+
+    const rows = [
+      ["Custody", `<span class="pill ${s.custody}">${s.custody}</span>`],
+      ["Original held by", s.holder ? short(s.holder) : "not minted yet"],
+      ["Wrapper owner", s.wrapped ? short(s.owner) : "—"],
+      ["Transferable", s.wrapped ? (s.locked ? "no" : "yes") : "n/a"],
+      ["Preservation", s.wrapped ? (s.proven ? s.lane : STAGE[s.stage] ?? "incomplete") : "—"],
+    ];
+
+    card.innerHTML =
+      `<h2>Ape #${s.id}</h2><div class="who">${mine ? "YOURS" : s.note}</div>` +
+      rows.map(([k, v]) => `<div class="row"><span>${k}</span><span>${v}</span></div>`).join("");
+
+    const acts = document.createElement("div");
+    acts.className = "acts";
+
+    // Wrapping is two transactions for a token the wrapper has never held: an
+    // approval, then the transfer that mints the wrapper. `safeTransferFrom`
+    // straight into the backpack does both in one, so that is what is offered.
+    const holdsOriginal = wallet && s.holder && s.holder.toLowerCase() === wallet.toLowerCase();
+    if (mine || holdsOriginal) {
+      // Wrapping needs the original in hand, which after an unwrap is the case
+      // again — the wrapper is still there, waiting to be refilled.
+      if (holdsOriginal && (s.custody === "None" || s.custody === "Hollow")) {
+        acts.append(
+          button("Wrap", async () => {
+            if (s.custody === "Hollow") {
+              await write(D.collection, SEL.approve + addr(D.backpack) + word(s.id), `approve #${s.id}`);
+              await write(D.backpack, SEL.wrap + word(s.id) + addr(wallet), `wrap #${s.id}`);
+            } else {
+              await write(
+                D.collection,
+                SEL.safeTransferFrom + addr(wallet) + addr(D.backpack) + word(s.id),
+                `wrap #${s.id}`,
+              );
+            }
+          }),
+        );
+      }
+      if (s.custody === "Sealed") {
+        acts.append(
+          button("Unwrap", () => write(D.backpack, SEL.withdraw + word(s.id), `unwrap #${s.id}`), true),
+          button("Freeze forever", () => {
+            if (!confirm(`Freeze ape #${s.id}? This cannot be undone by anyone, ever.`)) return;
+            return write(D.backpack, SEL.freeze + word(s.id), `freeze #${s.id}`);
+          }, true),
+        );
+      }
+      // Closing the ladder is open to anybody — the ledger checks bytes, not
+      // senders — so whoever wrapped it can do it from here, one stage at a
+      // time.
+      if (s.wrapped && !s.proven && s.metadataObject) {
+        if (s.stage === "needs-metadata" || s.stage === "unknown") {
+          acts.append(button("Prove metadata (3 txs)", () => proveMetadata(s)));
+        }
+        if (s.stage === "artwork-open") {
+          acts.append(button("Bind real artwork", () => bindArtwork(s)));
+        }
+      }
+      if (s.custody === "Frozen") {
+        acts.append(
+          button("Try to unwrap (must fail)", async () => {
+            try {
+              await write(D.backpack, SEL.withdraw + word(s.id), `unwrap frozen #${s.id}`);
+              log("that should not have worked — tell someone");
+            } catch {
+              log(`ape #${s.id} is frozen: withdraw is unreachable, exactly as intended.`);
+            }
+          }, true),
+        );
+      }
+    }
+    if (s.wrapped) {
+      const view = document.createElement("a");
+      view.href = `${D.explorer}/token/${D.backpack}?a=${s.id}`;
+      view.target = "_blank";
+      view.rel = "noreferrer noopener";
+      view.textContent = "view on explorer ›";
+      view.style.alignSelf = "center";
+      acts.append(view);
+    }
+    card.append(acts);
+    grid.append(card);
+  }
+}
+
+/**
+ * Ask the ledger, for free, what stage this token's ladder is at.
+ *
+ * Rather than keeping a second model of the state in this page, offer the real
+ * bytes through `eth_call` and read what comes back. A success means the artwork
+ * link is open and these bytes would be accepted; the revert names the stage.
+ */
+async function probe(token) {
+  if (!token.imageObject) return "unknown";
+  const field = new TextEncoder().encode("image");
+  const data =
+    SEL.bindAsset +
+    addr(D.backpack) +
+    word(token.id) +
+    token.imageObject.slice(2) +
+    word(0x80) +
+    word(field.length) +
+    [...field].map((b) => b.toString(16).padStart(2, "0")).join("").padEnd(64, "0");
+  const outcome = await call(D.ledger, data);
+  if (outcome.ok) return "artwork-open";
+  if (outcome.error?.name === "LinkAlreadyBound") return "complete";
+  if (outcome.error?.name === "NotProven") return "needs-metadata";
+  return outcome.error?.name ?? "unknown";
+}
+
+/** `eth_call` that returns the revert rather than throwing it away. */
+async function call(to, data) {
+  const response = await fetch(D.rpc, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "eth_call",
+      params: [{ to, data, from: wallet ?? D.deployer }, "latest"],
+    }),
+  });
+  const body = await response.json();
+  if (!body.error) return { ok: true };
+  const raw = body.error.data ?? body.error.message?.match(/0x[0-9a-f]{8,}/i)?.[0];
+  return { ok: false, error: explainRevert(raw) };
+}
+
+/**
+ * Prove the route and the metadata — links A, B and C — and stop there.
+ *
+ * Stopping short is deliberate. With the metadata proven and the artwork link
+ * still open, the ledger will accept an offer of bytes and judge them, which is
+ * the only moment at which "try to feed it something else" means anything.
+ */
+async function proveMetadata(token) {
+  const id = word(token.id);
+  const pair = addr(D.backpack) + id;
+
+  await write(D.ledger, SEL.pinObservation + pair, `pin observation #${token.id}`);
+  const pinned = BigInt(await rpc("eth_blockNumber", []));
+  log("waiting one block so the pinned hash exists…");
+  while (BigInt(await rpc("eth_blockNumber", [])) <= pinned) {
+    await new Promise((resolve) => setTimeout(resolve, 3_000));
+  }
+  await write(D.ledger, SEL.sealObservation + pair, `seal observation #${token.id}`);
+
+  // `proveMetadataViaDirectory(address,uint256,bytes32,bytes32,string,uint256)`
+  // — the route is dynamic, so its slot holds an offset into the tail.
+  const route = new TextEncoder().encode(D.route.replace("{id}", String(token.id)));
+  const routeTail =
+    word(route.length) +
+    [...route].map((b) => b.toString(16).padStart(2, "0")).join("").padEnd(Math.ceil(route.length / 32) * 64, "0");
+  await write(
+    D.ledger,
+    SEL.proveMetadataViaDirectory +
+      pair +
+      D.directoryObject.slice(2) +
+      token.metadataObject.slice(2) +
+      word(0xc0) +
+      word(token.hint) +
+      routeTail,
+    `prove metadata #${token.id}`,
+  );
+  log(`links A, B and C are closed for ape #${token.id}. The artwork link is open — try feeding it something now.`);
+}
+
+/** Close link D with the real bytes, and record the curve measured off them. */
+async function bindArtwork(token) {
+  const pair = addr(D.backpack) + word(token.id);
+  const field = new TextEncoder().encode("image");
+  await write(
+    D.ledger,
+    SEL.bindAsset +
+      pair +
+      token.imageObject.slice(2) +
+      word(0x80) +
+      word(field.length) +
+      [...field].map((b) => b.toString(16).padStart(2, "0")).join("").padEnd(64, "0"),
+    `bind artwork #${token.id}`,
+  );
+  const b = token.backdrop;
+  if (b) {
+    await write(
+      D.ledger,
+      SEL.bindBackdrop + pair + word(b.shape) + word(b.x) + word(b.y) + word(b.w) + word(b.h) + word(b.r),
+      `bind backdrop #${token.id}`,
+    );
+  }
+  log(`ape #${token.id} is preserved: four links, all native.`);
+}
+
+function button(label, onClick, danger = false) {
+  const node = document.createElement("button");
+  node.type = "button";
+  node.textContent = label;
+  if (danger) node.className = "danger";
+  node.addEventListener("click", async () => {
+    node.disabled = true;
+    try {
+      await onClick();
+    } catch (error) {
+      log(`${label} failed: ${error?.message ?? error}`);
+    } finally {
+      node.disabled = false;
+    }
+  });
+  return node;
+}
+
+const short = (value) => `${value.slice(0, 6)}…${value.slice(-4)}`;
+
+async function refresh() {
+  // One token that cannot be read must not blank the others.
+  const settled = await Promise.allSettled(D.tokens.map(inspect));
+  const failures = settled.filter((entry) => entry.status === "rejected");
+  render(settled.filter((entry) => entry.status === "fulfilled").map((entry) => entry.value));
+  if (failures.length) log(`${failures.length} token(s) could not be read: ${failures[0].reason?.message ?? ""}`);
+}
+
+document.getElementById("connect").addEventListener("click", async () => {
+  if (!window.ethereum) return log("no injected wallet found — open this in a browser with MetaMask");
+  [wallet] = await rpc("eth_requestAccounts", []);
+  const chain = await rpc("eth_chainId", []);
+  if (chain !== "0xaa36a7") {
+    await rpc("wallet_switchEthereumChain", [{ chainId: "0xaa36a7" }]);
+  }
+  document.getElementById("connect").textContent = short(wallet);
+  log(`connected as ${wallet}`);
+  await refresh();
+});
+
+/* ------------------------------------------------------------------ minting */
+
+document.getElementById("mint").addEventListener("click", async () => {
+  if (!wallet) return log("connect a wallet first");
+  const id = Number(document.getElementById("mint-id").value);
+  if (!Number.isInteger(id) || id < 1 || id > 10_000) return log("pick an id between 1 and 10,000");
+  try {
+    await write(D.collection, SEL.mint + addr(wallet) + word(id), `mint #${id}`);
+    if (!D.tokens.some((t) => t.id === id)) {
+      D.tokens.push({ id, note: "minted by you" });
+      await refresh();
+    }
+  } catch (error) {
+    log(`mint #${id} failed: ${error?.message ?? error}\nthat id is probably already minted — try another`);
+  }
+});
+
+/* -------------------------------------------------------------- bad data lab */
+
+/**
+ * The CID of a file, computed the way `ipfs add` computes it by default.
+ *
+ * A CID is not a label attached to bytes, it *is* their hash — so this can be
+ * done here, in the page, with no network and no trust in anybody. If what comes
+ * out is not the name the collection committed to, no amount of arguing will
+ * make the ledger accept it.
+ */
+const varint = (value) => {
+  const out = [];
+  while (value >= 0x80) {
+    out.push((value & 0x7f) | 0x80);
+    value >>>= 7;
+  }
+  out.push(value);
+  return out;
+};
+
+const BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+function base58(bytes) {
+  let number = 0n;
+  for (const byte of bytes) number = number * 256n + BigInt(byte);
+  let out = "";
+  while (number > 0n) {
+    out = BASE58[Number(number % 58n)] + out;
+    number /= 58n;
+  }
+  for (const byte of bytes) {
+    if (byte !== 0) break;
+    out = `1${out}`;
+  }
+  return out;
+}
+
+async function cidV0(content) {
+  if (content.length > 262_144) return null; // a bigger file needs a multi-block DAG
+  const unixfs = [0x08, 0x02, 0x12, ...varint(content.length), ...content, 0x18, ...varint(content.length)];
+  const node = new Uint8Array([0x0a, ...varint(unixfs.length), ...unixfs]);
+  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", node));
+  return base58(new Uint8Array([0x12, 0x20, ...digest]));
+}
+
+/** Decode the revert data the ledger returns, so the reason is readable. */
+function explainRevert(data) {
+  if (typeof data !== "string" || data.length < 10) return null;
+  const selector = data.slice(0, 10);
+  if (selector === "0x0f3e0452") {
+    // CidMismatch(string computed, string claimed)
+    const body = data.slice(10);
+    const read = (slot) => {
+      const at = Number(BigInt(`0x${body.slice(slot * 64, slot * 64 + 64)}`)) * 2;
+      const length = Number(BigInt(`0x${body.slice(at, at + 64)}`));
+      const raw = body.slice(at + 64, at + 64 + length * 2);
+      return new TextDecoder().decode(Uint8Array.from(raw.match(/../g) ?? [], (b) => parseInt(b, 16)));
+    };
+    return { name: "CidMismatch", computed: read(0), claimed: read(1) };
+  }
+  if (selector === "0xea98cec9") return { name: "ObjectMissing" };
+  if (selector === "0xa506d334") return { name: "NotProven" };
+  if (selector === "0xeece17a5") return { name: "LinkAlreadyBound" };
+  return { name: selector };
+}
+
+const badOut = document.getElementById("bad-out");
+const badFile = document.getElementById("bad-file");
+const badToken = document.getElementById("bad-token");
+const badAsk = document.getElementById("bad-ask");
+let dropped = null;
+
+for (const token of D.tokens) {
+  const option = document.createElement("option");
+  option.value = String(token.id);
+  option.textContent = `ape #${token.id}`;
+  badToken.append(option);
+}
+
+badFile.addEventListener("change", async () => {
+  const file = badFile.files?.[0];
+  if (!file) return;
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const cid = await cidV0(bytes);
+  dropped = { name: file.name, bytes, cid };
+  const token = D.tokens.find((t) => String(t.id) === badToken.value);
+  const wanted = D.cids?.[token?.id];
+  const match = cid && wanted && cid === wanted;
+  badOut.innerHTML =
+    `<span class="k">your file  </span>${file.name} · ${bytes.length.toLocaleString()} B\n` +
+    `<span class="k">hashes to  </span>${cid ?? "(over 256KB — needs a multi-block DAG)"}\n` +
+    `<span class="k">ape #${token?.id} is </span>${wanted ?? "—"}\n` +
+    (match
+      ? `<span class="yes">these are the bytes the collection named.</span>`
+      : `<span class="no">different name — the ledger will refuse these bytes.</span>`);
+  badAsk.disabled = false;
+  document.getElementById("bad-upload").disabled = bytes.length > MAX_UPLOAD_CHUNKS * CHUNK_BYTES;
+});
+
+const WHY = {
+  CidMismatch: "the ledger hashed the bytes it was offered and got a different name.",
+  LinkAlreadyBound: "this token's artwork link is already closed, so the ledger refuses a second binding before it even looks at the bytes.",
+  NotProven: "the route and metadata have not been proven yet, so there is nothing for artwork to be checked against. Prove metadata first.",
+  ObjectMissing: "those bytes are not on this chain at all — nothing to hash.",
+};
+
+badAsk.addEventListener("click", async () => {
+  const token = D.tokens.find((entry) => String(entry.id) === badToken.value);
+  if (!token) return;
+
+  // Offer bytes that genuinely exist on this chain but belong to another ape.
+  // `eth_call` runs the real function against real state and returns the real
+  // revert — it just never lands in a block, so it costs nothing.
+  const wrong = D.tokens.find((entry) => entry.id !== token.id && entry.imageObject);
+  if (!wrong) return log("no other artwork on chain to substitute");
+
+  const field = new TextEncoder().encode("image");
+  const data =
+    SEL.bindAsset +
+    addr(D.backpack) +
+    word(token.id) +
+    wrong.imageObject.slice(2) +
+    word(0x80) +
+    word(field.length) +
+    [...field].map((b) => b.toString(16).padStart(2, "0")).join("").padEnd(64, "0");
+
+  const outcome = await call(D.ledger, data);
+  const head = `\n\n<span class="k">offered ape #${wrong.id}'s artwork as ape #${token.id}'s, which is genuinely stored here.</span>\n`;
+
+  if (outcome.ok) {
+    badOut.innerHTML += `${head}<span class="no">the contract accepted it</span> — that should not happen. Tell someone.`;
+    return;
+  }
+  const { name, computed, claimed } = outcome.error ?? {};
+  badOut.innerHTML +=
+    `${head}<span class="k">the contract said </span><span class="yes">${name}</span>\n` +
+    (computed
+      ? `<span class="k">  it hashed to  </span>${computed}\n<span class="k">  but needed    </span>${claimed}\n`
+      : "") +
+    `<span class="k">${WHY[name] ?? "refused."}</span>`;
+});
+
+/* --------------------------------------------------- putting it on for real */
+
+const hexOf = (bytes) => [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
+const padded = (hex) => hex.padEnd(Math.ceil(hex.length / 64) * 64, "0");
+
+/** `castSlug(bytes)` — one dynamic argument, so an offset then the payload. */
+const castSlugData = (chunk) =>
+  SEL.castSlug + word(0x20) + word(chunk.length) + padded(hexOf(chunk));
+
+/** `weldObject(bytes32[],bytes32,uint64,uint8,string)`. */
+function createObjectData(ids, digest, byteLength, mediaType) {
+  const media = new TextEncoder().encode(mediaType);
+  const arrayTail = word(ids.length) + ids.map((id) => id.slice(2)).join("");
+  const head = word(0xa0) + digest.slice(2) + word(byteLength) + word(0) + word(0xa0 + arrayTail.length / 2);
+  return SEL.weldObject + head + arrayTail + word(media.length) + padded(hexOf(media));
+}
+
+/**
+ * Store a file on this chain and then offer it to the ledger as artwork.
+ *
+ * This is the honest version of the experiment: the bytes really do go on chain,
+ * because storage does not care what they are — it is content-addressed, it will
+ * take anything. What refuses them is the proof, and it refuses them by name.
+ *
+ * Chunk ids and the object id are read back with `eth_call`, which runs the real
+ * function and returns its real return value without ever landing in a block.
+ * That is cheaper and less error-prone than reimplementing keccak here.
+ */
+document.getElementById("bad-upload").addEventListener("click", async () => {
+  if (!wallet) return log("connect a wallet first");
+  if (!dropped) return log("choose a file first");
+  const token = D.tokens.find((entry) => String(entry.id) === badToken.value);
+  if (!token) return;
+
+  const chunks = [];
+  for (let offset = 0; offset < dropped.bytes.length; offset += CHUNK_BYTES) {
+    chunks.push(dropped.bytes.subarray(offset, Math.min(offset + CHUNK_BYTES, dropped.bytes.length)));
+  }
+  if (chunks.length > MAX_UPLOAD_CHUNKS) {
+    return log(
+      `that file is ${dropped.bytes.length.toLocaleString()} B and would cost about ` +
+        `${(chunks.length * 5.2).toFixed(0)}M gas to store. Pick something under ` +
+        `${(MAX_UPLOAD_CHUNKS * CHUNK_BYTES).toLocaleString()} B — the point does not need a big file.`,
+    );
+  }
+
+  const ids = [];
+  for (const [index, chunk] of chunks.entries()) {
+    const id = (await read(D.keelHold, castSlugData(chunk))).slice(0, 66);
+    ids.push(id);
+    const pointer = await read(D.keelHold, SEL.slugPointer + id.slice(2));
+    if (BigInt(pointer) === 0n) {
+      await write(D.keelHold, castSlugData(chunk), `store chunk ${index + 1}/${chunks.length}`);
+    } else {
+      log(`chunk ${index + 1}/${chunks.length} was already on this chain — content-addressed storage dedupes.`);
+    }
+  }
+
+  const digest = `0x${hexOf(new Uint8Array(await crypto.subtle.digest("SHA-256", dropped.bytes)))}`;
+  const objectData = createObjectData(ids, digest, dropped.bytes.length, "image/png");
+  const objectId = (await read(D.keelHold, objectData)).slice(0, 66);
+  const existing = await call(D.keelHold, SEL.getObject + objectId.slice(2));
+  if (!existing.ok) await write(D.keelHold, objectData, "create object");
+
+  badOut.innerHTML +=
+    `\n\n<span class="k">your file is now on this chain as </span>${objectId.slice(0, 18)}…\n` +
+    `<span class="k">storage took it without complaint — it is content-addressed, it takes anything.</span>\n`;
+
+  // Now offer it as this token's artwork. Free, because the answer is a revert.
+  const field = new TextEncoder().encode("image");
+  const bind =
+    SEL.bindAsset +
+    addr(D.backpack) +
+    word(token.id) +
+    objectId.slice(2) +
+    word(0x80) +
+    word(field.length) +
+    padded(hexOf(field));
+  const outcome = await call(D.ledger, bind);
+  if (outcome.ok) {
+    badOut.innerHTML += `<span class="yes">the ledger accepted it</span> — those really were ape #${token.id}'s bytes.`;
+    return;
+  }
+  const { name, computed, claimed } = outcome.error ?? {};
+  badOut.innerHTML +=
+    `<span class="k">the ledger said </span><span class="yes">${name}</span>\n` +
+    (computed
+      ? `<span class="k">  your bytes hash to  </span>${computed}\n<span class="k">  it needed           </span>${claimed}\n`
+      : "") +
+    `<span class="k">${WHY[name] ?? "refused."}</span>`;
+});
+
+// Read-only until a wallet shows up, so the states are visible either way.
+refresh()
+  .then(() => {
+    if (!wallet) log("connect a wallet to mint, wrap, unwrap or freeze");
+  })
+  .catch((error) => log(`could not read Sepolia: ${error?.message ?? error}`));
+</script>
+</body>
+</html>

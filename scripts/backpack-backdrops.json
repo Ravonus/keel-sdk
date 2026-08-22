@@ -1,0 +1,82 @@
+{
+  "1": {
+    "measured": {
+      "kind": "rounded",
+      "radiusPx": 24.35,
+      "color": "rgb(239,151,44)",
+      "fit": 99
+    },
+    "canvas": {
+      "shape": 3,
+      "x": 0,
+      "y": 0,
+      "w": 1000,
+      "h": 1000,
+      "r": 39
+    }
+  },
+  "2": {
+    "measured": {
+      "kind": "rounded",
+      "radiusPx": 23.65,
+      "color": "rgb(23,230,183)",
+      "fit": 100
+    },
+    "canvas": {
+      "shape": 3,
+      "x": 0,
+      "y": 0,
+      "w": 1000,
+      "h": 1000,
+      "r": 37
+    }
+  },
+  "3": {
+    "measured": {
+      "kind": "rounded",
+      "radiusPx": 24,
+      "color": "rgb(111,93,112)",
+      "fit": 100
+    },
+    "canvas": {
+      "shape": 3,
+      "x": 0,
+      "y": 0,
+      "w": 1000,
+      "h": 1000,
+      "r": 38
+    }
+  },
+  "4": {
+    "measured": {
+      "kind": "rounded",
+      "radiusPx": 24.1,
+      "color": "rgb(162,229,244)",
+      "fit": 100
+    },
+    "canvas": {
+      "shape": 3,
+      "x": 0,
+      "y": 0,
+      "w": 1000,
+      "h": 1000,
+      "r": 38
+    }
+  },
+  "5": {
+    "measured": {
+      "kind": "rounded",
+      "radiusPx": 24.35,
+      "color": "rgb(113,114,52)",
+      "fit": 100
+    },
+    "canvas": {
+      "shape": 3,
+      "x": 0,
+      "y": 0,
+      "w": 1000,
+      "h": 1000,
+      "r": 39
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Keel Verified Viewer",
+  "version": "0.1.0",
+  "description": "Detects Keel-bound Tezos tokens and renders their hash-verified recursive viewer without requiring marketplace Advanced Mode.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://api.tzkt.io/*",
+    "https://api.shadownet.tzkt.io/*",
+    "https://ipfs.io/*"
+  ],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://objkt.com/tokens/*/*",
+        "https://www.objkt.com/tokens/*/*",
+        "https://shadownet.objkt.com/tokens/*/*"
+      ],
+      "js": ["content.js"],
+      "css": ["viewer.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_page": "options.html",
+  "action": { "default_title": "Keel Verified Viewer" }
+}

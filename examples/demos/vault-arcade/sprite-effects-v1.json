@@ -1,0 +1,24 @@
+{
+  "schema": "oca-sprite-effect-catalog@1",
+  "storage": "keel-object-revision",
+  "profiles": [
+    { "effectProfileId": 0, "id": "none", "effects": [] },
+    { "effectProfileId": 1, "id": "core-glow", "effects": [{ "kind": "glow", "target": "core-light", "amount": 8 }] },
+    { "effectProfileId": 2, "id": "vault-pulse", "effects": [{ "kind": "pulse", "target": "sprite", "amount": 0.18, "speed": 0.004 }] },
+    { "effectProfileId": 3, "id": "damage-flash", "effects": [{ "kind": "brightness", "target": "sprite", "amount": 1.8 }, { "kind": "glow", "target": "damage-flash", "amount": 5 }] },
+    { "effectProfileId": 4, "id": "phase-shift", "effects": [{ "kind": "hue-rotate", "target": "sprite", "amount": 48 }, { "kind": "afterimage", "target": "special-fx", "amount": 0.45 }] },
+    { "effectProfileId": 5, "id": "void-dissolve", "effects": [{ "kind": "dissolve", "target": "special-fx", "amount": 0.35 }] },
+    { "effectProfileId": 6, "id": "hard-outline", "effects": [{ "kind": "outline", "target": "sprite", "amount": 2, "color": [0, 0, 0, 255] }] },
+    { "effectProfileId": 7, "id": "prism-overdrive", "effects": [{ "kind": "saturate", "target": "sprite", "amount": 1.7 }, { "kind": "glow", "target": "core-light", "amount": 12 }] }
+  ],
+  "particleColors": [
+    { "colorProfileId": 0, "id": "character-core", "link": "character.core-light" },
+    { "colorProfileId": 1, "id": "cyan", "rgba": [64, 244, 255, 255] },
+    { "colorProfileId": 2, "id": "magenta", "rgba": [255, 88, 232, 255] },
+    { "colorProfileId": 3, "id": "amber", "rgba": [255, 189, 66, 255] },
+    { "colorProfileId": 4, "id": "acid", "rgba": [148, 255, 85, 255] },
+    { "colorProfileId": 5, "id": "blood", "rgba": [255, 54, 75, 255] },
+    { "colorProfileId": 6, "id": "void", "rgba": [168, 103, 255, 255] },
+    { "colorProfileId": 7, "id": "prism", "rgba": [255, 113, 223, 255] }
+  ]
+}

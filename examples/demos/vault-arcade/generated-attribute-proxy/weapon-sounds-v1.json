@@ -1,0 +1,51 @@
+{
+  "schema": "oca-sprite-sounds@1",
+  "storage": "keel-object-revision",
+  "library": {
+    "codec": "oca-sonant-bits@1",
+    "reader": "createAudioReader",
+    "rule": "Sprite assets pin this sound profile as an exact Keel object revision. Sounds are synthesis parameters, not recorded samples."
+  },
+  "profiles": [
+    {
+      "soundProfileId": 100,
+      "id": "gyro-saw-mechanical-launch",
+      "assetId": "gyro",
+      "events": [{
+        "eventId": "attack",
+        "retriggerMs": 800,
+        "variations": [{ "soundId": "gyro-saw-attack", "resourceId": "gyro-saw-attack.ocas", "codec": "oca-sonant-bits@1", "weight": 1, "gain": 0.34, "rate": 1 }]
+      }]
+    },
+    {
+      "soundProfileId": 101,
+      "id": "rift-fork-charge-pierce",
+      "assetId": "rift",
+      "events": [{
+        "eventId": "attack",
+        "retriggerMs": 650,
+        "variations": [{ "soundId": "rift-fork-attack", "resourceId": "rift-fork-attack.ocas", "codec": "oca-sonant-bits@1", "weight": 1, "gain": 0.3, "rate": 1 }]
+      }]
+    },
+    {
+      "soundProfileId": 102,
+      "id": "aegis-star-six-node-burst",
+      "assetId": "bloom",
+      "events": [{
+        "eventId": "attack",
+        "retriggerMs": 650,
+        "variations": [{ "soundId": "aegis-star-attack", "resourceId": "aegis-star-attack.ocas", "codec": "oca-sonant-bits@1", "weight": 1, "gain": 0.28, "rate": 1 }]
+      }]
+    },
+    {
+      "soundProfileId": 103,
+      "id": "needle-array-staggered-dart",
+      "assetId": "needle",
+      "events": [{
+        "eventId": "attack",
+        "retriggerMs": 140,
+        "variations": [{ "soundId": "needle-array-attack", "resourceId": "needle-array-attack.ocas", "codec": "oca-sonant-bits@1", "weight": 1, "gain": 0.21, "rate": 1.08 }]
+      }]
+    }
+  ]
+}

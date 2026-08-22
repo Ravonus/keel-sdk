@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Vault Orb Attribute Editor</title>
+    <style>
+      :root { color-scheme:dark; font:14px Inter,ui-sans-serif,system-ui,sans-serif; color:#effffb; background:#07100f }
+      * { box-sizing:border-box } body { margin:0; min-height:100vh; background:radial-gradient(circle at 20% 0,#173934,transparent 40%),#07100f }
+      header { padding:20px 24px; border-bottom:1px solid #ffffff20; display:flex; align-items:center; justify-content:space-between; gap:18px }
+      h1,h2,p { margin:0 } h1 { font-size:clamp(24px,4vw,44px); letter-spacing:-.04em } header p,.help { color:#9bb8b1 }
+      a,button,select { color:#effffb; background:#0d1917; border:1px solid #ffffff24; border-radius:11px; padding:10px 12px; font:inherit; text-decoration:none }
+      button:hover,button[aria-pressed=true],a:hover { border-color:#62f1c5; background:#123029 }
+      main { max-width:1220px; margin:auto; padding:20px; display:grid; grid-template-columns:230px minmax(420px,1fr) 270px; gap:16px }
+      .panel { background:#07100fdd; border:1px solid #ffffff20; border-radius:18px; padding:15px }
+      h2 { color:#83ffc4; font-size:12px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:11px }
+      .stack { display:grid; gap:8px } button,select { width:100%; text-align:left }
+      .tools button { display:flex; align-items:center; gap:9px } .swatch { width:14px; height:14px; border-radius:4px; background:var(--color) }
+      .stage { display:grid; place-items:center; min-height:650px; overflow:auto; background:#040908; position:relative }
+      canvas { width:min(100%,612px); height:auto; image-rendering:pixelated; touch-action:none; cursor:crosshair }
+      .directions { display:grid; grid-template-columns:repeat(3,1fr); gap:6px }.directions button { text-align:center;padding:8px 4px}.void{visibility:hidden}
+      .readout { display:grid; gap:8px; margin-bottom:14px }.readout div { display:flex; justify-content:space-between; gap:12px;color:#91aaa4}.readout b{color:#fff}
+      .legend { display:grid; gap:7px; color:#a6bbb6 }.legend span { display:flex; gap:8px; align-items:center }
+      .help { line-height:1.5; font-size:12px; margin-top:12px }
+      #status { color:#62f1c5; font-weight:800 }
+      @media(max-width:920px){main{grid-template-columns:1fr}.stage{min-height:520px}}
+    </style>
+  </head>
+  <body>
+    <header><div><h1>Orb Attribute Editor</h1><p>Paint exact regions and place runtime hotspots for every direction/frame</p></div><a href="./?manager=orb-v1&camera=twin-stick">Back to Orb Lab</a></header>
+    <main>
+      <aside class="panel">
+        <h2>Direction / frame</h2>
+        <div class="directions">
+          <button data-direction="north-west">NW</button><button data-direction="north">N</button><button data-direction="north-east">NE</button>
+          <button data-direction="west">W</button><button class="void" disabled>•</button><button data-direction="east">E</button>
+          <button data-direction="south-west">SW</button><button data-direction="south" aria-pressed="true">S</button><button data-direction="south-east">SE</button>
+        </div>
+        <h2 style="margin-top:18px">Edit mode</h2>
+        <select id="edit-mode"><option value="hotspot">Place hotspot</option><option value="mask">Paint pixel mask</option></select>
+        <h2 style="margin-top:18px">Attribute</h2>
+        <div class="stack tools">
+          <button data-tool="shell" aria-pressed="true"><i class="swatch" style="--color:#ff4862"></i>Shell/body</button>
+          <button data-tool="visor"><i class="swatch" style="--color:#3fdcff"></i>Visor metal rim</button>
+          <button data-tool="light"><i class="swatch" style="--color:#bd65ff"></i>Core light</button>
+          <button data-tool="port"><i class="swatch" style="--color:#ff625c"></i>Rear light</button>
+          <button data-tool="skin"><i class="swatch" style="--color:#72ff8b"></i>Skin panels</button>
+          <button data-tool="weapon"><i class="swatch" style="--color:#ff9b45"></i>Weapon / beam</button>
+          <button data-tool="ignore"><i class="swatch" style="--color:#31363b"></i>Ignore/outline</button>
+        </div>
+        <h2 style="margin-top:18px">Brush</h2>
+        <select id="brush-size"><option value="1">1 pixel</option><option value="2">2 pixel radius</option><option value="3">3 pixel radius</option></select>
+        <h2 style="margin-top:18px">View</h2>
+        <div class="stack">
+          <button id="sprite-only">Sprite only</button>
+          <label><input id="show-sprite" type="checkbox" checked /> Show grayscale sprite</label>
+          <label><input id="show-hotspots" type="checkbox" checked /> Show hotspots</label>
+          <label>Mask opacity<input id="mask-opacity" type="range" min="0" max="100" value="48" /></label>
+        </div>
+      </aside>
+      <section class="panel stage"><canvas id="mask-canvas" width="612" height="612" aria-label="Pixel component mask editor"></canvas></section>
+      <aside class="panel">
+        <h2>Pixel inspector</h2>
+        <div class="readout">
+          <div><span>Direction</span><b id="read-direction">south</b></div>
+          <div><span>Coordinate</span><b id="read-coordinate">—</b></div>
+          <div><span>Grayscale</span><b id="read-luma">—</b></div>
+          <div><span>Alpha</span><b id="read-alpha">—</b></div>
+          <div><span>Component</span><b id="read-label">—</b></div>
+          <div><span>State</span><b id="status">saved</b></div>
+        </div>
+        <h2>Mask data</h2>
+        <div class="stack">
+          <button id="undo" disabled>Undo</button>
+          <button id="redo" disabled>Redo</button>
+          <button id="erase-hotspot">Erase selected hotspot</button>
+          <button id="save">Save locally</button>
+          <button id="copy">Copy compact JSON</button>
+          <button id="download">Download JSON</button>
+          <button id="load-pinned">Load current pinned targets</button>
+          <button id="reset">Reset all from auto mask</button>
+          <button id="clear">Clear masks + hotspots this frame</button>
+        </div>
+        <p class="help"><b>Place hotspot:</b> select an attribute, then click its exact anchor in each direction/frame. <b>Paint pixel mask:</b> drag over the pixels belonging to that attribute. Rear-light pixels may extend into blank source pixels—the runtime draws the light you author. The grayscale sprite never changes.</p>
+      </aside>
+    </main>
+    <script type="module" src="./mask-editor.js?v=9"></script>
+  </body>
+</html>

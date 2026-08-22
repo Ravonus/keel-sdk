@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vault Sprite Codex Library</title>
+  <style>
+    :root{color-scheme:dark;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#070a10;color:#eef6ff}*{box-sizing:border-box}body{margin:0;padding:24px;background:radial-gradient(circle at 50% 0,#18243a 0,#070a10 55%);min-height:100vh}main{max-width:1180px;margin:auto}.status{color:#9fcae8;margin:8px 0 18px}.layout{display:grid;grid-template-columns:minmax(480px,1.4fr) minmax(340px,1fr);gap:16px}.card{background:#0c121d;border:1px solid #263a52;border-radius:8px;padding:14px}.viewer{width:100%;height:570px;border:0;border-radius:6px;background:#05070b}.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}select,input{accent-color:#8bd7ff;background:#111c2c;color:#eef6ff;border:1px solid #5f82aa;border-radius:5px;padding:7px}.canvases{display:grid;grid-template-columns:1fr 1fr;gap:10px}.canvas-wrap{font-size:11px;color:#9fcae8;text-align:center}.canvas-wrap canvas{display:block;width:100%;aspect-ratio:1;margin-top:6px;background:repeating-conic-gradient(#121a25 0 25%,#1a2533 0 50%) 0/16px 16px;image-rendering:pixelated}.legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:10px;font-size:11px}.swatch{display:inline-block;width:10px;height:10px;margin-right:5px;border:1px solid #fff6;vertical-align:-1px}.gate{margin-top:16px;padding:12px;border-left:3px solid #d8aa58;background:#17130c;color:#e8cf9e}h1{margin-bottom:4px}h2{font-size:15px;margin:0 0 8px}@media(max-width:900px){.layout{grid-template-columns:1fr}.viewer{height:520px}}
+  </style>
+</head>
+<body><main>
+  <h1>Vault sprite-codex library</h1>
+  <div class="status" id="status">Verifying the pinned character and weapon bundles…</div>
+  <div class="layout">
+    <section class="card">
+      <h2>Finished canonical Orb + equipped weapon</h2>
+      <p class="status">This is the same bundled Keel compositor: componentFrames + skinFrames, Orb material/skin semantics, packed attributes, linked core light, weapon effects, and attack behavior.</p>
+      <iframe class="viewer" title="Canonical bundled Vault character viewer" src="./vault-keel-viewer-bundled.html?tokenId=sprite-codex-proof&seed=0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f&attributes=0x0000000000000000000000000000000018171615141312110807060504030201"></iframe>
+    </section>
+    <section class="card">
+      <h2>Authored weapon semantic masks</h2>
+      <p class="status">Every highlighted pixel comes from the exact authored sparse override for the selected weapon/frame. Fixed pixels are black in the finished compositor.</p>
+      <div class="controls">
+        <label>Weapon <select id="weapon"></select></label>
+        <label>Frame <input id="frame" type="range" min="0" max="8" value="0"> <span id="frame-value">0</span></label>
+      </div>
+      <div class="canvases">
+        <div class="canvas-wrap">Lossless atlas frame<canvas id="raw" width="192" height="192"></canvas></div>
+        <div class="canvas-wrap">Semantic color-debug<canvas id="mask" width="192" height="192"></canvas></div>
+      </div>
+      <div class="legend" id="legend"></div>
+      <div class="status" id="mask-status"></div>
+    </section>
+  </div>
+  <div class="gate" id="inventory"><strong>Approval gate:</strong> loading provenance inventory…</div>
+</main><script type="module">
+import { loadSpriteLibrary, sha256 } from "/packages/sprite-codex/dist/browser.js";
+const graphUrl = "/packages/sprite-codex/vault/generated/library/vault-assets-v1.library.json";
+const graphBytes = new Uint8Array(await (await fetch(graphUrl, { cache: "no-store" })).arrayBuffer());
+const graphDigest = await sha256(graphBytes);
+const library = await loadSpriteLibrary({ graphUrl, graphSha256: graphDigest, profileId: "unstaked-character", profileRevision: 1 });
+const weapons = library.bundle("shared-weapons", 1);
+const colors = ["#ff4f78","#34d9ff","#ffd166","#78ff9b","#bb86ff","#ff9f43","#f8f9fa","#4d7cff","#ef476f","#06d6a0"];
+const weaponSelect = document.querySelector("#weapon");
+for (const asset of weapons.metadata.assets) { const option = document.createElement("option"); option.value = asset.key; option.textContent = asset.label; weaponSelect.append(option); }
+const slider = document.querySelector("#frame");
+
+function renderWeapon() {
+  const key = weaponSelect.value, frame = Number(slider.value), asset = weapons.asset(key);
+  const raw = document.querySelector("#raw"), debug = document.querySelector("#mask");
+  const rawContext = raw.getContext("2d", { willReadFrequently: true }), debugContext = debug.getContext("2d");
+  rawContext.clearRect(0,0,192,192); debugContext.clearRect(0,0,192,192);
+  weapons.draw(rawContext, { asset: key, frame, displayWidth: 192, displayHeight: 192 });
+  const source = document.createElement("canvas"); source.width = 96; source.height = 96;
+  const sourceContext = source.getContext("2d", { willReadFrequently: true }); weapons.draw(sourceContext, { asset: key, frame, displayWidth: 96, displayHeight: 96 });
+  const pixels = sourceContext.getImageData(0,0,96,96), mask = weapons.regionMask(key, frame), regionColors = new Map(), counts = new Map();
+  for (const [index, region] of mask) {
+    if (!regionColors.has(region)) regionColors.set(region, colors[regionColors.size % colors.length]);
+    const color = regionColors.get(region), rgb = Number.parseInt(color.slice(1),16), offset = index*4;
+    pixels.data[offset]=(rgb>>16)&255; pixels.data[offset+1]=(rgb>>8)&255; pixels.data[offset+2]=rgb&255; pixels.data[offset+3]=255;
+    counts.set(region,(counts.get(region)||0)+1);
+  }
+  sourceContext.putImageData(pixels,0,0); debugContext.imageSmoothingEnabled=false; debugContext.drawImage(source,0,0,192,192);
+  const legend = document.querySelector("#legend"); legend.replaceChildren();
+  for (const region of asset.regions) { const item=document.createElement("div"), swatch=document.createElement("span"); swatch.className="swatch"; swatch.style.background=regionColors.get(region)||"#111"; item.append(swatch,`${region}: ${counts.get(region)||0}px`); legend.append(item); }
+  document.querySelector("#mask-status").textContent = `${asset.label} frame ${frame}: ${mask.size} exact sparse mask pixels across ${asset.regions.length} semantic regions.`;
+}
+weaponSelect.onchange=renderWeapon; slider.oninput=()=>{document.querySelector("#frame-value").textContent=slider.value;renderWeapon()}; renderWeapon();
+const report=await(await fetch("/packages/sprite-codex/vault/generated/library/vault-assets-v1.inventory.json",{cache:"no-store"})).json();
+document.querySelector("#inventory").innerHTML=`<strong>Approval gate:</strong> ${report.included} explicitly pinned sources included; ${report.excluded} candidate, rejected, benchmark, or unapproved sources retained only as hashed provenance. Rejected fixed-grid world crops are not visual acceptance evidence.`;
+document.querySelector("#status").textContent=`Digest verified: standalone character + shared weapon profile. Graph SHA-256 ${graphDigest.slice(0,16)}…`;
+</script></body></html>

@@ -1,0 +1,125 @@
+{
+  "schema": "keel-creative-lab-edge-matrix@2",
+  "viewerInvariant": "onchain-html-wrapper",
+  "failurePolicy": "fail-closed-in-wrapper",
+  "standards": [
+    { "id": "erc721", "mode": "seeded-and-one-of-one" },
+    { "id": "erc721a", "mode": "batch-seeded" },
+    { "id": "erc1155", "mode": "seeded-editions" },
+    { "id": "erc4906", "mode": "tracked-metadata-revision" },
+    { "id": "erc7496", "mode": "owner-editable-dynamic-traits" },
+    { "id": "erc7508", "mode": "onchain-attribute-repository" },
+    { "id": "erc5773", "mode": "owner-accepted-multi-asset-revision" },
+    { "id": "custom-no-hook", "mode": "content-verifiable-controls-unknown" }
+  ],
+  "presentationPolicies": [
+    {
+      "id": "code.locked",
+      "key": "creative-scenes.js",
+      "scope": "collection",
+      "authority": "immutable",
+      "updateKind": "viewer-revision",
+      "valueType": "binary",
+      "executable": true,
+      "expectedResult": "initial-publish-only"
+    },
+    {
+      "id": "css.creator",
+      "key": "theme.css",
+      "scope": "collection",
+      "authority": "creator",
+      "updateKind": "resource-revision",
+      "valueType": "binary",
+      "executable": false,
+      "expectedResult": "one-shared-package-revision"
+    },
+    {
+      "id": "palette.owner",
+      "key": "palette",
+      "scope": "token",
+      "authority": "token-owner",
+      "updateKind": "typed-state",
+      "valueType": "rgb24",
+      "executable": false,
+      "expectedResult": "same-package-query-state"
+    },
+    {
+      "id": "api.weather",
+      "key": "weather.json",
+      "scope": "collection",
+      "authority": "oracle",
+      "updateKind": "api-snapshot",
+      "valueType": "canonical-json",
+      "executable": false,
+      "expectedResult": "manifested-snapshot-only"
+    }
+  ],
+  "moduleCases": [
+    { "id": "p5", "module": "p5@1.11.3", "scene": "p5-seeded" },
+    { "id": "three", "module": "three@0.180.0", "scene": "three-heavy" },
+    { "id": "image", "module": "keel/image@1", "scene": "image-only" },
+    { "id": "video", "module": "keel/video@1", "scene": "video-loop" },
+    { "id": "classic-script", "module": "keel/classic-script@1", "scene": "script-pulse" },
+    { "id": "api-algorithm", "module": "keel/api-snapshot@1", "scene": "api-weather" }
+  ],
+  "assets": [
+    {
+      "id": "aurora-full",
+      "file": "assets/aurora-data-horizon-v1.png",
+      "delivery": "hybrid-manifest-source",
+      "decodedSha256": "b358e61324226d9d95666dabd263c19baadc90d0c012500db7ee956bfba0951c",
+      "decodedBytes": 2600024
+    },
+    {
+      "id": "aurora-compact",
+      "file": "assets/aurora-data-horizon-onchain-v1.webp",
+      "delivery": "onchain-recursive",
+      "decodedSha256": "2de15954adc9e36d0d794560b2f68e64a6db469e7e4fc91f192daefd161c7374",
+      "decodedBytes": 41534
+    },
+    {
+      "id": "mineral-full",
+      "file": "assets/cosmic-mineral-field-v1.png",
+      "delivery": "hybrid-manifest-source",
+      "decodedSha256": "9d2a790162e52f9d2a80b6f0a8de11b935c6a52e2049cd1e7edc8040290d3d01",
+      "decodedBytes": 3109082
+    },
+    {
+      "id": "mineral-compact",
+      "file": "assets/cosmic-mineral-field-onchain-v1.webp",
+      "delivery": "onchain-recursive",
+      "decodedSha256": "05eb77169a4f9b45b55a599012901488e64f82ec31139f3eb4055f0dece41752",
+      "decodedBytes": 61040
+    },
+    {
+      "id": "aurora-video",
+      "file": "assets/aurora-signal-loop-v1.webm",
+      "delivery": "onchain-recursive-or-hybrid",
+      "decodedSha256": "40a96dfad21063a5d87719dee5efd02f68fe7000ccd34adc297865dbc11b78be",
+      "decodedBytes": 63030
+    }
+  ],
+  "hostileCases": [
+    "missing-source",
+    "wrong-stored-sha256",
+    "wrong-decoded-sha256",
+    "wrong-stored-length",
+    "wrong-decoded-length",
+    "wrong-compression",
+    "brotli-truncation",
+    "undeclared-redirect",
+    "stale-manifest-revision",
+    "cross-chain-source-unavailable",
+    "recursive-cycle",
+    "resource-count-limit",
+    "decoded-byte-limit",
+    "runtime-timeout",
+    "unauthorized-css-revision",
+    "immutable-code-revision",
+    "typed-state-out-of-range",
+    "api-wrong-media-type",
+    "api-uncommitted-response",
+    "api-stale-sequence",
+    "verifier-api-not-enabled"
+  ]
+}

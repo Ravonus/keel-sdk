@@ -1,0 +1,1714 @@
+/** Minimal human-readable ABIs suitable for viem, ethers, or code generation. */
+/** KeelFactory capability marker for the shared mint-capacity KEEL721 build. */
+export const OCA_CAPACITY_FACTORY_VERSION =
+  "0x0c9cae5d5d90d4e1376492a08111dd1ffbadf0ecf76bb1ebe527263b6330272e" as const;
+
+export const keelHoldAbi = [
+  "function castSlug(bytes data) returns (bytes32 slugId, address pointer)",
+  "function castSlugs(bytes[] payloads) returns (bytes32[] slugIds, address[] pointers)",
+  "function weldObject(bytes32[] slugIds, bytes32 digest, uint64 byteLength, uint8 compression, string mediaType) returns (bytes32 objectId)",
+  "function weldComposite(bytes32[] partObjectIds,bytes32 digest,uint64 byteLength,string mediaType) returns (bytes32 objectId)",
+  "function getChunk(bytes32 slugId) view returns (bytes)",
+  "function haulObject(bytes32 objectId) view returns (bytes)",
+  "function slugPointer(bytes32 slugId) view returns (address)",
+  "function objectExists(bytes32 objectId) view returns (bool)",
+  "function getObject(bytes32 objectId) view returns ((bytes32 digest,bytes32 indexDigest,address descriptorPointer,uint64 byteLength,uint64 storedByteLength,uint32 chunkCount,uint8 compression,bool composite,bool exists,string mediaType))",
+  "function descriptorPointer(bytes32 objectId) view returns (address)",
+  "function MAX_SLUG_BYTES() view returns (uint256)",
+  "function MAX_BATCH_SLUGS() view returns (uint256)",
+  "function MAX_CHILDREN_PER_OBJECT() view returns (uint256)",
+  "function getObjectSlugPointers(bytes32 objectId,uint256 offset,uint256 limit) view returns (address[])",
+  "function getObjectPartIds(bytes32 objectId,uint256 offset,uint256 limit) view returns (bytes32[])",
+  "event SlugCast(bytes32 indexed slugId,address indexed pointer,uint256 byteLength)",
+  "event ObjectWelded(bytes32 indexed objectId,bytes32 indexed digest,bytes32 indexed indexDigest,address descriptorPointer,uint256 byteLength,uint256 storedByteLength,uint256 chunkCount,uint8 compression,bool composite,string mediaType)",
+] as const;
+
+/** Cross-chain portable roots pinned to one exact Keel object revision. */
+export const keelPortableAnchorRegistryAbi = [
+  "function artifactRegistry() view returns (address)",
+  "function publishObjectAnchor(bytes32 manifestObjectId,uint64 manifestObjectRevision,bytes32 decodedObjectId,uint64 decodedObjectRevision,bytes32 portableRoot) returns (bytes32 anchorRoot)",
+  "function computeAnchorRoot(bytes32 portableRoot,uint8 sourceFamily,uint32 sourceNetwork,bytes32 sourceRegistry,bytes32 sourceObjectKey,uint64 sourceRevision,bytes32 sourceEventDigest) pure returns (bytes32)",
+  "function revisionSourceDigest(bytes32 objectId,uint64 objectRevision) view returns (bytes32)",
+  "function anchor(bytes32 anchorRoot) view returns ((bytes32 manifestObjectId,uint64 manifestObjectRevision,bytes32 decodedObjectId,uint64 decodedObjectRevision,bytes32 portableRoot,bytes32 sourceEventDigest,address registrar,bool exists))",
+  "function sourceAnchor(bytes32 objectId,uint64 objectRevision) view returns (bytes32)",
+  "function portableAnchor(bytes32 portableRoot) view returns (bytes32)",
+  "function MAX_PORTABLE_MANIFEST_BYTES() view returns (uint64)",
+  "event PortableRootAnchored(bytes32 indexed anchorRoot,bytes32 indexed portableRoot,bytes32 indexed objectId,uint64 objectRevision,bytes32 decodedObjectId,uint64 decodedObjectRevision,bytes32 sourceEventDigest,address registrar)",
+] as const;
+
+/** Oracle-attested foreign-chain anchors: pending until a pinned verifier
+ * confirms the located foreign write hashes to the object's own commitments. */
+export const keelAttestedAnchorRegistryAbi = [
+  "function artifactRegistry() view returns (address)",
+  "function chainFamily(uint8 familyId) view returns ((string name,string locatorScheme,uint64 registeredAt,bool retired,bool exists))",
+  "function anchorVerifier(bytes32 verifierId) view returns ((address adapter,uint256 familyMask,bytes32 specDigest,uint8 trustClass,uint64 version,uint64 registeredAt,bool retired,bool exists))",
+  "function anchorState(bytes32 anchorId) view returns ((bytes32 objectId,uint64 objectRevision,(uint8 family,uint32 network,bytes32 registry,bytes32 objectKey,uint64 revision,bytes32 eventDigest) source,bytes32 contentRoot,bytes32 anchorRoot,bytes32 verifierId,address verifierAdapter,address contributor,uint32 taskCount,uint32 verifiedTasks,uint64 nonce,uint64 requestedAt,uint64 finalizedAt,uint64 contentByteLength,uint8 status))",
+  "function anchorTask(bytes32 anchorId,uint32 taskIndex) view returns ((bytes32 expectedDigest,bytes32 verifiedDigest,uint8 digestKind,uint64 verifiedByteLength,uint64 verifiedAt,uint8 status,string locator))",
+  "function anchorByRoot(bytes32 anchorRoot) view returns (bytes32)",
+  "function objectAttestedFamilyMask(bytes32 objectId) view returns (uint256)",
+  "function networkAnchor(bytes32 objectId,uint64 objectRevision,uint8 family,uint32 network) view returns (bytes32)",
+  "function contributorStats(address contributor) view returns ((uint128 verifiedBytes,uint64 anchors,uint64 networks,uint256 score))",
+  "function setFamilyEmission(uint8 familyId,uint128 perByteMilli,uint64 perTaskBonus,uint56 perAnchorBonus)",
+  "function setNetworkEmission(uint8 familyId,uint32 network,uint128 perByteMilli,uint64 perTaskBonus,uint56 perAnchorBonus)",
+  "function familyEmission(uint8 familyId) view returns ((uint128 perByteMilli,uint64 perTaskBonus,uint56 perAnchorBonus,bool exists))",
+  "function networkEmission(uint8 familyId,uint32 network) view returns ((uint128 perByteMilli,uint64 perTaskBonus,uint56 perAnchorBonus,bool exists))",
+  "function effectiveEmission(uint8 familyId,uint32 network) view returns ((uint128 perByteMilli,uint64 perTaskBonus,uint56 perAnchorBonus,bool exists))",
+  "function anchorSummary(bytes32 anchorId) view returns (uint8 status,bytes32 objectId,uint64 objectRevision,uint8 sourceFamily,uint32 sourceNetwork,bytes32 anchorRoot,address contributor,uint32 taskCount)",
+  "function anchorVerificationContext(bytes32 anchorId,uint32 taskIndex) view returns (uint8 anchorStatus,uint64 nonce,address verifierAdapter,address contributor,uint8 sourceFamily,uint32 sourceNetwork,uint8 taskStatus,uint8 digestKind,bytes32 expectedDigest,string locator)",
+  "function predictAnchorId(bytes32 objectId,uint64 objectRevision,(uint8 family,uint32 network,bytes32 registry,bytes32 objectKey,uint64 revision,bytes32 eventDigest) source) view returns (bytes32)",
+  "function computeAnchorRoot(bytes32 portableRoot,uint8 sourceFamily,uint32 sourceNetwork,bytes32 sourceRegistry,bytes32 sourceObjectKey,uint64 sourceRevision,bytes32 sourceEventDigest) pure returns (bytes32)",
+  "function driveAnchor(bytes32 objectId,uint64 objectRevision,(uint8 family,uint32 network,bytes32 registry,bytes32 objectKey,uint64 revision,bytes32 eventDigest) source,bytes32 verifierId,string[] locators,bytes32[] slugIds) returns (bytes32 anchorId)",
+  "function stampNative(bytes32 objectId,uint64 objectRevision) returns (bytes32 anchorId)",
+  "function objectAnchorStamp(bytes32 objectId,uint64 objectRevision) view returns (uint8 nativeStatus,bytes32 nativeAnchorRoot,uint256 attestedFamilyMask,bool frozen)",
+  "function isChainAnchored(bytes32 objectId,uint64 objectRevision,uint8 family,uint32 network) view returns (bool)",
+  "function objectChainAnchored(bytes32 objectId,uint8 family,uint32 network) view returns (bool)",
+  "function objectFamilyAnchored(bytes32 objectId,uint8 family) view returns (bool)",
+  "function objectAnchoredChains(bytes32 objectId) view returns ((uint8 family,uint32 network,uint64 objectRevision,bytes32 anchorId,bytes32 anchorRoot)[])",
+  "function grip(bytes32 objectId) view returns (uint256)",
+  "function objectAnchoredChainAt(bytes32 objectId,uint256 index) view returns ((uint8 family,uint32 network,uint64 objectRevision,bytes32 anchorId,bytes32 anchorRoot))",
+  "function NATIVE_VERIFIER_ID() view returns (bytes32)",
+  "function submitTaskResult(bytes32 anchorId,uint64 nonce,uint32 taskIndex,bytes32 verifiedDigest,uint64 verifiedByteLength,bool verified)",
+  "function setAnchor(bytes32 anchorId)",
+  "function cancelAnchor(bytes32 anchorId)",
+  "function setObjectAnchorPolicy(bytes32 objectId,uint256 policy)",
+  "function objectAnchorPolicy(bytes32 objectId) view returns (uint256)",
+  "function objectAnchorFamilyAllowed(bytes32 objectId,uint8 family) view returns (bool)",
+  "function ANCHOR_POLICY_RESTRICT_FLAG() view returns (uint256)",
+  "function registerChainFamily(uint8 familyId,string name,string locatorScheme)",
+  "function retireChainFamily(uint8 familyId)",
+  "function registerVerifier(bytes32 verifierId,address adapter,uint256 familyMask,uint8 trustClass,uint64 version,bytes32 specDigest)",
+  "function retireVerifier(bytes32 verifierId)",
+  "event ChainFamilyRegistered(uint8 indexed familyId,string name,string locatorScheme)",
+  "event ChainFamilyRetired(uint8 indexed familyId)",
+  "event AnchorVerifierRegistered(bytes32 indexed verifierId,address indexed adapter,uint256 familyMask,uint8 trustClass,uint64 version,bytes32 specDigest)",
+  "event AnchorVerifierRetired(bytes32 indexed verifierId)",
+  "event AnchorDriven(bytes32 indexed anchorId,bytes32 indexed objectId,uint8 indexed sourceFamily,uint64 objectRevision,uint32 sourceNetwork,bytes32 sourceRegistry,bytes32 sourceObjectKey,uint64 sourceRevision,bytes32 verifierId,address contributor,uint32 taskCount,uint64 nonce)",
+  "event AnchorTaskOpened(bytes32 indexed anchorId,uint32 taskIndex,bytes32 expectedDigest,uint8 digestKind,string locator)",
+  "event AnchorTaskVerified(bytes32 indexed anchorId,uint32 taskIndex,bytes32 verifiedDigest,uint64 byteLength)",
+  "event AnchorTaskRejected(bytes32 indexed anchorId,uint32 taskIndex,bytes32 reportedDigest)",
+  "event AnchorVerified(bytes32 indexed anchorId,bytes32 indexed anchorRoot,bytes32 indexed objectId,uint64 objectRevision,uint8 sourceFamily,uint32 sourceNetwork,address contributor)",
+  "event AnchorRejected(bytes32 indexed anchorId,uint64 nonce)",
+  "event AnchorCancelled(bytes32 indexed anchorId,uint64 nonce)",
+  "event ObjectAnchorPolicySet(bytes32 indexed objectId,uint256 policy,address setter)",
+  "event FamilyEmissionSet(uint8 indexed familyId,uint128 perByteMilli,uint64 perTaskBonus,uint56 perAnchorBonus)",
+  "event NetworkEmissionSet(uint8 indexed familyId,uint32 indexed network,uint128 perByteMilli,uint64 perTaskBonus,uint56 perAnchorBonus)",
+  "event AnchorEmissionCredited(bytes32 indexed anchorId,address indexed contributor,uint256 emission)",
+] as const;
+
+/** Chainlink Functions adapter that reports verification results into the
+ * attested-anchor registry. */
+export const keelChainlinkFunctionsVerifierAbi = [
+  "function router() view returns (address)",
+  "function anchorRegistry() view returns (address)",
+  "function keelHold() view returns (address)",
+  "function donId() view returns (bytes32)",
+  "function subscriptionId() view returns (uint64)",
+  "function callbackGasLimit() view returns (uint32)",
+  "function REQUESTER_ROLE() view returns (bytes32)",
+  "function familyRoute(uint8 familyId) view returns ((bytes32 sourceSlugId,uint32 minConfirmations,bool exists))",
+  "function pendingRequest(bytes32 requestId) view returns ((bytes32 anchorId,uint64 nonce,uint32 taskIndex,uint64 requestedAt,bool exists))",
+  "function taskRequest(bytes32 anchorId,uint64 nonce,uint32 taskIndex) view returns (bytes32)",
+  "function setRequestConfig(bytes32 donId,uint64 subscriptionId,uint32 callbackGasLimit)",
+  "function setFamilyRoute(uint8 familyId,bytes32 sourceSlugId,uint32 minConfirmations)",
+  "function beginVerification(bytes32 anchorId,uint32 taskIndex) returns (bytes32 requestId)",
+  "function grantRole(bytes32 role,address account)",
+  "event RequestConfigured(bytes32 donId,uint64 subscriptionId,uint32 callbackGasLimit)",
+  "event FamilyRouteConfigured(uint8 indexed familyId,bytes32 sourceSlugId,uint32 minConfirmations)",
+  "event VerificationRequested(bytes32 indexed anchorId,bytes32 indexed requestId,uint64 nonce,uint32 taskIndex,address requester)",
+  "event VerificationFulfilled(bytes32 indexed anchorId,bytes32 indexed requestId,uint32 taskIndex,uint8 outcome,bytes32 reportedDigest)",
+  "event VerificationErrored(bytes32 indexed anchorId,bytes32 indexed requestId,uint32 taskIndex,bytes err)",
+  "event ResultDeliveryFailed(bytes32 indexed anchorId,bytes32 indexed requestId,uint32 taskIndex,bytes reason)",
+  "event UnknownFulfillment(bytes32 indexed requestId)",
+] as const;
+
+/** CRE report receiver adapter: the Chainlink Functions successor. Emits
+ * VerificationRequested for the workflow's EVM log trigger and accepts
+ * DON-signed reports from the KeystoneForwarder. */
+export const keelCreReportVerifierAbi = [
+  "function anchorRegistry() view returns (address)",
+  "function forwarder() view returns (address)",
+  "function expectedWorkflowOwner() view returns (address)",
+  "function expectedWorkflowName() view returns (bytes10)",
+  "function expectedWorkflowId() view returns (bytes32)",
+  "function familyConfig(uint8 familyId) view returns ((uint32 minConfirmations,bool exists))",
+  "function REQUESTER_ROLE() view returns (bytes32)",
+  "function configLocked() view returns (bool)",
+  "function setForwarder(address forwarder)",
+  "function setWorkflowIdentity(address expectedOwner,bytes10 expectedName,bytes32 workflowId)",
+  "function lockConfiguration()",
+  "function setFamilyConfig(uint8 familyId,uint32 minConfirmations)",
+  "function beginVerification(bytes32 anchorId,uint32 taskIndex)",
+  "function onReport(bytes metadata,bytes report)",
+  "function grantRole(bytes32 role,address account)",
+  "event ForwarderConfigured(address forwarder)",
+  "event WorkflowIdentityConfigured(address expectedOwner,bytes10 expectedName,bytes32 expectedWorkflowId)",
+  "event FamilyConfigured(uint8 indexed familyId,uint32 minConfirmations)",
+  "event VerificationRequested(bytes32 indexed anchorId,uint64 nonce,uint32 taskIndex,uint8 sourceFamily,uint32 sourceNetwork,uint8 digestKind,bytes32 expectedDigest,uint32 minConfirmations,string locator,address requester)",
+  "event ReportResultApplied(bytes32 indexed anchorId,uint64 nonce,uint32 taskIndex,uint8 outcome,bytes32 digest)",
+  "event ReportResultSkipped(bytes32 indexed anchorId,uint64 nonce,uint32 taskIndex,bytes reason)",
+] as const;
+
+/** Anchor-gated cross-chain minting: source-side requests trigger a CRE
+ * workflow; target-side mints native tokens through the collection's manager
+ * surface, deduped one mint per source token per chain. */
+export const keelCrossChainMintBridgeAbi = [
+  "function anchorRegistry() view returns (address)",
+  "function artifactRegistry() view returns (address)",
+  "function forwarder() view returns (address)",
+  "function localNetwork() view returns (uint32)",
+  "function configLocked() view returns (bool)",
+  "function NO_OBJECT_ID_OFFSET() view returns (uint32)",
+  "function mintRouteKey(uint32 sourceNetwork,address sourceCollection) pure returns (bytes32)",
+  "function sourceTokenKey(uint32 sourceNetwork,address sourceCollection,uint256 sourceTokenId) view returns (bytes32)",
+  "function mintRoute(uint32 sourceNetwork,address sourceCollection) view returns ((address targetCollection,uint32 objectIdOffset,bool enabled,bool exists))",
+  "function crossMintCompleted(uint32 sourceNetwork,address sourceCollection,uint256 sourceTokenId) view returns (bool)",
+  "function setForwarder(address forwarder)",
+  "function setWorkflowIdentity(address expectedOwner,bytes10 expectedName,bytes32 workflowId)",
+  "function lockConfiguration()",
+  "function setMintRoute(uint32 sourceNetwork,address sourceCollection,address targetCollection,uint32 objectIdOffset,bool enabled)",
+  "function requestCrossMint(address collection,uint256 tokenId,bytes32 objectId,uint64 objectRevision,uint32 targetNetwork,address recipient,bytes mintData) returns (uint64 nonce)",
+  "function onReport(bytes metadata,bytes report)",
+  "event MintRouteConfigured(bytes32 indexed routeKey,uint32 indexed sourceNetwork,address sourceCollection,address targetCollection,uint32 objectIdOffset,bool enabled)",
+  "event CrossMintRequested(bytes32 indexed objectId,address indexed collection,uint256 tokenId,uint32 targetNetwork,address recipient,uint64 objectRevision,uint64 nonce,bytes mintData)",
+  "event CrossMintCompleted(bytes32 indexed sourceTokenKey,address indexed targetCollection,address indexed recipient,bytes32 objectId,uint64 nonce)",
+  "event CrossMintSkipped(bytes32 indexed sourceTokenKey,uint64 nonce,bytes reason)",
+  "event ConfigurationLockedEvent(address locker)",
+] as const;
+
+/** Development-network stand-in for the Chainlink Functions router. */
+export const keelLocalFunctionsRouterAbi = [
+  "function sendRequest(uint64 subscriptionId,bytes data,uint16 dataVersion,uint32 callbackGasLimit,bytes32 donId) returns (bytes32)",
+  "function fulfill(bytes32 requestId,bytes response,bytes err)",
+  "function lastRequestId() view returns (bytes32)",
+  "function lastRequestData() view returns (bytes)",
+  "function recordedRequest(bytes32 requestId) view returns ((address consumer,uint64 subscriptionId,uint32 callbackGasLimit,bytes32 donId,bool exists))",
+  "event LocalRequestSent(bytes32 indexed requestId,address indexed consumer,uint64 subscriptionId,uint32 callbackGasLimit,bytes32 donId,bytes data)",
+  "event LocalRequestFulfilled(bytes32 indexed requestId,address indexed consumer,bytes response,bytes err)",
+] as const;
+
+/** Accepts pending community-replication carrier proofs from verified
+ * attested anchors when deployed as a replication registry's proofVerifier. */
+export const keelAnchorReplicationBridgeAbi = [
+  "function anchorRegistry() view returns (address)",
+  "function applyVerifiedAnchor(address replicationRegistry,bytes32 campaignId,uint8 carrier,bytes32 anchorId)",
+  "event CarrierProofBridged(bytes32 indexed campaignId,uint8 indexed carrier,bytes32 indexed anchorId,address caller)",
+] as const;
+
+export const keelCollectionVerificationRegistryAbi = [
+  "function portableAnchorRegistry() view returns (address)",
+  "function HOOK_PROTOCOL() view returns (bytes32)",
+  "function ADAPTER_PROTOCOL() view returns (bytes32)",
+  "function PRESENTATION_CONTENT_DOMAIN() view returns (bytes32)",
+  "function POLICY_ROLE() view returns (bytes32)",
+  "function AUDITOR_ROLE() view returns (bytes32)",
+  "function policyId((uint8 lane,bytes32 runtimeCodeHash,address adapter,bytes32 adapterCodeHash,address implementation,bytes32 implementationCodeHash,address proxyAdmin,address beacon,bytes32 policyDigest,uint64 version) input) pure returns (bytes32)",
+  "function setPolicy((uint8 lane,bytes32 runtimeCodeHash,address adapter,bytes32 adapterCodeHash,address implementation,bytes32 implementationCodeHash,address proxyAdmin,address beacon,bytes32 policyDigest,uint64 version) input,bool enabled) returns (bytes32 id)",
+  "function policy(bytes32 id) view returns (((uint8 lane,bytes32 runtimeCodeHash,address adapter,bytes32 adapterCodeHash,address implementation,bytes32 implementationCodeHash,address proxyAdmin,address beacon,bytes32 policyDigest,uint64 version) input,bool enabled,bool exists))",
+  "function recordContentOnly(address collection,uint256 tokenId,bytes32 policyKey,bytes32 expectedTokenURIHash,bytes32 portableRoot,bytes32 manifestDigest,bytes32 evidenceRoot,uint64 evidenceBlock,bytes32 evidenceBlockHash,uint64 expiresAt) returns (bytes32 receiptId)",
+  "function recordApproved(address collection,uint256 tokenId,bytes32 policyKey) returns (bytes32 receiptId)",
+  "function approvedEvidenceRoot(address collection,uint256 tokenId,bytes32 policyKey) view returns (bytes32)",
+  "function sealObservation(bytes32 receiptId,bytes32 observedBlockHash)",
+  "function inspectCurrent(address collection,uint256 tokenId,bytes32 policyKey) view returns ((bytes32 expectedTokenURIHash,address resolver,address keelIndex,uint256 presentationScope,bool routeLocked,address pointerAuthority,uint64 presentationRevision,bytes32 portableRoot,bytes32 manifestDigest,uint8 revisionPolicy,address publisherAuthority,address activationAuthority,address governanceTimelock,bytes32 revisionLineageRoot,bool appendOnlyRevisions,bool revisionFrozen,bool governanceVerifiable,uint8 mintStatus,uint8 mintAccessMode,address mintAuthority,bytes32 mintAuthoritiesRoot,uint32 mintAuthorityCount,address mintPolicyAuthority,address mintTimelock,bool mintVerifiable,uint256 totalSupply,uint256 lifetimeMinted,uint256 burnedCount,uint256 remainingMintable,uint256 maxSupply,uint256 reservedSupply,uint16 supplyKnownFlags,uint8 maxSupplyKind,bool capMutable,address capAuthority,address supplyTimelock,bool supplyVerifiable,uint8 burnPolicy,address implementation,address proxyAdmin,address beacon,bool upgradeMutable,address upgradeAuthority,address upgradeTimelock,bool upgradeVerifiable) state,(uint8 route,uint8 content,uint8 governance,uint8 mint,uint8 supply,uint8 upgrade) facets)",
+  "function computePresentationContentDigest(uint256 chainId,address collection,address keelIndex,uint256 presentationScope,uint64 presentationRevision,bytes32 manifestDigest,bytes32 portableRoot,bytes32 portableAnchorRoot) pure returns (bytes32)",
+  "function revoke(bytes32 receiptId,bytes32 reasonDigest)",
+  "function latestReceipt(address collection,uint256 tokenId) view returns (bytes32 receiptId)",
+  "function receipt(bytes32 id) view returns ((bytes32 policyId,bytes32 previousReceipt,bytes32 evidenceRoot,bytes32 tokenURIHash,bytes32 portableRoot,bytes32 portableAnchorRoot,bytes32 presentationContentDigest,bytes32 manifestDigest,bytes32 stateDigest,bytes32 runtimeCodeHash,bytes32 implementationCodeHash,address collection,address resolver,address keelIndex,address pointerAuthority,address publisherAuthority,address activationAuthority,address governanceTimelock,address mintAuthority,address mintPolicyAuthority,address mintTimelock,address capAuthority,address supplyTimelock,address implementation,address proxyAdmin,address beacon,address upgradeAuthority,address upgradeTimelock,bytes32 revisionLineageRoot,bytes32 mintAuthoritiesRoot,uint256 presentationScope,uint256 tokenId,uint256 chainId,uint256 totalSupply,uint256 lifetimeMinted,uint256 burnedCount,uint256 remainingMintable,uint256 maxSupply,uint256 reservedSupply,uint16 supplyKnownFlags,uint64 presentationRevision,uint64 policyVersion,uint64 observedBlock,uint64 evidenceBlock,bytes32 evidenceBlockHash,uint64 expiresAt,uint32 mintAuthorityCount,uint8 revisionPolicy,uint8 mintStatus,uint8 mintAccessMode,uint8 burnPolicy,uint8 maxSupplyKind,uint8 lane,(uint8 route,uint8 content,uint8 governance,uint8 mint,uint8 supply,uint8 upgrade) facets,bool revisionFrozen,bool appendOnlyRevisions,bool governanceVerifiable,bool routeLocked,bool mintVerifiable,bool capMutable,bool supplyVerifiable,bool upgradeMutable,bool upgradeVerifiable,bool revoked,bool exists))",
+  "function receiptCurrent(bytes32 id) view returns (bool)",
+  "event VerificationPolicySet(bytes32 indexed policyId,bytes32 indexed policyDigest,uint64 version,uint8 lane,bool enabled)",
+  "event CollectionVerificationRecorded(bytes32 indexed receiptId,address indexed collection,uint256 indexed tokenId,bytes32 policyId,bytes32 previousReceipt,bytes32 evidenceRoot,bytes32 portableRoot,uint64 presentationRevision,uint8 lane,uint8 routeVerdict,uint8 contentVerdict,address auditor)",
+  "event CollectionVerificationRevoked(bytes32 indexed receiptId,address indexed auditor,bytes32 reasonDigest)",
+  "event CollectionVerificationObservationSealed(bytes32 indexed receiptId,uint64 indexed observedBlock,bytes32 blockHash)",
+] as const;
+
+export const keelCollectionVerificationHookAbi = [
+  "function keelVerificationProtocol() pure returns (bytes32)",
+  "function keelVerificationState(uint256 tokenId) view returns ((bytes32 expectedTokenURIHash,address resolver,address keelIndex,uint256 presentationScope,bool routeLocked,address pointerAuthority,uint64 presentationRevision,bytes32 portableRoot,bytes32 manifestDigest,uint8 revisionPolicy,address publisherAuthority,address activationAuthority,address governanceTimelock,bytes32 revisionLineageRoot,bool appendOnlyRevisions,bool revisionFrozen,bool governanceVerifiable,uint8 mintStatus,uint8 mintAccessMode,address mintAuthority,bytes32 mintAuthoritiesRoot,uint32 mintAuthorityCount,address mintPolicyAuthority,address mintTimelock,bool mintVerifiable,uint256 totalSupply,uint256 lifetimeMinted,uint256 burnedCount,uint256 remainingMintable,uint256 maxSupply,uint256 reservedSupply,uint16 supplyKnownFlags,uint8 maxSupplyKind,bool capMutable,address capAuthority,address supplyTimelock,bool supplyVerifiable,uint8 burnPolicy,address implementation,address proxyAdmin,address beacon,bool upgradeMutable,address upgradeAuthority,address upgradeTimelock,bool upgradeVerifiable) state)",
+] as const;
+
+export const keelCollectionAttestationRegistryAbi = [
+  "function threshold() view returns (uint16)",
+  "function approvedAttestor(address signer) view returns (bool)",
+  "function nonceUsed(bytes32 nonceKey) view returns (bool)",
+  "function setAttestor(address signer,bool approved)",
+  "function setThreshold(uint16 next)",
+  "function attestationDigest((uint256 chainId,address registry,address collection,uint256 tokenId,bytes32 runtimeCodeHash,address implementation,bytes32 implementationCodeHash,address proxyAdmin,address beacon,address adapter,bytes32 adapterCodeHash,bytes32 policyDigest,uint64 policyVersion,uint64 blockNumber,bytes32 blockHash,bytes32 tokenURIHash,bytes32 portableRoot,bytes32 manifestDigest,uint64 presentationRevision,bytes32 facetDigest,bytes32 evidenceRoot,bytes32 challengeNonce,uint64 issuedAt,uint64 expiresAt) value) view returns (bytes32)",
+  "function submit((uint256 chainId,address registry,address collection,uint256 tokenId,bytes32 runtimeCodeHash,address implementation,bytes32 implementationCodeHash,address proxyAdmin,address beacon,address adapter,bytes32 adapterCodeHash,bytes32 policyDigest,uint64 policyVersion,uint64 blockNumber,bytes32 blockHash,bytes32 tokenURIHash,bytes32 portableRoot,bytes32 manifestDigest,uint64 presentationRevision,bytes32 facetDigest,bytes32 evidenceRoot,bytes32 challengeNonce,uint64 issuedAt,uint64 expiresAt) value,bytes[] signatures) returns (bytes32 digest)",
+  "function revoke(bytes32 digest,bytes32 reasonDigest)",
+  "function attestationWindowOpen(bytes32 digest) view returns (bool)",
+  "event AttestorSet(address indexed signer,bool approved)",
+  "event ThresholdSet(uint16 threshold)",
+  "event CollectionAttested(bytes32 indexed digest,address indexed collection,uint256 indexed tokenId,bytes32 evidenceRoot,uint64 blockNumber,bytes32 blockHash,uint16 signerCount)",
+  "event CollectionAttestationRevoked(bytes32 indexed digest,bytes32 reasonDigest)",
+] as const;
+
+export const keelIndexAbi = [
+  "function publishCollectionRevision(address collection,string manifestURI,bytes32 manifestDigest,uint64 parentRevision,uint64 compatibilityMin,uint64 compatibilityMax,uint8 policy,uint64 activationTime) returns (uint64 revision)",
+  "function publishTokenRevision(address collection,uint256 tokenId,string manifestURI,bytes32 manifestDigest,uint64 parentRevision,uint64 compatibilityMin,uint64 compatibilityMax,uint8 policy,uint64 activationTime) returns (uint64 revision)",
+  "function activateCollectionRevision(address collection,uint64 revision)",
+  "function activateTokenRevision(address collection,uint256 tokenId,uint64 revision)",
+  "function freezeCollection(address collection)",
+  "function freezeToken(address collection,uint256 tokenId)",
+  "function activeRevision(address collection,uint256 tokenId) view returns ((string manifestURI,bytes32 manifestDigest,uint64 revision,uint64 parentRevision,uint64 compatibilityMin,uint64 compatibilityMax,uint64 activationTime,uint8 policy,bool frozen))",
+  "function revisionOf(address collection,uint256 tokenId,bool tokenSpecific,uint64 revision) view returns ((string manifestURI,bytes32 manifestDigest,uint64 revision,uint64 parentRevision,uint64 compatibilityMin,uint64 compatibilityMax,uint64 activationTime,uint8 policy,bool frozen))",
+  "function activePresentation(address collection,uint256 tokenId) view returns (string manifestURI,bytes32 manifestDigest,uint64 revision)",
+  "function presentationMatches(address collection,uint256 tokenId,bytes32 manifestDigest,uint64 revision) view returns (bool)",
+  "function scopeStatus(address collection,uint256 tokenId,bool tokenSpecific) view returns (uint64 latest,uint64 active,bool frozen)",
+  "function claimCollection(address collection)",
+  "function registerCollection(address collection,address controller)",
+  "function setCollectionController(address collection,address controller)",
+  "function collectionController(address collection) view returns (address)",
+  "event CollectionRegistered(address indexed collection,address indexed controller)",
+  "event CollectionControllerUpdated(address indexed collection,address indexed previousController,address indexed controller)",
+  "event RoleGranted(bytes32 indexed role,address indexed account,address indexed sender)",
+  "event RevisionPublished(address indexed collection,uint256 indexed tokenId,bool indexed tokenSpecific,uint64 revision,uint64 parentRevision,bytes32 manifestDigest,string manifestURI,uint8 policy,uint64 activationTime)",
+  "event RevisionActivated(address indexed collection,uint256 indexed tokenId,bool indexed tokenSpecific,uint64 revision)",
+] as const;
+
+export const keelMintGateAbi = [
+  "function creatorProfileRegistry() view returns (address)",
+  "function createCampaign((address target,address adapter,address payout,address paymentToken,address creatorSigner,uint64 startTime,uint64 endTime,uint64 maxSupply,uint64 maxPerWallet,uint128 unitPrice,bytes32 merkleRoot,address gateToken,uint256 gateTokenId,uint256 gateMinBalance,uint8 gateTokenStandard,address customGate,bytes customGateData,uint8 gateLogic,uint8 signatureMode,uint8 accessFlags,bytes32 metadataHash) config) returns (bytes32 campaignId)",
+  "function mint(bytes32 campaignId,uint64 quantity,(uint256 allowance,bytes32[] merkleProof,(bytes32 campaignId,address account,address signer,uint256 maxQuantity,uint256 unitPrice,uint256 nonce,uint256 deadline,bytes32 contextHash) authorization,bytes signature,bytes customData,bytes mintData) proof) payable",
+  "function setCampaignPaused(bytes32 campaignId,bool paused)",
+  "function invalidateAuthorizationNonce(bytes32 campaignId)",
+  "function withdraw(address asset,address recipient)",
+  "function closeCampaign(bytes32 campaignId)",
+  "function campaignCapacityProtected(bytes32 campaignId) view returns (bool)",
+  "function campaignClosed(bytes32 campaignId) view returns (bool)",
+  "function campaignReservedCapacity(bytes32 campaignId) view returns (uint64)",
+  "function targetReservedCapacity(address target) view returns (uint256)",
+  "function campaignCapacityStatus(bytes32 campaignId) view returns (bool capacityProtected,bool closed,uint256 campaignRemaining,uint256 targetRemaining)",
+  "function nonces(bytes32 campaignId,address account) view returns (uint256)",
+  "function mintedBy(bytes32 campaignId,address account) view returns (uint64)",
+  "function activeAuthorizationDigest(bytes32 campaignId,address account) view returns (bytes32)",
+  "function authorizationUsed(bytes32 authorizationDigest) view returns (uint256)",
+  "function pendingBalance(address asset,address recipient) view returns (uint256)",
+  "function getCampaign(bytes32 campaignId) view returns ((address creator,address target,address adapter,address payout,address paymentToken,address creatorSigner,address platformSigner,address platformFeeRecipient,uint64 startTime,uint64 endTime,uint64 maxSupply,uint64 maxPerWallet,uint64 minted,uint128 unitPrice,uint16 platformFeeBps,bytes32 merkleRoot,address gateToken,uint256 gateTokenId,uint256 gateMinBalance,uint8 gateTokenStandard,address customGate,bytes customGateData,uint8 gateLogic,uint8 signatureMode,uint8 accessFlags,bool paused,bool exists,bytes32 metadataHash))",
+  "function authorizationDigest((bytes32 campaignId,address account,address signer,uint256 maxQuantity,uint256 unitPrice,uint256 nonce,uint256 deadline,bytes32 contextHash) authorization) view returns (bytes32)",
+  "event CampaignCreated(bytes32 indexed campaignId,address indexed creator,address indexed target,address adapter,uint64 maxSupply,uint64 maxPerWallet,uint128 unitPrice,uint8 signatureMode,uint8 accessFlags,bytes32 metadataHash)",
+  "event Minted(bytes32 indexed campaignId,address indexed account,uint256 quantity,uint256 paid,address signer,bool platformSigned)",
+  "event CampaignCapacityReserved(bytes32 indexed campaignId,address indexed target,uint256 quantity,uint256 campaignRemaining,uint256 targetRemaining)",
+  "event CampaignCapacityConsumed(bytes32 indexed campaignId,address indexed target,uint256 quantity,uint256 campaignRemaining,uint256 targetRemaining)",
+  "event CampaignCapacityReleased(bytes32 indexed campaignId,address indexed target,uint256 quantity,uint256 campaignRemaining,uint256 targetRemaining)",
+  "event CampaignClosedPermanently(bytes32 indexed campaignId,uint256 releasedCapacity)",
+  "event PlatformConfigurationUpdated(address indexed signer,address indexed feeRecipient,uint16 feeBps)",
+  "event RoleGranted(bytes32 indexed role,address indexed account,address indexed sender)",
+] as const;
+
+export const keel721Abi = [
+  "function strikeFromManager(address to,uint256 quantity,bytes data)",
+  "function isCampaignCreator(address account) view returns (bool)",
+  "function CAMPAIGN_CREATOR_ROLE() view returns (bytes32)",
+  "function PRESENTATION_ROLE() view returns (bytes32)",
+  "function MINTER_ROLE() view returns (bytes32)",
+  "function DEFAULT_ADMIN_ROLE() view returns (bytes32)",
+  "function hasRole(bytes32 role,address account) view returns (bool)",
+  "function grantRole(bytes32 role,address account)",
+  "function revokeRole(bytes32 role,address account)",
+  "function renounceRole(bytes32 role,address callerConfirmation)",
+  "function keelIndex() view returns (address)",
+  "function ownerOf(uint256 tokenId) view returns (address)",
+  "function approve(address to,uint256 tokenId)",
+  "function getApproved(uint256 tokenId) view returns (address)",
+  "function setApprovalForAll(address operator,bool approved)",
+  "function isApprovedForAll(address owner,address operator) view returns (bool)",
+  "function safeTransferFrom(address from,address to,uint256 tokenId)",
+  "function safeTransferFrom(address from,address to,uint256 tokenId,bytes data)",
+  "function reserveStrikeCapacity(uint256 quantity)",
+  "function releaseStrikeCapacity(uint256 quantity)",
+  "function reservedStrikeCapacity(address manager) view returns (uint256)",
+  "function totalReservedStrikeCapacity() view returns (uint256)",
+  "function tokenURI(uint256 tokenId) view returns (string)",
+  "function tokenJSON(uint256 tokenId) view returns (string)",
+  "function harnessContext(uint256 tokenId) view returns (bytes)",
+  "function erc4804URI(uint256 tokenId) view returns (string)",
+  "function thumbnailSVG(uint256 tokenId) view returns (string)",
+  "function thumbnailURI(uint256 tokenId) view returns (string)",
+  "function erc4804ThumbnailURI(uint256 tokenId) view returns (string)",
+  "function presentationURI(uint256 tokenId) view returns (string)",
+  "function presentationDigest(uint256 tokenId) view returns (bytes32)",
+  "function royaltyInfo(uint256 tokenId,uint256 salePrice) view returns (address receiver,uint256 amount)",
+  "function setDefaultPresentation(string manifestURI,bytes32 manifestDigest,string previewImageURI,string harnessBaseURI_)",
+  "function setOnchainHarness(address builder,bytes32 objectId,bytes32 digest)",
+  "function onchainHarnessBuilder() view returns (address)",
+  "function onchainHarnessObjectId() view returns (bytes32)",
+  "function onchainHarnessDigest() view returns (bytes32)",
+  "function setDefaultRoyalty(address receiver,uint96 feeNumerator)",
+  "function setTokenPresentation(uint256,string,bytes32,string) pure",
+  "function freezePresentation(uint256)",
+  "event MetadataUpdate(uint256 indexed tokenId)",
+  "event BatchMetadataUpdate(uint256 indexed fromTokenId,uint256 indexed toTokenId)",
+  "event StrikeCapacityReserved(address indexed manager,uint256 quantity,uint256 managerTotal,uint256 globalTotal)",
+  "event StrikeCapacityConsumed(address indexed manager,uint256 quantity,uint256 managerTotal,uint256 globalTotal)",
+  "event StrikeCapacityReleased(address indexed manager,uint256 quantity,uint256 managerTotal,uint256 globalTotal)",
+  "event RoleGranted(bytes32 indexed role,address indexed account,address indexed sender)",
+  "event Transfer(address indexed from,address indexed to,uint256 indexed tokenId)",
+  "event Approval(address indexed owner,address indexed approved,uint256 indexed tokenId)",
+  "event ApprovalForAll(address indexed owner,address indexed operator,bool approved)",
+] as const;
+
+/** Separate Cool S line NFTs. The canvas assembler is the only burn/reissue authority. */
+export const coolSLine721Abi = [
+  ...keel721Abi,
+  "function LINE_COUNT() view returns (uint256)",
+  "function keelObjectRegistry() view returns (address)",
+  "function canvasAssembler() view returns (address)",
+  "function lineMintedByWallet(address account) view returns (uint256)",
+  "function lineRecord(uint256 tokenId) view returns (uint8 lineIndex,bytes32 objectId,uint64 objectRevision,bytes32 lineDigest,bool exists)",
+  "function setCanvasAssembler(address assembler)",
+  "function setOneMintController(address controller)",
+  "function beforeOneMint(bytes32 dropId,address account,uint256 quantity)",
+  "function setLineRarityWeights(uint16[12] weights)",
+  "function burnFromCanvas(uint256 tokenId)",
+  "function clampFromCanvas(uint256 tokenId)",
+  "function reissueFromCanvas(uint256 tokenId,address recipient)",
+  "event CanvasAssemblerConfigured(address indexed assembler)",
+  "event CoolSLineMinted(uint256 indexed tokenId,uint8 indexed lineIndex,bytes32 indexed objectId,uint64 objectRevision,bytes32 lineDigest)",
+  "event LineMintEligibilityRecorded(address indexed account,uint256 quantity,uint256 lifetimeTotal)",
+  "event CoolSLineBurned(uint256 indexed tokenId,address indexed canvas)",
+  "event CoolSLineClamped(uint256 indexed tokenId,address indexed canvas)",
+  "event CoolSLineReissued(uint256 indexed tokenId,address indexed recipient,address indexed canvas)",
+] as const;
+
+/** Cool S canvas/backpack state machine and final Keel composition package. */
+export const coolSCanvas721Abi = [
+  ...keel721Abi,
+  "function MAX_LINES() view returns (uint8)",
+  "function MAX_PAID_CANVASES() view returns (uint256)",
+  "function keelObjectRegistry() view returns (address)",
+  "function lineCollection() view returns (address)",
+  "function viewerRenderer() view returns (address)",
+  "function splitController() view returns (address)",
+  "function mintController() view returns (address)",
+  "function backgroundDigest(uint256 tokenId) view returns (bytes32)",
+  "function lineCount(uint256 tokenId) view returns (uint8)",
+  "function buildNonce(uint256 tokenId) view returns (uint64)",
+  "function buildDigest(uint256 tokenId) view returns (bytes32)",
+  "function finished(uint256 tokenId) view returns (bool)",
+  "function mintSeed(uint256 tokenId) view returns (bytes32)",
+  "function destructionUsed(uint256 tokenId) view returns (bool)",
+  "function canvasBackground(uint256 tokenId) view returns ((bytes32 objectId,uint64 revision))",
+  "function compositionData(uint256 tokenId) view returns (bytes)",
+  "function lineSlot(uint256 canvasTokenId,uint8 lineIndex) view returns (uint256 tokenId,bytes32 objectId,uint64 objectRevision,bytes32 lineDigest)",
+  "function depositLine(uint256 canvasTokenId,uint256 lineTokenId,bytes finalization)",
+  "function withdrawLine(uint256 canvasTokenId,uint8 lineIndex)",
+  "function splitFinishedCanvas(uint256 canvasTokenId,bytes32 randomnessProof)",
+  "function setMintController(address controller)",
+  "function setMintSeed(uint256 tokenId,bytes32 seed)",
+  "event CoolSCanvasMinted(uint256 indexed tokenId,bytes32 indexed backgroundObjectId,uint64 backgroundRevision,bytes32 backgroundDigest,address owner)",
+  "event CoolSLineDeposited(uint256 indexed canvasTokenId,uint256 indexed lineTokenId,uint8 indexed lineIndex,address owner)",
+  "event CoolSLineWithdrawn(uint256 indexed canvasTokenId,uint256 indexed lineTokenId,uint8 indexed lineIndex,address owner)",
+  "event CoolSAssemblyFinished(uint256 indexed canvasTokenId,uint64 indexed buildNonce,bytes32 indexed compositionDigest,bytes32 lineSetDigest)",
+  "event CoolSAssemblySplit(uint256 indexed canvasTokenId,address indexed owner,bytes32 indexed randomnessProof,uint8 burnedLineCount,uint8 returnedLineCount)",
+  "event CoolSLineClamped(uint256 indexed canvasTokenId,uint256 indexed lineTokenId,uint8 indexed lineIndex)",
+] as const;
+
+/** Paid blank/filled canvas route, VRF release scheduler, and Keel manager route. */
+export const coolSCanvasMintControllerAbi = [
+  "function MINTER_ROLE() view returns (bytes32)",
+  "function MAX_LINES() view returns (uint8)",
+  "function MAX_PAID_CANVASES() view returns (uint256)",
+  "function MAX_PAID_CANVASES_PER_WALLET() view returns (uint256)",
+  "function MIN_RELEASE_BATCH() view returns (uint16)",
+  "function MAX_RELEASE_BATCH() view returns (uint16)",
+  "function MIN_RELEASE_INTERVAL() view returns (uint64)",
+  "function MAX_RELEASE_INTERVAL() view returns (uint64)",
+  "function canvas() view returns (address)",
+  "function lines() view returns (address)",
+  "function payout() view returns (address)",
+  "function linePrice() view returns (uint256)",
+  "function blankCanvasPrice() view returns (uint256)",
+  "function filledCanvasPrice() view returns (uint256)",
+  "function paidCanvasMinted(address account) view returns (uint256)",
+  "function totalPaidCanvasMinted() view returns (uint256)",
+  "function releasedFilledSupply() view returns (uint256)",
+  "function mintedFilledSupply() view returns (uint256)",
+  "function pendingRequestId() view returns (uint256)",
+  "function pendingMaxBatch() view returns (uint16)",
+  "function nextReleaseAt() view returns (uint256)",
+  "function lastRandomness() view returns (uint256)",
+  "function releaseNonce() view returns (uint256)",
+  "function paused() view returns (bool)",
+  "function minReleaseBatch() view returns (uint16)",
+  "function maxReleaseBatch() view returns (uint16)",
+  "function minReleaseInterval() view returns (uint64)",
+  "function maxReleaseInterval() view returns (uint64)",
+  "function vrfCoordinator() view returns (address)",
+  "function vrfKeyHash() view returns (bytes32)",
+  "function vrfSubscriptionId() view returns (uint256)",
+  "function vrfRequestConfirmations() view returns (uint16)",
+  "function vrfCallbackGasLimit() view returns (uint32)",
+  "function reservedStrikeCapacity(address manager) view returns (uint256)",
+  "function totalReservedStrikeCapacity() view returns (uint256)",
+  "function setPrices(uint256 linePrice,uint256 blankCanvasPrice,uint256 filledCanvasPrice)",
+  "function setPayout(address payout)",
+  "function setReleaseConfig(uint16 minBatch,uint16 maxBatch,uint64 minInterval,uint64 maxInterval)",
+  "function setVRFConfig(bytes32 keyHash,uint256 subscriptionId,uint16 requestConfirmations,uint32 callbackGasLimit,bytes extraArgs)",
+  "function pause()",
+  "function unpause()",
+  "function artistMintEnabled() view returns (bool)",
+  "function setArtistMintEnabled(bool enabled)",
+  "function canHireArtist(address account) view returns (bool)",
+  "function mintBlankCanvas(bytes canvasMintData) payable returns (uint256 tokenId)",
+  "function mintFilledCanvas((bytes canvasMintData,bytes[] lineMintData,bytes finalization) data) payable returns (uint256 tokenId)",
+  "function strikeFromManager(address to,uint256 quantity,bytes data)",
+  "function reserveStrikeCapacity(uint256 quantity)",
+  "function releaseStrikeCapacity(uint256 quantity)",
+  "function requestFilledSupplyRelease() returns (uint256 requestId)",
+  "function rawFulfillRandomWords(uint256 requestId,uint256[] randomWords)",
+  "function previewFilledSeed(uint256 tokenId) view returns (bytes32)",
+  "function availableCanvasCapacity() view returns (uint256)",
+  "event PricesUpdated(uint256 linePrice,uint256 blankCanvasPrice,uint256 filledCanvasPrice)",
+  "event ReleaseConfigUpdated(uint16 minBatch,uint16 maxBatch,uint64 minInterval,uint64 maxInterval,uint256 nextReleaseAt)",
+  "event VRFConfigUpdated(bytes32 keyHash,uint256 subscriptionId,uint16 requestConfirmations,uint32 callbackGasLimit,bytes extraArgs)",
+  "event PauseUpdated(bool paused)",
+  "event FilledSupplyReleaseRequested(uint256 indexed requestId,uint16 maxBatch)",
+  "event FilledSupplyReleased(uint256 indexed requestId,uint256 indexed releaseNonce,uint256 randomness,uint16 amount,uint256 nextReleaseAt)",
+  "event PaidBlankCanvasMinted(address indexed account,uint256 indexed tokenId,uint256 price)",
+  "event PaidFilledCanvasMinted(address indexed account,uint256 indexed tokenId,bytes32 indexed seed,uint256 price)",
+  "event ManagerBlankCanvasMinted(address indexed manager,address indexed recipient,uint256 indexed tokenId)",
+  "event ManagerFilledCanvasMinted(address indexed manager,address indexed recipient,uint256 indexed tokenId,bytes32 seed)",
+  "event StrikeCapacityReserved(address indexed manager,uint256 quantity)",
+  "event StrikeCapacityReleased(address indexed manager,uint256 quantity)",
+  "event StrikeCapacityConsumed(address indexed manager,uint256 quantity)",
+  "event PayoutUpdated(address indexed payout)",
+  "event ArtistMintAccessUpdated(bool enabled)",
+] as const;
+
+export const keelFactoryAbi = [
+  "function FACTORY_VERSION() view returns (bytes32)",
+  "function COLLECTION_AUTHORIZATION_TYPEHASH() view returns (bytes32)",
+  "function MAX_COLLECTION_AUTHORIZATION_LIFETIME() view returns (uint64)",
+  "function dieCreationCodeHash() pure returns (bytes32)",
+  "function dieConfigDigest((string name,string symbol,address admin,address royaltyReceiver,uint96 royaltyBps,uint256 maxSupply,address mintManager,address keelIndex) config) pure returns (bytes32)",
+  "function dieAuthorizationDigest(address creator,address agent,uint256 nonce,uint64 deadline,bytes32 configDigest) view returns (bytes32)",
+  "function castDie((string name,string symbol,address admin,address royaltyReceiver,uint96 royaltyBps,uint256 maxSupply,address mintManager,address keelIndex) config) returns (address collection)",
+  "function castDieFor(address creator,(string name,string symbol,address admin,address royaltyReceiver,uint96 royaltyBps,uint256 maxSupply,address mintManager,address keelIndex) config,uint64 deadline,uint256 nonce,bytes signature) returns (address collection)",
+  "function invalidateCreatorNonce(uint256 nextNonce)",
+  "function creatorNonces(address creator) view returns (uint256)",
+  "event DieCast(address indexed collection,address indexed creator,address indexed admin,string name,string symbol,uint256 maxSupply)",
+  "event DieCastByAgent(address indexed collection,address indexed creator,address indexed agent,uint256 nonce,bytes32 authorizationDigest,bytes32 configDigest)",
+  "event CreatorNonceInvalidated(address indexed creator,uint256 previousNonce,uint256 nextNonce)",
+] as const;
+
+export const oneMintControllerAbi = [
+  "function OPEN_SUPPLY() view returns (uint64)",
+  "function creatorProfileRegistry() view returns (address)",
+  "function createDrop(address target,address payout,uint64 supply,uint32 maxPerTransaction,uint32 maxPerWallet,(uint8 kind,uint64 startTime,uint64 endTime,uint96 unitPrice,address paymentAsset,address signer,address entitlementToken,uint32 maxPerTransaction,uint32 maxPerWallet,bytes32 metadataDigest)[] stages,bytes32 metadataDigest) returns (bytes32 dropId)",
+  "function publicMint(bytes32 dropId,uint16 stageIndex,uint32 quantity,bytes mintData) payable",
+  "function allowlistMint((bytes32 dropId,uint16 stageIndex,address account,uint32 quantity,uint256 nonce,uint64 deadline,bytes32 contextHash) authorization,bytes signature,bytes mintData) payable",
+  "function claimMint((bytes32 dropId,uint16 stageIndex,address account,uint32 quantity,uint256 nonce,uint64 deadline,bytes32 contextHash) authorization,bytes signature,uint256[] entitlementIds,bytes mintData) payable",
+  "function adminStrike(bytes32 dropId,uint16 stageIndex,address recipient,uint32 quantity,bytes mintData)",
+  "function closeDrop(bytes32 dropId)",
+  "function updateDropSupply(bytes32 dropId,uint64 nextSupply)",
+  "function setDropPaused(bytes32 dropId,bool paused)",
+  "function setStageMerkleRoot(bytes32 dropId,uint16 stageIndex,bytes32 merkleRoot)",
+  "function setDelegate(address target,address delegate,bool allowed)",
+  "function invalidateNonce(bytes32 dropId,uint256 newNonce)",
+  "function withdraw(address asset,address recipient)",
+  "function getDrop(bytes32 dropId) view returns ((address creator,address target,address payout,uint64 supply,uint64 minted,uint32 defaultMaxPerTransaction,uint32 defaultMaxPerWallet,uint16 stageCount,bool paused,bool closed,bool capacityReserved,bool exists,bytes32 metadataDigest))",
+  "function latestDropForTarget(address target) view returns (bytes32)",
+  "function isOpenSupply(bytes32 dropId) view returns (bool)",
+  "function getStage(bytes32 dropId,uint16 stageIndex) view returns ((uint8 kind,uint64 startTime,uint64 endTime,uint96 unitPrice,address paymentAsset,address signer,address entitlementToken,uint32 maxPerTransaction,uint32 maxPerWallet,bytes32 metadataDigest))",
+  "function currentStage(bytes32 dropId) view returns (bool active,uint16 stageIndex,(uint8 kind,uint64 startTime,uint64 endTime,uint96 unitPrice,address paymentAsset,address signer,address entitlementToken,uint32 maxPerTransaction,uint32 maxPerWallet,bytes32 metadataDigest) stage)",
+  "function effectiveStageLimits(bytes32 dropId,uint16 stageIndex) view returns (uint32 maxPerTransaction,uint32 maxPerWallet)",
+  "function authorizationDigest((bytes32 dropId,uint16 stageIndex,address account,uint32 quantity,uint256 nonce,uint64 deadline,bytes32 contextHash) authorization) view returns (bytes32)",
+  "function merkleMint(bytes32 dropId,uint16 stageIndex,uint32 quantity,uint32 allowance,bytes32[] merkleProof,bytes mintData) payable",
+  "function stageMerkleRoot(bytes32 dropId,uint16 stageIndex) view returns (bytes32)",
+  "function merkleLeaf(address account,uint32 allowance) pure returns (bytes32)",
+  "function creatorNonces(address creator) view returns (uint256)",
+  "function nonces(bytes32 dropId,address account) view returns (uint256)",
+  "function mintedBy(bytes32 dropId,address account) view returns (uint64)",
+  "function claimIdUsed(bytes32 dropId,address entitlementToken,uint256 tokenId) view returns (bool)",
+  "function pendingBalance(address asset,address recipient) view returns (uint256)",
+  "function reservedByTarget(address target) view returns (uint256)",
+  "function merkleMintedBy(bytes32 dropId,uint16 stageIndex,address account) view returns (uint32)",
+  "event DropCreated(bytes32 indexed dropId,address indexed creator,address indexed target,address payout,uint64 supply,uint32 defaultMaxPerTransaction,uint32 defaultMaxPerWallet,uint16 stageCount,bytes32 metadataDigest)",
+  "event StageCreated(bytes32 indexed dropId,uint16 indexed stageIndex,uint8 kind,uint64 startTime,uint64 endTime,uint96 unitPrice,address paymentAsset,address signer,address entitlementToken,uint32 maxPerTransaction,uint32 maxPerWallet,bytes32 metadataDigest)",
+  "event DropMinted(bytes32 indexed dropId,uint16 indexed stageIndex,address indexed account,uint32 quantity,uint256 paid,uint8 kind)",
+  "event EntitlementClaimed(bytes32 indexed dropId,address indexed entitlementToken,uint256 indexed tokenId,address account)",
+  "event DropClosedPermanently(bytes32 indexed dropId,uint256 releasedCapacity)",
+  "event DropPauseUpdated(bytes32 indexed dropId,bool paused)",
+  "event DropSupplyUpdated(bytes32 indexed dropId,uint64 previousSupply,uint64 supply,bool openSupply)",
+  "event StageMerkleRootUpdated(bytes32 indexed dropId,uint16 indexed stageIndex,bytes32 merkleRoot)",
+] as const;
+
+/** Generic, append-only Keel resource-graph history. Enum values are uint8. */
+export const keelGraphRegistryAbi = [
+  "function predictGraphId(address publisher,bytes32 salt) pure returns (bytes32)",
+  "function createGraph(bytes32 salt,uint8 kind,string manifestURI,bytes32 manifestDigest,bytes32 resourceGraphDigest,bytes32 metadataDigest,uint8 storageTier) returns (bytes32 graphId)",
+  "function publishVersion(bytes32 graphId,uint64 expectedParent,string manifestURI,bytes32 manifestDigest,bytes32 resourceGraphDigest,bytes32 metadataDigest,uint8 storageTier) returns (uint64 version)",
+  "function activateVersion(bytes32 graphId,uint64 version)",
+  "function promoteMinimumTier(bytes32 graphId,uint8 minimumTier)",
+  "function beginPublisherTransfer(bytes32 graphId,address pendingPublisher)",
+  "function acceptPublisher(bytes32 graphId)",
+  "function freezeGraph(bytes32 graphId)",
+  "function graphPublisher(bytes32 graphId) view returns (address)",
+  "function graphKind(bytes32 graphId) view returns (uint8)",
+  "function graph(bytes32 graphId) view returns ((address publisher,address pendingPublisher,uint8 kind,uint8 minimumTier,uint64 latestVersion,uint64 activeVersion,bool frozen,bool exists))",
+  "function versionOf(bytes32 graphId,uint64 version) view returns ((string manifestURI,bytes32 manifestDigest,bytes32 resourceGraphDigest,bytes32 metadataDigest,uint64 number,uint64 parentVersion,uint64 createdAt,uint8 storageTier,bool active,bool graphFrozen))",
+  "function activeVersion(bytes32 graphId) view returns ((string manifestURI,bytes32 manifestDigest,bytes32 resourceGraphDigest,bytes32 metadataDigest,uint64 number,uint64 parentVersion,uint64 createdAt,uint8 storageTier,bool active,bool graphFrozen))",
+  "event GraphCreated(bytes32 indexed graphId,address indexed publisher,uint8 indexed kind)",
+  "event GraphVersionPublished(bytes32 indexed graphId,uint64 indexed version,uint64 indexed parentVersion,bytes32 manifestDigest,bytes32 resourceGraphDigest,bytes32 metadataDigest,uint8 storageTier,string manifestURI,address publisher)",
+  "event GraphVersionActivated(bytes32 indexed graphId,uint64 indexed version,uint8 storageTier)",
+  "event GraphMinimumTierPromoted(bytes32 indexed graphId,uint8 previousTier,uint8 indexed minimumTier)",
+  "event GraphPublisherTransferStarted(bytes32 indexed graphId,address indexed previousPublisher,address indexed pendingPublisher)",
+  "event GraphPublisherTransferred(bytes32 indexed graphId,address indexed previousPublisher,address indexed publisher)",
+  "event GraphPermanentlyFrozen(bytes32 indexed graphId,uint64 indexed activeVersion,uint8 minimumTier)",
+] as const;
+
+/** Exact-version reusable asset catalogue with append-only access policies.
+ * Public graph bytes remain inspectable; this registry governs licensing and
+ * reader launch, not confidentiality. */
+export const keelLibraryRegistryAbi = [
+  "function graphRegistry() view returns (address)",
+  "function predictAssetId(address creator,bytes32 salt) view returns (bytes32)",
+  "function policyCommitment(bytes32 assetId,bytes32 graphId,uint64 graphVersion,uint64 policyVersion,bytes32 manifestDigest,bytes32 resourceGraphDigest,uint8 storageTier,bytes32 catalogMetadataDigest,(uint8 mode,address payout,uint128 price,uint64 grantDuration,uint64 availableFrom,uint64 availableUntil,bytes32 allowlistRoot,address gateToken,uint128 minimumTokenBalance,bytes32 termsDigest) input) view returns (bytes32)",
+  "function indexAsset(bytes32 salt,bytes32 graphId,uint64 graphVersion,uint8 kind,bytes32 catalogMetadataDigest,(uint8 mode,address payout,uint128 price,uint64 grantDuration,uint64 availableFrom,uint64 availableUntil,bytes32 allowlistRoot,address gateToken,uint128 minimumTokenBalance,bytes32 termsDigest) initialPolicy) returns (bytes32 assetId)",
+  "function publishPolicy(bytes32 assetId,uint64 expectedParent,uint64 graphVersion,bytes32 catalogMetadataDigest,(uint8 mode,address payout,uint128 price,uint64 grantDuration,uint64 availableFrom,uint64 availableUntil,bytes32 allowlistRoot,address gateToken,uint128 minimumTokenBalance,bytes32 termsDigest) input) returns (uint64 policyVersion)",
+  "function activatePolicy(bytes32 assetId,uint64 policyVersion)",
+  "function freezeAsset(bytes32 assetId)",
+  "function closeAsset(bytes32 assetId)",
+  "function promoteMinimumTier(bytes32 assetId,uint8 minimumTier)",
+  "function beginControllerTransfer(bytes32 assetId,address pendingController)",
+  "function acceptController(bytes32 assetId)",
+  "function purchaseAccess(bytes32 assetId,uint64 expectedPolicyVersion,bytes32 expectedPolicyCommitment) payable",
+  "function claimAllowlistAccess(bytes32 assetId,uint64 expectedPolicyVersion,bytes32 expectedPolicyCommitment,bytes32[] proof)",
+  "function submitAccessRequest(bytes32 assetId,uint64 expectedPolicyVersion,bytes32 expectedPolicyCommitment,bytes32 submissionDigest)",
+  "function resolveAccessRequest(bytes32 assetId,uint64 policyVersion,bytes32 expectedPolicyCommitment,address account,bool approve,bytes32 decisionDigest)",
+  "function withdraw(address recipient)",
+  "function hasAccess(bytes32 assetId,address account) view returns (bool)",
+  "function hasAccessAtPolicy(bytes32 assetId,uint64 policyVersion,address account) view returns (bool)",
+  "function hasAccessWithProof(bytes32 assetId,address account,bytes32[] proof) view returns (bool)",
+  "function hasAccessWithProofAtPolicy(bytes32 assetId,uint64 policyVersion,address account,bytes32[] proof) view returns (bool)",
+  "function allowlistLeaf(bytes32 assetId,uint64 policyVersion,address account) view returns (bytes32)",
+  "function asset(bytes32 assetId) view returns ((bytes32 graphId,uint64 latestPolicyVersion,uint64 activePolicyVersion,uint8 minimumTier,uint8 kind,address controller,address pendingController,bool frozen,bool closed,bool exists))",
+  "function policy(bytes32 assetId,uint64 policyVersion) view returns ((bytes32 manifestDigest,bytes32 resourceGraphDigest,bytes32 catalogMetadataDigest,bytes32 commitment,uint64 graphVersion,uint8 storageTier,uint8 mode,address payout,uint128 price,uint64 grantDuration,uint64 availableFrom,uint64 availableUntil,bytes32 allowlistRoot,address gateToken,uint128 minimumTokenBalance,bytes32 termsDigest,uint64 parentVersion,uint64 createdAt,bool exists))",
+  "function activePolicy(bytes32 assetId) view returns ((bytes32 manifestDigest,bytes32 resourceGraphDigest,bytes32 catalogMetadataDigest,bytes32 commitment,uint64 graphVersion,uint8 storageTier,uint8 mode,address payout,uint128 price,uint64 grantDuration,uint64 availableFrom,uint64 availableUntil,bytes32 allowlistRoot,address gateToken,uint128 minimumTokenBalance,bytes32 termsDigest,uint64 parentVersion,uint64 createdAt,bool exists) value,uint64 policyVersion)",
+  "function entitlement(bytes32 assetId,uint64 policyVersion,address account) view returns ((uint64 startsAt,uint64 expiresAt,uint64 lastPolicyVersion,bool permanent,bool exists))",
+  "function accessRequest(bytes32 assetId,uint64 policyVersion,address account) view returns ((uint64 policyVersion,uint64 submittedAt,uint64 resolvedAt,bytes32 submissionDigest,bytes32 decisionDigest,uint8 status))",
+  "function grantCount(bytes32 assetId,uint64 policyVersion,address account) view returns (uint64)",
+  "function grantRecord(bytes32 assetId,uint64 policyVersion,address account,uint64 grantNumber) view returns ((address issuer,uint64 policyVersion,uint64 startsAt,uint64 expiresAt,bytes32 evidenceDigest,bool permanent))",
+  "function credit(address account) view returns (uint256)",
+  "function totalCreditLiability() view returns (uint256)",
+  "event LibraryAssetIndexed(bytes32 indexed assetId,bytes32 indexed graphId,uint64 indexed graphVersion,uint8 kind,bytes32 manifestDigest,bytes32 resourceGraphDigest,uint8 storageTier,bytes32 catalogMetadataDigest,bytes32 policyCommitment,address publisher)",
+  "event AccessPolicyPublished(bytes32 indexed assetId,uint64 indexed policyVersion,uint64 indexed parentVersion,uint64 graphVersion,uint8 mode,bytes32 termsDigest,bytes32 policyCommitment,address publisher)",
+  "event AccessPolicyActivated(bytes32 indexed assetId,uint64 indexed policyVersion)",
+  "event LibraryAssetPermanentlyFrozen(bytes32 indexed assetId,uint64 indexed policyVersion)",
+  "event LibraryAssetPermanentlyClosed(bytes32 indexed assetId,uint64 indexed policyVersion)",
+  "event AccessGranted(bytes32 indexed assetId,address indexed account,uint64 indexed grantNumber,uint64 policyVersion,uint64 startsAt,uint64 expiresAt,bool permanent,bytes32 evidenceDigest,address issuer)",
+  "event AccessPurchased(bytes32 indexed assetId,uint64 indexed policyVersion,address indexed account,uint256 amount,address payout)",
+  "event AccessRequested(bytes32 indexed assetId,uint64 indexed policyVersion,address indexed account,bytes32 submissionDigest)",
+  "event AccessRequestResolved(bytes32 indexed assetId,uint64 indexed policyVersion,address indexed account,bool approved,bytes32 decisionDigest)",
+] as const;
+
+/** Permissionless plugin submission plus exact, digest-scoped trust review. */
+export const keelPluginRegistryAbi = [
+  "function graphRegistry() view returns (address)",
+  "function APPROVER_ROLE() view returns (bytes32)",
+  "function specDigest((bytes32 pluginId,uint64 pluginVersion,uint8 kind,address target,bytes32 targetRuntimeCodeHash,bytes4 requiredInterfaceId,bytes32 graphId,uint64 graphVersion,bytes32 pluginManifestDigest,bytes32 abiDigest,bytes32 walletRuntimeDigest,bytes32 adapterDigest,bytes32 permissionsDigest,address legacyTarget,bytes32 legacyRuntimeCodeHash) spec) view returns (bytes32)",
+  "function submitPlugin((bytes32 pluginId,uint64 pluginVersion,uint8 kind,address target,bytes32 targetRuntimeCodeHash,bytes4 requiredInterfaceId,bytes32 graphId,uint64 graphVersion,bytes32 pluginManifestDigest,bytes32 abiDigest,bytes32 walletRuntimeDigest,bytes32 adapterDigest,bytes32 permissionsDigest,address legacyTarget,bytes32 legacyRuntimeCodeHash) spec) returns (bytes32 digest)",
+  "function sanctionPlugin(bytes32 digest,bytes32 reviewDigest,uint64 walletValidUntil)",
+  "function deprecatePlugin(bytes32 digest,bytes32 reasonDigest,bytes32 replacementSpecDigest,uint64 walletValidUntil)",
+  "function revokePlugin(bytes32 digest,bytes32 reasonDigest,bytes32 replacementSpecDigest)",
+  "function submission(bytes32 digest) view returns (((bytes32 pluginId,uint64 pluginVersion,uint8 kind,address target,bytes32 targetRuntimeCodeHash,bytes4 requiredInterfaceId,bytes32 graphId,uint64 graphVersion,bytes32 pluginManifestDigest,bytes32 abiDigest,bytes32 walletRuntimeDigest,bytes32 adapterDigest,bytes32 permissionsDigest,address legacyTarget,bytes32 legacyRuntimeCodeHash) spec,address submitter,uint64 submittedAt,bool exists))",
+  "function review(bytes32 digest) view returns ((uint8 status,bytes32 reviewDigest,bytes32 reasonDigest,bytes32 replacementSpecDigest,uint64 walletValidUntil,uint64 updatedAt,address reviewer))",
+  "function walletAuthorized(bytes32 digest) view returns (bool)",
+  "function bindingsMatch(bytes32 digest) view returns (bool)",
+  "event PluginSubmitted(bytes32 indexed specDigest,bytes32 indexed pluginId,uint64 indexed pluginVersion,uint8 kind,address target,bytes32 targetRuntimeCodeHash,bytes32 graphId,uint64 graphVersion,bytes32 pluginManifestDigest,address submitter)",
+  "event PluginSanctioned(bytes32 indexed specDigest,bytes32 indexed reviewDigest,uint64 walletValidUntil,address indexed reviewer)",
+  "event PluginDeprecated(bytes32 indexed specDigest,bytes32 indexed reasonDigest,bytes32 indexed replacementSpecDigest,uint64 walletValidUntil,address reviewer)",
+  "event PluginRevoked(bytes32 indexed specDigest,bytes32 indexed reasonDigest,bytes32 indexed replacementSpecDigest,address reviewer)",
+] as const;
+
+/** Serverless native-ETH Keel market. Listing creation is the NFT's
+ * four-argument safeTransferFrom with listingTransferData as calldata. */
+export const keelMarketAbi = [
+  "function pluginProtocol() pure returns (bytes32)",
+  "function pluginId() pure returns (bytes32)",
+  "function pluginVersion() pure returns (uint64)",
+  "function supportsInterface(bytes4 interfaceId) pure returns (bool)",
+  "function platformRecipient() view returns (address)",
+  "function platformFeeBps() view returns (uint96)",
+  "function listingTransferData(uint256 price,uint64 expiry,(address royaltyRecipient,uint256 royaltyAmount,address platformRecipient,uint256 platformFee,uint256 sellerProceeds) expectedQuote) pure returns (bytes)",
+  "function listing(address collection,uint256 tokenId) view returns ((address seller,address royaltyRecipient,uint96 price,uint96 royaltyAmount,uint96 platformFee,uint96 sellerProceeds,uint64 expiry,uint64 version))",
+  "function bid(address collection,uint256 tokenId,address bidder) view returns ((uint128 amount,uint64 expiry,uint64 version))",
+  "function listingVersion(bytes32 listingKey) view returns (uint64)",
+  "function bidVersion(bytes32 bidKey) view returns (uint64)",
+  "function updateListing(address collection,uint256 tokenId,uint64 expectedVersion,uint256 price,uint64 expiry,(address royaltyRecipient,uint256 royaltyAmount,address platformRecipient,uint256 platformFee,uint256 sellerProceeds) expectedQuote) returns (uint64 version)",
+  "function cancelListing(address collection,uint256 tokenId,uint64 expectedVersion)",
+  "function cancelListingTo(address collection,uint256 tokenId,uint64 expectedVersion,address recipient)",
+  "function reclaimExpiredListing(address collection,uint256 tokenId,uint64 expectedVersion)",
+  "function buy(address collection,uint256 tokenId,uint64 expectedVersion,uint256 expectedPrice,(address royaltyRecipient,uint256 royaltyAmount,address platformRecipient,uint256 platformFee,uint256 sellerProceeds) expectedQuote) payable",
+  "function placeBid(address collection,uint256 tokenId,uint64 expiry) payable returns (uint64 version)",
+  "function cancelBid(address collection,uint256 tokenId,uint64 expectedVersion)",
+  "function reclaimExpiredBid(address collection,uint256 tokenId,address bidder,uint64 expectedVersion)",
+  "function acceptBid(address collection,uint256 tokenId,address bidder,uint64 expectedBidVersion,uint256 expectedAmount,(address royaltyRecipient,uint256 royaltyAmount,address platformRecipient,uint256 platformFee,uint256 sellerProceeds) expectedQuote)",
+  "function settlementQuote(address collection,uint256 tokenId,uint256 price) view returns ((address royaltyRecipient,uint256 royaltyAmount,address platformRecipient,uint256 platformFee,uint256 sellerProceeds))",
+  "function settlementQuoteDigest((address royaltyRecipient,uint256 royaltyAmount,address platformRecipient,uint256 platformFee,uint256 sellerProceeds) quote) pure returns (bytes32)",
+  "function credit(address account) view returns (uint256)",
+  "function withdraw(address recipient)",
+  "function liabilities() view returns (uint256 credits,uint256 bids,uint256 total)",
+  "function listingKey(address collection,uint256 tokenId) pure returns (bytes32)",
+  "function bidKey(address collection,uint256 tokenId,address bidder) pure returns (bytes32)",
+  "function owner() view returns (address)",
+  "function pendingOwner() view returns (address)",
+  "function transferOwnership(address newOwner)",
+  "function acceptOwnership()",
+  "function recoverUntrackedERC721(address collection,uint256 tokenId,address recipient)",
+  "event ListingCreated(address indexed collection,uint256 indexed tokenId,uint64 indexed version,address seller,uint256 price,uint64 expiry)",
+  "event ListingUpdated(address indexed collection,uint256 indexed tokenId,uint64 indexed version,address seller,uint256 price,uint64 expiry)",
+  "event ListingCancelled(address indexed collection,uint256 indexed tokenId,uint64 indexed version,address seller,address returnRecipient)",
+  "event BidPlaced(address indexed collection,uint256 indexed tokenId,address indexed bidder,uint64 version,uint256 amount,uint64 expiry)",
+  "event BidCancelled(address indexed collection,uint256 indexed tokenId,address indexed bidder,uint64 version,uint256 amount)",
+  "event Sale(address indexed collection,uint256 indexed tokenId,address indexed buyer,address seller,uint64 listingVersion,uint64 bidVersion,bool acceptedBid,uint256 price,address royaltyRecipient,uint256 royaltyAmount,address platformRecipient,uint256 platformFee,uint256 sellerProceeds)",
+  "event CreditWithdrawn(address indexed account,address indexed recipient,uint256 amount)",
+  "event UntrackedERC721Recovered(address indexed collection,uint256 indexed tokenId,address indexed recipient,address recoveryAuthority)",
+] as const;
+
+export const keelObjectRegistryAbi = [
+  "function OBJECT_ID_DOMAIN() view returns (bytes32)",
+  "function forgeArtifact(bytes32 salt,(address collection,uint256 tokenId) binding,uint8 policy,bytes32 contentObjectId,uint8 digestAlgorithm,bytes32 decodedDigest,bytes32 metadataDigest,bytes32 fidelitySetDigest) payable returns (bytes32 objectId)",
+  "function forgeArtifactWithRevisionPolicy(bytes32 salt,(address collection,uint256 tokenId) binding,uint8 policy,bytes32 contentObjectId,uint8 digestAlgorithm,bytes32 decodedDigest,bytes32 metadataDigest,bytes32 fidelitySetDigest,address revisionPolicy_) payable returns (bytes32 objectId)",
+  "function appendArtifactRevision(bytes32 objectId,uint64 expectedParent,bytes32 contentObjectId,uint8 digestAlgorithm,bytes32 decodedDigest,bytes32 metadataDigest,bytes32 fidelitySetDigest) returns (uint64 revision)",
+  "function manager() view returns (address)",
+  "function forgingFee() view returns (uint256)",
+  "function protocolFeeRecipient() view returns (address)",
+  "function protocolFeesAccrued() view returns (uint256)",
+  "function setForgingFee(uint256 nextFee,address nextRecipient)",
+  "function claimProtocolFees(uint256 amount)",
+  "function setRevisionPolicy(bytes32 objectId,address policy)",
+  "function freezeArtifact(bytes32 objectId)",
+  "function keelHold() view returns (address)",
+  "function predictArtifactId(address creator,bytes32 salt) pure returns (bytes32)",
+  "function latestArtifactRevision(bytes32 objectId) view returns (uint64)",
+  "function artifactRevisionExists(bytes32 objectId,uint64 revision) view returns (bool)",
+  "function canEditArtifact(bytes32 objectId,address account) view returns (bool)",
+  "function artifactOwner(bytes32 objectId) view returns (address)",
+  "function artifactCreator(bytes32 objectId) view returns (address)",
+  "function artifactIsFrozen(bytes32 objectId) view returns (bool)",
+  "function revisionPolicy(bytes32 objectId) view returns (address)",
+  "function artifactLineage(bytes32 objectId) view returns ((address creator,(address collection,uint256 tokenId) binding,uint8 policy,uint64 latestRevision,bool frozen,bool exists))",
+  "function objectRevision(bytes32 objectId,uint64 revision) view returns ((bytes32 contentObjectId,bytes32 decodedDigest,bytes32 metadataDigest,bytes32 fidelitySetDigest,bytes32 mediaTypeDigest,uint64 byteLength,uint64 parentRevision,uint64 createdAt,address publisher,uint8 digestAlgorithm,uint8 compression,bool exists))",
+  "function artifactRevisionDescriptor(bytes32 objectId,uint64 revision) view returns (address store,bytes32 contentObjectId,bytes32 decodedDigest,bytes32 metadataDigest,bytes32 fidelitySetDigest,bytes32 mediaTypeDigest,uint64 byteLength,uint8 digestAlgorithm,uint8 compression,address publisher)",
+  "function artifactRevisionSource(bytes32 objectId,uint64 revision) view returns (address store,bytes32 contentObjectId,uint8 digestAlgorithm,bytes32 decodedDigest,uint64 byteLength,uint8 compression,string mediaType)",
+  "event ObjectWelded(bytes32 indexed objectId,address indexed creator,address indexed collection,uint256 tokenId,uint8 policy)",
+  "event ArtifactRevisionAppended(bytes32 indexed objectId,uint64 indexed revision,uint64 indexed parentRevision,bytes32 contentObjectId,bytes32 decodedDigest,bytes32 metadataDigest,bytes32 fidelitySetDigest,bytes32 mediaTypeDigest,uint64 byteLength,uint8 digestAlgorithm,uint8 compression,address publisher)",
+  "event ArtifactPermanentlyFrozen(bytes32 indexed objectId,uint64 indexed revision)",
+  "event ArtifactRevisionPolicySet(bytes32 indexed objectId,address indexed policy,uint64 indexed revision)",
+  "event ForgingFeeConfigured(uint256 indexed previousFee,uint256 indexed nextFee,address indexed feeRecipient)",
+  "event ProtocolFeesClaimed(address indexed recipient,uint256 amount)",
+] as const;
+
+/** Creator-owned Keel license declarations and per-resource access rules. */
+export const keelIPControlAbi = [
+  "function license(bytes32 licenseId) view returns ((bytes32 contentObjectId,bytes32 decodedDigest,uint64 byteLength,uint64 storedByteLength,uint8 compression,string identifier,string name,address publisher,bool standard,bool exists))",
+  "function policy(bytes32 policyId) view returns ((bytes32 objectId,uint64 objectRevision,address creator,bytes32 licenseId,uint64 version,bool configFrozen,bool exists))",
+  "function rule(bytes32 policyId,bytes32 resourceObjectId) view returns ((uint8 mode,uint8 tokenLogic,uint8 actionMask,address externalRule,bytes32 externalRuleCodeHash,uint64 objectRevision,bool exists))",
+  "function tokenRequirementCount(bytes32 policyId,bytes32 resourceObjectId) view returns (uint256)",
+  "function tokenRequirement(bytes32 policyId,bytes32 resourceObjectId,uint256 index) view returns ((uint8 standard,uint8 matchKind,address tokenContract,uint256 tokenId,uint256 minimumBalance))",
+  "function authorizationStatus(bytes32 policyId,bytes32 resourceObjectId,address account,uint8 action) view returns (bool allowed,uint8 mode,uint8 actionMask,uint64 grantExpiry,bytes32 effectiveRuleId,bytes32 licenseId,uint64 policyVersion)",
+  "function isAuthorized(bytes32 policyId,bytes32 resourceObjectId,address account,uint8 action) view returns (bool)",
+] as const;
+
+/** Chain-local executor for verified IP downloads, remints, and token-bound backpacks. */
+export const keelIPActionExecutorAbi = [
+  "function control() view returns (address)",
+  "function executionConfig(bytes32 policyId,bytes32 resourceObjectId) view returns ((address remintTarget,address backpackRegistry,address backpackImplementation,bytes32 backpackSalt,bool exists))",
+  "function setExecutionConfig(bytes32 policyId,bytes32 resourceObjectId,(address remintTarget,address backpackRegistry,address backpackImplementation,bytes32 backpackSalt,bool exists) config)",
+  "function downloadReceiptId((bytes32 policyId,bytes32 resourceObjectId,address account,uint8 action,uint256 nonce,uint256 deadline,bytes32 contextHash) request) view returns (bytes32)",
+  "function downloadReceipts(bytes32 receiptId) view returns (bool)",
+  "function executeDownload((bytes32 policyId,bytes32 resourceObjectId,address account,uint8 action,uint256 nonce,uint256 deadline,bytes32 contextHash) request,bytes signature) returns (bytes32 receiptId)",
+  "function executeRemint((bytes32 policyId,bytes32 resourceObjectId,address account,uint8 action,uint256 nonce,uint256 deadline,bytes32 contextHash) request,bytes signature,bytes data) returns (uint256 tokenId)",
+  "function executeMintToBackpack((bytes32 policyId,bytes32 resourceObjectId,address account,uint8 action,uint256 nonce,uint256 deadline,bytes32 contextHash) request,bytes signature,address hostCollection,uint256 hostTokenId,bytes data) returns (address backpack,uint256 tokenId)",
+  "event ExecutionConfigUpdated(bytes32 indexed policyId,bytes32 indexed resourceObjectId,address remintTarget,address backpackRegistry,address backpackImplementation,bytes32 backpackSalt)",
+  "event DownloadAuthorized(bytes32 indexed receiptId,bytes32 indexed policyId,bytes32 indexed resourceObjectId,address account,bytes32 contextHash)",
+  "event Reminted(bytes32 indexed policyId,bytes32 indexed resourceObjectId,address indexed account,address recipient,uint256 tokenId,bytes32 contextHash)",
+  "event MintedToBackpack(bytes32 indexed policyId,bytes32 indexed resourceObjectId,address indexed account,address hostCollection,uint256 hostTokenId,address backpack,uint256 tokenId,bytes32 contextHash)",
+] as const;
+
+/** Canonical EVM destination used by the action executor and generic adapters. */
+export const keelIPWrapped721Abi = [
+  "function executor() view returns (address)",
+  "function nextTokenId() view returns (uint256)",
+  "function provenance(uint256 tokenId) view returns ((bytes32 policyId,bytes32 resourceObjectId,bytes32 dataDigest))",
+  "function tokenURI(uint256 tokenId) view returns (string)",
+  "event Transfer(address indexed from,address indexed to,uint256 indexed tokenId)",
+] as const;
+
+/** Revision-bound, race-safe community replication for exact Keel object bytes. */
+export const keelCommunityReplicationRegistryAbi = [
+  "function artifactRegistry() view returns (address)",
+  "function keelHold() view returns (address)",
+  "function proofVerifier() view returns (address)",
+  "function CAMPAIGN_ID_DOMAIN() view returns (bytes32)",
+  "function CARRIER_PROOF_ID_DOMAIN() view returns (bytes32)",
+  "function CARRIER_EVM() view returns (uint8)",
+  "function CARRIER_TEZOS() view returns (uint8)",
+  "function CARRIER_ORDINALS() view returns (uint8)",
+  "function VALID_CARRIER_MASK() view returns (uint8)",
+  "function MAX_CHUNKS() view returns (uint32)",
+  "function MAX_CLAIM_BATCH() view returns (uint32)",
+  "function MAX_SUBMIT_BATCH() view returns (uint32)",
+  "function MIN_CLAIM_LEASE() view returns (uint32)",
+  "function MAX_CLAIM_LEASE() view returns (uint32)",
+  "function CHUNK_SCORE_BONUS() view returns (uint256)",
+  "function CARRIER_SCORE_BONUS() view returns (uint256)",
+  "function MAX_LOCATOR_BYTES() view returns (uint256)",
+  "function predictCampaignId((bytes32 objectId,bytes32 objectSalt,uint64 targetRevision,uint64 expectedParent,uint8 digestAlgorithm,bytes32 decodedDigest,bytes32 metadataDigest,bytes32 fidelitySetDigest,bytes32 indexDigest,uint64 byteLength,uint64 storedByteLength,uint8 compression,string mediaType,uint8 carrierMask,uint32 claimLeaseSeconds) input,address creator) pure returns (bytes32)",
+  "function predictCarrierProofDigest(bytes32 campaignId,uint8 carrier,bytes32 locatorDigest,bytes32 readbackDigest) pure returns (bytes32)",
+  "function createCampaign((bytes32 objectId,bytes32 objectSalt,uint64 targetRevision,uint64 expectedParent,uint8 digestAlgorithm,bytes32 decodedDigest,bytes32 metadataDigest,bytes32 fidelitySetDigest,bytes32 indexDigest,uint64 byteLength,uint64 storedByteLength,uint8 compression,string mediaType,uint8 carrierMask,uint32 claimLeaseSeconds) input,(bytes32 slugId,uint32 byteLength)[] chunks) returns (bytes32 campaignId)",
+  "function replaceCampaign(bytes32 priorCampaignId,(bytes32 objectId,bytes32 objectSalt,uint64 targetRevision,uint64 expectedParent,uint8 digestAlgorithm,bytes32 decodedDigest,bytes32 metadataDigest,bytes32 fidelitySetDigest,bytes32 indexDigest,uint64 byteLength,uint64 storedByteLength,uint8 compression,string mediaType,uint8 carrierMask,uint32 claimLeaseSeconds) input,(bytes32 slugId,uint32 byteLength)[] chunks) returns (bytes32 campaignId)",
+  "function setCampaignEnabled(bytes32 campaignId,bool enabled)",
+  "function enableExternalCarriers(bytes32 campaignId,uint8 carrierMask)",
+  "function claimChunks(bytes32 campaignId,uint32[] indices)",
+  "function releaseChunkClaim(bytes32 campaignId,uint32 chunkIndex)",
+  "function submitChunk(bytes32 campaignId,uint32 chunkIndex,bytes data)",
+  "function submitChunks(bytes32 campaignId,uint32[] indices,bytes[] payloads)",
+  "function finalizeEvmCarrier(bytes32 campaignId) returns (bytes32 contentObjectId)",
+  "function bindObjectRevision(bytes32 campaignId)",
+  "function claimCarrier(bytes32 campaignId,uint8 carrier)",
+  "function releaseCarrierClaim(bytes32 campaignId,uint8 carrier)",
+  "function submitCarrierProof(bytes32 campaignId,uint8 carrier,string locator,bytes32 readbackDigest)",
+  "function reviewCarrierProof(bytes32 campaignId,uint8 carrier,bool accepted)",
+  "function campaignState(bytes32 campaignId) view returns ((address creator,bytes32 objectId,uint64 targetRevision,uint64 expectedParent,bytes32 decodedDigest,bytes32 metadataDigest,bytes32 fidelitySetDigest,bytes32 indexDigest,bytes32 mediaTypeDigest,bytes32 contentObjectId,uint64 byteLength,uint64 storedByteLength,uint64 createdAt,uint32 chunkCount,uint32 completedChunks,uint32 claimLeaseSeconds,uint8 digestAlgorithm,uint8 compression,uint8 carrierMask,uint8 requiredCarrierMask,bool enabled,bool evmFinalized,bool revisionBound,bool exists,string mediaType))",
+  "function validateRevisionAppend(bytes32 objectId,uint64 revision,address publisher,bytes32 contentObjectId,uint8 digestAlgorithm,bytes32 decodedDigest,bytes32 metadataDigest,bytes32 fidelitySetDigest) view",
+  "function campaignCurrent(bytes32 campaignId) view returns (bool)",
+  "function requiredCarrierMask(bytes32 objectId) view returns (uint8)",
+  "function campaignCarrierStatus(bytes32 campaignId) view returns (uint8 requiredMask,uint8 completedMask,bool complete)",
+  "function campaignForRevision(bytes32 objectId,uint64 revision) view returns (bytes32 campaignId)",
+  "function chunkTask(bytes32 campaignId,uint32 chunkIndex) view returns ((bytes32 slugId,address claimant,address contributor,uint64 claimExpiresAt,uint32 byteLength,bool complete,bool preexisting))",
+  "function carrierTask(bytes32 campaignId,uint8 carrier) view returns ((address claimant,uint64 claimExpiresAt))",
+  "function carrierProof(bytes32 campaignId,uint8 carrier) view returns ((address contributor,address verifier,bytes32 locatorDigest,bytes32 proofDigest,bytes32 readbackDigest,uint64 byteLength,uint64 submittedAt,uint64 verifiedAt,uint8 status,string locator))",
+  "function globalContributorStats(address contributor) view returns ((uint128 verifiedBytes,uint64 chunks,uint64 carriers,uint256 score))",
+  "function campaignContributorStats(bytes32 campaignId,address contributor) view returns ((uint128 verifiedBytes,uint64 chunks,uint64 carriers,uint256 score))",
+  "event ReplicationCampaignCreated(bytes32 indexed campaignId,bytes32 indexed objectId,uint64 indexed targetRevision,uint64 expectedParent,address creator,uint8 digestAlgorithm,bytes32 decodedDigest,bytes32 metadataDigest,bytes32 fidelitySetDigest,bytes32 indexDigest,bytes32 mediaTypeDigest,uint64 byteLength,uint64 storedByteLength,uint32 chunkCount,uint8 compression,uint8 carrierMask,uint8 requiredCarrierMask,uint32 claimLeaseSeconds,bool evmFinalized)",
+  "event ReplicationCampaignEnabled(bytes32 indexed campaignId,bool enabled)",
+  "event ReplicationCampaignSuperseded(bytes32 indexed objectId,uint64 indexed revision,bytes32 indexed priorCampaignId,bytes32 campaignId)",
+  "event ReplicationCarriersEnabled(bytes32 indexed campaignId,uint8 addedCarrierMask,uint8 carrierMask)",
+  "event ObjectCarrierPolicyAdvanced(bytes32 indexed objectId,uint64 indexed revision,uint8 addedCarrierMask,uint8 requiredCarrierMask)",
+  "event ChunkTaskCommitted(bytes32 indexed campaignId,uint32 indexed chunkIndex,bytes32 indexed slugId,uint32 byteLength,bool preexisting)",
+  "event ChunkClaimed(bytes32 indexed campaignId,uint32 indexed chunkIndex,address indexed contributor,uint64 expiresAt)",
+  "event ChunkClaimReleased(bytes32 indexed campaignId,uint32 indexed chunkIndex,address indexed contributor)",
+  "event ChunkContributionAccepted(bytes32 indexed campaignId,uint32 indexed chunkIndex,bytes32 indexed slugId,address contributor,address pointer,uint32 byteLength,uint256 score,uint32 completedChunks)",
+  "event ChunkResolvedAsPreexisting(bytes32 indexed campaignId,uint32 indexed chunkIndex,bytes32 indexed slugId,address pointer)",
+  "event EvmCarrierFinalized(bytes32 indexed campaignId,bytes32 indexed contentObjectId,address indexed finalizer)",
+  "event ObjectRevisionBound(bytes32 indexed campaignId,bytes32 indexed objectId,uint64 indexed revision,bytes32 contentObjectId)",
+  "event CarrierClaimed(bytes32 indexed campaignId,uint8 indexed carrier,address indexed contributor,uint64 expiresAt)",
+  "event CarrierClaimReleased(bytes32 indexed campaignId,uint8 indexed carrier,address indexed contributor)",
+  "event CarrierProofSubmitted(bytes32 indexed campaignId,uint8 indexed carrier,address indexed contributor,bytes32 locatorDigest,bytes32 proofDigest,bytes32 readbackDigest,uint64 byteLength,string locator)",
+  "event CarrierProofReviewed(bytes32 indexed campaignId,uint8 indexed carrier,address indexed contributor,address verifier,bool accepted,uint256 score)",
+] as const;
+
+export const keelHarnessRegistryAbi = [
+  "function artifactRegistry() view returns (address)",
+  "function spriteAssetRegistry() view returns (address)",
+  "function portableAnchorRegistry() view returns (address)",
+  "function keelIndex() view returns (address)",
+  "function forgeHarness(bytes32 salt,address collection,uint8 editPolicy,uint8 forkPolicy,bytes32[] slotObjectIds,uint64[] slotObjectRevisions,bytes32 manifestDigest,bytes32 seedSetDigest) returns (bytes32 viewerId)",
+  "function appendHarnessRevision(bytes32 viewerId,uint64 expectedParent,bytes32[] slotObjectIds,uint64[] slotObjectRevisions,bytes32 manifestDigest,bytes32 seedSetDigest) returns (uint64 revision)",
+  "function forkHarnessForToken(bytes32 viewerId,uint256 tokenId,uint64 baseViewerRevision,uint64 expectedForkParent,uint64[] selectedObjectRevisions,bytes32 manifestDigest) returns (uint64 forkRevision)",
+  "function activateFork(bytes32 viewerId,uint256 tokenId,uint64 forkRevision,uint64 keelIndexRevision)",
+  "function cancelPendingFork(bytes32 viewerId,uint256 tokenId)",
+  "function freezeHarness(bytes32 viewerId)",
+  "function freezeTokenFork(bytes32 viewerId,uint256 tokenId)",
+  "function predictHarnessId(address creator,bytes32 salt,address collection) pure returns (bytes32)",
+  "function harnessCreator(bytes32 viewerId) view returns (address)",
+  "function latestHarnessRevision(bytes32 viewerId) view returns (uint64)",
+  "function harnessCollection(bytes32 viewerId) view returns (address)",
+  "function harnessRevisionExists(bytes32 viewerId,uint64 revision) view returns (bool)",
+  "function harnessRevisionPublisher(bytes32 viewerId,uint64 revision) view returns (address)",
+  "function harnessRevisionCommitment(bytes32 viewerId,uint64 revision) view returns (bytes32 manifestDigest,bytes32 slotsDigest,bytes32 seedSetDigest)",
+  "function harnessSlots(bytes32 viewerId,uint64 revision) view returns (bytes32[] objectIds,uint64[] objectRevisions)",
+  "function effectiveHarness(bytes32 viewerId,uint256 tokenId) view returns ((uint64 harnessRevision,uint64 forkRevision,uint64 keelIndexRevision,bytes32 manifestDigest,bytes32 selectionDigest,bytes32[] slotObjectIds,uint64[] selectedObjectRevisions))",
+  "event HarnessForged(bytes32 indexed viewerId,address indexed creator,address indexed collection,uint8 editPolicy,uint8 forkPolicy)",
+  "event HarnessRevisionAppended(bytes32 indexed viewerId,uint64 indexed revision,uint64 indexed parentRevision,bytes32 slotsDigest,bytes32 manifestDigest,bytes32 seedSetDigest,address publisher)",
+  "event TokenForkPublished(bytes32 indexed viewerId,uint256 indexed tokenId,uint64 indexed forkRevision,uint64 baseViewerRevision,uint64 parentRevision,bytes32 selectionDigest,bytes32 manifestDigest,address publisher)",
+  "event TokenForkActivated(bytes32 indexed viewerId,uint256 indexed tokenId,uint64 indexed forkRevision,uint64 keelIndexRevision)",
+] as const;
+
+/** Creator-authored people and role labels. Labels never grant edit, owner,
+ * fork, runtime, or IP access; those decisions remain in the source registry. */
+export const keelAttributionRegistryAbi = [
+  "function ATTRIBUTION_ID_DOMAIN() view returns (bytes32)",
+  "function SUBJECT_ID_DOMAIN() view returns (bytes32)",
+  "function MAX_ENTRIES() view returns (uint256)",
+  "function MAX_TAG_BYTES() view returns (uint256)",
+  "function artifactRegistry() view returns (address)",
+  "function harnessRegistry() view returns (address)",
+  "function subjectKey(uint8 subjectKind,bytes32 subjectId) pure returns (bytes32)",
+  "function tagIdFor(string tag) pure returns (bytes32)",
+  "function attributionId(uint8 subjectKind,bytes32 subjectId,address account,string tag) pure returns (bytes32)",
+  "function canManage(uint8 subjectKind,bytes32 subjectId,address account) view returns (bool)",
+  "function setAttribution(uint8 subjectKind,bytes32 subjectId,address account,string tag,bool active) returns (bytes32 id)",
+  "function removeAttribution(uint8 subjectKind,bytes32 subjectId,address account,string tag)",
+  "function attribution(uint8 subjectKind,bytes32 subjectId,address account,string tag) view returns ((address account,bytes32 tagId,string tag,uint64 createdAt,uint64 updatedAt,address publisher,bool active,bool verified,bool exists))",
+  "function attributionById(bytes32 id) view returns ((address account,bytes32 tagId,string tag,uint64 createdAt,uint64 updatedAt,address publisher,bool active,bool verified,bool exists))",
+  "function subjectAttributionIds(uint8 subjectKind,bytes32 subjectId) view returns (bytes32[])",
+  "function attributionCount(uint8 subjectKind,bytes32 subjectId) view returns (uint256)",
+  "event AttributionUpdated(bytes32 indexed subjectId,uint8 indexed subjectKind,address indexed account,bytes32 tagId,string tag,bool active,bool verified,address publisher)",
+] as const;
+
+export const keelLinkRegistryAbi = [
+  "function artifactRegistry() view returns (address)",
+  "function computeLinkSetDigest(bytes32 objectId,uint64 objectRevision,(uint8 fidelity,uint8 scheme,uint8 digestAlgorithm,uint8 compression,string uri,string mediaType,bytes32 decodedDigest,bytes32 provenanceDigest,uint64 byteLength)[] inputs) pure returns (bytes32)",
+  "function publishFidelityLinks(bytes32 objectId,uint64 objectRevision,(uint8 fidelity,uint8 scheme,uint8 digestAlgorithm,uint8 compression,string uri,string mediaType,bytes32 decodedDigest,bytes32 provenanceDigest,uint64 byteLength)[] inputs) returns (bytes32 linkSetDigest)",
+  "function predictLinkId(bytes32 objectId,uint64 objectRevision,uint8 fidelity) pure returns (bytes32)",
+  "function fidelityLink(bytes32 objectId,uint64 objectRevision,uint8 fidelity) view returns ((bytes32 objectId,uint64 objectRevision,uint8 fidelity,uint8 scheme,uint8 digestAlgorithm,uint8 compression,string uri,string mediaType,bytes32 decodedDigest,bytes32 provenanceDigest,uint64 byteLength,uint64 createdAt,address publisher,address revealer,bool exists))",
+  "function linkById(bytes32 linkId) view returns ((bytes32 objectId,uint64 objectRevision,uint8 fidelity,uint8 scheme,uint8 digestAlgorithm,uint8 compression,string uri,string mediaType,bytes32 decodedDigest,bytes32 provenanceDigest,uint64 byteLength,uint64 createdAt,address publisher,address revealer,bool exists))",
+  "function linkExists(bytes32 objectId,uint64 objectRevision,uint8 fidelity) view returns (bool)",
+  "function linkSet(bytes32 objectId,uint64 objectRevision) view returns (bytes32 digest,uint8 count)",
+  "event FidelityLinkSetPublished(bytes32 indexed objectId,uint64 indexed objectRevision,bytes32 indexed linkSetDigest,uint8 count,address publisher,address revealer)",
+  "event FidelityLinkPublished(bytes32 indexed objectId,uint64 indexed objectRevision,uint8 indexed fidelity,bytes32 linkId,uint8 scheme,uint8 digestAlgorithm,uint8 compression,bytes32 uriDigest,bytes32 mediaTypeDigest,bytes32 decodedDigest,bytes32 provenanceDigest,uint64 byteLength,address publisher,address revealer)",
+] as const;
+
+export const keelSeedRegistryAbi = [
+  "function harnessRegistry() view returns (address)",
+  "function keelIndex() view returns (address)",
+  "function computeSeedSetCommitment(bytes32 viewerId,uint64 harnessRevision,bytes32 rootSeed,bytes32 provenanceDigest) pure returns (bytes32)",
+  "function publishSeedSet(bytes32 viewerId,uint64 harnessRevision,bytes32 rootSeed,bytes32 provenanceDigest) returns (bytes32 seedSetId)",
+  "function publishMintSeedSet(bytes32 viewerId,uint64 harnessRevision,bytes32 rootSeed,bytes32 provenanceDigest) returns (bytes32 seedSetId)",
+  "function predictSeedSetId(bytes32 viewerId,uint64 harnessRevision) pure returns (bytes32)",
+  "function deriveTokenSeed(bytes32 seedSetId,uint256 tokenId) view returns (bytes32)",
+  "function mintEntropyEnabled(bytes32 seedSetId) view returns (bool)",
+  "function seedSetCollection(bytes32 seedSetId) view returns (address)",
+  "function seedSet(bytes32 seedSetId) view returns ((bytes32 viewerId,uint64 harnessRevision,address collection,bytes32 viewerManifestDigest,bytes32 rootSeed,bytes32 provenanceDigest,uint64 createdAt,address publisher,address revealer,bool exists))",
+  "function seedSetForViewerRevision(bytes32 viewerId,uint64 harnessRevision) view returns ((bytes32 viewerId,uint64 harnessRevision,address collection,bytes32 viewerManifestDigest,bytes32 rootSeed,bytes32 provenanceDigest,uint64 createdAt,address publisher,address revealer,bool exists))",
+  "event SeedSetPublished(bytes32 indexed seedSetId,bytes32 indexed viewerId,uint64 indexed harnessRevision,address collection,bytes32 viewerManifestDigest,bytes32 rootSeed,bytes32 provenanceDigest,address publisher,address revealer)",
+] as const;
+
+/** Token-owner controlled typed presentation state used by live Keel viewers. */
+export const keelPresentationStateRegistryAbi = [
+  "function POLICY_ID_DOMAIN() view returns (bytes32)",
+  "function predictPolicyId(address creator,bytes32 salt) pure returns (bytes32)",
+  "function createPolicy(bytes32 salt,(address collection,uint256 tokenId) binding,uint8 authority,uint8 updateKind,uint8 valueKind,bool executable,string mediaType,uint64 maxBytes,address oracle) returns (bytes32 policyId)",
+  "function appendInlineRevision(bytes32 policyId,uint64 expectedParent,bytes canonicalValue,string mediaType,bytes32 sourceManifestDigest,uint64 sourceSequence) returns (uint64 revision)",
+  "function appendResourceRevision(bytes32 policyId,uint64 expectedParent,bytes32 valueDigest,uint64 byteLength,string mediaType) returns (uint64 revision)",
+  "function presentationPolicy(bytes32 policyId) view returns ((address creator,address oracle,(address collection,uint256 tokenId) binding,bytes32 mediaTypeDigest,uint64 maxBytes,uint64 latestRevision,uint8 authority,uint8 updateKind,uint8 valueKind,bool executable,bool exists))",
+  "function presentationRevision(bytes32 policyId,uint64 revision) view returns ((bytes32 valueDigest,bytes32 sourceManifestDigest,bytes32 mediaTypeDigest,uint64 byteLength,uint64 parentRevision,uint64 sourceSequence,uint64 publishedAt,address publisher,bool hasInlineValue,bool exists))",
+  "function currentPresentation(bytes32 policyId) view returns (((bytes32 valueDigest,bytes32 sourceManifestDigest,bytes32 mediaTypeDigest,uint64 byteLength,uint64 parentRevision,uint64 sourceSequence,uint64 publishedAt,address publisher,bool hasInlineValue,bool exists),bytes inlineValue))",
+  "function presentationMatches(bytes32 policyId,uint64 revision,bytes32 valueDigest,uint64 byteLength,bytes32 sourceManifestDigest,uint64 sourceSequence) view returns (bool)",
+  "function policyIsImmutable(bytes32 policyId) view returns (bool)",
+  "function policyMaterialization(bytes32 policyId) view returns ((address artifactRegistry,address keelHold,bytes32 objectId,bytes32 contentObjectId,uint64 objectRevision,uint64 policyRevision,uint64 sealedAt,bool exists))",
+  "event PolicyCreated(bytes32 indexed policyId,address indexed creator,address indexed collection,uint256 tokenId,uint8 authority,uint8 updateKind,uint8 valueKind,bool executable)",
+  "event PresentationRevisionAppended(bytes32 indexed policyId,uint64 indexed revision,uint64 indexed parentRevision,bytes32 valueDigest,uint64 byteLength,bytes32 mediaTypeDigest,bytes32 sourceManifestDigest,uint64 sourceSequence,address publisher,bool hasInlineValue)",
+] as const;
+
+/** Contract-owned Seasonal Grove lifecycle and owner location/live-time state. */
+export const keelSeasonalGroveStateAbi = [
+  "function collection() view returns (address)",
+  "function tokenId() view returns (uint256)",
+  "function treeType() view returns (uint8)",
+  "function treeSeed() view returns (bytes32)",
+  "function bornAt() view returns (uint64)",
+  "function deathAt() view returns (uint64)",
+  "function timezoneId() view returns (uint8)",
+  "function regionId() view returns (uint8)",
+  "function revision() view returns (uint64)",
+  "function owner() view returns (address)",
+  "function effectiveTimestamp() view returns (uint64)",
+  "function currentState() view returns ((address collection,uint256 tokenId,uint8 treeType,bytes32 treeSeed,uint64 bornAt,uint64 deathAt,uint8 timezoneId,uint8 regionId,uint64 revision,uint64 effectiveTimestamp,bool dead))",
+  "function ageBpsAt(uint64 timestamp) view returns (uint16)",
+  "function timezoneName(uint8 id) pure returns (string)",
+  "function regionName(uint8 id) pure returns (string)",
+  "function setOwnerLocation(uint8 timezoneId,uint8 regionId)",
+  "event OwnerLocationUpdated(address indexed owner,uint8 timezoneId,uint8 regionId,uint64 effectiveTimestamp,uint64 revision)",
+] as const;
+
+export const keelEquipmentInventoryAbi = [
+  "function registerDefinition(address assetCollection,uint256 assetTokenId,uint8 standard,uint8 slot,bytes32 objectId,uint64 objectRevision,bytes32 catalogMetadataDigest) returns (bytes32 definitionId)",
+  "function registerDescriptorBoundERC1155Definition(address assetCollection,uint256 assetTokenId,uint8 slot,bytes32 objectId,uint64 objectRevision,bytes32 catalogMetadataDigest) returns (bytes32 definitionId)",
+  "function configureBindingPolicy(bytes32 definitionId,uint8 mode,uint32 maxUnequips)",
+  "function setRunLootIssuer(address issuer)",
+  "function runLootIssuer() view returns (address)",
+  "function provisionRunLootERC1155(uint256 characterId,bytes32 definitionId,uint32 amount)",
+  "function depositERC721(uint256 characterId,address assetCollection,uint256 assetTokenId) returns (bytes32 definitionId)",
+  "function depositERC1155(uint256 characterId,address assetCollection,uint256 assetTokenId) returns (bytes32 definitionId)",
+  "function equip(uint256 characterId,uint8 slot,bytes32 definitionId)",
+  "function unequip(uint256 characterId,uint8 slot) returns (bytes32 definitionId)",
+  "function withdraw(uint256 characterId,bytes32 definitionId)",
+  "function recoverUntrackedERC721(address assetCollection,uint256 assetTokenId,address recipient)",
+  "function predictDefinitionId(address assetCollection,uint256 assetTokenId,uint8 standard,uint8 slot,bytes32 objectId,uint64 objectRevision,bytes32 catalogMetadataDigest) view returns (bytes32)",
+  "function definition(bytes32 definitionId) view returns ((address assetCollection,uint256 assetTokenId,uint8 standard,uint8 slot,bytes32 objectId,uint64 objectRevision,bytes32 catalogMetadataDigest,uint64 registeredAt,address publisher,bool exists))",
+  "function bindingPolicy(bytes32 definitionId) view returns ((uint8 mode,uint32 maxUnequips,bool configured))",
+  "function bindingState(uint256 characterId,bytes32 definitionId) view returns ((uint32 remainingUnequips,bool bound))",
+  "function inventoryCount(uint256 characterId) view returns (uint256)",
+  "function inventoryDefinitionAt(uint256 characterId,uint256 index) view returns (bytes32)",
+  "function equippedDefinition(uint256 characterId,uint8 slot) view returns (bytes32)",
+  "function materializeOneUseERC1155(uint256 characterId,uint8 slot,bytes32 expectedDefinitionId,address expectedOwner) returns (uint32 quantity,bytes32 reservationId)",
+  "function loadoutDigest(uint256 characterId) view returns (bytes32)",
+  "function reader() view returns (address)",
+  "function reservationEngine() view returns (address)",
+  "function descriptorValidator() view returns (address)",
+  "function definitionDescriptorCommitment(bytes32 definitionId) view returns (bytes32)",
+  "function erc721Location(address assetCollection,uint256 assetTokenId) view returns (uint256 characterId,bool deposited)",
+  "function characterCollection() view returns (address)",
+  "function artifactRegistry() view returns (address)",
+  "function keelIndex() view returns (address)",
+  "event EquipmentDefinitionRegistered(bytes32 indexed definitionId,address indexed assetCollection,uint256 indexed assetTokenId,uint8 standard,uint8 slot,bytes32 objectId,uint64 objectRevision,bytes32 catalogMetadataDigest,address publisher)",
+  "event EquipmentDefinitionDescriptorBound(bytes32 indexed definitionId,address indexed assetCollection,uint256 indexed assetTokenId,bytes32 assetDescriptorCommitment,bytes32 definitionDescriptorCommitment)",
+  "event EquipmentBindingPolicyConfigured(bytes32 indexed definitionId,uint8 mode,uint32 maxUnequips,address indexed publisher)",
+  "event RunLootIssuerUpdated(address indexed previousIssuer,address indexed issuer,address indexed controller)",
+  "event EquipmentBound(uint256 indexed characterId,bytes32 indexed definitionId,uint8 mode)",
+  "event EquipmentUnequipConsumed(uint256 indexed characterId,bytes32 indexed definitionId,uint32 remainingUnequips)",
+  "event InventoryDeposited(uint256 indexed characterId,bytes32 indexed definitionId,address indexed assetCollection,uint256 assetTokenId,uint8 standard,address depositor)",
+  "event InventoryWithdrawn(uint256 indexed characterId,bytes32 indexed definitionId,address indexed assetCollection,uint256 assetTokenId,uint8 standard,address recipient)",
+  "event EquipmentEquipped(uint256 indexed characterId,uint8 indexed slot,bytes32 indexed definitionId,bytes32 objectId,uint64 objectRevision,address owner)",
+  "event EquipmentUnequipped(uint256 indexed characterId,uint8 indexed slot,bytes32 indexed definitionId,address owner)",
+  "event LoadoutUpdated(uint256 indexed characterId,bytes32 indexed loadoutDigest)",
+  "event UntrackedERC721Recovered(address indexed assetCollection,uint256 indexed assetTokenId,address indexed recipient,address controller)",
+] as const;
+
+export const keelEquipmentInventoryReaderAbi = [
+  "function inventory() view returns (address)",
+  "function artifactRegistry() view returns (address)",
+  "function inventoryContains(uint256 characterId,bytes32 definitionId) view returns (bool)",
+  "function inventoryPage(uint256 characterId,uint256 cursor,uint256 limit) view returns ((bytes32 definitionId,bool equipped)[] entries,uint256 nextCursor)",
+  "function withdrawableQuantity(uint256 characterId,bytes32 definitionId) view returns (uint32)",
+  "function loadout(uint256 characterId) view returns ((uint8 slot,bytes32 definitionId,address assetCollection,uint256 assetTokenId,uint8 standard,bytes32 objectId,uint64 objectRevision,bytes32 catalogMetadataDigest,bool equipped)[] entries,bytes32 digest)",
+  "function equipmentSource(uint256 characterId,uint8 slot) view returns (bytes32 definitionId,bytes32 objectId,uint64 objectRevision,address store,bytes32 contentObjectId,uint8 digestAlgorithm,bytes32 decodedDigest,uint64 byteLength,uint8 compression,string mediaType)",
+] as const;
+
+export const keelEquipmentReservationEngineAbi = [
+  "function inventory() view returns (address)",
+  "function characterCollection() view returns (address)",
+  "function policy(uint8 slot) view returns ((address materializer,bytes32 entitlementId,bytes32 materializerRuntimeCodeHash,bool configured,bool frozen))",
+  "function materializerRuntimeCodeHash(uint8 slot) view returns (bytes32)",
+  "function reservation(uint256 characterId,uint8 slot) view returns ((bytes32 definitionId,bytes32 reservationId,uint64 generation,bool active))",
+  "function consumed(uint256 characterId,uint8 slot) view returns (bool)",
+  "function lastConsumedDefinition(uint256 characterId,uint8 slot) view returns (bytes32)",
+  "function duplicationCycle(uint256 characterId,uint8 slot) view returns (uint64)",
+  "function status(uint256 characterId,uint8 slot) view returns (address materializer,bytes32 entitlementId,bool policyFrozen,bool consumed_,bytes32 definitionId,bytes32 reservationId,bool backed)",
+  "event OneUseMaterializerPolicyConfigured(uint8 indexed slot,address indexed materializer,bytes32 indexed entitlementId,bytes32 materializerRuntimeCodeHash,address controller)",
+  "event OneUseMaterializerPolicyPermanentlyFrozen(uint8 indexed slot,address indexed materializer,bytes32 indexed entitlementId,bytes32 materializerRuntimeCodeHash)",
+  "event MaterializationSupplyReserved(uint256 indexed characterId,uint8 indexed slot,bytes32 indexed definitionId,bytes32 reservationId,bytes32 entitlementId,uint64 generation)",
+  "event MaterializationSupplyRebound(uint256 indexed characterId,uint8 indexed slot,bytes32 indexed previousDefinitionId,bytes32 nextDefinitionId,bytes32 previousReservationId,bytes32 nextReservationId,uint64 generation)",
+  "event OneUseMaterializationConsumed(uint256 indexed characterId,uint8 indexed slot,bytes32 indexed definitionId,bytes32 reservationId,bytes32 entitlementId,address materializer,address owner)",
+  "event OneUseMaterializationRearmed(uint256 indexed characterId,uint8 indexed slot,bytes32 indexed previousDefinitionId,bytes32 nextDefinitionId,bytes32 reservationId,uint64 cycle)",
+] as const;
+
+export const keelEquipmentDescriptorValidatorAbi = [
+  "function inventory() view returns (address)",
+  "function DEFINITION_DOMAIN() view returns (bytes32)",
+  "function computeDefinitionCommitment(bytes32 definitionId,bytes32 assetDescriptorCommitment) view returns (bytes32)",
+] as const;
+
+/** Creator-owned Cool S shell reads used by Studio's fail-closed release gate. */
+export const coolS721Abi = [
+  ...keel721Abi,
+  "function DUPLICATOR_ENTITLEMENT_ID() view returns (bytes32)",
+  "function seedSetId() view returns (bytes32)",
+  "function seedRegistry() view returns (address)",
+  "function generativeConfigurationFrozen() view returns (bool)",
+  "function oneMintController() view returns (address)",
+  "function initialBackpackCapacity() view returns (uint8)",
+  "function visualRegistry() view returns (address)",
+  "function coolSInventory() view returns (address)",
+  "function duplicator() view returns (address)",
+  "function coolSMetadataRenderer() view returns (address)",
+  "function coolSModulesFrozen() view returns (bool)",
+  "function frozenReservationEngine() view returns (address)",
+  "function reservationEngineRuntimeCodeHash() view returns (bytes32)",
+  "function metadataRendererRuntimeCodeHash() view returns (bytes32)",
+  "function frozenViewerBindingRoot() view returns (bytes32)",
+  "function coolSViewerBindingRoot() view returns (bytes32)",
+  "function defaultPresentationFrozen() view returns (bool)",
+  "function tokenOwnerCanEdit() view returns (bool)",
+  "function onchainHarnessBuilder() view returns (address)",
+  "function onchainHarnessObjectId() view returns (bytes32)",
+  "function onchainHarnessDigest() view returns (bytes32)",
+  "event GenerativeMintBound(uint256 indexed tokenId,address indexed recipient,bytes32 indexed seedSetId,bytes32 mintSeed,bytes32 resolvedSeed,bytes32 tokenMintDataDigest)",
+] as const;
+
+export const coolSVisualRegistryAbi = [
+  "function configurationFrozen() view returns (bool)",
+  "function characterCollection() view returns (address)",
+  "function inventory() view returns (address)",
+  "function targetTable() view returns (address)",
+  "function resolver() view returns (address)",
+  "function visualStateLedger() view returns (address)",
+  "function resolverRuntimeCodeHash() view returns (bytes32)",
+  "function targetTableRuntimeCodeHash() view returns (bytes32)",
+  "function releaseProfileRoot() view returns (bytes32)",
+  "function targetAssetCount(uint8 targetIndex) view returns (uint256)",
+  "function targetAsset(uint8 targetIndex,uint256 assetIndex) view returns (bytes32)",
+  "event TokenVisualInitialized(uint256 indexed tokenId,bytes32 indexed visualStateDigest,bytes32 indexed equippedDefinitionId,uint8 targetIndex,uint16 acceptedAttempt,bytes32 mintReceipt)",
+] as const;
+
+export const coolSTargetTableAbi = [
+  "function ENTRY_COUNT() view returns (uint8)",
+  "function INVENTORY_SLOT() view returns (uint8)",
+  "function VIEWER_COMPATIBLE_RELEASE() view returns (bool)",
+  "function targetTableRoot() view returns (bytes32)",
+] as const;
+
+export const coolSReleaseResolverAbi = [
+  "function targetTableRoot() view returns (bytes32)",
+  "function resolverCommitment() view returns (bytes32)",
+] as const;
+
+export const coolSMetadataRendererAbi = [
+  "function visualRegistry() view returns (address)",
+  "function targetTable() view returns (address)",
+  "function resolver() view returns (address)",
+  "function duplicator() view returns (address)",
+  "function viewerBindingRoot() view returns (bytes32)",
+] as const;
+
+export const keelOneUseDuplicatorAbi = [
+  "function tokenCollection() view returns (address)",
+  "function inventory() view returns (address)",
+  "function ENTITLEMENT_ID() view returns (bytes32)",
+  "function duplicatorSlot(uint256 tokenId) view returns (uint8)",
+  "function duplicatorUsed(uint256 tokenId) view returns (bool)",
+  "function duplicateEquipped(uint256 tokenId) returns (bytes32 definitionId,uint32 resultingQuantity)",
+  "function nextDefinitionId(uint256 tokenId,uint8 slot,bytes32 excludedDefinitionId,uint64 cycle) view returns (bytes32 definitionId)",
+  "event EquippedAssetDuplicated(uint256 indexed tokenId,uint8 indexed slot,bytes32 indexed definitionId,address owner,uint32 resultingQuantity,uint64 visualRevision,bytes32 reservationId,bytes32 entitlementId)",
+] as const;
+
+/** Minimal Vault supply-role surface used to prove Engine-only authority. */
+export const keelReservableEquipmentSupplyAbi = [
+  "function supportsInterface(bytes4 interfaceId) view returns (bool)",
+  "function MINTER_ROLE() view returns (bytes32)",
+  "function RESERVER_ROLE() view returns (bytes32)",
+  "function hasRole(bytes32 role,address account) view returns (bool)",
+  "function equipmentDescriptor(uint256 itemId) view returns (uint8 slot,bytes32 objectId,uint64 objectRevision,bytes32 metadataDigest,bytes32 commitment)",
+  "event MintSupplyReserved(bytes32 indexed reservationId,address indexed reserver,uint256 indexed itemId,uint64 amount)",
+  "event ItemMinted(address indexed operator,address indexed recipient,uint256 indexed itemId,uint256 amount)",
+  "event MintReservationConsumed(bytes32 indexed reservationId,address indexed reserver,address indexed recipient,uint256 itemId,uint64 amount)",
+] as const;
+
+/** Compact character arguments resolved against revision-pinned shared
+ * Keel sprite, target-map, FX, sound, metadata, and viewer objects. */
+export const vaultCharacter721Abi = [
+  ...keel721Abi,
+  ...keelCollectionVerificationHookAbi,
+  "function MINT_SEED_DOMAIN() view returns (bytes32)",
+  "function tokenSeed(uint256 tokenId) view returns (bytes32)",
+  "function mintEntropyNonce() view returns (uint256)",
+  "function characterRegistry() view returns (address)",
+  "function metadataRenderer() view returns (address)",
+  "function mintProfileRevision() view returns (uint64)",
+  "function portableAnchorRegistry() view returns (address)",
+  "function keelHTMLBuilder() view returns (address)",
+  "function collectionPresentationBinding(uint64 revision) view returns (bytes32 manifestDigest,bytes32 portableRoot,bytes32 anchorRoot,bytes32 viewerObjectId,bytes32 viewerDigest,bool exists)",
+  "function setCharacterRegistry(address registry,uint64 profileRevision)",
+  "function configureMintProfile(uint64 profileRevision)",
+  "function bindCollectionPresentationRevision(uint64 revision,bytes32 manifestDigest,bytes32 portableRoot,bytes32 viewerObjectId,bytes32 viewerDigest)",
+  "function tokenJSON(uint256 tokenId) view returns (string)",
+  "function tokenAttributesJSON(uint256 tokenId) view returns (string)",
+  "function thumbnailSVG(uint256 tokenId) view returns (string)",
+  "function thumbnailURI(uint256 tokenId) view returns (string)",
+  "event CollectionPresentationPortableBindingSet(uint64 indexed revision,bytes32 indexed manifestDigest,bytes32 indexed portableRoot,bytes32 anchorRoot,bytes32 viewerObjectId,bytes32 viewerDigest)",
+  "event TokenSeedAssigned(uint256 indexed tokenId,address indexed minter,address indexed recipient,bytes32 seed)",
+  "event CharacterRegistrySet(address indexed registry,uint64 indexed mintProfileRevision)",
+  "event MintProfileConfigurationUpdated(uint64 indexed mintProfileRevision)",
+] as const;
+
+export const keelOnchainHTMLBuilderAbi = [
+  "function keelHold() view returns (address)",
+  "function MAX_RECONSTRUCTED_BYTES() view returns (uint256)",
+  "function MAX_OBJECT_DEPTH() view returns (uint256)",
+  "function harnessSourceValid(bytes32 objectId,bytes32 expectedDigest) view returns (bool)",
+  "function itemBytes(bytes32 objectId,bytes32 expectedDigest) view returns (bytes)",
+  "function harnessHTML(bytes32 objectId,bytes32 expectedDigest) view returns (bytes)",
+  "function harnessDataURI(bytes32 objectId,bytes32 expectedDigest) view returns (string)",
+  "function harnessHTMLWithContext(bytes32 objectId,bytes32 expectedDigest,bytes contextJSON) view returns (bytes)",
+  "function harnessDataURIWithContext(bytes32 objectId,bytes32 expectedDigest,bytes contextJSON) view returns (string)",
+] as const;
+
+export const vaultCharacterMetadataRendererAbi = [
+  "function CODEC_PUBLISHER_ROLE() view returns (bytes32)",
+  "function publishAssetCodec(uint64 catalogRevision,bytes32 assetId,string name,string attackSound,uint8 attributeProfile)",
+  "function assetCodec(uint64 catalogRevision,bytes32 assetId) view returns ((string name,string attackSound,uint8 attributeProfile,bool exists))",
+  "function publishEffectCodec(uint64 catalogRevision,uint32 spriteAssetId,string particleSprite,string emitterPreset,string colorMode,string lightStyle,string trailStyle,string blendMode)",
+  "function effectCodec(uint64 catalogRevision,uint32 spriteAssetId) view returns ((string particleSprite,string emitterPreset,string colorMode,string lightStyle,string trailStyle,string blendMode,bool exists))",
+  "function attributesJSON(bytes32 packed,bytes32 assetId,(uint32 spriteBundleId,uint32 spriteAssetId,bytes32 materialTargetId,uint32 presetId,uint32 revision,uint32 spriteBundleRevision,uint32 spriteSelectionRevision,uint32 fxCatalogRevision,uint32 mapGenerationEpoch,uint16 seedDomainVersion,uint8 paletteMode) emitter,uint64 catalogRevision,uint256 tokenId) view returns (string)",
+  "event AssetCodecPublished(uint64 indexed catalogRevision,bytes32 indexed assetId,uint8 indexed attributeProfile,string name,string attackSound)",
+  "event EffectCodecPublished(uint64 indexed catalogRevision,uint32 indexed spriteAssetId,string emitterPreset)",
+] as const;
+
+export const vaultCharacterRegistryAbi = [
+  "function VERSION() view returns (uint16)",
+  "function characterCollection() view returns (address)",
+  "function seedRegistry() view returns (address)",
+  "function artifactRegistry() view returns (address)",
+  "function spriteAssetRegistry() view returns (address)",
+  "function portableAnchorRegistry() view returns (address)",
+  "function latestCatalogRevision() view returns (uint64)",
+  "function latestMintProfileRevision() view returns (uint64)",
+  "function CATALOG_PUBLISHER_ROLE() view returns (bytes32)",
+  "function publishCatalogRevision(uint64 expectedParent,bytes32 manifestDigest,bytes32 traitCodecDigest,bytes32 lockedTraitsRoot,uint32 attributeCount,bool rejectExactDuplicates,bool freeze) returns (uint64 revision)",
+  "function publishCatalogObjects(uint64 catalogVersion,uint64 selectionEpoch,bytes32[6] objectIds,uint64[6] objectRevisions)",
+  "function publishCatalogPortableBinding(uint64 catalogVersion,bytes32 portableRoot,bytes32 manifestObjectId,uint64 manifestObjectRevision,bytes32 decodedObjectId,uint64 decodedObjectRevision,bytes32 anchorRoot)",
+  "function publishMintProfile(uint64 expectedParent,uint64 catalogVersion,bytes32 seedSetId,bytes32 assetFamilyId,uint64 assetFamilyRevision,uint32 sceneId) returns (uint64 revision)",
+  "function registerMintedCharacter(uint256 tokenId,uint64 mintProfileRevision,bytes32 mintSeed) returns (bytes32 visualFingerprint)",
+  "function validateMintSeedSet(bytes32 seedSetId) view",
+  "function validateMintProfile(uint64 revision) view",
+  "function catalogRevision(uint64 revision) view returns ((bytes32 manifestDigest,bytes32 traitCodecDigest,bytes32 lockedTraitsRoot,uint64 parentRevision,uint64 publishedAt,address publisher,uint32 attributeCount,bool rejectExactDuplicates,bool frozen,bool exists))",
+  "function catalogObjects(uint64 revision) view returns ((bytes32[6] objectIds,uint64[6] objectRevisions,uint64 selectionEpoch,bool exists))",
+  "function catalogPortableBinding(uint64 revision) view returns ((bytes32 portableRoot,bytes32 manifestObjectId,bytes32 decodedObjectId,bytes32 anchorRoot,uint64 manifestObjectRevision,uint64 decodedObjectRevision,bool exists))",
+  "function mintProfile(uint64 revision) view returns ((bytes32 seedSetId,bytes32 assetFamilyId,uint64 catalogRevision,uint64 assetFamilyRevision,uint32 sceneId,bool exists))",
+  "function characterRecord(uint256 tokenId) view returns ((uint64 mintProfileRevision,bool exists))",
+  "function renderRecipe(uint256 tokenId) view returns ((bytes32 derivedSeed,bytes32 packedAttributes,bytes32[6] objectIds,uint64[6] objectRevisions,bytes32 portableRoot,bytes32 portableManifestObjectId,bytes32 portableDecodedObjectId,bytes32 portableAnchorRoot,uint64 portableManifestObjectRevision,uint64 portableDecodedObjectRevision,bytes32 assetFamilyId,bytes32 assetId,bytes32 spriteObjectId,bytes32 targetMapObjectId,bytes32 effectProfileObjectId,bytes32 soundProfileObjectId,uint32 emitterSpriteBundleId,uint32 emitterSpriteAssetId,bytes32 emitterMaterialTargetId,uint64 catalogRevision,uint64 selectionEpoch,uint64 assetFamilyRevision,uint64 spriteRevision,uint64 targetMapRevision,uint64 effectProfileRevision,uint64 soundProfileRevision,uint32 emitterPresetId,uint32 emitterRevision,uint32 emitterSpriteBundleRevision,uint32 emitterSpriteSelectionRevision,uint32 fxCatalogRevision,uint32 mapGenerationEpoch,uint16 emitterSeedDomainVersion,uint8 emitterPaletteMode,uint32 sceneId))",
+  "function renderRecipeDigest(uint256 tokenId) view returns (bytes32)",
+  "function EMITTER_SEED_DOMAIN() view returns (string)",
+  "function emitterEventSeed(uint32 mapGenerationEpoch,bytes32 mapSeed,bytes32 mapId,uint32 emitterPresetId,uint32 emitterRevision,uint16 eventKind,uint32 worldEntityIndex,uint32 eventOrdinal) pure returns (bytes32)",
+  "function emitterRandom64(bytes32 eventSeed,uint32 counter) pure returns (uint64 result)",
+  "function attributeByte(uint256 tokenId,uint8 index) view returns (uint8)",
+  "function fingerprintToken(bytes32 fingerprint) view returns (uint256 tokenIdPlusOne)",
+  "event CatalogRevisionPublished(uint64 indexed revision,uint64 indexed parentRevision,bytes32 manifestDigest,bytes32 traitCodecDigest,bytes32 lockedTraitsRoot,uint32 attributeCount,bool rejectExactDuplicates,bool frozen,address publisher)",
+  "event CatalogObjectsPublished(uint64 indexed catalogRevision,uint64 indexed selectionEpoch,bytes32[6] objectIds,uint64[6] objectRevisions)",
+  "event CatalogPortableBindingPublished(uint64 indexed catalogRevision,bytes32 indexed portableRoot,bytes32 indexed anchorRoot,bytes32 manifestObjectId,uint64 manifestObjectRevision,bytes32 decodedObjectId,uint64 decodedObjectRevision)",
+  "event MintProfilePublished(uint64 indexed revision,uint64 indexed parentRevision,uint64 indexed catalogRevision,bytes32 seedSetId,bytes32 assetFamilyId,uint64 assetFamilyRevision,uint32 sceneId)",
+  "event CharacterRegistered(uint256 indexed tokenId,uint64 indexed catalogRevision,bytes32 indexed seedSetId,uint64 mintProfileRevision,bytes32 packedAttributes,bytes32 assetFamilyId,uint64 assetFamilyRevision,bytes32 assetId,bytes32 derivedSeed,bytes32 visualFingerprint,uint32 sceneId)",
+  "event RoleGranted(bytes32 indexed role,address indexed account,address indexed sender)",
+] as const;
+
+/** Append-only sprite families whose content is wholly managed by Keel. */
+export const vaultSpriteAssetRegistryAbi = [
+  "function VERSION() view returns (uint16)",
+  "function artifactRegistry() view returns (address)",
+  "function ASSET_PUBLISHER_ROLE() view returns (bytes32)",
+  "function MAX_FAMILY_ASSETS() view returns (uint32)",
+  "function MAX_REVISION_CHANGES() view returns (uint32)",
+  "function latestFamilyRevision(bytes32 familyId) view returns (uint64)",
+  "function appendFamilyRevision(bytes32 familyId,uint64 expectedParent,bytes32 catalogObjectId,uint64 catalogObjectRevision,(bytes32 assetId,bytes32 spriteObjectId,bytes32 targetMapObjectId,bytes32 effectProfileObjectId,bytes32 soundProfileObjectId,uint32 emitterSpriteBundleId,uint32 emitterSpriteAssetId,bytes32 emitterMaterialTargetId,uint32 weight,uint64 spriteRevision,uint64 targetMapRevision,uint64 effectProfileRevision,uint64 soundProfileRevision,uint32 emitterPresetId,uint32 emitterRevision,uint32 emitterSpriteBundleRevision,uint32 emitterSpriteSelectionRevision,uint32 fxCatalogRevision,uint32 mapGenerationEpoch,uint16 emitterSeedDomainVersion,uint8 emitterPaletteMode)[] additions) returns (uint64 revision)",
+  "function publishRetirementRevision(bytes32 familyId,uint64 expectedParent,bytes32 catalogObjectId,uint64 catalogObjectRevision,bytes32[] retirements) returns (uint64 revision)",
+  "function familyRevision(bytes32 familyId,uint64 revision) view returns ((bytes32 catalogObjectId,uint128 totalWeight,uint64 parentRevision,uint32 assetCount,uint32 activeAssetCount,uint32 selectionRoot,uint64 publishedAt,address publisher,uint64 catalogObjectRevision,bool exists))",
+  "function spriteAsset(bytes32 familyId,uint32 index) view returns ((bytes32 assetId,bytes32 spriteObjectId,bytes32 targetMapObjectId,bytes32 effectProfileObjectId,bytes32 soundProfileObjectId,uint32 emitterSpriteBundleId,uint32 emitterSpriteAssetId,bytes32 emitterMaterialTargetId,uint32 weight,uint64 introducedAt,uint64 spriteRevision,uint64 targetMapRevision,uint64 effectProfileRevision,uint64 soundProfileRevision,uint32 emitterPresetId,uint32 emitterRevision,uint32 emitterSpriteBundleRevision,uint32 emitterSpriteSelectionRevision,uint32 fxCatalogRevision,uint32 mapGenerationEpoch,uint16 emitterSeedDomainVersion,uint8 emitterPaletteMode))",
+  "function assetById(bytes32 familyId,bytes32 assetId) view returns ((bytes32 assetId,bytes32 spriteObjectId,bytes32 targetMapObjectId,bytes32 effectProfileObjectId,bytes32 soundProfileObjectId,uint32 emitterSpriteBundleId,uint32 emitterSpriteAssetId,bytes32 emitterMaterialTargetId,uint32 weight,uint64 introducedAt,uint64 spriteRevision,uint64 targetMapRevision,uint64 effectProfileRevision,uint64 soundProfileRevision,uint32 emitterPresetId,uint32 emitterRevision,uint32 emitterSpriteBundleRevision,uint32 emitterSpriteSelectionRevision,uint32 fxCatalogRevision,uint32 mapGenerationEpoch,uint16 emitterSeedDomainVersion,uint8 emitterPaletteMode))",
+  "function retiredAt(bytes32 familyId,bytes32 assetId) view returns (uint64)",
+  "function assetIndex(bytes32 familyId,bytes32 assetId) view returns (uint256 indexPlusOne)",
+  "function familyAssetCount(bytes32 familyId) view returns (uint256)",
+  "function familySelection(bytes32 familyId,uint64 revision,uint32 position) view returns (uint32 assetIndex_,uint128 cumulativeWeight)",
+  "function selectionNodeCount(bytes32 familyId) view returns (uint256)",
+  "function selectAsset(bytes32 familyId,uint64 revision,bytes32 tokenSeed,uint32 entropyDomain) view returns (uint32 index,(bytes32 assetId,bytes32 spriteObjectId,bytes32 targetMapObjectId,bytes32 effectProfileObjectId,bytes32 soundProfileObjectId,uint32 emitterSpriteBundleId,uint32 emitterSpriteAssetId,bytes32 emitterMaterialTargetId,uint32 weight,uint64 introducedAt,uint64 spriteRevision,uint64 targetMapRevision,uint64 effectProfileRevision,uint64 soundProfileRevision,uint32 emitterPresetId,uint32 emitterRevision,uint32 emitterSpriteBundleRevision,uint32 emitterSpriteSelectionRevision,uint32 fxCatalogRevision,uint32 mapGenerationEpoch,uint16 emitterSeedDomainVersion,uint8 emitterPaletteMode) asset)",
+  "event FamilyRevisionPublished(bytes32 indexed familyId,uint64 indexed revision,uint64 indexed parentRevision,uint32 assetCount,uint128 totalWeight,bytes32 catalogObjectId,uint64 catalogObjectRevision,address publisher)",
+  "event SpriteAssetAppended(bytes32 indexed familyId,bytes32 indexed assetId,uint64 indexed revision,uint32 assetIndex,uint32 weight,bytes32 spriteObjectId,uint64 spriteRevision,bytes32 targetMapObjectId,uint64 targetMapRevision,bytes32 effectProfileObjectId,uint64 effectProfileRevision,bytes32 soundProfileObjectId,uint64 soundProfileRevision)",
+  "event SpriteEmitterBindingPinned(bytes32 indexed familyId,bytes32 indexed assetId,uint32 emitterSpriteAssetId,uint32 emitterSpriteBundleId,bytes32 emitterMaterialTargetId,uint32 emitterPresetId,uint32 emitterRevision,uint32 emitterSpriteBundleRevision,uint32 emitterSpriteSelectionRevision,uint32 fxCatalogRevision,uint32 mapGenerationEpoch,uint16 emitterSeedDomainVersion,uint8 emitterPaletteMode)",
+  "event SpriteAssetRetired(bytes32 indexed familyId,bytes32 indexed assetId,uint64 indexed revision)",
+] as const;
+
+export const vaultArcadeRegistryAbi = [
+  "function characterCollection() view returns (address)",
+  "function mapCollection() view returns (address)",
+  "function keelIndex() view returns (address)",
+  "function artifactRegistry() view returns (address)",
+  "function characterRegistry() view returns (address)",
+  "function portableAnchorRegistry() view returns (address)",
+  "function publishMapBuild(uint256 mapId,uint64 expectedParent,uint64 artifactRevision,bytes32 manifestDigest,bytes32 resourceGraphDigest,bytes32 gameObjectId,uint64 gameObjectRevision,bytes32 mapSeed,bool freeze) returns (uint64 revision)",
+  "function publishMapBuildV2(uint256 mapId,uint64 expectedParent,uint64 artifactRevision,bytes32 manifestDigest,bytes32 resourceGraphDigest,bytes32 gameObjectId,uint64 gameObjectRevision,bytes32 mapSeed,bytes32 contentClampDigest,address runVerifier,bool freeze) returns (uint64 revision)",
+  "function publishMapBuildV3(uint256 mapId,uint64 expectedParent,uint64 artifactRevision,bytes32 manifestDigest,bytes32 resourceGraphDigest,bytes32 gameObjectId,uint64 gameObjectRevision,bytes32 mapSeed,bytes32 contentClampDigest,address runVerifier,address hardcoreReporter,bool freeze) returns (uint64 revision)",
+  "function enterMap(uint256 characterId,uint256 mapId)",
+  "function enterMapHardcore(uint256 characterId,uint256 mapId,uint64 expectedBuildRevision,bytes32 expectedTermsDigest)",
+  "function leaveMap(uint256 characterId)",
+  "function beginHardcoreSession(uint256 characterId,uint256 mapId,uint64 buildRevision,uint64 assignmentEpoch,bytes32 sessionId,bytes32 termsDigest,uint64 settleAfter)",
+  "function resolveHardcoreSession(uint256 characterId,uint256 mapId,uint64 buildRevision,uint64 assignmentEpoch,bytes32 sessionId,bytes32 termsDigest,bytes32 runDigest,bool defeated)",
+  "function expireHardcoreSession(uint256 characterId) returns (bytes32 runDigest)",
+  "function bindMapBuildPortable(uint256 mapId,uint64 mapBuildRevision,bytes32 portableRoot,bytes32 manifestObjectId,uint64 manifestObjectRevision,bytes32 decodedObjectId,uint64 decodedObjectRevision,bytes32 anchorRoot)",
+  "function latestMapBuild(uint256 mapId) view returns (uint64 revision)",
+  "function mapBuild(uint256 mapId,uint64 revision) view returns ((bytes32 manifestDigest,bytes32 resourceGraphDigest,bytes32 portableRoot,bytes32 portableManifestObjectId,bytes32 portableDecodedObjectId,bytes32 portableAnchorRoot,bytes32 gameObjectId,bytes32 mapSeed,uint64 portableManifestObjectRevision,uint64 portableDecodedObjectRevision,uint64 artifactRevision,uint64 gameObjectRevision,uint64 parentRevision,uint64 publishedAt,address publisher,bool frozen,bool exists))",
+  "function mapBuildPolicy(uint256 mapId,uint64 revision) view returns ((bytes32 contentClampDigest,address runVerifier,bool exists))",
+  "function hardcoreBuildPolicy(uint256 mapId,uint64 revision) view returns ((address reporter,bool exists))",
+  "function hardcoreStake(uint256 characterId) view returns ((uint8 mode,bytes32 termsDigest,bytes32 activeSessionId,uint64 settleAfter,bytes32 deathRunDigest))",
+  "function hardcoreExitStatus(uint256 characterId) view returns (bool hardcore,bool temporaryLock,bool permanentLock,bytes32 activeSessionId,uint64 settleAfter,bytes32 deathRunDigest)",
+  "function characterMap(uint256 characterId) view returns (bool assigned,uint256 mapId)",
+  "function characterMapBuildRevision(uint256 characterId) view returns (uint64)",
+  "function characterAssignmentEpoch(uint256 characterId) view returns (uint64)",
+  "function characterAssignment(uint256 characterId) view returns (address staker,uint256 mapId,uint64 mapBuildRevision,uint64 assignmentEpoch,bytes32 mapCharacterSeed,bytes32 renderRecipeDigest)",
+  "function stakerOf(uint256 characterId) view returns (address)",
+  "function characterAnimationContext(uint256 characterId) view returns (bool staked,uint256 mapId,uint64 mapBuildRevision,bytes32 renderRecipeDigest)",
+  "function mapCharacterRuntime(uint256 mapId,uint256 characterId) view returns (uint64 mapBuildRevision,(bytes32 manifestDigest,bytes32 resourceGraphDigest,bytes32 portableRoot,bytes32 portableManifestObjectId,bytes32 portableDecodedObjectId,bytes32 portableAnchorRoot,bytes32 gameObjectId,bytes32 mapSeed,uint64 portableManifestObjectRevision,uint64 portableDecodedObjectRevision,uint64 artifactRevision,uint64 gameObjectRevision,uint64 parentRevision,uint64 publishedAt,address publisher,bool frozen,bool exists) build,(bytes32 derivedSeed,bytes32 packedAttributes,bytes32[6] objectIds,uint64[6] objectRevisions,bytes32 portableRoot,bytes32 portableManifestObjectId,bytes32 portableDecodedObjectId,bytes32 portableAnchorRoot,uint64 portableManifestObjectRevision,uint64 portableDecodedObjectRevision,bytes32 assetFamilyId,bytes32 assetId,bytes32 spriteObjectId,bytes32 targetMapObjectId,bytes32 effectProfileObjectId,bytes32 soundProfileObjectId,uint32 emitterSpriteBundleId,uint32 emitterSpriteAssetId,bytes32 emitterMaterialTargetId,uint64 catalogRevision,uint64 selectionEpoch,uint64 assetFamilyRevision,uint64 spriteRevision,uint64 targetMapRevision,uint64 effectProfileRevision,uint64 soundProfileRevision,uint32 emitterPresetId,uint32 emitterRevision,uint32 emitterSpriteBundleRevision,uint32 emitterSpriteSelectionRevision,uint32 fxCatalogRevision,uint32 mapGenerationEpoch,uint16 emitterSeedDomainVersion,uint8 emitterPaletteMode,uint32 sceneId) character)",
+  "function mapOccupancy(uint256 mapId) view returns (uint256)",
+  "function mapCharacterSeed(uint256 mapId,uint256 characterId) view returns (bytes32)",
+  "function mapCharacters(uint256 mapId,uint256 offset,uint256 limit) view returns (uint256[] page)",
+  "function waveSeed(uint256 mapId,uint64 buildRevision,uint256 waveNumber) view returns (bytes32)",
+  "function floorSeed(uint256 mapId,uint64 buildRevision,uint32 floor) view returns (bytes32)",
+  "event MapBuildPublished(uint256 indexed mapId,uint64 indexed revision,uint64 indexed parentRevision,bytes32 manifestDigest,bytes32 resourceGraphDigest,bytes32 gameObjectId,uint64 gameObjectRevision,uint64 artifactRevision,bytes32 mapSeed,address publisher,bool frozen)",
+  "event CharacterEnteredMap(uint256 indexed characterId,uint256 indexed mapId,address indexed staker,uint64 mapBuildRevision,bytes32 renderRecipeDigest)",
+  "event CharacterLeftMap(uint256 indexed characterId,uint256 indexed mapId,address indexed owner,uint64 mapBuildRevision)",
+  "event CharacterAssignmentEpochAdvanced(uint256 indexed characterId,uint256 indexed mapId,uint64 indexed assignmentEpoch,uint64 mapBuildRevision,address staker)",
+  "event MapBuildPortableBindingPublished(uint256 indexed mapId,uint64 indexed mapBuildRevision,bytes32 indexed portableRoot,bytes32 anchorRoot,bytes32 manifestObjectId,uint64 manifestObjectRevision,bytes32 decodedObjectId,uint64 decodedObjectRevision)",
+  "event MapBuildPolicyPublished(uint256 indexed mapId,uint64 indexed revision,bytes32 indexed contentClampDigest,address runVerifier)",
+  "event HardcoreBuildPolicyPublished(uint256 indexed mapId,uint64 indexed revision,address indexed reporter)",
+  "event HardcoreStakeEntered(uint256 indexed characterId,uint256 indexed mapId,uint64 indexed buildRevision,uint64 assignmentEpoch,address staker,bytes32 termsDigest)",
+  "event HardcoreSessionStarted(uint256 indexed characterId,bytes32 indexed sessionId,uint256 indexed mapId,uint64 buildRevision,uint64 assignmentEpoch,uint64 settleAfter)",
+  "event HardcoreSessionResolved(uint256 indexed characterId,bytes32 indexed sessionId,bytes32 indexed runDigest,bool defeated)",
+  "event HardcoreSessionExpired(uint256 indexed characterId,bytes32 indexed sessionId)",
+  "event HardcoreDeathLocked(uint256 indexed characterId,uint256 indexed mapId,uint64 indexed buildRevision,uint64 assignmentEpoch,bytes32 sessionId,bytes32 runDigest)",
+] as const;
+
+export const vaultRunLeaderboardAbi = [
+  "function arcade() view returns (address)",
+  "function signatureAuthority() view returns (address)",
+  "function configureSignatureAuthority(address authority)",
+  "function leagueId(uint256 mapId,uint64 buildRevision) view returns (bytes32)",
+  "function configureLeague(uint256 mapId,uint64 buildRevision,bytes32 simulatorObjectId,uint64 simulatorObjectRevision,bytes32 rulesDigest,uint32 tickRate,uint32 maxTicks,uint16 topSize) returns (bytes32 id)",
+  "function league(uint256 mapId,uint64 buildRevision) view returns ((bytes32 simulatorObjectId,uint64 simulatorObjectRevision,bytes32 simulatorDecodedDigest,bytes32 simulatorMetadataDigest,bytes32 simulatorFidelitySetDigest,bytes32 simulatorMediaTypeDigest,bytes32 rulesDigest,bytes32 simulatorCommitment,uint64 simulatorByteLength,uint32 tickRate,uint32 maxTicks,uint16 topSize,uint8 digestAlgorithm,uint8 compression,address simulatorPublisher,address verifier,bytes32 signaturePolicyDigest,bytes32 hardcoreTermsDigest,bool hardcoreEnabled,bool exists))",
+  "function hardcoreTerms(uint256 mapId,uint64 buildRevision) view returns (bytes32)",
+  "function characterSeed(uint256 characterId,uint256 mapId,uint64 buildRevision) view returns (bytes32)",
+  "function runContext(uint256 characterId,uint256 mapId,uint64 buildRevision) view returns (address staker,uint64 assignmentEpoch,bytes32 characterSeed_,bytes32 simulationSeed,bytes32 loadoutDigest,bytes32 simulatorCommitment,address verifier)",
+  "function hardcoreSessionAuthorizationDigest((address player,uint256 characterId,uint256 mapId,uint64 buildRevision,uint64 assignmentEpoch,bytes32 sessionId,bytes32 characterSeed,bytes32 loadoutDigest,bytes32 simulatorCommitment,bytes32 startStateDigest,bytes32 hardcoreTermsDigest,uint64 startedAt,uint64 deadline) authorization) view returns (bytes32)",
+  "function beginHardcoreRun((address player,uint256 characterId,uint256 mapId,uint64 buildRevision,uint64 assignmentEpoch,bytes32 sessionId,bytes32 characterSeed,bytes32 loadoutDigest,bytes32 simulatorCommitment,bytes32 startStateDigest,bytes32 hardcoreTermsDigest,uint64 startedAt,uint64 deadline) authorization,bytes playerSignature) returns (bytes32 authorizationDigest,uint64 settleAfter)",
+  "function runReceiptDigest((address player,uint256 characterId,uint256 mapId,uint64 buildRevision,uint64 assignmentEpoch,bytes32 sessionId,bytes32 characterSeed,bytes32 loadoutDigest,bytes32 simulatorCommitment,bytes32 startStateDigest,bytes32 finalStateDigest,bytes32 transcriptDigest,uint32 floor,uint256 score,uint32 ticks,uint8 outcome,uint64 startedAt,uint64 finishedAt,uint64 deadline) receipt) view returns (bytes32)",
+  "function submitRun((address player,uint256 characterId,uint256 mapId,uint64 buildRevision,uint64 assignmentEpoch,bytes32 sessionId,bytes32 characterSeed,bytes32 loadoutDigest,bytes32 simulatorCommitment,bytes32 startStateDigest,bytes32 finalStateDigest,bytes32 transcriptDigest,uint32 floor,uint256 score,uint32 ticks,uint8 outcome,uint64 startedAt,uint64 finishedAt,uint64 deadline) receipt,bytes signature) returns (bytes32 runDigest,bool newBuildBest,bool newOverallBest,bool ranked)",
+  "function submitHardcoreRun((address player,uint256 characterId,uint256 mapId,uint64 buildRevision,uint64 assignmentEpoch,bytes32 sessionId,bytes32 characterSeed,bytes32 loadoutDigest,bytes32 simulatorCommitment,bytes32 startStateDigest,bytes32 finalStateDigest,bytes32 transcriptDigest,uint32 floor,uint256 score,uint32 ticks,uint8 outcome,uint64 startedAt,uint64 finishedAt,uint64 deadline) receipt,bytes signature) returns (bytes32 runDigest,bool newBuildBest,bool newOverallBest,bool ranked)",
+  "function expireHardcoreRun(bytes32 sessionId)",
+  "function hardcoreSessions(bytes32 sessionId) view returns (bytes32 authorizationDigest,uint256 characterId,uint64 settleAfter,bool active)",
+  "function bestRun(uint256 mapId,uint256 characterId) view returns ((uint32 floor,uint256 score,uint64 buildRevision,uint64 recordedAt,bytes32 runDigest,address player))",
+  "function bestRunForBuild(uint256 mapId,uint64 buildRevision,uint256 characterId) view returns ((uint32 floor,uint256 score,uint32 ticks,uint64 assignmentEpoch,uint64 recordedAt,bytes32 sessionId,bytes32 runDigest,bytes32 transcriptDigest,bytes32 finalStateDigest,address player))",
+  "function rankedRunCount(uint256 mapId,uint64 buildRevision) view returns (uint256)",
+  "function rankedRuns(uint256 mapId,uint64 buildRevision,uint256 offset,uint256 limit) view returns ((uint256 characterId,address player,uint32 floor,uint256 score,uint32 ticks,uint64 recordedAt,bytes32 runDigest)[] page)",
+  "function rankOf(uint256 mapId,uint64 buildRevision,uint256 characterId) view returns (uint256)",
+  "function sessionRunDigest(bytes32 sessionId) view returns (bytes32)",
+  "function usedRunDigest(bytes32 runDigest) view returns (bool)",
+  "event LeagueConfigured(bytes32 indexed leagueId,uint256 indexed mapId,uint64 indexed buildRevision,bytes32 simulatorObjectId,uint64 simulatorObjectRevision,bytes32 simulatorDecodedDigest,bytes32 simulatorMetadataDigest,bytes32 rulesDigest,bytes32 simulatorCommitment,uint32 tickRate,uint32 maxTicks,uint16 topSize,address verifier,bytes32 hardcoreTermsDigest)",
+  "event RunRecorded(bytes32 indexed sessionId,uint256 indexed characterId,uint256 indexed mapId,uint64 buildRevision,uint64 assignmentEpoch,address player,uint32 floor,uint256 score,uint32 ticks,bytes32 runDigest,bool newBuildBest,bool newOverallBest,bool ranked)",
+  "event RunEvidenceCommitted(bytes32 indexed runDigest,bytes32 indexed sessionId,bytes32 indexed transcriptDigest,bytes32 characterSeed,bytes32 loadoutDigest,bytes32 simulatorCommitment,bytes32 startStateDigest,bytes32 finalStateDigest,uint64 startedAt,uint64 finishedAt)",
+  "event HardcoreSessionRegistered(bytes32 indexed sessionId,uint256 indexed characterId,address indexed player,uint256 mapId,uint64 buildRevision,uint64 assignmentEpoch,bytes32 authorizationDigest,uint64 deadline,uint64 settleAfter)",
+  "event HardcoreSessionSettled(bytes32 indexed sessionId,uint256 indexed characterId,bytes32 indexed runDigest,bool defeated)",
+  "event HardcoreSessionExpired(bytes32 indexed sessionId,uint256 indexed characterId)",
+] as const;
+
+export const vaultRunLootExtractionAbi = [
+  "function CLAIM_DOMAIN() view returns (bytes32)",
+  "function MAX_ITEMS_PER_CLAIM() view returns (uint256)",
+  "function MAX_UNITS_PER_CLAIM() view returns (uint256)",
+  "function manager() view returns (address)",
+  "function arcade() view returns (address)",
+  "function runSource() view returns (address)",
+  "function inventory() view returns (address)",
+  "function sessionLootClaim(bytes32 sessionId) view returns (bytes32 claimId)",
+  "function claimed(bytes32 claimId) view returns (bool)",
+  "function extract((address player,uint256 characterId,uint256 mapId,uint64 buildRevision,uint64 assignmentEpoch,bytes32 sessionId,bytes32 runDigest,bytes32 lootDigest,uint64 expiresAt,(bytes32 definitionId,uint32 amount)[] items) claim) returns (bytes32 claimId)",
+  "event RunLootExtracted(bytes32 indexed claimId,bytes32 indexed sessionId,bytes32 indexed runDigest,uint256 characterId,uint256 mapId,uint64 buildRevision,uint64 assignmentEpoch,address player,bytes32 lootDigest,bytes32 itemsDigest,uint256 itemCount,uint256 unitCount)",
+] as const;
+
+export const keelManagerAbi = [
+  "function MIN_GOVERNORS() view returns (uint256)",
+  "function MAX_GOVERNORS() view returns (uint256)",
+  "function GOVERNANCE_NUMERATOR() view returns (uint256)",
+  "function GOVERNANCE_DENOMINATOR() view returns (uint256)",
+  "function MAX_SIGNATURE_APPROVAL_DURATION() view returns (uint64)",
+  "function MAX_AUTOMATION_KEY_LIFETIME() view returns (uint64)",
+  "function MIN_GOVERNOR_ROTATION_DELAY() view returns (uint64)",
+  "function MAX_GOVERNOR_SCHEDULING_DELAY() view returns (uint64)",
+  "function MIN_GOVERNOR_ACTIVATION_WINDOW() view returns (uint64)",
+  "function MAX_GOVERNOR_ACTIVATION_WINDOW() view returns (uint64)",
+  "function MANAGER_VERSION() view returns (string)",
+  "function executionMode() view returns (uint8)",
+  "function governors() view returns (address[])",
+  "function isGovernor(address account) view returns (bool)",
+  "function governanceThreshold() view returns (uint256)",
+  "function governanceNonce() view returns (uint256)",
+  "function governanceEpoch() view returns (uint64)",
+  "function governorChangeNonce() view returns (uint64)",
+  "function pendingGovernors() view returns (address[])",
+  "function pendingGovernorReconfiguration() view returns (bytes32 setDigest,uint64 validAfter,uint64 expiresAt)",
+  "function accountTier(address account) view returns (uint8)",
+  "function accountTierNonce(address account) view returns (uint256)",
+  "function paused() view returns (bool)",
+  "function executionPolicy(address target,bytes4 selector) view returns ((uint96 maxValue,uint8 minimumTier,bool enabled))",
+  "function executionPolicyNonce(address target,bytes4 selector) view returns (uint256)",
+  "function automationKeyValidUntil(address signer) view returns (uint64)",
+  "function automationNonce(address signer) view returns (uint256)",
+  "function automationKeyGeneration(address signer) view returns (uint256)",
+  "function automationCapability(address signer,address target,bytes4 selector) view returns ((uint96 maxValue,uint64 validAfter,uint64 validUntil,bool enabled,uint256 keyGeneration))",
+  "function governanceActionDigest((address target,uint256 value,bytes data) call_,uint64 deadline) view returns (bytes32)",
+  "function automationActionDigest(address signer,(address target,uint256 value,bytes data) call_,uint64 deadline) view returns (bytes32)",
+  "function governorSetDigest(address[] nextGovernors,uint64 validAfter,uint64 expiresAt,uint64 nextEpoch,uint64 changeNonce) view returns (bytes32)",
+  "function newGovernorAcceptanceDigest(bytes32 setDigest,address governor) view returns (bytes32)",
+  "function executeGovernance((address target,uint256 value,bytes data) call_,uint64 deadline,(address signer,bytes signature)[] signatures) payable returns (bytes result)",
+  "function executeRole((address target,uint256 value,bytes data) call_) payable returns (bytes result)",
+  "function executeAutomation(address signer,(address target,uint256 value,bytes data) call_,uint64 deadline,bytes signature) payable returns (bytes result)",
+  "function scheduleGovernorReconfiguration(address[] nextGovernors,uint64 validAfter,uint64 expiresAt,uint64 expectedEpoch,uint64 expectedChangeNonce,(address signer,bytes signature)[] acceptances)",
+  "function cancelGovernorReconfiguration()",
+  "function activateGovernorReconfiguration()",
+  "function expireGovernorReconfiguration()",
+  "function pause()",
+  "function unpause()",
+  "function configureAccountTier(address account,uint8 tier)",
+  "function configureExecutionPolicy(address target,bytes4 selector,uint8 minimumTier,uint96 maxValue,bool enabled)",
+  "function configureAutomationKey(address signer,uint64 validUntil)",
+  "function configureAutomationCapability(address signer,address target,bytes4 selector,uint64 validAfter,uint64 validUntil,uint96 maxValue,bool enabled)",
+  "function MAX_RPC_HOSTS() view returns (uint256)",
+  "function MAX_RPC_HOST_BYTES() view returns (uint256)",
+  "function RPC_HOST_LIST_DOMAIN() view returns (string)",
+  "function rpcHostList() view returns (string[] hosts,uint64 revision,uint64 listEpoch,uint64 currentEpoch,bytes32 digest)",
+  "function rpcHostCount() view returns (uint256)",
+  "function rpcHostListPreimage(string[] hosts,uint64 revision,uint64 epoch) pure returns (bytes)",
+  "function computeRpcHostListDigest(string[] hosts,uint64 revision,uint64 epoch) pure returns (bytes32)",
+  "function configureRpcHostList(string[] hosts,uint64 expectedRevision)",
+  "event GovernorReconfigurationScheduled(bytes32 indexed governorSetDigest,uint64 indexed nextEpoch,uint64 validAfter,uint64 expiresAt,uint256 governorCount,uint256 threshold)",
+  "event GovernorReconfigurationCancelled(bytes32 indexed governorSetDigest)",
+  "event GovernorReconfigurationActivated(bytes32 indexed governorSetDigest,uint64 indexed epoch,uint256 governorCount,uint256 threshold)",
+  "event GovernorReconfigurationExpired(bytes32 indexed governorSetDigest)",
+  "event AccountTierConfigured(address indexed account,uint8 indexed previousTier,uint8 indexed nextTier)",
+  "event ExecutionPolicyConfigured(address indexed target,bytes4 indexed selector,uint8 minimumTier,uint96 maxValue,bool enabled,uint256 policyNonce)",
+  "event AutomationKeyConfigured(address indexed signer,uint64 validUntil,uint256 nonce,uint256 keyGeneration)",
+  "event AutomationCapabilityConfigured(address indexed signer,address indexed target,bytes4 indexed selector,uint64 validAfter,uint64 validUntil,uint96 maxValue,bool enabled,uint256 keyGeneration)",
+  "event RpcHostListConfigured(bytes32 indexed digest,uint64 indexed revision,uint64 indexed epoch,uint256 hostCount)",
+] as const;
+
+/** The proof ladder behind a wrapped token, including how its viewer document
+ * gets the artwork it renders. `viewerCarriage` is read from the viewer
+ * composite's own part list, not from anything the document claims. */
+export const keelBackpackProofLedgerAbi = [
+  "function viewerCarriage(address backpack,uint256 tokenId) view returns (uint8)",
+  "function viewerOf(address backpack,uint256 tokenId) view returns (bytes32 objectId,bytes32 digest)",
+  "function weakestLane(address backpack,uint256 tokenId) view returns (uint8)",
+  "function ladderComplete(address backpack,uint256 tokenId) view returns (bool)",
+  "function assetCid(address backpack,uint256 tokenId) view returns (string)",
+  "function imageStrategyOf(address backpack) view returns (uint8)",
+  "function linkedImageURI(bytes32 assetObjectId) view returns (string)",
+  "function projectedReadGas(uint256 artworkBytes) pure returns (uint256)",
+] as const;
+
+export const keelCreatorProfileRegistryAbi = [
+  "function CREATOR_ID_DOMAIN() view returns (bytes32)",
+  "function USERNAME_HASH_DOMAIN() view returns (bytes32)",
+  "function MAX_METADATA_URI_BYTES() view returns (uint256)",
+  "function MAX_NORMALIZED_USERNAME_BYTES() view returns (uint256)",
+  "function manager() view returns (address)",
+  "function predictCreatorId(address creator) view returns (bytes32)",
+  "function usernameCommitment(string normalizedUsername) pure returns (bytes32)",
+  "function createProfile((bytes32 usernameHash,string metadataURI,address metadataObjectRegistry,bytes32 metadataObjectId,bytes32 organizationId,uint64 metadataObjectRevision,address recoveryAddress) input) returns (bytes32 creatorId)",
+  "function ensureProfile(address creator,(bytes32 usernameHash,string metadataURI,address metadataObjectRegistry,bytes32 metadataObjectId,bytes32 organizationId,uint64 metadataObjectRevision,address recoveryAddress) input) returns (bytes32 creatorId,bool created)",
+  "function updateProfile(bytes32 creatorId,uint64 expectedRevision,(bytes32 usernameHash,string metadataURI,address metadataObjectRegistry,bytes32 metadataObjectId,bytes32 organizationId,uint64 metadataObjectRevision,address recoveryAddress) input)",
+  "function recoverProfile(bytes32 creatorId,address expectedCreator,address newCreator)",
+  "function creatorIdOf(address creator) view returns (bytes32)",
+  "function walletWasBound(address wallet) view returns (bool)",
+  "function profile(bytes32 creatorId) view returns ((address creator,address recoveryAddress,bytes32 usernameHash,string metadataURI,address metadataObjectRegistry,bytes32 metadataObjectId,bytes32 organizationId,uint64 metadataObjectRevision,uint64 revision,uint64 createdAt,uint64 updatedAt,bool complete,bool exists))",
+  "function profileOf(address creator) view returns ((address creator,address recoveryAddress,bytes32 usernameHash,string metadataURI,address metadataObjectRegistry,bytes32 metadataObjectId,bytes32 organizationId,uint64 metadataObjectRevision,uint64 revision,uint64 createdAt,uint64 updatedAt,bool complete,bool exists))",
+  "function profileComplete(address creator) view returns (bool)",
+  "function canCreateDrop(address creator) view returns (bool)",
+  "event CreatorProfileConfigured(bytes32 indexed creatorId,address indexed creator,address indexed actor,uint64 revision,bytes32 usernameHash,string metadataURI,address metadataObjectRegistry,bytes32 metadataObjectId,uint64 metadataObjectRevision,bytes32 organizationId,address recoveryAddress,bool complete)",
+  "event CreatorWalletRecovered(bytes32 indexed creatorId,address indexed previousCreator,address indexed creator,address recoveryAuthority,uint64 revision)",
+] as const;
+
+export const vaultRunSignatureAuthorityAbi = [
+  "function manager() view returns (address)",
+  "function consumer() view returns (address)",
+  "function configurationDigest() view returns (bytes32)",
+  "function operational() view returns (bool)",
+  "function STANDARD_RUN_CAPABILITY() view returns (bytes4)",
+  "function HARDCORE_SURVIVAL_CAPABILITY() view returns (bytes4)",
+  "function HARDCORE_DEFEAT_CAPABILITY() view returns (bytes4)",
+  "function SCOPE_STANDARD_RUN() view returns (uint8)",
+  "function SCOPE_HARDCORE_SURVIVAL() view returns (uint8)",
+  "function SCOPE_HARDCORE_DEFEAT() view returns (uint8)",
+  "function AUTHORITY_ROLE() view returns (uint8)",
+  "function AUTHORITY_AUTOMATION() view returns (uint8)",
+  "function MAX_ATTESTATION_LIFETIME() view returns (uint64)",
+  "function authoritySecurity() view returns (address manager,address consumer,bytes32 configurationDigest)",
+  "function capabilityForScope(uint8 scope) pure returns (bytes4)",
+  "function authorizationNonce(address signer,uint8 authorityClass,uint8 scope) view returns (uint256)",
+  "function attestationDigest(bytes32 digest,address signer,uint8 authorityClass,uint8 scope,uint64 deadline,uint256 authorizationNonce) view returns (bytes32)",
+  "function isValidAttestation(bytes32 digest,uint8 scope,bytes encoded) view returns (bool)",
+] as const;
+
+export const vaultMapAuctionAbi = [
+  "function auctionsPerDay() view returns (uint16)",
+  "function reservePrice() view returns (uint96)",
+  "function treasury() view returns (address)",
+  "function scheduleAuctionsPerDay(uint16 count,uint64 effectiveDay)",
+  "function setReservePrice(uint96 nextReservePrice)",
+  "function currentSlot() view returns (uint64 day,uint32 slot,uint16 cadence,uint64 endTime)",
+  "function currentAuctionId() view returns (bytes32)",
+  "function auctionId(uint64 day,uint32 slot,uint16 cadence) view returns (bytes32)",
+  "function auctions(bytes32 auctionId) view returns (uint64 day,uint32 slot,uint16 cadence,uint96 reservePrice,address bidder,uint256 bid,bool settled)",
+  "function bid(bytes32 id) payable",
+  "function settle(uint64 day,uint32 slot,uint16 cadence) returns (uint256 mapId)",
+  "function mapSeed(uint256 mapId) view returns (bytes32 seed)",
+  "function credits(address account) view returns (uint256 amount)",
+  "function withdraw(address recipient)",
+  "event BidPlaced(bytes32 indexed auctionId,uint64 indexed day,uint32 indexed slot,address bidder,uint256 amount)",
+  "event AuctionSettled(bytes32 indexed auctionId,address indexed winner,uint256 indexed mapId,uint256 amount,bytes32 seed)",
+] as const;
+
+export const KEEL_MODULE_REVIEW_REGISTRY_ABI = [
+  {
+    "type": "function",
+    "name": "APPROVER_ROLE",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "deprecateModule",
+    "inputs": [
+      {
+        "name": "digest",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "reasonDigest",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "replacementSpecDigest",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "validUntil",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "moduleAuthorized",
+    "inputs": [
+      {
+        "name": "digest",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "review",
+    "inputs": [
+      {
+        "name": "digest",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct KeelModuleReviewRegistry.Review",
+        "components": [
+          {
+            "name": "status",
+            "type": "uint8",
+            "internalType": "enum KeelModuleReviewRegistry.Status"
+          },
+          {
+            "name": "reviewDigest",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "reasonDigest",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "replacementSpecDigest",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "validUntil",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "reviewer",
+            "type": "address",
+            "internalType": "address"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "revokeModule",
+    "inputs": [
+      {
+        "name": "digest",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "reasonDigest",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "replacementSpecDigest",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "sanctionModule",
+    "inputs": [
+      {
+        "name": "digest",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "reviewDigest",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "validUntil",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "specDigest",
+    "inputs": [
+      {
+        "name": "spec",
+        "type": "tuple",
+        "internalType": "struct KeelModuleReviewRegistry.ModuleSpec",
+        "components": [
+          {
+            "name": "moduleId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "moduleVersion",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "format",
+            "type": "uint8",
+            "internalType": "enum KeelModuleReviewRegistry.ModuleFormat"
+          },
+          {
+            "name": "graphId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "graphVersion",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "manifestDigest",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "resourceGraphDigest",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "metadataDigest",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "submitModule",
+    "inputs": [
+      {
+        "name": "spec",
+        "type": "tuple",
+        "internalType": "struct KeelModuleReviewRegistry.ModuleSpec",
+        "components": [
+          {
+            "name": "moduleId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "moduleVersion",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "format",
+            "type": "uint8",
+            "internalType": "enum KeelModuleReviewRegistry.ModuleFormat"
+          },
+          {
+            "name": "graphId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "graphVersion",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "manifestDigest",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "resourceGraphDigest",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "metadataDigest",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "digest",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  }
+] as const;

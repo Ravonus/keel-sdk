@@ -1,0 +1,15 @@
+{
+  "name": "@keel/web3-boundary-tests",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Integration tests for the Keel web3:// boundary: reference-client compatibility, ERC-7617/7618 streaming, the dependency-free stream loader, and repo-root forge guardrails. Requires `forge build` in packages/contracts and the `anvil` binary.",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "viem": "^2.38.0",
+    "vitest": "^4.0.18",
+    "web3protocol": "0.6.3"
+  }
+}

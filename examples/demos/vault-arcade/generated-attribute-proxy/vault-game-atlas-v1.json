@@ -1,0 +1,134 @@
+{
+  "schema": "vault-game-atlas@2",
+  "title": "Vault Arcade Shared Atlas",
+  "runtimeBudgetBytes": 8388608,
+  "gameArt": {
+    "schema": "vault-grayscale-game-atlas@1",
+    "source": "assets/game/forge-atlas-grayscale-v1.png",
+    "sha256": "5db8547f4cfb24e464b0c01fead64e581286916541c2f260f36d88ed42634c54",
+    "grid": [6, 6],
+    "semanticRows": ["floor", "wall", "object", "enemy", "boss-part", "effect"],
+    "materialMode": "grayscale-runtime-palette",
+    "biomeAtlases": {
+      "industrial-forge": {
+        "source": "assets/game/forge-atlas-grayscale-v1.png",
+        "sha256": "5db8547f4cfb24e464b0c01fead64e581286916541c2f260f36d88ed42634c54",
+        "state": "candidate-visual-review"
+      },
+      "crystal-overgrowth": {
+        "source": "assets/game/biomes/prism-garden-atlas-v2.webp",
+        "sha256": "c878b8387d4a969f8b2bbd9d5fab21068a13562c659b880796195f8531708c1c",
+        "state": "candidate-visual-review"
+      },
+      "occult-machine-catacomb": {
+        "source": "assets/game/biomes/signal-crypt-atlas-v2.webp",
+        "sha256": "49e131a0e034e855df7ab2446d8ca1912e3d2fdc2b6e69b2e52567a8ef53ae12",
+        "state": "candidate-visual-review"
+      },
+      "zero-gravity-reactor": {
+        "source": "assets/game/biomes/void-engine-atlas-v2.webp",
+        "sha256": "c3ad34f800da8406996130b807c4d795286a6ee9b24d8dd27de0ec208f63f0d5",
+        "state": "candidate-visual-review"
+      }
+    },
+    "materials": {
+      "industrial-forge": {
+        "source": "assets/game/materials/industrial-forge-floor-v1-tile.webp",
+        "sha256": "4c249d2af0c9225adb6293b27be669b834c16998028df4010e7fc34a94517b60",
+        "dimensions": [1024, 1024],
+        "mode": "seamless-mirrored-grayscale-luminance-ramp",
+        "state": "candidate-visual-review"
+      },
+      "industrial-forge-wall": {
+        "source": "assets/game/materials/industrial-forge-wall-v1-tile.webp",
+        "sha256": "9ef59896d4588ed3510685011bcaeff0b3717dc09aa5b612eaffc7ee03e2e5c1",
+        "dimensions": [1024, 1024],
+        "mode": "seamless-mirrored-grayscale-luminance-ramp",
+        "state": "candidate-visual-review"
+      }
+    }
+  },
+  "character": {
+    "id": "orb-core-v1",
+    "source": "orb-core-v1-turnaround.png",
+    "cell": [34, 34],
+    "directions": ["south", "south-west", "west", "north-west", "north", "north-east", "east", "south-east"],
+    "abilities": {
+      "escape": { "id": "phase-blink", "cooldownMs": 3600, "distance": 150 },
+      "defense": { "id": "gravity-shell", "cooldownMs": 6200, "durationMs": 1100 },
+      "cooldownAttack": { "id": "core-flare", "name": "Core Flare", "cooldownMs": 7800, "damage": 42, "range": 260, "arcDegrees": 76 },
+      "ultimate": { "id": "event-horizon", "unlockLevel": 6, "cooldownMs": 24000 }
+    }
+  },
+  "weapons": [
+    {
+      "id": "gyro",
+      "name": "Gyro Saw",
+      "source": "assets/weapons/generated-v1/gyro-saw-96.png",
+      "class": "orbit-blade",
+      "longRange": { "mode": "launch-recall", "damage": [18, 27], "speed": [390, 470], "cooldownMs": [610, 760] },
+      "closeRange": { "mode": "spin-cleave", "damage": [28, 42], "radius": [72, 90], "cooldownMs": [920, 1120] },
+      "chargeAttack": { "mode": "overdrive-disc", "chargeMs": [420, 1450], "damage": [58, 92], "speed": [330, 410], "radius": [18, 27], "cooldownMs": [2600, 3200] },
+      "statClamps": { "power": [0.82, 1.28], "speed": [0.88, 1.18], "critical": [0.02, 0.14] }
+    },
+    {
+      "id": "rift",
+      "name": "Rift Fork",
+      "source": "assets/weapons/generated-v1/rift-fork-96.png",
+      "class": "piercing-fork",
+      "longRange": { "mode": "pierce", "damage": [15, 23], "speed": [620, 760], "cooldownMs": [440, 570] },
+      "closeRange": { "mode": "rift-sweep", "damage": [22, 34], "radius": [65, 80], "cooldownMs": [760, 960] },
+      "chargeAttack": { "mode": "singularity-lance", "chargeMs": [480, 1550], "damage": [66, 108], "speed": [760, 900], "radius": [9, 14], "cooldownMs": [2800, 3450] },
+      "statClamps": { "power": [0.86, 1.24], "speed": [0.92, 1.22], "critical": [0.04, 0.17] }
+    },
+    {
+      "id": "bloom",
+      "name": "Aegis Star",
+      "source": "assets/weapons/generated-v1/aegis-star-96.png",
+      "class": "radial-core",
+      "longRange": { "mode": "six-node-burst", "damage": [8, 14], "speed": [430, 520], "cooldownMs": [820, 1040] },
+      "closeRange": { "mode": "nova-pulse", "damage": [20, 31], "radius": [88, 112], "cooldownMs": [1050, 1320] },
+      "chargeAttack": { "mode": "stellar-bloom", "chargeMs": [520, 1650], "damage": [24, 39], "speed": [380, 470], "radius": [7, 11], "cooldownMs": [3100, 3800] },
+      "statClamps": { "power": [0.78, 1.34], "speed": [0.86, 1.15], "critical": [0.01, 0.12] }
+    },
+    {
+      "id": "needle",
+      "name": "Needle Array",
+      "source": "assets/weapons/generated-v1/needle-array-96.png",
+      "class": "rapid-array",
+      "longRange": { "mode": "staggered-darts", "damage": [7, 11], "speed": [690, 820], "cooldownMs": [145, 220] },
+      "closeRange": { "mode": "needle-fan", "damage": [18, 29], "radius": [58, 76], "cooldownMs": [680, 850] },
+      "chargeAttack": { "mode": "needle-tempest", "chargeMs": [380, 1250], "damage": [17, 28], "speed": [760, 940], "radius": [4, 7], "cooldownMs": [2300, 2950] },
+      "statClamps": { "power": [0.9, 1.18], "speed": [1.02, 1.3], "critical": [0.06, 0.2] }
+    }
+  ],
+  "tilesets": [
+    { "id": "crypt-grid", "name": "Signal Crypt", "biome": "occult-machine-catacomb", "roomDesigns": ["cross-sanctum", "rune-hall", "split-vault", "relay-chapel"], "floor": ["slate", "circuit", "fracture"], "walls": ["vault", "rune"], "objects": ["relay", "pillar", "cache"], "fx": ["scanlines", "cyan-dust"] },
+    { "id": "ember-vault", "name": "Ember Vault", "biome": "industrial-forge", "roomDesigns": ["crucible-ring", "chain-gallery", "slag-channel", "vent-foundry"], "floor": ["basalt", "heated-seam", "slag"], "walls": ["forge", "chain"], "objects": ["vent", "crucible", "cache"], "fx": ["embers", "heat-haze"] },
+    { "id": "prism-garden", "name": "Prism Garden", "biome": "crystal-overgrowth", "roomDesigns": ["facet-court", "root-maze", "bloom-terrace", "glass-orbit"], "floor": ["glass", "moss", "facet"], "walls": ["crystal", "root"], "objects": ["bloom", "obelisk", "cache"], "fx": ["prism-motes", "spores"] },
+    { "id": "void-engine", "name": "Void Engine", "biome": "zero-gravity-reactor", "roomDesigns": ["reactor-cross", "coil-ring", "warning-grid", "terminal-spine"], "floor": ["black-metal", "gravity-well", "warning"], "walls": ["reactor", "conduit"], "objects": ["coil", "terminal", "cache"], "fx": ["void-specks", "gravity-lines"] }
+  ],
+  "palettes": [
+    { "id": "cyan-magenta", "floor": "#101d20", "floor2": "#172a2d", "line": "#285057", "accent": "#5dffe0", "hostile": "#ff5f9f", "ambient": "#68c7ff" },
+    { "id": "amber-violet", "floor": "#21170f", "floor2": "#302117", "line": "#634224", "accent": "#ffc65c", "hostile": "#d86cff", "ambient": "#ff8a4c" },
+    { "id": "acid-rose", "floor": "#101a13", "floor2": "#18271b", "line": "#355b3b", "accent": "#b8ff62", "hostile": "#ff658d", "ambient": "#7affc5" },
+    { "id": "ice-void", "floor": "#111525", "floor2": "#1a2034", "line": "#35446b", "accent": "#90c7ff", "hostile": "#d38cff", "ambient": "#78f5ff" }
+  ],
+  "mobs": [
+    { "id": "drifter", "name": "Drifter", "shape": "orb", "behavior": "chase", "attacks": ["bite", "aoe-pulse"], "health": [18, 28], "speed": [54, 82], "damage": [5, 9], "parts": ["shell", "core"] },
+    { "id": "lancer", "name": "Lancer", "shape": "diamond", "behavior": "dash", "attacks": ["charge", "close-lance"], "health": [24, 38], "speed": [44, 66], "damage": [8, 13], "parts": ["body", "wings", "visor", "lance", "trail", "core", "skin-1", "skin-2", "skin-3", "skin-4", "skin-5", "skin-6"] },
+    { "id": "wisp", "name": "Signal Wisp", "shape": "wisp", "behavior": "shooter", "attacks": ["ranged-bolt", "laser"], "health": [13, 22], "speed": [48, 74], "damage": [5, 10], "parts": ["core", "halo", "projectile"] },
+    { "id": "bulwark", "name": "Bulwark", "shape": "hex", "behavior": "tank", "attacks": ["aoe-slam", "charge"], "health": [46, 68], "speed": [28, 43], "damage": [10, 16], "parts": ["armor", "core", "shield"] }
+  ],
+  "bosses": [
+    { "id": "warden", "name": "Vault Warden", "shape": "warden", "parts": ["core", "left-pylon", "right-pylon", "crown"], "moves": ["ring-burst", "pylon-beam", "gravity-pull", "summon-drifters"] },
+    { "id": "loom", "name": "The Loom", "shape": "loom", "parts": ["heart", "north-node", "east-node", "south-node", "west-node"], "moves": ["thread-lines", "rotating-gap", "needle-rain", "phase-shift"] },
+    { "id": "devourer", "name": "Signal Devourer", "shape": "devourer", "parts": ["maw", "inner-core", "left-fin", "right-fin"], "moves": ["cone-bite", "void-pools", "charge", "echo-clones"] }
+  ],
+  "shop": {
+    "intervalLayers": [4, 10],
+    "choices": 3,
+    "upgrades": ["power", "fire-rate", "move-speed", "max-health", "critical", "pickup-radius", "close-range", "defense-cooldown", "escape-cooldown", "backpack-slot"]
+  },
+  "backpack": { "baseSlots": 6, "maximumSlots": 42, "equipmentSlots": 9, "activeWeaponSlots": 1, "carriedWeaponLimit": 2, "persistentKinds": ["weapon", "relic", "consumable"] }
+}

@@ -1,0 +1,162 @@
+{
+  "schema": "oca-manifest@2",
+  "canonicalization": "RFC8785",
+  "id": "oca-orbit-example",
+  "name": "Keel Orbit Example",
+  "description": "A minimal multi-resource interactive artifact using the verified virtual content gateway.",
+  "entrypoint": {
+    "resource": "viewer",
+    "mode": "html"
+  },
+  "resources": [
+    {
+      "id": "viewer",
+      "role": "entrypoint",
+      "mediaType": "text/html",
+      "executable": true,
+      "originalName": "viewer.html",
+      "aliases": [
+        "/content/viewer"
+      ],
+      "sources": [
+        {
+          "kind": "inline",
+          "data": "PCFkb2N0eXBlIGh0bWw+PGh0bWw+PGhlYWQ+PG1ldGEgY2hhcnNldD0idXRmLTgiPjxtZXRhIG5hbWU9InZpZXdwb3J0IiBjb250ZW50PSJ3aWR0aD1kZXZpY2Utd2lkdGgsaW5pdGlhbC1zY2FsZT0xIj48bGluayByZWw9InN0eWxlc2hlZXQiIGhyZWY9Ii9jb250ZW50L3N0eWxlIj48dGl0bGU+T0NBIE9yYml0PC90aXRsZT48L2hlYWQ+PGJvZHk+PGNhbnZhcyBpZD0iY2FudmFzIj48L2NhbnZhcz48ZGl2PjxzbWFsbD5WRVJJRklFRCBDT01QT1NJVElPTjwvc21hbGw+PGgxPk9DQSBPcmJpdDwvaDE+PHA+SFRNTCArIENTUyArIEphdmFTY3JpcHQgKyBTVkcsIG1vdW50ZWQgb25seSBhZnRlciBldmVyeSBkZWNsYXJlZCBieXRlIHZlcmlmaWVzLjwvcD48L2Rpdj48c3BhbiBjbGFzcz0ic2VhbCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJPQ0Egc2VhbCI+PC9zcGFuPjxzY3JpcHQgdHlwZT0ibW9kdWxlIiBzcmM9Ii9jb250ZW50L3J1bnRpbWUiPjwvc2NyaXB0PjwvYm9keT48L2h0bWw+Cg==",
+          "encoding": "base64",
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0xb77691a64cfc3afec50c8dc03457e0f75a2a6e3ae3e377b1de81dc5e0f2cf6ee",
+            "byteLength": 505
+          }
+        }
+      ]
+    },
+    {
+      "id": "style",
+      "role": "style",
+      "mediaType": "text/css",
+      "executable": false,
+      "originalName": "style.css",
+      "aliases": [
+        "/content/style"
+      ],
+      "sources": [
+        {
+          "kind": "inline",
+          "data": "aHRtbCxib2R5e3dpZHRoOjEwMCU7aGVpZ2h0OjEwMCU7bWFyZ2luOjA7b3ZlcmZsb3c6aGlkZGVuO2JhY2tncm91bmQ6IzA5MDkwYjtjb2xvcjojZmZmO2ZvbnQtZmFtaWx5OnN5c3RlbS11aSxzYW5zLXNlcmlmfWNhbnZhc3twb3NpdGlvbjphYnNvbHV0ZTtpbnNldDowO3dpZHRoOjEwMCU7aGVpZ2h0OjEwMCV9ZGl2e3Bvc2l0aW9uOmFic29sdXRlO2xlZnQ6NyU7Ym90dG9tOjglO21heC13aWR0aDo2NTBweH1zbWFsbHtmb250OjEycHggdWktbW9ub3NwYWNlLG1vbm9zcGFjZTtsZXR0ZXItc3BhY2luZzouMjJlbTtjb2xvcjojZmZiNmMxfWgxe2ZvbnQtc2l6ZTpjbGFtcCg0NnB4LDl2dywxMjBweCk7bGV0dGVyLXNwYWNpbmc6LS4wN2VtO2xpbmUtaGVpZ2h0Oi44NTttYXJnaW46LjJlbSAwfXB7Zm9udC1zaXplOmNsYW1wKDE0cHgsMnZ3LDIwcHgpO2xpbmUtaGVpZ2h0OjEuNTtjb2xvcjojYTFhMWFhfS5zZWFse3Bvc2l0aW9uOmFic29sdXRlO3JpZ2h0OjYlO3RvcDo3JTt3aWR0aDo5MHB4O2hlaWdodDo5MHB4O2JhY2tncm91bmQ6dXJsKCIvY29udGVudC9mYWxsYmFjayIpIGNlbnRlci9jb250YWluIG5vLXJlcGVhdH0K",
+          "encoding": "base64",
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0xc06c3aa82c5965ecb9e8747ce57791e77b9a7586185258ddaee3f83d0540e206",
+            "byteLength": 582
+          }
+        }
+      ]
+    },
+    {
+      "id": "runtime",
+      "role": "script",
+      "mediaType": "text/javascript",
+      "executable": true,
+      "originalName": "runtime.js",
+      "aliases": [
+        "/content/runtime"
+      ],
+      "sources": [
+        {
+          "kind": "inline",
+          "data": "Y29uc3QgY2FudmFzPWRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoJyNjYW52YXMnKTtjb25zdCBjb250ZXh0PWNhbnZhcy5nZXRDb250ZXh0KCcyZCcpO2xldCB3aWR0aCxoZWlnaHQsdGltZT0wO2Z1bmN0aW9uIHJlc2l6ZSgpe3dpZHRoPWNhbnZhcy53aWR0aD1pbm5lcldpZHRoKmRldmljZVBpeGVsUmF0aW87aGVpZ2h0PWNhbnZhcy5oZWlnaHQ9aW5uZXJIZWlnaHQqZGV2aWNlUGl4ZWxSYXRpb31hZGRFdmVudExpc3RlbmVyKCdyZXNpemUnLHJlc2l6ZSk7cmVzaXplKCk7ZnVuY3Rpb24gcmVuZGVyKCl7dGltZSs9LjAwODtjb250ZXh0LmZpbGxTdHlsZT0ncmdiYSg5LDksMTEsLjIyKSc7Y29udGV4dC5maWxsUmVjdCgwLDAsd2lkdGgsaGVpZ2h0KTtmb3IobGV0IGluZGV4PTA7aW5kZXg8ODA7aW5kZXgrKyl7Y29uc3QgYW5nbGU9aW5kZXgqLjU1K3RpbWUqKDEraW5kZXglNSkvNDtjb25zdCByYWRpdXM9KDQwK2luZGV4KjcpKmRldmljZVBpeGVsUmF0aW87Y29uc3QgeD13aWR0aCouNjYrTWF0aC5jb3MoYW5nbGUpKnJhZGl1cztjb25zdCB5PWhlaWdodCouNDIrTWF0aC5zaW4oYW5nbGUqLjkxKSpyYWRpdXMqLjYyO2NvbnRleHQuYmVnaW5QYXRoKCk7Y29udGV4dC5hcmMoeCx5LCgxLjIrKGluZGV4JTQpKSAqIGRldmljZVBpeGVsUmF0aW8sMCxNYXRoLlBJKjIpO2NvbnRleHQuZmlsbFN0eWxlPWByZ2JhKDI1NSwxODIsMTkzLCR7LjE1KyhpbmRleCU5KS8xNH0pYDtjb250ZXh0LmZpbGwoKX1yZXF1ZXN0QW5pbWF0aW9uRnJhbWUocmVuZGVyKX1yZW5kZXIoKTsK",
+          "encoding": "base64",
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0x143083b909630ddece9fc018fb8791531c23fcdba41fb4fda17214b86c2a8784",
+            "byteLength": 774
+          }
+        }
+      ]
+    },
+    {
+      "id": "fallback",
+      "role": "fallback",
+      "mediaType": "image/svg+xml",
+      "executable": false,
+      "originalName": "fallback.svg",
+      "aliases": [
+        "/content/fallback"
+      ],
+      "sources": [
+        {
+          "kind": "inline",
+          "data": "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgyPSIxIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmYjZjMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiByeD0iNDIiIGZpbGw9IiMxMTExMTMiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjY4IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZykiIHN0cm9rZS13aWR0aD0iOCIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iMTUiIGZpbGw9InVybCgjZykiLz48cGF0aCBkPSJNMTAwIDMyYTY4IDY4IDAgMCAxIDAgMTM2IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZykiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWRhc2hhcnJheT0iNSA4Ii8+PC9zdmc+Cg==",
+          "encoding": "base64",
+          "integrity": {
+            "algorithm": "sha256",
+            "digest": "0x28a8a8dc65c5c419cfffa9278f04fe40ff1c4effd31c6b2364a76f99e71b6849",
+            "byteLength": 490
+          }
+        }
+      ]
+    }
+  ],
+  "fallback": {
+    "image": "fallback",
+    "animation": "viewer",
+    "backgroundColor": "#09090b"
+  },
+  "runtime": {
+    "engine": {
+      "protocol": "oca-runtime@1",
+      "viewerProtocol": "oca-viewer@1",
+      "renderer": "browser"
+    },
+    "determinism": {
+      "mode": "replay",
+      "seed": "0x525dbb75391f4bda94065983c3523ab169d3a1692d602ba89c66869c5fc2de0f",
+      "randomAlgorithm": "xoshiro128ss",
+      "viewport": {
+        "width": 1280,
+        "height": 1280,
+        "devicePixelRatio": 1
+      },
+      "clock": {
+        "mode": "frame",
+        "epochMs": 1786060800000,
+        "frameDurationMs": 16.666666666666668
+      },
+      "locale": "en-US",
+      "timezone": "UTC"
+    },
+    "content": {
+      "protocol": "oca-content-gateway@1",
+      "mode": "verified-only",
+      "externalSources": "host-verified",
+      "manifestTrust": "digest",
+      "blockUndeclared": true,
+      "resourcePathPrefix": "/content/",
+      "onchainPathPrefix": "/onchain/",
+      "ipfsPathPrefix": "/ipfs/"
+    },
+    "sandbox": "strict",
+    "capabilities": {},
+    "maxResourceBytes": 100000,
+    "maxTotalBytes": 300000,
+    "maxRecursionDepth": 8,
+    "maxResources": 16,
+    "timeoutMs": 8000
+  },
+  "revision": {
+    "number": 1,
+    "compatibility": {
+      "min": 1,
+      "max": 1
+    },
+    "policy": "immutable",
+    "frozen": true
+  },
+  "provenance": {
+    "createdAt": "2026-08-07T00:00:00.000Z",
+    "creator": "Ravonus",
+    "sourceRepository": "oca-modern",
+    "license": "MIT"
+  }
+}

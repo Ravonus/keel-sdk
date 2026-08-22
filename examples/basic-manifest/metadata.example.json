@@ -1,0 +1,9 @@
+{
+  "name": "Keel Orbit Example",
+  "description": "A minimal multi-resource interactive artifact using the verified virtual content gateway.",
+  "image": "./fallback.svg",
+  "animation_url": "https://viewer.example/?manifest=./manifest.json",
+  "oca_schema": "oca-manifest@2",
+  "oca_manifest": "./manifest.json",
+  "oca_manifest_digest": "0x41d6ade88965d534a13ad6b2e1f118460eabeffe9ddb39c0323213e5e77c8b33"
+}

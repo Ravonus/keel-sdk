@@ -1,0 +1,29 @@
+<div class="stage">
+  <div id="asset"></div>
+  <!-- The unwrapped frame is stroked along the artwork's own backdrop edge,
+       measured from the pixels, so a rounded field is followed rather than
+       squared off. Positioned by script over the painted rectangle. -->
+  <svg class="edge" id="edge" aria-hidden="true"><path id="edge-path" /></svg>
+  <div class="flag" id="flag"><i></i>UNWRAPPED</div>
+  <div id="boot">READING THE ARTWORK</div>
+</div>
+<button class="scrim" id="scrim" type="button" aria-label="Close proof"></button>
+<div class="corner">
+  <button class="seal" id="seal" type="button" aria-expanded="false" aria-controls="panel" aria-label="Open Keel proof"><b>S</b></button>
+</div>
+<!-- Closed state is carried by aria-hidden, which the app toggles, not by the
+     hidden attribute: .panel sets display:flex, so hidden would never have
+     taken effect visually while still telling a screen reader the panel is
+     permanently gone. -->
+<div class="panel" id="panel" role="dialog" aria-modal="true" aria-label="Keel proof" aria-hidden="true">
+  <span class="grab" aria-hidden="true"></span>
+  <button class="close" id="close" type="button" aria-label="Close">&times;</button>
+  <div class="head"><b>Keel proof</b><span id="head-sub">on-chain verification</span></div>
+  <div class="tabs" role="tablist">
+    <button class="tab" data-tab="overview" role="tab" aria-selected="true">Overview</button>
+    <button class="tab" data-tab="provenance" role="tab" aria-selected="false">Provenance</button>
+    <button class="tab" data-tab="storage" role="tab" aria-selected="false">Storage</button>
+    <button class="tab" data-tab="report" role="tab" aria-selected="false">Report</button>
+  </div>
+  <div id="pages"></div>
+</div>

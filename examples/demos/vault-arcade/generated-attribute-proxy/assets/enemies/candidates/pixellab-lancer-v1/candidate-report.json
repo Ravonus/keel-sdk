@@ -1,0 +1,283 @@
+{
+  "schema": "vault-pixellab-enemy-candidate@1",
+  "asset": "pixellab-lancer-v1",
+  "state": "candidate-mechanical-pass-visual-review-required",
+  "provenance": {
+    "provider": "PixelLabs",
+    "objectId": "2f972c44-fc7c-41b5-bfe4-ac868c25711b",
+    "directions": [
+      "south",
+      "south-west",
+      "west",
+      "north-west",
+      "north",
+      "north-east",
+      "east",
+      "south-east"
+    ],
+    "sourceMode": "eight-direction-object"
+  },
+  "animationReview": {
+    "policy": "human-approval-required-one-group-at-a-time",
+    "gameplayGate": "fail-closed-to-static-base",
+    "rejected": [
+      {
+        "group": "98847bc6-ec56-4c6f-84bc-348ab9df60ef",
+        "name": "idle-hover",
+        "reason": "rigid lower prongs and side armor articulated as limbs"
+      },
+      {
+        "group": "4704eab8-780b-434e-b521-27ce893dd6bb",
+        "name": "move-glide",
+        "reason": "rigid lower prongs and side armor articulated as limbs"
+      },
+      {
+        "group": "7ad5121b-c50b-49ed-acd9-cd24a1a2ab3d",
+        "name": "charge-attack",
+        "reason": "rigid lower prongs and side armor articulated as limbs"
+      },
+      {
+        "group": "be84fd69-2e80-42c0-b340-d643f30629ae",
+        "name": "hit-recoil",
+        "reason": "rigid lower prongs and side armor articulated as limbs"
+      },
+      {
+        "group": "5a76e7ee-8317-4ea3-bdab-f99a5dbf09a5",
+        "name": "death-collapse",
+        "reason": "rigid lower prongs and side armor articulated as limbs"
+      }
+    ],
+    "rejectedCandidate": {
+      "group": "f9790f2a-fd94-480d-b7de-93c03db7e4c0",
+      "name": "rotor-spin-review-v1",
+      "allowedMotion": "small top two-blade rotor only",
+      "state": "rejected-visual-inspection",
+      "reason": "provider changed the rigid prongs, side armor, body silhouette, and registration outside the rotor"
+    },
+    "imagegenReview": {
+      "provider": "Codex ImageGen built-in",
+      "root": "animation-review/imagegen-lancer-v1",
+      "rotorDirections": 8,
+      "rotorFramesPerDirection": 8,
+      "attackDirections": [
+        "south"
+      ],
+      "attackFrames": 8,
+      "attackRevision": 2,
+      "rejectedAttackRevision": {
+        "revision": 1,
+        "reason": "silhouette length changed without a readable stored-energy buildup"
+      },
+      "attackChoreography": "idle, core ignition, progressive inward charge, maximum hold, compact plasma discharge, aftershock, recovery, idle",
+      "state": "human-review-required-gameplay-locked",
+      "runtimePolicy": "generated motion is reviewed separately and cannot replace the approved base until promoted"
+    }
+  },
+  "output": {
+    "cellSize": 68,
+    "columns": 4,
+    "rows": 2,
+    "width": 272,
+    "height": 136
+  },
+  "source": {
+    "file": "eight-direction-master.png",
+    "sha256": "0x1452ab779a85dcfbfcee9fd265b54fdeaea77c071c62e49b6175d6c29f5c4cb9"
+  },
+  "materialMap": {
+    "file": "material-id-map.png",
+    "sha256": "0xd2704c391251067229d90a028dcd95dd248095accf6abcbe19c77fc1ac993d73",
+    "regions": {
+      "transparent": 27310,
+      "locked-outline": 3005,
+      "seam": 1300,
+      "armor-dark": 1324,
+      "armor-mid": 1671,
+      "armor-light": 1400,
+      "highlight": 675,
+      "emissive-core": 307
+    }
+  },
+  "paletteProof": {
+    "file": "palette-proof.png",
+    "sha256": "0x99ecd53b7b379173b4a6b83f5e8c2972bd1f1979d15c5f45eef3c628164819de"
+  },
+  "frames": [
+    {
+      "direction": "south",
+      "source": "south.png",
+      "size": [
+        68,
+        68
+      ],
+      "bodyCenter": [
+        33,
+        25
+      ],
+      "regions": {
+        "transparent": 3416,
+        "locked-outline": 408,
+        "seam": 56,
+        "armor-mid": 220,
+        "armor-dark": 183,
+        "highlight": 78,
+        "emissive-core": 33,
+        "armor-light": 230
+      }
+    },
+    {
+      "direction": "south-west",
+      "source": "south-west.png",
+      "size": [
+        68,
+        68
+      ],
+      "bodyCenter": [
+        39,
+        33
+      ],
+      "regions": {
+        "transparent": 3387,
+        "locked-outline": 412,
+        "seam": 149,
+        "armor-dark": 182,
+        "armor-mid": 201,
+        "highlight": 61,
+        "armor-light": 198,
+        "emissive-core": 34
+      }
+    },
+    {
+      "direction": "west",
+      "source": "west.png",
+      "size": [
+        68,
+        68
+      ],
+      "bodyCenter": [
+        33,
+        33
+      ],
+      "regions": {
+        "transparent": 3441,
+        "locked-outline": 371,
+        "armor-dark": 119,
+        "armor-mid": 211,
+        "seam": 249,
+        "highlight": 80,
+        "armor-light": 129,
+        "emissive-core": 24
+      }
+    },
+    {
+      "direction": "north-west",
+      "source": "north-west.png",
+      "size": [
+        68,
+        68
+      ],
+      "bodyCenter": [
+        33,
+        33
+      ],
+      "regions": {
+        "transparent": 3403,
+        "locked-outline": 352,
+        "armor-light": 186,
+        "highlight": 101,
+        "armor-dark": 175,
+        "emissive-core": 44,
+        "armor-mid": 209,
+        "seam": 154
+      }
+    },
+    {
+      "direction": "north",
+      "source": "north.png",
+      "size": [
+        68,
+        68
+      ],
+      "bodyCenter": [
+        33,
+        33
+      ],
+      "regions": {
+        "transparent": 3457,
+        "locked-outline": 324,
+        "armor-light": 124,
+        "highlight": 105,
+        "emissive-core": 55,
+        "armor-dark": 197,
+        "armor-mid": 216,
+        "seam": 146
+      }
+    },
+    {
+      "direction": "north-east",
+      "source": "north-east.png",
+      "size": [
+        68,
+        68
+      ],
+      "bodyCenter": [
+        33,
+        33
+      ],
+      "regions": {
+        "transparent": 3400,
+        "locked-outline": 351,
+        "armor-light": 205,
+        "armor-dark": 178,
+        "highlight": 107,
+        "emissive-core": 53,
+        "armor-mid": 206,
+        "seam": 124
+      }
+    },
+    {
+      "direction": "east",
+      "source": "east.png",
+      "size": [
+        68,
+        68
+      ],
+      "bodyCenter": [
+        33,
+        33
+      ],
+      "regions": {
+        "transparent": 3441,
+        "locked-outline": 375,
+        "armor-dark": 140,
+        "seam": 198,
+        "armor-mid": 210,
+        "highlight": 79,
+        "armor-light": 150,
+        "emissive-core": 31
+      }
+    },
+    {
+      "direction": "south-east",
+      "source": "south-east.png",
+      "size": [
+        68,
+        68
+      ],
+      "bodyCenter": [
+        33,
+        33
+      ],
+      "regions": {
+        "transparent": 3365,
+        "locked-outline": 412,
+        "seam": 224,
+        "armor-dark": 150,
+        "armor-mid": 198,
+        "highlight": 64,
+        "emissive-core": 33,
+        "armor-light": 178
+      }
+    }
+  ]
+}

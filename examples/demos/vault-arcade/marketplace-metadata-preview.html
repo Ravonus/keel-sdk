@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Keel Marketplace Preview</title>
+    <style>
+      :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background:#07090f; color:#f8f7ff; }
+      * { box-sizing:border-box; }
+      body { margin:0; min-height:100vh; background:radial-gradient(circle at 15% 0%,#25204c 0,transparent 34rem),#07090f; }
+      header { padding:24px clamp(18px,4vw,56px) 18px; display:flex; gap:18px; align-items:end; justify-content:space-between; flex-wrap:wrap; }
+      h1 { margin:0; font-size:clamp(24px,4vw,46px); letter-spacing:-.045em; }
+      .eyebrow { margin:0 0 7px; color:#9c92ff; font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:.16em; }
+      .status { border:1px solid #34344d; background:#10121cdd; border-radius:999px; padding:9px 13px; color:#b9bdd1; }
+      main { padding:0 clamp(18px,4vw,56px) 48px; }
+      .controls { display:grid; grid-template-columns:minmax(220px,1.2fr) minmax(220px,2fr) 120px auto; gap:10px; padding:14px; border:1px solid #292b3d; background:#0d0f18e8; border-radius:18px; }
+      label { display:grid; gap:6px; color:#9095ac; font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+      input,select,button { min-height:42px; border-radius:11px; border:1px solid #35384b; background:#171a27; color:#fff; padding:0 12px; font:inherit; }
+      button { cursor:pointer; font-weight:800; background:linear-gradient(135deg,#745cff,#bd58d8); border:0; }
+      .tokens { display:flex; gap:6px; align-items:end; }
+      .tokens button { min-width:42px; background:#202338; }
+      .tokens button[aria-pressed="true"] { background:#8d6bff; }
+      .warning { display:none; margin:18px 0 0; padding:22px; border:2px solid #ff3d64; background:#3b0714; border-radius:16px; font-size:18px; font-weight:850; }
+      .warning[data-open="true"] { display:block; }
+      .gallery { display:grid; grid-template-columns:minmax(260px,.68fr) minmax(0,1.5fr); gap:16px; margin-top:18px; }
+      .card { border:1px solid #292c3c; border-radius:20px; overflow:hidden; background:#0e1019; min-width:0; }
+      .card-head { padding:14px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #262938; }
+      .card-head strong { font-size:13px; letter-spacing:.04em; }
+      .card-head span { color:#858ba2; font-size:12px; }
+      .play-animation { min-height:32px; padding:0 11px; border-radius:9px; font-size:11px; letter-spacing:.04em; }
+      .image-stage { aspect-ratio:1; display:grid; place-items:center; background:linear-gradient(145deg,#0f1320,#05060a); }
+      .image-stage img { width:100%; height:100%; object-fit:contain; }
+      iframe { display:block; width:100%; height:min(76vh,820px); min-height:520px; border:0; background:#05060a; }
+      .animation-wrap { position:relative; min-height:520px; }
+      .animation-loading { position:absolute; inset:0; z-index:2; display:grid; place-items:center; background:radial-gradient(circle at 50% 42%,#31265a,#070910 58%); color:#d9d4ff; font-weight:850; letter-spacing:.08em; text-transform:uppercase; transition:opacity .35s ease,visibility .35s ease; }
+      .animation-loading[data-ready="true"] { opacity:0; visibility:hidden; pointer-events:none; }
+      .details { display:grid; gap:4px; padding:16px; }
+      .details h2 { margin:0; font-size:22px; }
+      .details p { margin:2px 0 8px; color:#a6abc0; line-height:1.45; }
+      .traits { display:flex; flex-wrap:wrap; gap:7px; }
+      .trait { padding:7px 9px; border:1px solid #303348; border-radius:9px; background:#171a28; font-size:11px; }
+      details { margin-top:16px; border:1px solid #292c3c; background:#0e1019; border-radius:16px; overflow:hidden; }
+      summary { padding:14px 16px; cursor:pointer; font-weight:800; }
+      pre { margin:0; padding:16px; border-top:1px solid #292c3c; overflow:auto; color:#b8f0dc; font-size:12px; line-height:1.5; }
+      @media(max-width:900px) { .controls { grid-template-columns:1fr; } .gallery { grid-template-columns:1fr; } iframe { min-height:70vh; } }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div><p class="eyebrow">Marketplace simulator</p><h1>Keel token preview</h1></div>
+      <div class="status" id="status">Ready for a token</div>
+    </header>
+    <main>
+      <section class="controls">
+        <label>RPC / indexer<select id="network"><option value="auto">Auto-detect</option><option value="ethereum">Ethereum Sepolia</option><option value="tezos">Tezos Shadownet</option></select><input id="rpc" value="https://ethereum-sepolia-rpc.publicnode.com" /></label>
+        <label>Collection<input id="contract" value="0xf9eae6838c718bbef224c4846b01e35306b60520" /></label>
+        <label>Token ID<input id="token" inputmode="numeric" value="1" /></label>
+        <div class="tokens"><button type="button" data-token="0">0</button><button type="button" data-token="1" aria-pressed="true">1</button><button type="button" data-token="2">2</button><button type="button" data-token="3">3</button><button id="load" type="button">Load NFT</button></div>
+      </section>
+      <div class="warning" id="warning" role="alert"></div>
+      <section class="gallery" id="gallery" hidden>
+        <article class="card">
+          <div class="card-head"><strong>Marketplace image</strong><span id="image-source">metadata.image</span></div>
+          <div class="image-stage"><img id="image" alt="Token preview" /></div>
+          <div class="details"><h2 id="name"></h2><p id="description"></p><div class="traits" id="traits"></div></div>
+        </article>
+        <article class="card">
+          <div class="card-head"><strong>animation_url</strong><button class="play-animation" id="play-animation" type="button">Play / focus game</button></div>
+          <div class="animation-wrap"><div class="animation-loading" id="animation-loading">Loading on-chain HTML viewer…</div><iframe id="animation" title="Token animation" tabindex="0" allow="autoplay; gamepad" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-downloads"></iframe></div>
+        </article>
+      </section>
+      <details id="raw-wrap" hidden><summary>Raw decoded token metadata</summary><pre id="raw"></pre></details>
+    </main>
+    <script type="module">
+      const $ = (id) => document.getElementById(id);
+      const TOKEN_URI = "c87b56dd";
+      const THUMBNAIL_URI = "08aa39b2";
+      const TZKT_SHADOWNET = "https://api.shadownet.tzkt.io";
+      const state = { request: 0 };
+      const focusAnimation = () => { $("animation").focus(); try { $("animation").contentWindow?.focus(); } catch {} };
+      $("play-animation").addEventListener("click", focusAnimation);
+      $("animation").addEventListener("load", () => setTimeout(() => { $("animation-loading").dataset.ready = "true"; focusAnimation(); }, 450));
+
+      function uint256(value) {
+        const parsed = BigInt(value);
+        if (parsed < 0n) throw new Error("Token ID must be non-negative.");
+        return parsed.toString(16).padStart(64, "0");
+      }
+      async function rpc(method, params) {
+        const response = await fetch($("rpc").value.trim(), { method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({jsonrpc:"2.0",id:1,method,params}) });
+        if (!response.ok) throw new Error(`RPC HTTP ${response.status}`);
+        const body = await response.json();
+        if (body.error) throw new Error(body.error.message || "RPC call failed");
+        return body.result;
+      }
+      function decodeAbiString(hex) {
+        const value = hex.startsWith("0x") ? hex.slice(2) : hex;
+        if (value.length < 128) throw new Error("Contract did not return an ABI string.");
+        const offset = Number.parseInt(value.slice(0,64),16) * 2;
+        const length = Number.parseInt(value.slice(offset,offset+64),16);
+        const bytes = Uint8Array.from(value.slice(offset+64,offset+64+length*2).match(/.{2}/gu) ?? [], pair => Number.parseInt(pair,16));
+        return new TextDecoder().decode(bytes);
+      }
+      function decodeDataJSON(uri) {
+        const marker = "data:application/json";
+        if (!uri.startsWith(marker)) throw new Error("tokenURI is not inline application/json.");
+        const comma = uri.indexOf(",");
+        if (comma < 0) throw new Error("Malformed tokenURI data URL.");
+        const header = uri.slice(0,comma);
+        const payload = uri.slice(comma+1);
+        const text = header.includes(";base64") ? new TextDecoder().decode(Uint8Array.from(atob(payload), c=>c.charCodeAt(0))) : decodeURIComponent(payload);
+        return JSON.parse(text);
+      }
+      function displayable(uri) {
+        if (!uri) return "";
+        if (uri.startsWith("ipfs://")) return `https://ipfs.io/ipfs/${uri.slice(7)}`;
+        return uri;
+      }
+      function bytesFromHex(hex) {
+        const value = String(hex || "").replace(/^0x/u, "");
+        if (!value || value.length % 2) throw new Error("Malformed on-chain byte string.");
+        return Uint8Array.from(value.match(/.{2}/gu) ?? [], pair => Number.parseInt(pair, 16));
+      }
+      function base64(bytes) {
+        let binary = "";
+        for (let index=0; index<bytes.length; index+=0x8000) binary += String.fromCharCode(...bytes.subarray(index,index+0x8000));
+        return btoa(binary);
+      }
+      function tezosStorageRoute(uri, fallbackContract="") {
+        const value = String(uri || "");
+        const absolute = /^tezos-storage:\/\/(KT1[1-9A-HJ-NP-Za-km-z]{33})\/([^?#]+)$/u.exec(value);
+        if (absolute) return { contract:absolute[1], key:decodeURIComponent(absolute[2]) };
+        const relative = /^tezos-storage:([^/?#][^?#]*)$/u.exec(value);
+        if (relative && /^KT1[1-9A-HJ-NP-Za-km-z]{33}$/u.test(fallbackContract)) {
+          return { contract:fallbackContract, key:decodeURIComponent(relative[1]) };
+        }
+        throw new Error(`Unsupported Tezos storage URI: ${uri || "missing"}`);
+      }
+      async function tzkt(path) {
+        const api = $("rpc").value.trim().replace(/\/$/u, "") || TZKT_SHADOWNET;
+        const response = await fetch(`${api}${path}`, {cache:"no-store"});
+        if (!response.ok) throw new Error(`TzKT HTTP ${response.status}: ${path}`);
+        return response.json();
+      }
+      async function tezosStorageBytes(uri, fallbackContract="") {
+        const route = tezosStorageRoute(uri, fallbackContract);
+        const storage = await tzkt(`/v1/contracts/${route.contract}/storage`);
+        const bigMap = storage?.metadata;
+        if (!Number.isInteger(bigMap)) throw new Error(`${route.contract} has no standard metadata big-map.`);
+        const entry = await tzkt(`/v1/bigmaps/${bigMap}/keys/${encodeURIComponent(route.key)}`);
+        return bytesFromHex(entry?.value);
+      }
+      async function sha256Hex(bytes) {
+        const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
+        return [...digest].map(value => value.toString(16).padStart(2,"0")).join("");
+      }
+      async function hydrateTezosArtifact(html) {
+        const parsed = new DOMParser().parseFromString(html, "text/html");
+        const contextNode = parsed.querySelector("#keel-context");
+        if (!contextNode) return html;
+        const context = JSON.parse(contextNode.textContent || "{}");
+        const modules = Object.entries(context.modules || {});
+        await Promise.all(modules.map(async ([name, descriptor]) => {
+          if (!descriptor?.url) throw new Error(`Module ${name} has no carrier URL.`);
+          const response = await fetch(descriptor.url, {cache:"no-store"});
+          if (!response.ok) throw new Error(`Hybrid module ${name} returned HTTP ${response.status}.`);
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          descriptor.url = `data:application/octet-stream;base64,${base64(bytes)}`;
+        }));
+        contextNode.textContent = JSON.stringify(context);
+        return `<!doctype html>\n${parsed.documentElement.outerHTML}`;
+      }
+      async function loadTezosToken(tokenId) {
+        const contract = $("contract").value.trim();
+        if (!/^KT1[1-9A-HJ-NP-Za-km-z]{33}$/u.test(contract)) throw new Error("Tezos collection address is invalid.");
+        const records = await tzkt(`/v1/tokens?contract=${contract}&tokenId=${encodeURIComponent(tokenId)}`);
+        const metadata = records?.[0]?.metadata;
+        if (!metadata) throw new Error("TzKT has not indexed this token metadata.");
+        const image = metadata.displayUri || metadata.thumbnailUri || metadata.artifactUri;
+        if (typeof image !== "string" || !image.startsWith("data:image/svg+xml")) throw new Error("Marketplace display resource is not an inline SVG.");
+        if (typeof metadata.keelArtifactUri !== "string") throw new Error("Metadata has no Keel HTML artifact route.");
+        const artifactBytes = await tezosStorageBytes(metadata.keelArtifactUri, contract);
+        const actualDigest = await sha256Hex(artifactBytes);
+        if (actualDigest !== String(metadata.keelViewerDigest || "").replace(/^0x/u, "").toLowerCase()) throw new Error("Keel HTML artifact digest mismatch.");
+        const artifactText = new TextDecoder().decode(artifactBytes);
+        if (!/^\s*<!doctype html>/iu.test(artifactText)) throw new Error("On-chain artifact resource is not HTML.");
+        const hydratedArtifact = await hydrateTezosArtifact(artifactText);
+        return {
+          metadata,
+          image,
+          animationHTML:hydratedArtifact,
+          source:"on-chain marketplace SVG; Keel HTML hash verified",
+        };
+      }
+      function localPoster(metadata, tokenId) {
+        const title = String(metadata.name || `Token #${tokenId}`).replace(/[<>&"']/gu, "");
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200"><defs><radialGradient id="g"><stop stop-color="#8b78ff"/><stop offset="1" stop-color="#101421"/></radialGradient></defs><rect width="1200" height="1200" fill="#070910"/><circle cx="600" cy="530" r="330" fill="url(#g)"/><circle cx="600" cy="530" r="215" fill="#181d2d"/><circle cx="600" cy="530" r="78" fill="#b9f6ff"/><text x="600" y="1000" fill="#fff" font-family="system-ui,sans-serif" font-size="54" text-anchor="middle">${title}</text><text x="600" y="1070" fill="#9da6bd" font-family="system-ui,sans-serif" font-size="26" text-anchor="middle">Local fallback poster — metadata has no image</text></svg>`;
+        return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      }
+      async function ethString(selector, tokenId) {
+        const to = $("contract").value.trim();
+        if (!/^0x[0-9a-fA-F]{40}$/u.test(to)) throw new Error("Collection address is invalid.");
+        return decodeAbiString(await rpc("eth_call", [{to,data:`0x${selector}${uint256(tokenId)}`},"latest"]));
+      }
+      function fail(error) {
+        $("warning").dataset.open = "true";
+        $("warning").textContent = `TOKEN PREVIEW FAILED — ${error instanceof Error ? error.message : String(error)}`;
+        $("gallery").hidden = true; $("raw-wrap").hidden = true; $("status").textContent = "Failed";
+      }
+      async function loadToken() {
+        const request = ++state.request;
+        const contract = $("contract").value.trim();
+        const tezos = $("network").value === "tezos" || ($("network").value === "auto" && contract.startsWith("KT1"));
+        $("warning").dataset.open = "false"; $("status").textContent = tezos ? "Resolving TZIP metadata and tezos-storage media…" : "Reading tokenURI from Sepolia…";
+        try {
+          const tokenId = $("token").value.trim();
+          let metadata;
+          let image;
+          let animation;
+          let animationHTML;
+          let source;
+          if (tezos) {
+            if ($("rpc").value.includes("ethereum-sepolia")) $("rpc").value = TZKT_SHADOWNET;
+            const resolved = await loadTezosToken(tokenId);
+            ({metadata,image,source,animationHTML} = resolved);
+          } else {
+            const tokenURI = await ethString(TOKEN_URI, tokenId);
+            metadata = decodeDataJSON(tokenURI);
+            image = metadata.image;
+            source = "metadata.image";
+            if (!image) {
+              try { image = await ethString(THUMBNAIL_URI, tokenId); source = "on-chain thumbnailURI()"; }
+              catch { image = localPoster(metadata, tokenId); source = "local fallback — token metadata omits image"; }
+            }
+            if (typeof metadata.animation_url !== "string" || !metadata.animation_url.startsWith("data:text/html")) throw new Error("animation_url is not inline HTML.");
+            animation = metadata.animation_url;
+          }
+          if (request !== state.request) return;
+          $("image").src = displayable(image); $("image-source").textContent = source;
+          $("animation-loading").dataset.ready = "false";
+          if (tezos) {
+            $("animation").removeAttribute("src");
+            $("animation").srcdoc = animationHTML;
+          } else {
+            $("animation").removeAttribute("srcdoc");
+            $("animation").src = animation;
+          }
+          $("name").textContent = metadata.name || `Token #${tokenId}`;
+          $("description").textContent = metadata.description || "";
+          $("traits").replaceChildren(...(metadata.attributes || []).map((trait) => { const node=document.createElement("span"); node.className="trait"; node.textContent=`${trait.trait_type ?? trait.name}: ${trait.value}`; return node; }));
+          const animationSummary = tezos ? `verified srcdoc (${animationHTML.length} chars)` : `${animation.slice(0,80)}… (${animation.length} chars)`;
+          $("raw").textContent = JSON.stringify({...metadata,animation_url:animationSummary},null,2);
+          $("gallery").hidden = false; $("raw-wrap").hidden = false; $("status").textContent = `Token #${tokenId} loaded from chain`;
+          const url = new URL(location.href); url.searchParams.set("contract",$("contract").value.trim()); url.searchParams.set("tokenId",tokenId); url.searchParams.set("chain",tezos ? "tezos" : "ethereum"); history.replaceState(null,"",url);
+        } catch (error) { fail(error); }
+      }
+      for (const button of document.querySelectorAll("[data-token]")) button.addEventListener("click", () => { $("token").value=button.dataset.token; for (const item of document.querySelectorAll("[data-token]")) item.setAttribute("aria-pressed",String(item===button)); void loadToken(); });
+      $("load").addEventListener("click", () => void loadToken());
+      const input = new URLSearchParams(location.search);
+      if (input.get("contract")) $("contract").value=input.get("contract");
+      if (input.get("tokenId")) $("token").value=input.get("tokenId");
+      if (input.get("chain") === "tezos") { $("network").value="tezos"; $("rpc").value=TZKT_SHADOWNET; }
+      if (input.get("chain") === "ethereum") $("network").value="ethereum";
+      if (input.get("contract") && input.get("tokenId")) void loadToken();
+    </script>
+  </body>
+</html>

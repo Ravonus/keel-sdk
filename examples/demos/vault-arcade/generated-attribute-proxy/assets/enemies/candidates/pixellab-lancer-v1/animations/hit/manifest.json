@@ -1,0 +1,51 @@
+{
+  "schema": "vault-pixellab-enemy-animation@1",
+  "asset": "pixellab-lancer-v1",
+  "animation": "hit",
+  "state": "candidate-mechanical-pass-visual-review-required",
+  "provenance": {
+    "provider": "PixelLabs",
+    "objectId": "2f972c44-fc7c-41b5-bfe4-ac868c25711b",
+    "sourceDirectory": "Short_damage_reaction._The_drone_jolts_backward_op"
+  },
+  "cellSize": 68,
+  "directions": [
+    "south",
+    "south-west",
+    "west",
+    "north-west",
+    "north",
+    "north-east",
+    "east",
+    "south-east"
+  ],
+  "frameCount": 5,
+  "layout": {
+    "columns": 5,
+    "rows": 8,
+    "width": 340,
+    "height": 544
+  },
+  "source": {
+    "file": "source.png",
+    "sha256": "0xb7ede0641e002201a55d648026b0709af32c3e64a43c40873204c78a1bb5d977"
+  },
+  "materialMap": {
+    "file": "material-id-map.png",
+    "sha256": "0x0d8954d4cb49bdd24943eec42eea0e5069a0eea820510ce8e1b6cfadbb93a2ed",
+    "regions": {
+      "transparent": 136467,
+      "locked-outline": 14291,
+      "seam": 8283,
+      "armor-dark": 6804,
+      "armor-mid": 8161,
+      "armor-light": 5900,
+      "highlight": 3383,
+      "emissive-core": 1671
+    }
+  },
+  "paletteProof": {
+    "file": "palette-proof.png",
+    "sha256": "0x01f3d00c458b2e8aab44a52621bdf2b79585e3af5e91ebc4109e5f12bb7e4da5"
+  }
+}

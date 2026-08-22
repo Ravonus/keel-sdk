@@ -1,0 +1,518 @@
+{
+  "schema": "vault-mint-stake-demo@1",
+  "network": "Ethereum Sepolia",
+  "chainId": 11155111,
+  "rpcUrl": "https://ethereum-sepolia-rpc.publicnode.com",
+  "explorerUrl": "https://sepolia.etherscan.io",
+  "owner": "0x404A6bd65EF48AE85Da7b0E9358715a34A401b05",
+  "mapId": "1",
+  "mapSeed": "vault-map-001",
+  "contracts": {
+    "keelHold": "0x2621c924adfeac2b761b2ddc6611a9581120d439",
+    "keelIndex": "0xec0cecb2a16f5da78810b6b060f5ad83ee211a74",
+    "characterCollection": "0xf8aa0086c23c4aca4837015565272e9b4e3e037e",
+    "mapCollection": "0x1d85a78474c481898d160d9e67eddee4b1a1b880",
+    "artifactRegistry": "0x95161bd877ed9300397e179bae6a10178c6d6d8b",
+    "arcadeRegistry": "0x1ae10d853d77f97d1b7286583b1775427b595377"
+  },
+  "transactions": {
+    "deploy-keelHold": "0xc84d7a311d6a562e9d716deda12ac68875d0fa9fc02615a871fb59c9345d548e",
+    "deploy-keelIndex": "0xaa3d1c1b5a5a37d2f2f462371b5af093ade1b254235fe6e00d5267db30d630d2",
+    "deploy-characterCollection": "0xa33c5a249fb66491b52ade670a0e71045e68de0bab1fa87aec174c6b39d8bcf1",
+    "deploy-mapCollection": "0xc9acb1041dd027a38e85a40faafcb81da91fb113e3811a729e6eea7f3fe25065",
+    "deploy-artifactRegistry": "0x07e3c5e3a641f1a7b612886f8f976e4a277857fc65b562bf056189d182d55be9",
+    "deploy-arcadeRegistry": "0x282ebea2040702f76c19a3cc05f58c9a559f6d27fc402a4427ec0758f3ca2928",
+    "mint-characters": "0xafbea18c19e628a3849eef8799ede42db86477fa1709281079a7a081991e13ae",
+    "mint-map": "0xbdcb7e5bd2dea8f97d7d564b42ac0f3785d74196b1261d7bdd2f1316dd237ebf",
+    "character-1-publish": "0x3a1b7bd184d155c56a869c5b315739a97a7a7a09f31ff07ee8a37a0de9a90640",
+    "character-1-activate": "0x2f07e052c9f155dbad4d6c5e596f140f0d5b90b5488c5b3cf66a6960db19ab4a",
+    "character-2-publish": "0xeb4fc49775d5b13d47ce1f9d6e9f7ceb0c9ca3dd00ed1f5b7f5856252f824aae",
+    "character-2-activate": "0x6811ad1321630865ddb8235a96ecfe740c33ddab2c4244309bc05ac877a24685",
+    "character-3-publish": "0xc181133f69eedc28e76936be6818b5e9dfb1eb80555c95c82ce03ad28614580b",
+    "character-3-activate": "0x615f75e56afe2880daffb351d6213c519762bcd64c55a2b255606e5998cf7f50",
+    "character-4-publish": "0xf90c5c5522cfb5af4b43b56f14746c0f55c8800c3a12cdecec29a23f94bcfbcc",
+    "character-4-activate": "0x561b8e663f93ae8a6a1195d8b039af0bb13a527505979abff296f8a579a5c841",
+    "character-5-publish": "0x3410ae73e014ada1063163f55b89d090784d3268c51cd66696ec1a3bf17b211e",
+    "character-5-activate": "0xcff28babac0d10353303642e38befafef59e0c0541137ffdbf13fb8e8855a7c0",
+    "character-6-publish": "0xdb9538785e5275a1edf427a3825ddb393f5a636758be01b3555a7cbabf69e9f1",
+    "character-6-activate": "0xc0d4d70dcf50c2d9eb4a1b8eeaeb83b0ba8235b0db410e341bd366987f78edd1",
+    "character-7-publish": "0x2c9470c8db60ec59c2623fbbdf1806a783a333bf5075045373f11251393356b4",
+    "character-7-activate": "0x4178e847ae5b6887c2dd7749d1312732752b63567d3516d7baaef01099c690f1",
+    "character-8-publish": "0xa37bdbdde5c750744f3d886e1fa3a6374d6c7c3d411c760fcc9299af26f8a078",
+    "character-8-activate": "0x5bcea6f7c04de5a899f84d34dd43c30fa6aca29c53ee67b3764b3cdc2cfd9029",
+    "character-9-publish": "0x98bbd9c6a79afc61aea4483c9c30b0d9378bbc255b4112d58d0d25cb05bb3ff5",
+    "character-9-activate": "0xc9e7466c1024fa8b08293bcefe37dc005c10918643fda92698f50ee851834c69",
+    "character-10-publish": "0x885162015dd0ab5e43bdd8dfd9c6a972cf614d1be093adf2191aef2049440348",
+    "character-10-activate": "0x9d246e0ca211e8a72b31a3350d85cdccbca5e7856c9302d24d0850f13bdb50b2",
+    "map-chunk": "0x433a6ac52284c72d9ae75bc22f39300606e4c78ba3efebc7c5d986176705c847",
+    "map-content-object": "0x44e8c797644fb8d638a05370eea36e4c029d4957e1970985158a169f0e84bd36",
+    "map-keel-object": "0x5468e7e48a5102fdb7f42adc9a341473bb1780dd919c8b05782a1ce3b2be99cc",
+    "map-presentation-publish": "0x19e000acd1935a625660cd9cbaf76aa0b30222002db4135a8fa6efc3432d822a",
+    "map-presentation-activate": "0xf828f971b6fb1eda51d89b86bf05e097607c80f119a14485ba69fc7148d0eef2",
+    "map-build-publish": "0x22acebd5a73738a03a2ecc0618f9d155262a6849b5d9d7a43f28279ea6664025",
+    "stake-character-1": "0x7d24e7080543454af256094b26fd1c4520c39d902e46e8959cfc3bad8fe0b205",
+    "stake-character-2": "0x25c98f66ca31e3f3a28497fa6efd59a4d580c87689addcf64d79bc3c47c44db8",
+    "stake-character-3": "0x8015e8fcfc094df75a13839b04aed3b6232119efc757a3c116aa344b0540d7b3",
+    "stake-character-4": "0x020560488346b09572772fdf070a086a870b2832f525066bd0089ad509306bf8",
+    "stake-character-5": "0x2b20374c264e716ec81910dca701a891a8d35c6a6fef641fb27fade3d4489569",
+    "stake-character-6": "0xbef343645b4861ca9e9fe2508fa1bcff5e7d34c81d43745db5e2899e7d4b6b9a",
+    "stake-character-7": "0x148af64ab17b42219072932e03a55a376a369e1c41129ee6ea4f560235c655e3",
+    "stake-character-8": "0x3b924674306bf3097dd25bce9cd8f00b33cc6c1e1a108b699c84f560350c5c7e",
+    "stake-character-9": "0x77a4738917e9f81da5cd586dda47503ecf1229a9e704724c43c6dd3b80c02e64",
+    "stake-character-10": "0x6c0854e1c7e8744f8fc44c5bd5dcc38430a2de3f055b693090dec844d039f48d",
+    "character-description": "0x82c5f009ad057698d3e152456e53a21f31e03ba0cb401e2218753758524b37dd",
+    "character-viewer-url": "0xba359c61e8cda29c0f7fa8eca5f6b3920c17a7d370c6534106e4fe641f2fd02f"
+  },
+  "characters": [
+    {
+      "tokenId": "1",
+      "derivedSeed": "0x5de468047c534e299fd9923cb350a80b730c0ce86eb850612a8f757a34af3782",
+      "visualFingerprint": "0x0b1b7cbde1ae3b30c0da1f31383d6e13a35657081a3f429d19f3fd3dfceb0fa5",
+      "headlineTraits": [
+        {
+          "name": "body",
+          "attributeId": 1,
+          "optionId": 4,
+          "materialProfileId": 0
+        },
+        {
+          "name": "shirt-armor",
+          "attributeId": 3,
+          "optionId": 4,
+          "materialProfileId": 0
+        },
+        {
+          "name": "weapon",
+          "attributeId": 5,
+          "optionId": 1,
+          "materialProfileId": 1
+        },
+        {
+          "name": "species-lineage",
+          "attributeId": 9,
+          "optionId": 0,
+          "materialProfileId": 0
+        },
+        {
+          "name": "vault-affinity",
+          "attributeId": 20,
+          "optionId": 3,
+          "materialProfileId": 3
+        },
+        {
+          "name": "sound-effect-profile",
+          "attributeId": 22,
+          "optionId": 8,
+          "materialProfileId": 0
+        }
+      ],
+      "stakeTransaction": "0x7d24e7080543454af256094b26fd1c4520c39d902e46e8959cfc3bad8fe0b205",
+      "enterMapCalldata": "0x14a33f6300000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "tokenId": "2",
+      "derivedSeed": "0x2ae3637601570f774142d209a52913d3ba6a29cf9379370e65bba19bc1c2c545",
+      "visualFingerprint": "0x0057a13547c94d64f56be5db01a24a17a42de15461e7ae558aa276eb762088b1",
+      "headlineTraits": [
+        {
+          "name": "body",
+          "attributeId": 1,
+          "optionId": 11,
+          "materialProfileId": 3
+        },
+        {
+          "name": "shirt-armor",
+          "attributeId": 3,
+          "optionId": 4,
+          "materialProfileId": 0
+        },
+        {
+          "name": "weapon",
+          "attributeId": 5,
+          "optionId": 11,
+          "materialProfileId": 3
+        },
+        {
+          "name": "species-lineage",
+          "attributeId": 9,
+          "optionId": 1,
+          "materialProfileId": 1
+        },
+        {
+          "name": "vault-affinity",
+          "attributeId": 20,
+          "optionId": 3,
+          "materialProfileId": 3
+        },
+        {
+          "name": "sound-effect-profile",
+          "attributeId": 22,
+          "optionId": 1,
+          "materialProfileId": 1
+        }
+      ],
+      "stakeTransaction": "0x25c98f66ca31e3f3a28497fa6efd59a4d580c87689addcf64d79bc3c47c44db8",
+      "enterMapCalldata": "0x14a33f6300000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "tokenId": "3",
+      "derivedSeed": "0x116ce3ed5c63fa95effc6a1c8c38eb5d8ccd12c355fea920af0bcea31b769827",
+      "visualFingerprint": "0x8b976f1eab829146751a095d5871314b7232a4e1a62a1dda3ccd576a05cad499",
+      "headlineTraits": [
+        {
+          "name": "body",
+          "attributeId": 1,
+          "optionId": 8,
+          "materialProfileId": 0
+        },
+        {
+          "name": "shirt-armor",
+          "attributeId": 3,
+          "optionId": 3,
+          "materialProfileId": 3
+        },
+        {
+          "name": "weapon",
+          "attributeId": 5,
+          "optionId": 4,
+          "materialProfileId": 0
+        },
+        {
+          "name": "species-lineage",
+          "attributeId": 9,
+          "optionId": 12,
+          "materialProfileId": 0
+        },
+        {
+          "name": "vault-affinity",
+          "attributeId": 20,
+          "optionId": 3,
+          "materialProfileId": 3
+        },
+        {
+          "name": "sound-effect-profile",
+          "attributeId": 22,
+          "optionId": 1,
+          "materialProfileId": 1
+        }
+      ],
+      "stakeTransaction": "0x8015e8fcfc094df75a13839b04aed3b6232119efc757a3c116aa344b0540d7b3",
+      "enterMapCalldata": "0x14a33f6300000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "tokenId": "4",
+      "derivedSeed": "0xf2336c9882ff317efe7495a5f60ca0ed2ec0e86ba29c7e2bc5e65b1fa5dffe6e",
+      "visualFingerprint": "0x394a674e120e45d774f8a84aee0c334e4f41eb87b925d2f2891eeb3e95e86bc9",
+      "headlineTraits": [
+        {
+          "name": "body",
+          "attributeId": 1,
+          "optionId": 5,
+          "materialProfileId": 1
+        },
+        {
+          "name": "shirt-armor",
+          "attributeId": 3,
+          "optionId": 3,
+          "materialProfileId": 3
+        },
+        {
+          "name": "weapon",
+          "attributeId": 5,
+          "optionId": 0,
+          "materialProfileId": 0
+        },
+        {
+          "name": "species-lineage",
+          "attributeId": 9,
+          "optionId": 0,
+          "materialProfileId": 0
+        },
+        {
+          "name": "vault-affinity",
+          "attributeId": 20,
+          "optionId": 1,
+          "materialProfileId": 1
+        },
+        {
+          "name": "sound-effect-profile",
+          "attributeId": 22,
+          "optionId": 3,
+          "materialProfileId": 3
+        }
+      ],
+      "stakeTransaction": "0x020560488346b09572772fdf070a086a870b2832f525066bd0089ad509306bf8",
+      "enterMapCalldata": "0x14a33f6300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "tokenId": "5",
+      "derivedSeed": "0x3b61d5c10ee5ef88158ead1f037ed25265e0da09404d8ce400b490ffe48973a2",
+      "visualFingerprint": "0x9303feaf9db28d3a40769fc038bc90d6d2593617eaad34e84472ec04d734b1bc",
+      "headlineTraits": [
+        {
+          "name": "body",
+          "attributeId": 1,
+          "optionId": 4,
+          "materialProfileId": 0
+        },
+        {
+          "name": "shirt-armor",
+          "attributeId": 3,
+          "optionId": 0,
+          "materialProfileId": 0
+        },
+        {
+          "name": "weapon",
+          "attributeId": 5,
+          "optionId": 2,
+          "materialProfileId": 2
+        },
+        {
+          "name": "species-lineage",
+          "attributeId": 9,
+          "optionId": 1,
+          "materialProfileId": 1
+        },
+        {
+          "name": "vault-affinity",
+          "attributeId": 20,
+          "optionId": 3,
+          "materialProfileId": 3
+        },
+        {
+          "name": "sound-effect-profile",
+          "attributeId": 22,
+          "optionId": 7,
+          "materialProfileId": 3
+        }
+      ],
+      "stakeTransaction": "0x2b20374c264e716ec81910dca701a891a8d35c6a6fef641fb27fade3d4489569",
+      "enterMapCalldata": "0x14a33f6300000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "tokenId": "6",
+      "derivedSeed": "0xcb1e9a2607fa37979b26bad7e797c9d456901be29907be8e67ac98abbba72d39",
+      "visualFingerprint": "0x3db124c54577cb2b80e3db3930453ad130e91c882499bd89d1b20bfb47e135db",
+      "headlineTraits": [
+        {
+          "name": "body",
+          "attributeId": 1,
+          "optionId": 0,
+          "materialProfileId": 0
+        },
+        {
+          "name": "shirt-armor",
+          "attributeId": 3,
+          "optionId": 11,
+          "materialProfileId": 3
+        },
+        {
+          "name": "weapon",
+          "attributeId": 5,
+          "optionId": 1,
+          "materialProfileId": 1
+        },
+        {
+          "name": "species-lineage",
+          "attributeId": 9,
+          "optionId": 8,
+          "materialProfileId": 0
+        },
+        {
+          "name": "vault-affinity",
+          "attributeId": 20,
+          "optionId": 10,
+          "materialProfileId": 2
+        },
+        {
+          "name": "sound-effect-profile",
+          "attributeId": 22,
+          "optionId": 11,
+          "materialProfileId": 3
+        }
+      ],
+      "stakeTransaction": "0xbef343645b4861ca9e9fe2508fa1bcff5e7d34c81d43745db5e2899e7d4b6b9a",
+      "enterMapCalldata": "0x14a33f6300000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "tokenId": "7",
+      "derivedSeed": "0x81d2c466e7ccac1d3cd534bec9cb6eb91268856e9a3a27a82cc172735def8081",
+      "visualFingerprint": "0xf0fdd8fe7e8b0d805f9721d914ce1887009f45c599b29edc32d4eeba2c2d0cbd",
+      "headlineTraits": [
+        {
+          "name": "body",
+          "attributeId": 1,
+          "optionId": 13,
+          "materialProfileId": 1
+        },
+        {
+          "name": "shirt-armor",
+          "attributeId": 3,
+          "optionId": 5,
+          "materialProfileId": 1
+        },
+        {
+          "name": "weapon",
+          "attributeId": 5,
+          "optionId": 3,
+          "materialProfileId": 3
+        },
+        {
+          "name": "species-lineage",
+          "attributeId": 9,
+          "optionId": 0,
+          "materialProfileId": 0
+        },
+        {
+          "name": "vault-affinity",
+          "attributeId": 20,
+          "optionId": 2,
+          "materialProfileId": 2
+        },
+        {
+          "name": "sound-effect-profile",
+          "attributeId": 22,
+          "optionId": 11,
+          "materialProfileId": 3
+        }
+      ],
+      "stakeTransaction": "0x148af64ab17b42219072932e03a55a376a369e1c41129ee6ea4f560235c655e3",
+      "enterMapCalldata": "0x14a33f6300000000000000000000000000000000000000000000000000000000000000070000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "tokenId": "8",
+      "derivedSeed": "0xfb7e6dd31e8df38a84810a2003b9c85de34301d56e07a9ed54ce51f4c5e76fa8",
+      "visualFingerprint": "0x5b8cf529a0639787bc5e2b4e45d378c00cb71c8fccef589e5c8aad4cd6c1eaa4",
+      "headlineTraits": [
+        {
+          "name": "body",
+          "attributeId": 1,
+          "optionId": 1,
+          "materialProfileId": 1
+        },
+        {
+          "name": "shirt-armor",
+          "attributeId": 3,
+          "optionId": 1,
+          "materialProfileId": 1
+        },
+        {
+          "name": "weapon",
+          "attributeId": 5,
+          "optionId": 1,
+          "materialProfileId": 1
+        },
+        {
+          "name": "species-lineage",
+          "attributeId": 9,
+          "optionId": 6,
+          "materialProfileId": 2
+        },
+        {
+          "name": "vault-affinity",
+          "attributeId": 20,
+          "optionId": 6,
+          "materialProfileId": 2
+        },
+        {
+          "name": "sound-effect-profile",
+          "attributeId": 22,
+          "optionId": 7,
+          "materialProfileId": 3
+        }
+      ],
+      "stakeTransaction": "0x3b924674306bf3097dd25bce9cd8f00b33cc6c1e1a108b699c84f560350c5c7e",
+      "enterMapCalldata": "0x14a33f6300000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "tokenId": "9",
+      "derivedSeed": "0xeaf867b8f04e377a358a85154cb97c8a41464231a7982d8a27e61a151c15d2ca",
+      "visualFingerprint": "0xd0babb373c7d68a631697146fa196dcab625f2cc1aa833fb35a96c048f7ffdaf",
+      "headlineTraits": [
+        {
+          "name": "body",
+          "attributeId": 1,
+          "optionId": 2,
+          "materialProfileId": 2
+        },
+        {
+          "name": "shirt-armor",
+          "attributeId": 3,
+          "optionId": 1,
+          "materialProfileId": 1
+        },
+        {
+          "name": "weapon",
+          "attributeId": 5,
+          "optionId": 1,
+          "materialProfileId": 1
+        },
+        {
+          "name": "species-lineage",
+          "attributeId": 9,
+          "optionId": 7,
+          "materialProfileId": 3
+        },
+        {
+          "name": "vault-affinity",
+          "attributeId": 20,
+          "optionId": 4,
+          "materialProfileId": 0
+        },
+        {
+          "name": "sound-effect-profile",
+          "attributeId": 22,
+          "optionId": 2,
+          "materialProfileId": 2
+        }
+      ],
+      "stakeTransaction": "0x77a4738917e9f81da5cd586dda47503ecf1229a9e704724c43c6dd3b80c02e64",
+      "enterMapCalldata": "0x14a33f6300000000000000000000000000000000000000000000000000000000000000090000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "tokenId": "10",
+      "derivedSeed": "0x24d97897600c1f2f782d52880e4e6ea1f0de520d8211fd615e2860d84eb40e5d",
+      "visualFingerprint": "0x7d0a29aeaa8b0093bf87e176571335974470c0f1bf919763855dc280407a3217",
+      "headlineTraits": [
+        {
+          "name": "body",
+          "attributeId": 1,
+          "optionId": 11,
+          "materialProfileId": 3
+        },
+        {
+          "name": "shirt-armor",
+          "attributeId": 3,
+          "optionId": 0,
+          "materialProfileId": 0
+        },
+        {
+          "name": "weapon",
+          "attributeId": 5,
+          "optionId": 4,
+          "materialProfileId": 0
+        },
+        {
+          "name": "species-lineage",
+          "attributeId": 9,
+          "optionId": 3,
+          "materialProfileId": 3
+        },
+        {
+          "name": "vault-affinity",
+          "attributeId": 20,
+          "optionId": 3,
+          "materialProfileId": 3
+        },
+        {
+          "name": "sound-effect-profile",
+          "attributeId": 22,
+          "optionId": 1,
+          "materialProfileId": 1
+        }
+      ],
+      "stakeTransaction": "0x6c0854e1c7e8744f8fc44c5bd5dcc38430a2de3f055b693090dec844d039f48d",
+      "enterMapCalldata": "0x14a33f63000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000001"
+    }
+  ]
+}

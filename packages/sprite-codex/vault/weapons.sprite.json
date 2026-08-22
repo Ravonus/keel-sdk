@@ -1,0 +1,87 @@
+{
+  "schema": "oca-sprite-source@1",
+  "id": "vault-weapons-v1",
+  "frame": { "width": 96, "height": 96 },
+  "defaultDisplaySize": 32,
+  "assets": [
+    {
+      "id": 1,
+      "key": "gyro",
+      "label": "Gyro Saw",
+      "slot": 0,
+      "frameCapacity": 16,
+      "frames": [
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/gyro-saw-spin/frame-0.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/gyro-saw-spin/frame-1.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/gyro-saw-spin/frame-2.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/gyro-saw-spin/frame-3.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/gyro-saw-spin/frame-4.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/gyro-saw-spin/frame-5.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/gyro-saw-spin/frame-6.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/gyro-saw-spin/frame-7.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/gyro-saw-spin/frame-8.png"
+      ]
+    },
+    {
+      "id": 2,
+      "key": "rift",
+      "label": "Rift Fork",
+      "slot": 1,
+      "frameCapacity": 16,
+      "frames": [
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/rift-fork-fire-grayscale/frame-0.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/rift-fork-fire-grayscale/frame-1.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/rift-fork-fire-grayscale/frame-2.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/rift-fork-fire-grayscale/frame-3.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/rift-fork-fire-grayscale/frame-4.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/rift-fork-fire-grayscale/frame-5.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/rift-fork-fire-grayscale/frame-6.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/rift-fork-fire-grayscale/frame-7.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/rift-fork-fire-grayscale/frame-8.png"
+      ]
+    },
+    {
+      "id": 3,
+      "key": "bloom",
+      "label": "Aegis Star",
+      "slot": 2,
+      "frameCapacity": 16,
+      "frames": [
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/aegis-star-pulse/frame-0.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/aegis-star-pulse/frame-1.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/aegis-star-pulse/frame-2.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/aegis-star-pulse/frame-3.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/aegis-star-pulse/frame-4.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/aegis-star-pulse/frame-5.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/aegis-star-pulse/frame-6.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/aegis-star-pulse/frame-7.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/aegis-star-pulse/frame-8.png"
+      ]
+    },
+    {
+      "id": 4,
+      "key": "needle",
+      "label": "Needle Array",
+      "slot": 3,
+      "frameCapacity": 16,
+      "frames": [
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/needle-array-fire/frame-0.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/needle-array-fire/frame-1.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/needle-array-fire/frame-2.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/needle-array-fire/frame-3.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/needle-array-fire/frame-4.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/needle-array-fire/frame-5.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/needle-array-fire/frame-6.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/needle-array-fire/frame-7.png",
+        "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/weapons/generated-v1/needle-array-fire/frame-8.png"
+      ]
+    }
+  ],
+  "selections": [
+    { "revision": 1, "activeAssetIds": [1, 2, 3, 4] }
+  ],
+  "masks": {
+    "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/weapon-region-overrides-v1.json",
+    "root": "overrides"
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "schema": "vault-weapon-attributes@1",
+  "rules": {
+    "minimumAttributes": 3,
+    "maximumAttributes": 7,
+    "particleAttributeRequiredWhenRendered": true,
+    "characterLightLinkRequired": true,
+    "bonusFinishConsumesParentRegionRoll": true
+  },
+  "materials": {
+    "gunmetal": { "label": "Gunmetal", "bands": ["#15191d", "#58616a", "#d8e0e5"] },
+    "chrome": { "label": "Chrome", "bands": ["#111820", "#77909f", "#ffffff"] },
+    "gold": { "label": "Vault gold", "bands": ["#321903", "#b46d12", "#fff09b"] },
+    "copper": { "label": "Copper", "bands": ["#2b100b", "#a74e2e", "#ffd0ad"] },
+    "ceramic": { "label": "White ceramic", "bands": ["#292a31", "#a5a8b2", "#ffffff"] },
+    "obsidian": { "label": "Obsidian", "bands": ["#05030a", "#302043", "#b99bd8"] },
+    "bone": { "label": "Ancient bone", "bands": ["#211c13", "#9b8c68", "#fff3cc"] },
+    "bloodsteel": { "label": "Blood steel", "bands": ["#160105", "#86121e", "#ff9b8f"], "effect": "blood" },
+    "prism": { "label": "Prism rainbow", "bands": ["#241044", "#5ad7e8", "#fff3a1"], "effect": "rainbow" },
+    "aurora": { "label": "Aurora edge", "bands": ["#07152b", "#276dd8", "#8dffc6"], "effect": "aurora" },
+    "void": { "label": "Void edge", "bands": ["#010104", "#291145", "#c89cff"], "effect": "void" },
+    "acid": { "label": "Acid edge", "bands": ["#071205", "#3f8e20", "#d8ff75"], "effect": "acid" }
+  },
+  "particleStyles": {
+    "orbit-motes": { "label": "Orbit motes", "tether": "particles" },
+    "energy-filaments": { "label": "Energy filaments", "tether": "filaments" },
+    "ember-shards": { "label": "Ember shards", "tether": "particles" },
+    "pulse-rings": { "label": "Pulse rings", "tether": "filaments" }
+  },
+  "characterAttributes": {
+    "particle-color": {
+      "label": "Particle effect color",
+      "options": ["character-core", "cyan", "magenta", "amber", "acid", "blood", "void", "prism"]
+    }
+  },
+  "weapons": {
+    "gyro": {
+      "assetId": "0x0275a444d4957cb28141dffcce602f47de8334040f18b8283e9cd88e78def9cc",
+      "name": "Gyro Saw",
+      "sprite": "/content/gyro-saw.png",
+      "frames": ["/content/gyro-frame-0.png", "/content/gyro-frame-1.png", "/content/gyro-frame-2.png", "/content/gyro-frame-3.png", "/content/gyro-frame-4.png", "/content/gyro-frame-5.png", "/content/gyro-frame-6.png", "/content/gyro-frame-7.png", "/content/gyro-frame-8.png"],
+      "regions": ["hub", "inner-ring", "outer-ring", "gear", "blade"],
+      "attributes": [
+        { "id": "core-particles", "label": "Core light + particles", "mode": "forced", "link": "character.core-light", "options": ["orbit-motes", "energy-filaments", "ember-shards", "pulse-rings"] },
+        { "id": "projectile-style", "label": "Projectile color + trail", "mode": "required", "options": ["linked-core", "solid-cyan", "solid-amber", "solid-magenta", "prism", "matrix", "blood", "void", "aurora"] },
+        { "id": "hub", "label": "Center piece", "mode": "required", "region": "hub", "options": ["gunmetal", "chrome", "gold", "copper", "obsidian"] },
+        { "id": "inner-ring", "label": "Inner metal ring", "mode": "required", "region": "inner-ring", "options": ["gunmetal", "chrome", "gold", "copper", "ceramic"] },
+        { "id": "outer-ring", "label": "Outer metal ring", "mode": "required", "region": "outer-ring", "options": ["gunmetal", "chrome", "gold", "copper", "obsidian"] },
+        { "id": "gear", "label": "Gear body", "mode": "required", "region": "gear", "options": ["gunmetal", "chrome", "gold", "copper", "bone"] },
+        { "id": "blade", "label": "Blade + bonus finish", "mode": "bonus", "region": "blade", "options": ["chrome", "bloodsteel", "prism", "aurora", "void", "acid"] }
+      ]
+    },
+    "rift": {
+      "assetId": "0xb5170b4b9f15944b038152159948e553aeaf6390ece33490f28fc0af6f17cda5",
+      "name": "Rift Fork",
+      "sprite": "/content/rift-fork.png",
+      "frames": ["/content/rift-frame-0.png", "/content/rift-frame-1.png", "/content/rift-frame-2.png", "/content/rift-frame-3.png", "/content/rift-frame-4.png", "/content/rift-frame-5.png", "/content/rift-frame-6.png", "/content/rift-frame-7.png", "/content/rift-frame-8.png"],
+      "regions": ["core-light", "rear-hilt", "core-hilt", "front-hilt", "prongs"],
+      "attributes": [
+        { "id": "core-particles", "label": "Square core light + particles", "mode": "forced", "link": "character.core-light", "region": "core-light", "options": ["energy-filaments", "orbit-motes", "pulse-rings", "ember-shards"] },
+        { "id": "projectile-style", "label": "Projectile color + trail", "mode": "required", "options": ["linked-core", "solid-cyan", "solid-amber", "solid-magenta", "prism", "matrix", "blood", "void", "aurora"] },
+        { "id": "rear-hilt", "label": "Rear hilt", "mode": "required", "region": "rear-hilt", "options": ["gunmetal", "chrome", "gold", "copper", "bone"] },
+        { "id": "core-hilt", "label": "Core hilt", "mode": "required", "region": "core-hilt", "options": ["gunmetal", "chrome", "gold", "ceramic", "obsidian"] },
+        { "id": "front-hilt", "label": "Front hilt", "mode": "bonus", "region": "front-hilt", "options": ["gunmetal", "chrome", "copper", "prism", "void"] },
+        { "id": "prongs", "label": "Twin prongs", "mode": "required", "region": "prongs", "options": ["chrome", "gold", "bloodsteel", "prism", "aurora", "void"] }
+      ]
+    },
+    "needle": {
+      "assetId": "0x96dc0650ff9cb4e256de1d5d7807cee799b639b46cae123fa6093583a09c5ed1",
+      "name": "Needle Array",
+      "sprite": "/content/needle-array.png",
+      "frames": ["/content/needle-frame-0.png", "/content/needle-frame-1.png", "/content/needle-frame-2.png", "/content/needle-frame-3.png", "/content/needle-frame-4.png", "/content/needle-frame-5.png", "/content/needle-frame-6.png", "/content/needle-frame-7.png", "/content/needle-frame-8.png"],
+      "regions": ["core-light", "circle-housing", "main-body", "needle-holder", "needles"],
+      "attributes": [
+        { "id": "core-particles", "label": "Circular core light + particles", "mode": "forced", "link": "character.core-light", "region": "core-light", "options": ["orbit-motes", "energy-filaments", "ember-shards", "pulse-rings"] },
+        { "id": "projectile-style", "label": "Projectile color + trail", "mode": "required", "options": ["linked-core", "solid-cyan", "solid-amber", "solid-magenta", "prism", "matrix", "blood", "void", "aurora"] },
+        { "id": "main-body", "label": "Main body", "mode": "required", "region": "main-body", "options": ["gunmetal", "chrome", "gold", "copper", "ceramic"] },
+        { "id": "circle-housing", "label": "Circular housing", "mode": "required", "region": "circle-housing", "options": ["gunmetal", "chrome", "gold", "obsidian", "prism"] },
+        { "id": "needle-holder", "label": "Needle holder", "mode": "bonus", "region": "needle-holder", "options": ["gunmetal", "chrome", "gold", "copper", "void"] },
+        { "id": "needles", "label": "Needles", "mode": "required", "region": "needles", "options": ["chrome", "gold", "bloodsteel", "prism", "aurora", "acid"] }
+      ]
+    },
+    "bloom": {
+      "assetId": "0x43dd86bae906520ce34a7164148fd406f51ba3e1f040adfcef4ae240ef2ed712",
+      "name": "Aegis Star",
+      "sprite": "/content/aegis-star.png",
+      "frames": ["/content/bloom-frame-0.png", "/content/bloom-frame-1.png", "/content/bloom-frame-2.png", "/content/bloom-frame-3.png", "/content/bloom-frame-4.png", "/content/bloom-frame-5.png", "/content/bloom-frame-6.png", "/content/bloom-frame-7.png", "/content/bloom-frame-8.png"],
+      "regions": ["shell", "seams", "aperture"],
+      "attributes": [
+        { "id": "core-particles", "label": "Center light + node particles", "mode": "forced", "link": "character.core-light", "options": ["orbit-motes", "energy-filaments", "ember-shards", "pulse-rings"] },
+        { "id": "projectile-style", "label": "Projectile color + trail", "mode": "required", "options": ["linked-core", "solid-cyan", "solid-amber", "solid-magenta", "prism", "matrix", "blood", "void", "aurora"] },
+        { "id": "shell", "label": "Armor vanes", "mode": "required", "region": "shell", "options": ["gunmetal", "chrome", "gold", "copper", "ceramic", "obsidian"] },
+        { "id": "seams", "label": "Hub seams", "mode": "required", "region": "seams", "options": ["gunmetal", "chrome", "gold", "copper", "obsidian"] },
+        { "id": "aperture", "label": "Core aperture ring", "mode": "required", "region": "aperture", "options": ["chrome", "gold", "copper", "ceramic", "prism"] },
+        { "id": "shell-finish", "label": "Bonus vane finish", "mode": "bonus", "region": "shell", "finish": true, "options": ["clean", "battle-worn", "blood-splatter", "prism-wash", "void-speckle"] }
+      ]
+    }
+  }
+}

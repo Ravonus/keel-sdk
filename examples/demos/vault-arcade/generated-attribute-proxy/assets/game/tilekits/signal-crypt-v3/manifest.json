@@ -1,0 +1,28 @@
+{
+  "schema": "vault-tilekit@1",
+  "id": "signal-crypt-v3",
+  "biome": "occult-machine-catacomb",
+  "state": "candidate-visual-review",
+  "provider": "openai-imagegen",
+  "cell": [64, 64],
+  "tileGrid": [6, 6],
+  "animationGrid": [8, 6],
+  "sourceTilekit": "source-tilekit-6x6.png",
+  "sourceAnimations": "source-animations-8x6.png",
+  "runtimeTilekit": "runtime-tilekit-64.png",
+  "runtimeAnimations": "runtime-animations-64.png",
+  "semanticRows": {
+    "tilekit": ["floor-base", "floor-motif", "wall-join", "traversal", "terrain", "set-piece"],
+    "animations": ["water", "lava", "mist", "void", "rune-current", "door-open"]
+  },
+  "renderOrder": ["base-material", "room-motif", "sparse-decal", "terrain-overlay", "animated-material", "cliff-ramp-bridge", "computed-fx", "actors"],
+  "constraints": {
+    "terrainPreservesMotif": true,
+    "computedFxSeeded": true,
+    "minimumDistinctRoomMotifs": 4,
+    "maximumSameNeighborRate": 0.35,
+    "maximumUniformWindowRate": 0.02,
+    "maximumRepeatedWindowRate": 0.10,
+    "maximumSameCellComponent": 36
+  }
+}

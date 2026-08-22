@@ -1,0 +1,119 @@
+/*
+ * Keel wrapper viewer — the sealed document's stylesheet.
+ *
+ * Written as one rule per line rather than expanded, because these are the
+ * exact bytes that go on chain: every space is paid for once at write time and
+ * again on every read, and a stylesheet that reads differently here from what
+ * ships is a stylesheet nobody can check against the chain.
+ *
+ * Two layouts, one panel. Over 720px it is a drawer off the right edge and the
+ * stage slides left to make room. At 720px and under it is a bottom sheet:
+ * full width, rounded at the top, a grab bar, and it comes up from below —
+ * which is the only shape that leaves room for a thumb.
+ */
+:root{color-scheme:dark;--bg:#050807;--panel:#0a1512;--line:#ffffff14;--ink:#dff8f0;--dim:#7d968d;--ok:#67f6c5;--ok-rgb:103,246,197;--warn:#ffca63;--bad:#ff6573;--accent:var(--ok)}
+html.is-unwrapped{--accent:var(--bad)}
+/* The bytes did not hash to the name they were committed under. Nothing is
+   painted in that case, so this only has to make the refusal look like a
+   refusal rather than a slow load. */
+html.is-corrupt{--accent:var(--bad)}
+html.is-corrupt #boot{color:var(--bad);font-weight:900;text-align:center;padding:0 24px}
+html.is-corrupt .stage{background:radial-gradient(circle at 50% 42%,#1f0409 0,#0d0305 55%,#050203)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;position:fixed;inset:0;overflow:hidden}
+.stage{position:fixed;inset:0;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 42%,#0d1f1a 0,#060d0b 55%,#030605);transition:transform .5s cubic-bezier(.22,.9,.24,1)}
+#asset{display:grid;place-items:center;width:100%;height:100%;min-width:0;min-height:0}
+#asset>*{max-width:100%;max-height:100%}
+#boot{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);letter-spacing:.16em}
+#boot[hidden]{display:none}
+@media(min-width:721px){body.open .stage{transform:translate(min(-210px,-23vw))}}
+.edge{position:absolute;left:0;top:0;pointer-events:none;z-index:3;overflow:visible;opacity:0;transition:opacity .35s ease}
+html.is-unwrapped .edge{opacity:1}
+.edge path{fill:none;stroke:var(--bad);stroke-width:5;stroke-linejoin:round;animation:breathe 2.6s ease-in-out infinite}
+@keyframes breathe{0%,to{opacity:.22;filter:none}
+50%{opacity:1;filter:drop-shadow(0 0 14px rgba(255,101,115,.75))}}
+.flag{position:absolute;left:14px;top:14px;z-index:4;display:none;align-items:center;gap:7px;padding:6px 11px;border:1px solid var(--bad);border-radius:999px;background:#2a0006e6;color:#ffd9de;font-size:9px;font-weight:900;letter-spacing:.16em}
+html.is-unwrapped .flag{display:flex}
+.flag i{width:6px;height:6px;border-radius:50%;background:var(--bad);animation:blink 2.6s ease-in-out infinite}
+@keyframes blink{0%,to{opacity:.25}
+50%{opacity:1;box-shadow:0 0 12px var(--bad)}}
+.corner{position:absolute;left:0;bottom:0;z-index:8;transition:left .3s ease,bottom .3s ease;width:104px;height:104px;display:flex;align-items:flex-end;padding:16px;pointer-events:auto}
+.seal{width:38px;height:38px;padding:0;border:1px solid rgba(var(--ok-rgb),.5);border-radius:11px;background:#04100ce6;color:var(--accent);cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(8px);opacity:0;visibility:hidden;pointer-events:none;transform:translate(-14px) rotate(-7deg) scale(.9);transition:opacity .34s ease,transform .44s cubic-bezier(.16,1,.3,1),box-shadow .3s ease,visibility 0s linear .34s}
+.corner:hover .seal,.corner:focus-within .seal,.seal[aria-expanded=true]{opacity:1;visibility:visible;pointer-events:auto;transform:none;box-shadow:0 0 26px rgba(var(--ok-rgb),.3);transition:opacity .3s ease,transform .44s cubic-bezier(.16,1,.3,1),box-shadow .3s ease,visibility 0s linear 0s}
+.seal:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.seal b{font:900 15px/1 ui-monospace,monospace;letter-spacing:-.06em}
+@media(pointer:coarse){.corner:hover .seal{opacity:0;visibility:hidden;pointer-events:none;transform:translate(-14px) rotate(-7deg) scale(.9)}
+.seal[aria-expanded=true]{opacity:1;visibility:visible;pointer-events:auto;transform:none}}
+.scrim{position:absolute;inset:0;z-index:9;border:0;background:#000a;opacity:0;pointer-events:none;transition:opacity .35s ease}
+body.open .scrim{opacity:1;pointer-events:auto}
+.panel{position:fixed;z-index:10;display:flex;flex-direction:column;background:linear-gradient(150deg,#0b1a16fc,#040908fc);border:1px solid rgba(var(--ok-rgb),.24);box-shadow:0 -18px 70px #000c,0 0 46px rgba(var(--ok-rgb),.06);pointer-events:none;overflow:hidden;transition:transform .48s cubic-bezier(.22,.9,.24,1),opacity .3s ease}
+html.is-unwrapped .panel{border-color:#ff657357}
+/* The grab bar belongs to the sheet, so it is off by default and the mobile
+   block below switches it on. Declared here rather than after that block:
+   a media query carries no extra specificity, so a plain rule written
+   later would win and the handle would never appear. */
+.grab{display:none}
+@media(min-width:721px){.panel{top:0;right:0;bottom:0;width:min(460px,44vw);border-width:0 0 0 1px;transform:translate(101%);opacity:1}
+body.open .panel{transform:none;pointer-events:auto}}
+@media(max-width:720px){.panel{left:0;right:0;bottom:0;max-height:92%;border-radius:18px 18px 0 0;border-width:1px 0 0 0;transform:translateY(101%)}
+body.open .panel{transform:none;pointer-events:auto}
+.grab{display:block;width:38px;height:4px;margin:9px auto 2px;border-radius:99px;background:#ffffff2e}
+.corner{width:84px;height:84px;padding:13px}}
+.close{position:absolute;right:12px;top:12px;z-index:2;width:28px;height:28px;border:0;border-radius:50%;background:#ffffff12;color:var(--ink);font-size:16px;cursor:pointer}
+.head{display:flex;align-items:baseline;gap:10px;padding:15px 44px 11px 16px;border-bottom:1px solid var(--line)}
+.head b{font-size:14px;letter-spacing:-.02em}
+.head span{color:var(--dim);font-size:10px}
+.tabs{display:flex;gap:4px;padding:10px 12px;border-bottom:1px solid var(--line);overflow:auto}
+.tab{flex:1;min-width:84px;border:0;border-radius:9px;padding:9px 8px;background:transparent;color:var(--dim);font:800 9px/1 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.tab[aria-selected=true]{background:rgba(var(--ok-rgb),.12);color:var(--accent);box-shadow:0 0 0 1px rgba(var(--ok-rgb),.18) inset}
+#pages{flex:1;overflow:auto;padding:13px;overscroll-behavior:contain}
+.page{display:grid;gap:12px}
+.page[hidden]{display:none}
+.card{border:1px solid var(--line);border-radius:14px;padding:13px 14px;background:#ffffff05}
+.card h3{margin:0 0 10px;color:#cde1da;font-size:9px;letter-spacing:.15em;text-transform:uppercase}
+.row{display:grid;grid-template-columns:minmax(96px,.8fr) minmax(0,1.2fr);gap:10px;padding:6px 0;border-top:1px solid var(--line);font-size:10.5px}
+.row:first-of-type{border-top:0}
+.k{color:var(--dim)}
+.v{color:var(--ink);text-align:right;overflow-wrap:anywhere}
+.v.mono{font-family:ui-monospace,monospace}
+a.v{color:var(--accent);text-decoration:none;border-bottom:1px dotted rgba(var(--ok-rgb),.4)}
+@media(max-width:520px){.row{grid-template-columns:1fr;gap:2px}
+.v{text-align:left}}
+.verdict{display:flex;align-items:center;gap:14px;padding:15px;border:1px solid rgba(var(--ok-rgb),.3);border-radius:16px;background:linear-gradient(140deg,rgba(var(--ok-rgb),.09),transparent)}
+.score{display:flex;align-items:baseline;gap:3px;color:var(--accent)}
+.score b{font-size:34px;letter-spacing:-.05em;line-height:1}
+.score span{font-size:11px;color:var(--dim)}
+.grade{margin:0;color:var(--accent);font-size:13px;font-weight:900;letter-spacing:.12em}
+.grade-sub{margin:4px 0 0;color:var(--dim);font-size:9.5px;line-height:1.5}
+.custody{display:flex;gap:11px;align-items:flex-start;padding:12px 13px;border-radius:14px;border:1px solid var(--line);background:#ffffff05}
+.custody.held{border-color:rgba(var(--ok-rgb),.28)}
+.custody.empty{border-color:#ff657366;background:#26060bb0}
+.custody b{display:block;font-size:10px;letter-spacing:.14em}
+.custody.held b{color:var(--ok)}
+.custody.empty b{color:var(--bad)}
+.custody small{display:block;margin-top:3px;color:var(--dim);font-size:9.5px;line-height:1.5}
+.pulse{flex:none;width:8px;height:8px;margin-top:4px;border-radius:50%;background:var(--ok)}
+.custody.empty .pulse{background:var(--bad);animation:blink 2.6s ease-in-out infinite}
+.chk{display:grid;grid-template-columns:8px 1fr;gap:9px;padding:7px 0;border-top:1px solid var(--line)}
+.chk:first-of-type{border-top:0}
+.chk .dot{width:7px;height:7px;margin-top:4px;border-radius:50%;background:var(--ok)}
+.chk.warn .dot{background:var(--warn)}
+.chk.no .dot{background:var(--bad)}
+.chk b{font-size:10.5px;font-weight:800}
+.chk small{display:block;margin-top:2px;color:var(--dim);font-size:9.5px;line-height:1.5}
+.mut{padding:8px 0;border-top:1px solid var(--line)}
+.mut:first-of-type{border-top:0}
+.mut-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mut b{font-size:10.5px}
+.tag{padding:2px 7px;border-radius:999px;font-size:8px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.tag.good{background:rgba(var(--ok-rgb),.14);color:var(--ok)}
+.tag.warn{background:#ffca6324;color:var(--warn)}
+.mut small{display:block;margin-top:3px;color:var(--dim);font-size:9.5px;line-height:1.5}
+.row.drill{cursor:pointer;border-radius:7px;margin:0 -6px;padding-left:6px;padding-right:6px;transition:background .16s ease}
+.row.drill:hover,.row.drill:focus-visible{background:rgba(var(--ok-rgb),.07);outline:none}
+.row.drill .v{color:var(--accent)}
+.row.drill:after{content:"\203a";color:var(--dim);grid-column:2;justify-self:end;font-size:11px;margin-top:-16px}
+.back{margin:0 0 10px;border:1px solid var(--line);border-radius:9px;padding:6px 10px;background:#ffffff08;color:var(--dim);font:800 9px ui-monospace,monospace;letter-spacing:.1em;cursor:pointer}
+.back:hover{color:var(--ink)}
+.loading{color:var(--dim);font-size:10px;letter-spacing:.1em}
