@@ -199,3 +199,9 @@ recomputation, and fail-closed behavior;
 reproduction, `--keep-comments`, vector testing, the candidate flow, and the
 catalog; `tests/sdk-verification-wrap.test.mjs` covers the wrapper and the
 single-implementation guarantee with the studio scripts.
+
+For what the pipeline is proven to guarantee, the tamper drills each of those
+guarantees survives, and how to re-run the proofs against the real public
+workspace and against GitHub itself, see `docs/KEEL_MODULE_ASSURANCE.md`
+(`tests/keel-module-assurance.test.mjs` and
+`tests/keel-modules-reproduction.test.mjs`).
