@@ -175,7 +175,7 @@ export const MODULES = [
     summary: "Third-party collection attestation, URI/pixel fingerprints, community replication, and preservation bounties.",
     deps: ["keel-kernel", "keel-hold", "keel-artifacts"],
     devDeps: [],
-    contracts: ["KeelCollectionVerificationRegistry.sol", "KeelCollectionVerificationHookBase.sol", "KeelCollectionAttestationRegistry.sol", "KeelUriAttestationRegistry.sol", "KeelPixelFingerprintRegistry.sol", "KeelCommunityReplicationRegistry.sol", "KeelPreservationBounty.sol", "interfaces/IKeelCollectionVerificationHook.sol", "interfaces/IKeelCollectionVerificationAdapter.sol", "interfaces/ICommunityHold.sol"],
+    contracts: ["KeelCollectionVerificationRegistry.sol", "KeelCollectionVerificationHookBase.sol", "KeelCollectionAttestationRegistry.sol", "KeelUriAttestationRegistry.sol", "KeelPixelFingerprintRegistry.sol", "KeelCommunityReplicationRegistry.sol", "interfaces/IKeelCollectionVerificationHook.sol", "interfaces/IKeelCollectionVerificationAdapter.sol", "interfaces/ICommunityHold.sol"],
   },
   {
     id: "keel-ip-control",
@@ -205,7 +205,7 @@ export const MODULES = [
     summary: "ERC-5219/7617 resource adapter exposing Keel content over web3:// URLs, plus its demos.",
     deps: ["keel-hold"],
     devDeps: [],
-    contracts: ["KeelWeb3ResourceAdapter.sol", "KeelWeb3TokenDemo.sol", "KeelWeb3InlineTokenDemo.sol", "interfaces/IDecentralizedApp.sol", "interfaces/IERC7572.sol"],
+    contracts: ["KeelWeb3ResourceAdapter.sol", "interfaces/IDecentralizedApp.sol", "interfaces/IERC7572.sol"],
   },
   {
     id: "keel-cross-chain-mint",

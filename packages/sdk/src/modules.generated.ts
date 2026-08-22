@@ -445,7 +445,6 @@ export const KEEL_MODULES: readonly KeelModule[] = [
       "KeelUriAttestationRegistry.sol",
       "KeelPixelFingerprintRegistry.sol",
       "KeelCommunityReplicationRegistry.sol",
-      "KeelPreservationBounty.sol",
       "interfaces/IKeelCollectionVerificationHook.sol",
       "interfaces/IKeelCollectionVerificationAdapter.sol",
       "interfaces/ICommunityHold.sol"
@@ -455,7 +454,6 @@ export const KEEL_MODULES: readonly KeelModule[] = [
       "KeelCollectionVerificationRegistry",
       "KeelCommunityReplicationRegistry",
       "KeelPixelFingerprintRegistry",
-      "KeelPreservationBounty",
       "KeelUriAttestationRegistry"
     ]
   },
@@ -517,15 +515,11 @@ export const KEEL_MODULES: readonly KeelModule[] = [
     ],
     "contracts": [
       "KeelWeb3ResourceAdapter.sol",
-      "KeelWeb3TokenDemo.sol",
-      "KeelWeb3InlineTokenDemo.sol",
       "interfaces/IDecentralizedApp.sol",
       "interfaces/IERC7572.sol"
     ],
     "deployable": [
-      "KeelWeb3InlineTokenDemo",
-      "KeelWeb3ResourceAdapter",
-      "KeelWeb3TokenDemo"
+      "KeelWeb3ResourceAdapter"
     ]
   },
   {
