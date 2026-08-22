@@ -7,6 +7,7 @@ import { lockModuleSnapshotFile, moduleSpecifierFromFlags, resolveModuleSnapshot
 import { buildKeelModule, initKeelModule, planKeelModule } from "./module-pipeline.js";
 import { testKeelModule, verifyKeelModuleCandidate } from "./module-testing.js";
 import { buildKeelWorkspace, indexKeelWorkspace, testKeelWorkspace } from "./module-workspace.js";
+import { verifyKeelModuleFromOrigin } from "./module-verification.js";
 import { analyzeCost } from "./cost-analysis.js";
 import { analyzeMedia, runMediaPipeline, verifyBuiltArtifact } from "./pipeline.js";
 import { createRecursiveUploadPlan } from "./recursive-plan.js";
@@ -83,6 +84,8 @@ Commands:
   keel module test --all [--root <workspace>] [--json]
   keel module compact <dir> --candidate <file> [--json]
   keel module index [--root <workspace>] [--repository <url>] [--json]
+  keel module verify --repo <owner/name> --commit <sha> [--path <dir>] [--entry src/index.ts]
+    [--expect <0xdigest>] [--no-compact] [--json]
   keel module plan <dir> [--chain-id 11155111] [--address <0x...>] [--json]
   keel analyze <input> [--media-type <type>] [--json]
   keel build <input> --out <directory> --created-at <ISO date> [--name <name>] [--description <text>]
@@ -134,10 +137,12 @@ async function main(): Promise<void> {
     }
 
     case "module": {
-      const verb = required(args.positional[0], "module requires a subcommand: init, build, test, compact, index, or plan.");
+      const verb = required(args.positional[0], "module requires a subcommand: init, build, test, compact, verify, index, or plan.");
       const all = args.flags.all === true && (verb === "build" || verb === "test");
       const workspaceRoot = flag(args, "root") ?? process.cwd();
-      const directory = verb === "index" || all ? undefined : required(args.positional[1], `module ${verb} requires a module directory (or --all).`);
+      const directory = verb === "index" || verb === "verify" || all
+        ? undefined
+        : required(args.positional[1], `module ${verb} requires a module directory (or --all).`);
       if (verb === "init") {
         const name = flag(args, "name");
         const result = await initKeelModule(directory as string, name === undefined ? {} : { name });
@@ -210,6 +215,42 @@ async function main(): Promise<void> {
         );
         return;
       }
+      if (verb === "verify") {
+        const repository = required(flag(args, "repo"), "module verify requires --repo <owner/name>.");
+        const [owner, name] = repository.split("/");
+        if (owner === undefined || name === undefined || name.length === 0) throw new TypeError("--repo must be <owner>/<name>.");
+        const commit = required(flag(args, "commit"), "module verify requires --commit <sha>; a branch moves and a proof pinned to it expires silently.");
+        const recipeRoot = flag(args, "path");
+        const entry = flag(args, "entry") ?? "src/index.ts";
+        const expected = flag(args, "expect");
+        if (expected !== undefined && !/^0x[0-9a-f]{64}$/u.test(expected)) throw new TypeError("--expect must be a lower-case sha256 digest.");
+        const verified = await verifyKeelModuleFromOrigin({
+          origin: { protocol: "keel-source-origin@1", provider: "github", owner, repo: name, commit, visibility: "public" },
+          identity: { namespace: "keel", name, version: "0.0.0", entry },
+          entry,
+          ...(recipeRoot === undefined ? {} : { recipeRoot }),
+          ...(args.flags["no-compact"] === true ? {} : { compact: { keepComments: false } }),
+          mediaType: "text/javascript",
+        });
+        const digest = verified.recipe.output.integrity.digest;
+        const matches = expected === undefined || digest === expected;
+        output(
+          { ...verified, outputBytes: undefined, matchesExpected: matches },
+          args.flags.json === true,
+          `${repository}@${commit.slice(0, 10)}${recipeRoot === undefined ? "" : `/${recipeRoot}`}\n` +
+          `verdict:        ${verified.verification.verdict} (${verified.receipt.disposition})\n` +
+          `source digest:  ${verified.receipt.source.digest}\n` +
+          `output digest:  ${digest}\n` +
+          `archive digest: ${verified.archiveIntegrity.digest}\n` +
+          (expected === undefined
+            ? "No --expect given, so this is a reproduction, not a comparison."
+            : matches
+              ? `Matches --expect: the published bytes are this source.`
+              : `DOES NOT MATCH --expect ${expected}.`),
+        );
+        if (!matches || !verified.verification.reproduced) process.exitCode = 1;
+        return;
+      }
       if (verb === "index") {
         const repositoryUrl = flag(args, "repository");
         const result = await indexKeelWorkspace(workspaceRoot, repositoryUrl === undefined ? {} : { repositoryUrl });
@@ -238,7 +279,7 @@ async function main(): Promise<void> {
         );
         return;
       }
-      throw new TypeError(`Unknown module subcommand ${verb}. Use init, build, test, compact, index, or plan.`);
+      throw new TypeError(`Unknown module subcommand ${verb}. Use init, build, test, compact, verify, index, or plan.`);
     }
 
     case "analyze": {

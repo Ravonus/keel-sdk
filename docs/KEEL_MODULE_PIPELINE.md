@@ -68,11 +68,26 @@ reproduction stays byte-exact:
 
 ### Workspaces: `keel module build --all`
 
-A workspace is many art items in one directory, in exactly the keel-modules
-repo layout: `modules/<name>/{keel.module.json, src/, tsconfig.json}` over a
-shared `tsconfig.base.json`. Both manifest shapes are accepted:
-`keel-module-manifest@1` and the keel-modules `keel.jsmodule@1` (id, entry,
-license, summary).
+A workspace is many art items in one directory, in the keel-modules repo
+layout. Discovery has one rule: a directory holding a `keel.module.json` is a
+module and is not descended into, anything else is a grouping directory. So
+both layouts work and a workspace can migrate between them freely:
+
+```
+modules/<id>/                          flat
+modules/<org>/<category>/<id>/         filed by organisation and category
+```
+
+Three manifest shapes are accepted: `keel-module-manifest@1`, the keel-modules
+`keel.jsmodule@1` (id, entry, license, summary), and `keel.jsmodule@2`, which
+adds `category` (what the module is, and the directory it lives in), `owner`
+(who is responsible: an org, optionally a group, optionally a member of that
+group), and `repository` (the module's own public repository).
+
+An organisation is declared by `modules/<org>/org.json` (`keel.org@1`) listing
+its people and its groups. Indexing cross-checks every owner path against it,
+so a module cannot list under a heading that does not exist or name somebody
+who is not in the org.
 
 ```bash
 keel module build --all --root ./keel-modules
@@ -122,6 +137,23 @@ Trust order, strongest first: `exact-source-output` and `reproducible-build`
 (byte proofs) > `behaviorally-verified` (vector-witnessed behavior only) >
 `queued`.
 
+## 4b. Check somebody else's module: `keel module verify`
+
+```bash
+keel module verify --repo keel-web3/noise2d --commit <sha> --expect 0x...
+```
+
+The public primitive. It fetches the archive for that exact commit, rebuilds
+it in a temporary directory, prints the source, output, and archive digests,
+deletes the checkout, and exits non-zero if the rebuild does not reproduce or
+does not match `--expect`. `--path` names a directory inside the repository
+for a monorepo layout.
+
+No account, no permission, and no trust in the publisher or in Keel: this is
+the command that makes "verified" a claim anyone can check rather than one
+somebody made. A branch or tag is refused, because a proof pinned to a moving
+ref expires without saying so.
+
 ## 5. Index for the site: `keel module index`
 
 ```bash
@@ -129,16 +161,33 @@ keel module index --root ./keel-modules --repository https://github.com/you/keel
 ```
 
 Scans the workspace and writes `catalog/catalog.json`
-(`keel-module-catalog@1`): one entry per module with `id`, `version`,
-`license`, `summary`, `sourceRepository` (from the manifest when real,
-otherwise the `--repository` flag, otherwise `null`), `githubPath`
-(repo-relative path to the readable verified entry source), `sourceFiles`
-(the READABLE files with per-file sha256; these are what the site shows),
-`outputDigest`, `receiptDigest`, `disposition`, `verified`, and `builtAt`.
+(`keel-module-catalog@2`): the `organizations` the workspace declares, plus one
+entry per module with `id`, `version`, `license`, `summary`, `org`, `category`,
+`owner`, `sourceRepository` (from the manifest when real, otherwise the
+`--repository` flag, otherwise `null`), `moduleRepository` (its own public
+repo, or null), `githubPath` (repo-relative path to the readable verified entry
+source), `sourceFiles` (the READABLE files with per-file sha256; these are what
+the site shows), `outputDigest`, `receiptDigest`, `disposition`, `verified`,
+`deployments`, and `deployed`.
+
 `verified` is true only for the byte-proof dispositions
 (`exact-source-output`, `reproducible-build`); a behaviorally verified
 candidate never sets it. Indexing refuses stale dist bytes; run
 `keel module build --all` first.
+
+**`verified` and `deployed` are independent, and neither is derived from the
+other.** A module is verified the moment its readable source is proven to
+rebuild into its exact minified bytes, which happens before any chain is
+involved and stays true if it is never published. `deployments` lists the
+revisions that HAVE reached a chain, each pinning the KeelHold address and
+object id it lives at plus the `outputDigest` tying it back to verified bytes;
+`deployed` is only whether that list is non-empty. An empty list on a verified
+module is the normal starting state.
+
+Every catalog field derives from a committed file, with nothing read from a
+clock or an mtime, so indexing a clean workspace twice is a no-op diff and a
+third party can check a published catalog by regenerating it and running
+`diff`.
 
 ## 6. Plan: `keel module plan <dir>`
 

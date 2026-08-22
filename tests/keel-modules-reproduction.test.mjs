@@ -308,3 +308,58 @@ test("a stranger with only the GitHub path reproduces the published on-chain byt
     assert.equal(verified.indexEntry.origin.archiveIntegrity.digest, verified.archiveIntegrity.digest);
   }
 });
+
+test("keel module verify lets a stranger check any public repo from the command line", { skip: skipWorkspace }, async (t) => {
+  const commit = await publishedCommit();
+  if (commit === undefined) {
+    t.skip("the keel-modules checkout has uncommitted changes, so its catalog is not what GitHub serves.");
+    return;
+  }
+  const published = JSON.parse(await readFile(path.join(workspaceRoot, "catalog/catalog.json"), "utf8"));
+  const entry = published.modules.find((module) => module.id === "noise2d");
+  const recipeRoot = entry.githubPath.slice(0, entry.githubPath.lastIndexOf("/src/"));
+
+  let result;
+  try {
+    result = await runCli([
+      "module", "verify",
+      "--repo", "Ravonus/keel-modules",
+      "--commit", commit,
+      "--path", recipeRoot,
+      "--expect", entry.outputDigest,
+    ]);
+  } catch (error) {
+    // Offline is a skip; a rebuild that disagrees is never a skip, and the CLI
+    // exits non-zero in that case, which lands here too. Tell them apart.
+    if (/fetch failed|HTTP \d/u.test(String(error.stderr) + String(error.stdout))) {
+      t.skip("the keel-modules archive could not be fetched.");
+      return;
+    }
+    throw error;
+  }
+  assert.match(result.stdout, /verdict:\s+reproduced \(reproducible-build\)/u);
+  assert.match(result.stdout, new RegExp(`output digest:\\s+${entry.outputDigest}`, "u"));
+  assert.match(result.stdout, /Matches --expect/u);
+
+  // A wrong expectation must fail closed, not warn.
+  await assert.rejects(
+    () => runCli([
+      "module", "verify",
+      "--repo", "Ravonus/keel-modules",
+      "--commit", commit,
+      "--path", recipeRoot,
+      "--expect", `0x${"ab".repeat(32)}`,
+    ]),
+    (error) => {
+      assert.match(String(error.stdout), /DOES NOT MATCH --expect/u);
+      assert.equal(error.code, 1);
+      return true;
+    },
+  );
+
+  // A branch is refused: a proof pinned to something that moves expires silently.
+  await assert.rejects(
+    () => runCli(["module", "verify", "--repo", "Ravonus/keel-modules", "--commit", "master"]),
+    /full commit hash/u,
+  );
+});
