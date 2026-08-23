@@ -1,7 +1,7 @@
 {
   "schema": "keel-manifest@2",
   "canonicalization": "RFC8785",
-  "id": "oca-orbit-example",
+  "id": "keel-orbit-example",
   "name": "Keel Orbit Example",
   "description": "A minimal multi-resource interactive artifact using the verified virtual content gateway.",
   "entrypoint": {
@@ -21,12 +21,12 @@
       "sources": [
         {
           "kind": "inline",
-          "data": "PCFkb2N0eXBlIGh0bWw+PGh0bWw+PGhlYWQ+PG1ldGEgY2hhcnNldD0idXRmLTgiPjxtZXRhIG5hbWU9InZpZXdwb3J0IiBjb250ZW50PSJ3aWR0aD1kZXZpY2Utd2lkdGgsaW5pdGlhbC1zY2FsZT0xIj48bGluayByZWw9InN0eWxlc2hlZXQiIGhyZWY9Ii9jb250ZW50L3N0eWxlIj48dGl0bGU+T0NBIE9yYml0PC90aXRsZT48L2hlYWQ+PGJvZHk+PGNhbnZhcyBpZD0iY2FudmFzIj48L2NhbnZhcz48ZGl2PjxzbWFsbD5WRVJJRklFRCBDT01QT1NJVElPTjwvc21hbGw+PGgxPk9DQSBPcmJpdDwvaDE+PHA+SFRNTCArIENTUyArIEphdmFTY3JpcHQgKyBTVkcsIG1vdW50ZWQgb25seSBhZnRlciBldmVyeSBkZWNsYXJlZCBieXRlIHZlcmlmaWVzLjwvcD48L2Rpdj48c3BhbiBjbGFzcz0ic2VhbCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJPQ0Egc2VhbCI+PC9zcGFuPjxzY3JpcHQgdHlwZT0ibW9kdWxlIiBzcmM9Ii9jb250ZW50L3J1bnRpbWUiPjwvc2NyaXB0PjwvYm9keT48L2h0bWw+Cg==",
+          "data": "PCFkb2N0eXBlIGh0bWw+PGh0bWw+PGhlYWQ+PG1ldGEgY2hhcnNldD0idXRmLTgiPjxtZXRhIG5hbWU9InZpZXdwb3J0IiBjb250ZW50PSJ3aWR0aD1kZXZpY2Utd2lkdGgsaW5pdGlhbC1zY2FsZT0xIj48bGluayByZWw9InN0eWxlc2hlZXQiIGhyZWY9Ii9jb250ZW50L3N0eWxlIj48dGl0bGU+S2VlbCBPcmJpdDwvdGl0bGU+PC9oZWFkPjxib2R5PjxjYW52YXMgaWQ9ImNhbnZhcyI+PC9jYW52YXM+PGRpdj48c21hbGw+VkVSSUZJRUQgQ09NUE9TSVRJT048L3NtYWxsPjxoMT5LZWVsIE9yYml0PC9oMT48cD5IVE1MICsgQ1NTICsgSmF2YVNjcmlwdCArIFNWRywgbW91bnRlZCBvbmx5IGFmdGVyIGV2ZXJ5IGRlY2xhcmVkIGJ5dGUgdmVyaWZpZXMuPC9wPjwvZGl2PjxzcGFuIGNsYXNzPSJzZWFsIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IktlZWwgc2VhbCI+PC9zcGFuPjxzY3JpcHQgdHlwZT0ibW9kdWxlIiBzcmM9Ii9jb250ZW50L3J1bnRpbWUiPjwvc2NyaXB0PjwvYm9keT48L2h0bWw+Cg==",
           "encoding": "base64",
           "integrity": {
             "algorithm": "sha256",
-            "digest": "0xb77691a64cfc3afec50c8dc03457e0f75a2a6e3ae3e377b1de81dc5e0f2cf6ee",
-            "byteLength": 505
+            "digest": "0xfcc9c504f1d19e1b202c24bcdc698ee71c1408697e5a9626f1e7ac74834ea63c",
+            "byteLength": 508
           }
         }
       ]
@@ -111,7 +111,7 @@
     },
     "determinism": {
       "mode": "replay",
-      "seed": "0x525dbb75391f4bda94065983c3523ab169d3a1692d602ba89c66869c5fc2de0f",
+      "seed": "0x750bcede71d5f15592168f7b14a43bf3a03cc5e4dbbf2bb97409501c91517f14",
       "randomAlgorithm": "xoshiro128ss",
       "viewport": {
         "width": 1280,

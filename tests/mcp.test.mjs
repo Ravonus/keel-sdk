@@ -42,7 +42,7 @@ async function call(server, id, name, args) {
 const initializeParams = { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "test", version: "1" } };
 
 test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors", async () => {
-  const directory = await mkdtemp(path.join("/tmp", "oca-mcp-"));
+  const directory = await mkdtemp(path.join("/tmp", "keel-mcp-"));
   try {
     const server = await createMcpServer({ workspaceRoot: directory });
     const before = await server.handle({ jsonrpc: "2.0", id: 1, method: "tools/list", params: {} });
@@ -64,7 +64,7 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     const unsupportedInitialize = await server.handle({ jsonrpc: "2.0", id: 3, method: "initialize", params: { ...initializeParams, protocolVersion: "2025-06-18" } });
     assert.equal(unsupportedInitialize?.error?.code, -32602);
     const initialized = await server.handle({ jsonrpc: "2.0", id: 4, method: "initialize", params: initializeParams });
-    assert.equal(initialized?.result.serverInfo.name, "oca-keel-mcp");
+    assert.equal(initialized?.result.serverInfo.name, "keel-mcp");
     assert.deepEqual(Object.keys(initialized?.result.capabilities), ["tools", "prompts", "resources"]);
     const listed = await server.handle({ jsonrpc: "2.0", id: 5, method: "tools/list", params: {} });
     assert.deepEqual(listed?.result.tools.map((tool) => tool.name), ["analyze", "build", "verify", "cost", "upload-plan", "chain-plan", "ethereum-encode", "publish-plan", "module-resolve", "module-lock", "wallet-request-prepare", "wallet-link", "module-review-prepare", "fray-auction-intake", "fray-stage-project", "keel-chain-guide", "keel-library-search", "keel-studio-capabilities"]);
@@ -121,7 +121,7 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
 });
 
 test("MCP cost, module lock, and wallet preparation stay offline and bounded", async () => {
-  const directory = await mkdtemp(path.join("/tmp", "oca-mcp-"));
+  const directory = await mkdtemp(path.join("/tmp", "keel-mcp-"));
   try {
     await writeFile(path.join(directory, "asset.js"), "export const asset = true;\n");
     await writeFile(path.join(directory, "snapshot.json"), JSON.stringify(await moduleSnapshot()));
@@ -343,8 +343,8 @@ test("MCP cost, module lock, and wallet preparation stay offline and bounded", a
 });
 
 test("MCP rejects symlink inputs and CLI emits protocol JSON only", async () => {
-  const directory = await mkdtemp(path.join("/tmp", "oca-mcp-"));
-  const outside = await mkdtemp(path.join("/tmp", "oca-mcp-outside-"));
+  const directory = await mkdtemp(path.join("/tmp", "keel-mcp-"));
+  const outside = await mkdtemp(path.join("/tmp", "keel-mcp-outside-"));
   try {
     await writeFile(path.join(outside, "asset.js"), "export const outside = true;\n");
     await symlink(path.join(outside, "asset.js"), path.join(directory, "linked.js"));
@@ -373,7 +373,7 @@ test("MCP rejects symlink inputs and CLI emits protocol JSON only", async () => 
 });
 
 test("Fray intake asks for creator choices and emits a digest-bound approval handoff", async () => {
-  const directory = await mkdtemp(path.join("/tmp", "oca-mcp-"));
+  const directory = await mkdtemp(path.join("/tmp", "keel-mcp-"));
   try {
     const server = await createMcpServer({ workspaceRoot: directory });
     await server.handle({ jsonrpc: "2.0", id: 1, method: "initialize", params: initializeParams });
@@ -427,7 +427,7 @@ test("Fray intake asks for creator choices and emits a digest-bound approval han
 });
 
 test("Keel index search reads bounded metadata and locks an exact reuse candidate", async () => {
-  const directory = await mkdtemp(path.join("/tmp", "oca-mcp-"));
+  const directory = await mkdtemp(path.join("/tmp", "keel-mcp-"));
   const indexServer = createServer((request, response) => {
     response.setHeader("content-type", "application/json");
     if (request.url?.startsWith("/api/library?")) {
@@ -488,11 +488,11 @@ test("Keel index search reads bounded metadata and locks an exact reuse candidat
 });
 
 test("MCP CLI help, version, and self-test are explicit non-stdio modes", async () => {
-  const directory = await mkdtemp(path.join("/tmp", "oca-mcp-"));
+  const directory = await mkdtemp(path.join("/tmp", "keel-mcp-"));
   try {
     const cli = path.resolve("packages/mcp/dist/cli.js");
     const help = execFileSync(process.execPath, [cli, "--help"], { encoding: "utf8" });
-    assert.match(help, /^Usage: oca-mcp /u);
+    assert.match(help, /^Usage: keel-mcp /u);
     assert.doesNotMatch(help, /^\s*\{\s*"jsonrpc"/u);
     assert.equal(execFileSync(process.execPath, [cli, "--version"], { encoding: "utf8" }), "0.4.0\n");
     const before = await readdir(directory);

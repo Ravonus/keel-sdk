@@ -5,5 +5,5 @@
   "animation_url": "https://viewer.example/?manifest=./manifest.json",
   "oca_schema": "keel-manifest@2",
   "oca_manifest": "./manifest.json",
-  "oca_manifest_digest": "0x41d6ade88965d534a13ad6b2e1f118460eabeffe9ddb39c0323213e5e77c8b33"
+  "oca_manifest_digest": "0x9ab49035c5d59049da21a08b244c4740717cb755b7124701c947677de8fbd694"
 }

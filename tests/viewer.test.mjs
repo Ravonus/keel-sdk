@@ -829,7 +829,7 @@ test("manifest loader resolves a canonical KeelIndex URI directly from KeelHold 
   const integrity = await manifestIntegrity(value);
   const store = "0x1111111111111111111111111111111111111111";
   const objectId = `0x${"22".repeat(32)}`;
-  const uri = `oca-onchain://31338/${store}/${objectId}`;
+  const uri = `keel-onchain://31338/${store}/${objectId}`;
   let reads = 0;
   const loaded = await loadArtifactManifest(uri, integrity, {
     adapters: {

@@ -194,7 +194,7 @@ test("per-resource compression selection never inflates a resource", async () =>
 test("already-compressed sprite art is stored uncompressed rather than padded", async () => {
   // WebP is entropy-coded; re-compressing it costs bytes. The builder should
   // notice and leave those resources alone.
-  const forge = DEMOS.find((demo) => demo.id === "oca-sprite-forge");
+  const forge = DEMOS.find((demo) => demo.id === "keel-sprite-forge");
   const webp = (await readDemoResources(forge)).filter((resource) => resource.mediaType === "image/webp");
   assert.ok(webp.length >= 5, "the sprite demo should carry the original attribute layers");
 

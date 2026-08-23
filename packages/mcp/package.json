@@ -25,6 +25,6 @@
     "@keel/sdk": "workspace:*"
   },
   "bin": {
-    "oca-mcp": "./dist/cli.js"
+    "keel-mcp": "./dist/cli.js"
   }
 }

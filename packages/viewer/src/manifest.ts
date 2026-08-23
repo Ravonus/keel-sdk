@@ -23,7 +23,7 @@ const DEFAULT_MAX_MANIFEST_BYTES = 2 * 1024 * 1024;
 const DEFAULT_TIMEOUT_MS = 15_000;
 const DIGEST = /^0x[0-9a-f]{64}$/;
 const ADDRESS = /^0x[0-9a-f]{40}$/;
-const KEEL_ONCHAIN_MANIFEST_PROTOCOL = "oca-onchain:";
+const KEEL_ONCHAIN_MANIFEST_PROTOCOL = "keel-onchain:";
 
 function positiveInteger(value: number | undefined, fallback: number, label: string): number {
   const result = value ?? fallback;
@@ -92,7 +92,7 @@ function onchainManifestRequest(uri: string): { readonly chainId: number; readon
   const store = segments[0];
   const objectId = segments[1];
   if (!Number.isSafeInteger(chainId) || chainId <= 0 || segments.length !== 2 || store === undefined || !ADDRESS.test(store) || objectId === undefined || !DIGEST.test(objectId)) {
-    throw new TypeError("Onchain manifest URI must be oca-onchain://<chainId>/<lowercase-store>/<objectId>.");
+    throw new TypeError("Onchain manifest URI must be keel-onchain://<chainId>/<lowercase-store>/<objectId>.");
   }
   return { chainId, store: store as Hex, objectId: objectId as Hex };
 }

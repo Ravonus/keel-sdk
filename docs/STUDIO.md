@@ -132,7 +132,7 @@ All mutating REST routes and tRPC procedures share one write-access guard:
 - same-origin validation when the request carries an `Origin` header;
 - unrestricted local development/test writes;
 - disabled production writes unless `STUDIO_WRITE_TOKEN` is configured;
-- constant-time comparison of the `x-oca-studio-write-token` value.
+- constant-time comparison of the `x-keel-studio-write-token` value.
 
 This protects the reference/demo deployment from becoming an open upload or index-control endpoint. It is not a replacement for user authentication. A multi-user service should add normal sessions, project ownership, role checks, rate limits, quotas, malware/content policy, and audit logging.
 

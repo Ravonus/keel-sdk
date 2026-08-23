@@ -17,7 +17,7 @@ const imageProcessor = {
 };
 
 test("upload planner emits byte-bounded chunks that reconstruct exactly", async () => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), "oca-plan-"));
+  const directory = await mkdtemp(path.join(os.tmpdir(), "keel-plan-"));
   try {
     const source = new TextEncoder().encode("browser-native-artifact\n".repeat(5000));
     const plan = await createUploadPlan(source, {
@@ -41,7 +41,7 @@ test("upload planner emits byte-bounded chunks that reconstruct exactly", async 
 });
 
 test("recursive planner creates a balanced bounded-fanout tree", async () => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), "oca-tree-"));
+  const directory = await mkdtemp(path.join(os.tmpdir(), "keel-tree-"));
   try {
     const source = new TextEncoder().encode("0123456789abcdef".repeat(5000));
     const plan = await createRecursiveUploadPlan(source, {
@@ -75,7 +75,7 @@ test("recursive planner creates a balanced bounded-fanout tree", async () => {
 });
 
 test("recursive planner refuses fanout above the immutable index limit", async () => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), "oca-tree-limit-"));
+  const directory = await mkdtemp(path.join(os.tmpdir(), "keel-tree-limit-"));
   try {
     await assert.rejects(
       () => createRecursiveUploadPlan(new Uint8Array(1000), {
@@ -92,7 +92,7 @@ test("recursive planner refuses fanout above the immutable index limit", async (
 });
 
 test("image wrapper emits a deterministic v2 verified-only manifest and can omit the original", async () => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), "oca-wrap-"));
+  const directory = await mkdtemp(path.join(os.tmpdir(), "keel-wrap-"));
   try {
     const input = path.join(directory, "art.png");
     const outputDirectory = path.join(directory, "release");
@@ -124,7 +124,7 @@ test("image wrapper emits a deterministic v2 verified-only manifest and can omit
 });
 
 test("image wrapper validates WebP quality before loading an image backend", async () => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), "oca-wrap-quality-"));
+  const directory = await mkdtemp(path.join(os.tmpdir(), "keel-wrap-quality-"));
   try {
     const input = path.join(directory, "art.png");
     await writeFile(input, ONE_PIXEL_PNG);

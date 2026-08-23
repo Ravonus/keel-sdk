@@ -6,7 +6,7 @@ Claude/Codex client can connect over stdio with a configuration equivalent to:
 ```json
 {
   "mcpServers": {
-    "oca-keel": {
+    "keel-mcp": {
       "command": "node",
       "args": ["/path/to/keel-sdk/packages/mcp/dist/cli.js", "--workspace", "/path/to/artwork-workspace"],
       "env": {

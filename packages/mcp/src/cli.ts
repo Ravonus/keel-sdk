@@ -3,7 +3,7 @@ import { runMcpSelfTest } from "./health.js";
 import { MCP_SERVER_VERSION } from "./types.js";
 import { runStdio } from "./stdio.js";
 
-const HELP = `Usage: oca-mcp [--workspace <directory> | --workspace=<directory>] [--help | --version | --self-test]
+const HELP = `Usage: keel-mcp [--workspace <directory> | --workspace=<directory>] [--help | --version | --self-test]
 
 Run the offline MCP JSON-RPC server over stdio (the default).
   --workspace <directory>  Restrict local reads and writes to this directory.

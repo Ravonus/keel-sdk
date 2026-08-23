@@ -132,7 +132,7 @@ every manifest and descriptor already published on chain:
 - `keel-manifest@2` — the manifest format id (becomes `keel-manifest@3` at the
   next format bump, not before)
 - `keel://` — the virtual route scheme inside the sandbox
-- `oca.per-token-mint-data.v1` and similar already-deployed hash domains
+- `keel.per-token-mint-data.v1` and related KEEL hash domains
 - `STR3` (`0x53545233`) — the descriptor magic in `KeelHold`
 
 New domain separators introduced after the rename are `keel.*`; the recorded

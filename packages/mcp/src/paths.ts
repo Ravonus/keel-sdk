@@ -92,7 +92,7 @@ async function writeJson(root: string, value: string, payload: unknown): Promise
   const entries = await readdir(parent, { withFileTypes: true });
   const existing = entries.find((candidate) => candidate.name === path.basename(requested));
   if (existing?.isSymbolicLink()) throw new TypeError("output file cannot overwrite a symlink.");
-  const temporary = path.join(parent, `.oca-mcp-${Date.now()}-${Math.random().toString(16).slice(2)}.tmp`);
+  const temporary = path.join(parent, `.keel-mcp-${Date.now()}-${Math.random().toString(16).slice(2)}.tmp`);
   await writeFile(temporary, `${JSON.stringify(payload, null, 2)}\n`, { flag: "wx" });
   await rename(temporary, requested);
   return requested;

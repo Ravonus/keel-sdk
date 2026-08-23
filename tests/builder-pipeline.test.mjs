@@ -22,7 +22,7 @@ const imageProcessor = {
 };
 
 async function fixture() {
-  const directory = await mkdtemp(path.join(os.tmpdir(), "oca-pipeline-"));
+  const directory = await mkdtemp(path.join(os.tmpdir(), "keel-pipeline-"));
   const input = path.join(directory, "art.png");
   await writeFile(input, ONE_PIXEL_PNG);
   return { directory, input };

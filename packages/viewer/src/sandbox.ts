@@ -727,10 +727,10 @@ function contentGatewayBootstrap(artifact: ResolvedArtifact): string {
 }
 function headPayload(artifact: ResolvedArtifact, csp: string, runtimeContext?: RuntimeContext, consumer = false): string {
   const consumerChrome = consumer
-    ? `<style>html[data-oca-consumer="true"] button,html[data-oca-consumer="true"] input,html[data-oca-consumer="true"] select,html[data-oca-consumer="true"] textarea,html[data-oca-consumer="true"] [role="button"]{display:none!important;pointer-events:none!important}</style>`
+    ? `<style>html[data-keel-consumer="true"] button,html[data-keel-consumer="true"] input,html[data-keel-consumer="true"] select,html[data-keel-consumer="true"] textarea,html[data-keel-consumer="true"] [role="button"]{display:none!important;pointer-events:none!important}</style>`
     : "";
   const verificationChrome = `(() => {
-    ${consumer ? 'document.documentElement.dataset.ocaConsumer = "true";' : ""}
+    ${consumer ? 'document.documentElement.dataset.keelConsumer = "true";' : ""}
     const apply = (value) => {
       if (value !== "internal" && value !== "external") return;
       document.documentElement.dataset.verificationChrome = value;
@@ -837,7 +837,7 @@ export function createSandboxDocument(artifact: ResolvedArtifact, options: Sandb
   switch (mode) {
     case "module": {
       const code = entrypointText(materializer);
-      body = `<div id="${escapeAttribute(artifact.manifest.entrypoint.mount ?? "oca-root")}" style="width:100%;height:100%"></div><script type="module">${inlineModule(code)}</script>`;
+      body = `<div id="${escapeAttribute(artifact.manifest.entrypoint.mount ?? "keel-root")}" style="width:100%;height:100%"></div><script type="module">${inlineModule(code)}</script>`;
       break;
     }
     case "svg":

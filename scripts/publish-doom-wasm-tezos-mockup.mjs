@@ -146,7 +146,7 @@ function identityType() {
 }
 
 const workDirectory = mkdtempSync(path.join(tezosRoot, "build/doom-wasm-tezos-mockup."));
-const container = `oca-doom-keel-${process.pid}`;
+const container = `keel-doom-keel-${process.pid}`;
 let containerStarted = false;
 
 function docker(arguments_, options = {}) {

@@ -13,9 +13,9 @@ const MAX_BYTES = 64 * 1024 * 1024;
 
 function usage(): never {
   console.error(`Usage:
-  oca-sandbox inspect <manifest.json> [--json]
-  oca-sandbox compare <parent-manifest.json> <child-manifest.json> [--approve] [--json]
-  oca-sandbox prepare <project-directory> [--name <name>] [--out <sandbox.html>] [--json]
+  keel-sandbox inspect <manifest.json> [--json]
+  keel-sandbox compare <parent-manifest.json> <child-manifest.json> [--approve] [--json]
+  keel-sandbox prepare <project-directory> [--name <name>] [--out <sandbox.html>] [--json]
 
 Compare uses the same per-component hash gate as Studio. --approve records creator approval in the dry run only.
 All checks use @keel/protocol and @keel/viewer. The CLI never grants network or wallet access to project code.`);

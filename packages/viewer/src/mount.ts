@@ -12,7 +12,7 @@ export function mountArtifact(
   });
   const iframe = globalThis.document.createElement("iframe");
   iframe.title = options.title ?? artifact.manifest.name;
-  iframe.className = options.className ?? "oca-viewer-frame";
+  iframe.className = options.className ?? "keel-viewer-frame";
   iframe.loading = options.loading ?? "eager";
   // A mounted game/artifact is an interactive document, not a decorative
   // image. Making the verified frame programmatically focusable lets a host
@@ -39,7 +39,7 @@ export function mountArtifact(
 
   if (viewport !== undefined && viewportMode !== "host") {
     const shell = globalThis.document.createElement("div");
-    shell.className = "oca-viewer-viewport";
+    shell.className = "keel-viewer-viewport";
     shell.style.position = "relative";
     shell.style.width = "100%";
     shell.style.height = "100%";

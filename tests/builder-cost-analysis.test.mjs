@@ -100,7 +100,7 @@ test("cost analysis rejects unsafe boundaries and the CLI exposes the caveat", a
   assert.equal(depthBound.model.maxTreeDepth, 8);
   assert.equal(depthBound.recommendation.strategy, "infeasible");
 
-  const directory = await mkdtemp(path.join(os.tmpdir(), "oca-cost-cli-"));
+  const directory = await mkdtemp(path.join(os.tmpdir(), "keel-cost-cli-"));
   try {
     const input = path.join(directory, "module.js");
     await writeFile(input, "export const answer = 42;\n");

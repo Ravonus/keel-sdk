@@ -8,11 +8,11 @@ or mutates a wallet or chain; wallet output is a canonical request envelope for
 a separate user-approved wallet UI.
 
 ```bash
-oca-mcp --workspace /path/to/project
+keel-mcp --workspace /path/to/project
 ```
 
 Use `--help` or `--version` for portable launcher discovery. For a deterministic
-local health check, run `oca-mcp --self-test --workspace /path/to/project`;
+local health check, run `keel-mcp --self-test --workspace /path/to/project`;
 it performs `initialize`, `ping`, `tools/list`, `prompts/list`, `prompts/get`, and static resource checks in-process and emits one
 non-RPC JSON summary. It reads the workspace root but does not start stdio,
 write files, fetch a carrier, sign, or submit.
@@ -22,7 +22,7 @@ For a local agent configuration, point the MCP client at the built CLI:
 ```json
 {
   "mcpServers": {
-    "oca-keel": {
+    "keel-mcp": {
       "command": "node",
       "args": ["/path/to/keel-sdk/packages/mcp/dist/cli.js", "--workspace", "/path/to/project"]
     }

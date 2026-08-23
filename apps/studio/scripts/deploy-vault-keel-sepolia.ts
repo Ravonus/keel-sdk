@@ -1602,7 +1602,7 @@ await checkpointedTransition("character-collection-seed", characterSeedState, se
 ], async () => (await publicClient.readContract({ address: seedRegistry.address, abi: seedRegistry.abi, functionName: "mintEntropyEnabled", args: [characterSeedSetId] })) === true);
 const characterManifestBytes = utf8ToBytes(canonicalJson(characterManifest));
 const characterManifestContent = await publishContent("character-collection-manifest", characterManifestBytes, "application/json");
-const characterManifestUri = `oca-onchain://${chainId}/${oldDeployment.contracts.keelHold.toLowerCase()}/${characterManifestContent.objectId}`;
+const characterManifestUri = `keel-onchain://${chainId}/${oldDeployment.contracts.keelHold.toLowerCase()}/${characterManifestContent.objectId}`;
 const collectionScope = await publicClient.readContract({
   address: oldDeployment.contracts.keelIndex, abi: registry.abi, functionName: "scopeStatus", args: [collection.address, 0n, false],
 }) as readonly [bigint,bigint,boolean];
@@ -1970,7 +1970,7 @@ await checkpointedTransition("map-viewer", await viewerState(
 ], async () => (await publicClient.readContract({ address: harnessRegistry.address, abi: harnessRegistry.abi, functionName: "harnessRevisionExists", args: [mapViewerId, 1n] })) === true);
 const mapManifestBytes = utf8ToBytes(canonicalJson(mapManifest));
 const mapManifestContent = await publishContent("map-manifest", mapManifestBytes, "application/json");
-const mapManifestUri = `oca-onchain://${chainId}/${oldDeployment.contracts.keelHold.toLowerCase()}/${mapManifestContent.objectId}`;
+const mapManifestUri = `keel-onchain://${chainId}/${oldDeployment.contracts.keelHold.toLowerCase()}/${mapManifestContent.objectId}`;
 const mapScope = await publicClient.readContract({
   address: oldDeployment.contracts.keelIndex,
   abi: registry.abi,

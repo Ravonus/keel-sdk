@@ -18,11 +18,11 @@ console.log(result.sandbox.csp);
 The CLI is machine-readable for AI and CI:
 
 ```sh
-oca-sandbox prepare ./my-project --json
-oca-sandbox prepare ./my-project --out ./sandbox.html
-oca-sandbox inspect ./manifest.json --json
-oca-sandbox compare ./parent-manifest.json ./child-manifest.json --json
-oca-sandbox compare ./parent-manifest.json ./child-manifest.json --approve --json
+keel-sandbox prepare ./my-project --json
+keel-sandbox prepare ./my-project --out ./sandbox.html
+keel-sandbox inspect ./manifest.json --json
+keel-sandbox compare ./parent-manifest.json ./child-manifest.json --json
+keel-sandbox compare ./parent-manifest.json ./child-manifest.json --approve --json
 ```
 
 `prepare` never sends project bytes to a server. On-chain or remote manifest resolution is available through the exported viewer adapters, where every source remains digest-bound.

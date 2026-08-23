@@ -9,7 +9,7 @@
  * The Sonant renderer below is derived from Dominic Szablewski's pl_synth
  * (MIT, Copyright 2024-2025 Dominic Szablewski), itself based on Sonant.
  * It is adapted here to use a per-render deterministic noise seed, bounded
- * allocation, and the historical named Sonant-X JSON format used by OCA.
+ * allocation, and the historical named Sonant-X JSON format.
  */
 
 export const KEEL_SOUND_BITS_CODEC = "keel-sonant-bits@1" as const;
@@ -402,7 +402,7 @@ class ByteReader {
   }
 }
 
-const SOUND_MAGIC = [0x4f, 0x43, 0x41, 0x53] as const; // OCAS
+const SOUND_MAGIC = [0x4f, 0x43, 0x41, 0x53] as const; // legacy sound magic
 
 /** Compile human-readable Sonant-X JSON into the compact on-chain bit codec. */
 export function encodeSoundBits(value: unknown): Uint8Array {
@@ -497,7 +497,7 @@ export function compactSonantSong(value: unknown): CompactSonantSong {
 
 function seed32(value: string | number | undefined): number {
   if (typeof value === "number" && Number.isInteger(value)) return value >>> 0;
-  const text = String(value ?? "oca-audio");
+  const text = String(value ?? "keel-audio");
   let state = 0x811c9dc5;
   for (let index = 0; index < text.length; index += 1) {
     state ^= text.charCodeAt(index);
@@ -1095,7 +1095,7 @@ export interface DirectionalAtlasInspection {
   readonly frames: readonly DirectionalFrameInspection[];
 }
 
-const SPRITE_MAGIC = [0x4f, 0x43, 0x41, 0x41] as const; // OCAA
+const SPRITE_MAGIC = [0x4f, 0x43, 0x41, 0x41] as const; // legacy sprite-atlas magic
 
 /** Build equal-sized, left-to-right/top-to-bottom frame rectangles. */
 export function createGridSpriteAtlas(options: {
@@ -1633,7 +1633,7 @@ export interface KeelCharacterMetadataVector {
 }
 
 const MATERIAL_MAGIC = [0x4f, 0x43, 0x4d, 0x50] as const; // OCMP
-const ATLAS_MATERIAL_MAGIC = [0x4f, 0x43, 0x41, 0x4d] as const; // OCAM
+const ATLAS_MATERIAL_MAGIC = [0x4f, 0x43, 0x41, 0x4d] as const; // legacy material-atlas magic
 const TRAIT_MAGIC = [0x4f, 0x43, 0x54, 0x52] as const; // OCTR
 const CHARACTER_METADATA_MAGIC = [0x4f, 0x43, 0x4d, 0x56] as const; // OCMV
 const MAX_MATERIAL_REGIONS = 64;

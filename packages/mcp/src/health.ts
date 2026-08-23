@@ -8,7 +8,7 @@ import {
 const INITIALIZE_PARAMS = {
   protocolVersion: MCP_PROTOCOL_VERSION,
   capabilities: {},
-  clientInfo: { name: "oca-mcp-self-test", version: MCP_SERVER_VERSION },
+  clientInfo: { name: "keel-mcp-self-test", version: MCP_SERVER_VERSION },
 } as const;
 
 export const MCP_SELF_TEST_CHECKS = ["initialize", "ping", "tools/list", "prompts/list", "prompts/get", "resources/list", "resources/read"] as const;

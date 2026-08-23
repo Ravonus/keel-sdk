@@ -16,7 +16,7 @@
     }
   },
   "bin": {
-    "oca-sandbox": "./dist/cli.js"
+    "keel-sandbox": "./dist/cli.js"
   },
   "files": ["dist", "README.md"],
   "scripts": {

@@ -240,7 +240,7 @@ async function uploadPlanTool(context: ToolContext, value: unknown): Promise<unk
     for (let level = leaves; level > 1; level = Math.ceil(level / (maxPartsPerComposite ?? 64))) depth += 1;
     if (depth > MAX_PLAN_DEPTH) throw new RangeError(`recursive plan depth ${depth} exceeds the direct reader limit of ${MAX_PLAN_DEPTH}.`);
   }
-  const scratch = await mkdtemp(path.join("/tmp", "oca-mcp-upload-plan-"));
+  const scratch = await mkdtemp(path.join("/tmp", "keel-mcp-upload-plan-"));
   try {
     const common = {
       objectName,

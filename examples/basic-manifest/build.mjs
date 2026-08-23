@@ -40,11 +40,11 @@ const resources = await Promise.all([
   resource("runtime", "script", "text/javascript", "runtime.js", true),
   resource("fallback", "fallback", "image/svg+xml", "fallback.svg"),
 ]);
-const replaySeed = await createIntegrity(new TextEncoder().encode("oca-orbit-example/replay/v1"));
+const replaySeed = await createIntegrity(new TextEncoder().encode("keel-orbit-example/replay/v1"));
 const manifest = {
   schema: KEEL_MANIFEST_SCHEMA,
   canonicalization: KEEL_CANONICALIZATION,
-  id: "oca-orbit-example",
+  id: "keel-orbit-example",
   name: "Keel Orbit Example",
   description: "A minimal multi-resource interactive artifact using the verified virtual content gateway.",
   entrypoint: { resource: "viewer", mode: "html" },

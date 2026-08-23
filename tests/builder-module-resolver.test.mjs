@@ -189,7 +189,7 @@ test("resolver rejects malformed metadata, duplicate release keys, unsupported f
 
 test("CLI resolves JSON or concise output and writes an unavailable-by-default lock receipt", async () => {
   const value = await fixture();
-  const directory = await mkdtemp(path.join("/tmp", "oca-module-cli-"));
+  const directory = await mkdtemp(path.join("/tmp", "keel-module-cli-"));
   try {
     const snapshotPath = path.join(directory, "modules.snapshot.json");
     const lockPath = path.join(directory, "keel.lock.json");
