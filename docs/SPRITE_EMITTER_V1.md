@@ -3,7 +3,7 @@
 **Status:** active draft. It requires implementation and independent replay
 review before deployment.
 
-`oca-sprite-emitter@1` composes approved static or animated grayscale sprite
+`keel-sprite-emitter@1` composes approved static or animated grayscale sprite
 masters with a bounded deterministic particle simulation. It can attach to any
 character, weapon, projectile, door, prop, pickup, mob, boss, map event, or
 sprite-based UI event.
@@ -27,7 +27,7 @@ they never change the selection modulus or dependency graph of an old epoch.
 The event seed is SHA-256 over fixed-width bytes:
 
 ```text
-"oca.sprite-emitter.v1" ||
+"keel.sprite-emitter.v1" ||
 mapGenerationEpoch:u32be || mapSeed:bytes32 || mapId:bytes32 ||
 emitterPresetId:u32be || emitterRevision:u32be ||
 eventKind:u16be || worldEntityIndex:u32be || eventOrdinal:u32be

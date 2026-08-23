@@ -1,5 +1,5 @@
 {
-  "schema": "oca-sprite-source@1",
+  "schema": "keel-sprite-source@1",
   "id": "vault-weapons-v1",
   "frame": { "width": 96, "height": 96 },
   "defaultDisplaySize": 32,

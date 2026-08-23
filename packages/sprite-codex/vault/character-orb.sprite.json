@@ -1,5 +1,5 @@
 {
-  "schema": "oca-sprite-source@1",
+  "schema": "keel-sprite-source@1",
   "id": "vault-character-orb-v1",
   "frame": { "width": 34, "height": 34 },
   "defaultDisplaySize": 32,

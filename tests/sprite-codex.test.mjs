@@ -59,7 +59,7 @@ async function fixture() {
     overrides: { one: { 0: { 0: "edge", 3: "core" } }, two: { 0: { 1: "fixed" } } },
   }));
   const source = {
-    schema: "oca-sprite-source@1",
+    schema: "keel-sprite-source@1",
     id: "fixture",
     frame: { width: 2, height: 2 },
     defaultDisplaySize: 32,
@@ -352,7 +352,7 @@ test("Vault dependency profiles load standalone characters without world and sta
   const loadedKeys = [];
   const library = await loadSpriteLibrary({
     graphUrl: "./vault-assets-v1.library.json", baseUrl: "https://vault.invalid/", graphSha256: await sha256(graphBytes), profileId: "unstaked-character", profileRevision: 1, fetch,
-    loadBundle: async (bundle) => { loadedKeys.push(bundle.key); return new SpriteCodex({ schema: "oca-sprite-codex@1", id: bundle.key, frame: { width: 1, height: 1 }, atlas: { width: 1, height: 1, sha256: "00".repeat(32), mediaType: "image/webp" }, defaultDisplaySize: 32, assets: [], selections: [] }, new Uint8Array(), {}); },
+    loadBundle: async (bundle) => { loadedKeys.push(bundle.key); return new SpriteCodex({ schema: "keel-sprite-codex@1", id: bundle.key, frame: { width: 1, height: 1 }, atlas: { width: 1, height: 1, sha256: "00".repeat(32), mediaType: "image/webp" }, defaultDisplaySize: 32, assets: [], selections: [] }, new Uint8Array(), {}); },
   });
   assert.deepEqual(loadedKeys, ["character-orb", "shared-weapons"]);
   assert.throws(() => library.bundle("world-tiles"), /not in profile/);
@@ -381,7 +381,7 @@ test("library bundle and profile revisions append without rerolling or mutating 
   await png(path.join(directory, "red.png"), { r: 255, g: 0, b: 0, alpha: 1 });
   await png(path.join(directory, "blue.png"), { r: 0, g: 0, b: 255, alpha: 1 });
   await png(path.join(directory, "world.png"), { r: 0, g: 255, b: 0, alpha: 1 });
-  const spriteSource = (id, image) => ({ schema: "oca-sprite-source@1", id, frame: { width: 2, height: 2 }, assets: [{ id: 1, key: "asset", label: id, slot: 0, frameCapacity: 1, frames: [image] }], selections: [{ revision: 1, activeAssetIds: [1] }] });
+  const spriteSource = (id, image) => ({ schema: "keel-sprite-source@1", id, frame: { width: 2, height: 2 }, assets: [{ id: 1, key: "asset", label: id, slot: 0, frameCapacity: 1, frames: [image] }], selections: [{ revision: 1, activeAssetIds: [1] }] });
   await writeFile(path.join(directory, "character-v1.json"), JSON.stringify(spriteSource("character", "red.png")));
   await writeFile(path.join(directory, "character-v2.json"), JSON.stringify(spriteSource("character", "blue.png")));
   await writeFile(path.join(directory, "world-v1.json"), JSON.stringify(spriteSource("world-v1", "world.png")));
@@ -389,7 +389,7 @@ test("library bundle and profile revisions append without rerolling or mutating 
   const lockPath = path.join(directory, "library.lock.json");
   const outputDirectory = path.join(directory, "out");
   const first = {
-    schema: "oca-sprite-library-source@1", id: "fixture-library",
+    schema: "keel-sprite-library-source@1", id: "fixture-library",
     bundles: [{ bundleId: 1, revision: 1, key: "character", role: "character", source: "character-v1.json", lock: "character-v1.lock.json", dependencies: [] }],
     profiles: [
       { id: "unstaked", revision: 1, roots: [{ bundleId: 1, revision: 1 }] },
@@ -451,12 +451,12 @@ test("unreferenced provenance additions never mutate the committed sprite runtim
   await png(path.join(directory, "assets", "active.png"), { r: 255, g: 255, b: 255, alpha: 1 });
   await png(path.join(directory, "assets", "candidate.png"), { r: 255, g: 0, b: 255, alpha: 1 });
   await writeFile(path.join(directory, "character.json"), JSON.stringify({
-    schema: "oca-sprite-source@1", id: "character", frame: { width: 2, height: 2 },
+    schema: "keel-sprite-source@1", id: "character", frame: { width: 2, height: 2 },
     assets: [{ id: 1, key: "active", label: "Active", slot: 0, frameCapacity: 1, frames: ["assets/active.png"] }],
     selections: [{ revision: 1, activeAssetIds: [1] }],
   }));
   await writeFile(path.join(directory, "library.json"), JSON.stringify({
-    schema: "oca-sprite-library-source@1", id: "provenance-library",
+    schema: "keel-sprite-library-source@1", id: "provenance-library",
     bundles: [{ bundleId: 1, revision: 1, key: "character", role: "character", source: "character.json", lock: "character.lock.json", dependencies: [] }],
     profiles: [{ id: "default", revision: 1, roots: [{ bundleId: 1, revision: 1 }] }],
     inventoryRoots: [{ path: "assets", label: "fixture provenance" }],
@@ -493,12 +493,12 @@ test("source-root inventories exclude compiler transactions, staging output, gen
   const bundleLockPath = path.join(directory, "source.lock.json");
   const libraryLockPath = path.join(directory, "library.lock.json");
   await writeFile(sourcePath, JSON.stringify({
-    schema: "oca-sprite-source@1", id: "inventory-boundary", frame: { width: 2, height: 2 },
+    schema: "keel-sprite-source@1", id: "inventory-boundary", frame: { width: 2, height: 2 },
     assets: [{ id: 1, key: "active", label: "Active", slot: 0, frameCapacity: 1, frames: ["active.png"] }],
     selections: [{ revision: 1, activeAssetIds: [1] }],
   }));
   await writeFile(libraryPath, JSON.stringify({
-    schema: "oca-sprite-library-source@1", id: "inventory-boundary-library",
+    schema: "keel-sprite-library-source@1", id: "inventory-boundary-library",
     bundles: [{ bundleId: 1, revision: 1, key: "material", role: "material", source: "source.json", lock: "source.lock.json", dependencies: [] }],
     profiles: [{ id: "default", revision: 1, roots: [{ bundleId: 1, revision: 1 }] }],
     inventoryRoots: [{ path: ".", label: "all source provenance" }],
@@ -532,12 +532,12 @@ test("boundary-length library IDs use fixed prepared-write names independent of 
   const libraryLock = path.join(directory, `library-${"l".repeat(111)}.lock.json`);
   const libraryId = "a".repeat(128);
   await writeFile(sourcePath, JSON.stringify({
-    schema: "oca-sprite-source@1", id: "boundary-id-source", frame: { width: 2, height: 2 },
+    schema: "keel-sprite-source@1", id: "boundary-id-source", frame: { width: 2, height: 2 },
     assets: [{ id: 1, key: "active", label: "Active", slot: 0, frameCapacity: 1, frames: ["active.png"] }],
     selections: [{ revision: 1, activeAssetIds: [1] }],
   }));
   await writeFile(libraryPath, JSON.stringify({
-    schema: "oca-sprite-library-source@1", id: libraryId,
+    schema: "keel-sprite-library-source@1", id: libraryId,
     bundles: [{ bundleId: 1, revision: 1, key: "material", role: "material", source: "source.json", lock: bundleLock, dependencies: [] }],
     profiles: [{ id: "default", revision: 1, roots: [{ bundleId: 1, revision: 1 }] }],
     inventoryRoots: [{ path: ".", label: "boundary id provenance" }],
@@ -560,12 +560,12 @@ test("rejected library revisions are transactional and manifest paths cannot esc
   const outputDirectory = path.join(directory, "out");
   const lockPath = path.join(directory, "library.lock.json");
   const source = {
-    schema: "oca-sprite-source@1", id: "transaction-character", frame: { width: 2, height: 2 },
+    schema: "keel-sprite-source@1", id: "transaction-character", frame: { width: 2, height: 2 },
     assets: [{ id: 1, key: "one", label: "One", slot: 0, frameCapacity: 1, frames: ["one.png"] }],
     selections: [{ revision: 1, activeAssetIds: [1] }],
   };
   const library = {
-    schema: "oca-sprite-library-source@1", id: "transaction-library",
+    schema: "keel-sprite-library-source@1", id: "transaction-library",
     bundles: [{ bundleId: 1, revision: 1, key: "character", role: "character", source: "character.json", lock: "character.lock.json", dependencies: [] }],
     profiles: [{ id: "default", revision: 1, roots: [{ bundleId: 1, revision: 1 }] }], inventoryRoots: [],
   };
@@ -651,7 +651,7 @@ test("rejected library revisions are transactional and manifest paths cannot esc
   await rm(outputDirectory, { recursive: true, force: true });
   await mkdir(recoveryTransaction);
   await writeFile(path.join(recoveryTransaction, "OWNER.json"), JSON.stringify({
-    schema: "oca-sprite-library-owner@2",
+    schema: "keel-sprite-library-owner@2",
     libraryId: "transaction-library",
     outputDirectory,
     transactionId: recoveryTransactionId,
@@ -659,7 +659,7 @@ test("rejected library revisions are transactional and manifest paths cannot esc
     createdAt: new Date(0).toISOString(),
   }));
   await writeFile(path.join(recoveryTransaction, "RECOVERY_REQUIRED.json"), JSON.stringify({
-    schema: "oca-sprite-library-recovery@2",
+    schema: "keel-sprite-library-recovery@2",
     libraryId: "transaction-library",
     transactionId: recoveryTransactionId,
     outputDirectory,
@@ -685,7 +685,7 @@ test("rejected library revisions are transactional and manifest paths cannot esc
   await writeFile(earlyCrashFinal, earlyCrashNext);
   await mkdir(recoveryTransaction);
   await writeFile(path.join(recoveryTransaction, "OWNER.json"), JSON.stringify({
-    schema: "oca-sprite-library-owner@2",
+    schema: "keel-sprite-library-owner@2",
     libraryId: "transaction-library",
     outputDirectory,
     transactionId: earlyCrashTransactionId,
@@ -693,7 +693,7 @@ test("rejected library revisions are transactional and manifest paths cannot esc
     createdAt: new Date(0).toISOString(),
   }));
   await writeFile(path.join(recoveryTransaction, "RECOVERY_REQUIRED.json"), JSON.stringify({
-    schema: "oca-sprite-library-recovery@2",
+    schema: "keel-sprite-library-recovery@2",
     libraryId: "transaction-library",
     transactionId: earlyCrashTransactionId,
     outputDirectory,
@@ -741,7 +741,7 @@ test("rejected library revisions are transactional and manifest paths cannot esc
 
 test("sprite-emitter v1 is bounded, counter-deterministic, map-variable, and independent of appended presets", async () => {
   const recipe = {
-    schema: "oca-sprite-emitter@1", presetId: 7, revision: 1, fxCatalogRevision: 1, mapGenerationEpoch: 3, seedDomainVersion: 1, eventKind: 12,
+    schema: "keel-sprite-emitter@1", presetId: 7, revision: 1, fxCatalogRevision: 1, mapGenerationEpoch: 3, seedDomainVersion: 1, eventKind: 12,
     sprite: { mode: "animated", bundleId: 9, bundleRevision: 2, assetId: 4, selectionRevision: 1, frameIndices: [0, 1], frameSha256: ["11".repeat(32), "22".repeat(32)] },
     animation: { frameTicks: [3, 5], playback: "loop", phaseJitterTicks: 7 },
     spawn: { mode: "rate", maxLive: 32, maxTotal: 64, startTick: 0, endTick: 120, countMin: 18, countMax: 30, timingJitterTicks: 3, rateNumerator: 1, rateDenominator: 4, initialPosition: { shape: "ellipse", offsetXMinQ16: -8 * 65536, offsetXMaxQ16: 8 * 65536, offsetYMinQ16: -4 * 65536, offsetYMaxQ16: 4 * 65536 } },
@@ -755,11 +755,11 @@ test("sprite-emitter v1 is bounded, counter-deterministic, map-variable, and ind
   const seedA = await deriveEmitterEventSeed(recipe, context);
   const seedB = await deriveEmitterEventSeed(recipe, context);
   assert.deepEqual(seedA, seedB);
-  assert.equal(Buffer.from(seedA).toString("hex"), "473eaee7582f9ace129d3dcea60a832bf92ba5ffbdf1d3e3d7b40dbcfc02d237");
-  assert.deepEqual(Array.from({ length: 4 }, (_, counter) => splitMix64(0x473eaee7582f9acen, counter).toString(16)), ["528cfd666f8fa644", "383115e08339ef36", "421553ea6670a4b7", "af06399ea16f8018"]);
+  assert.equal(Buffer.from(seedA).toString("hex"), "b7a931a7a401d843cb4a2230b3744e5af9b7c15fe543e4fe23d297b01e3ae27d");
+  assert.deepEqual(Array.from({ length: 4 }, (_, counter) => splitMix64(0xb7a931a7a401d843n, counter).toString(16)), ["99906df5c5ef3241", "e104bd1ba1f7a3fc", "64c9a5fe9ff087be", "b14a411a1fd2a8bf"]);
   const portableVector = JSON.parse(await readFile(new URL("../packages/sprite-codex/vault/emitter-v1.portable-vector.json", import.meta.url), "utf8"));
   assert.equal(portableVector.eventSeed, Buffer.from(seedA).toString("hex"));
-  assert.deepEqual(portableVector.splitMix64Words, Array.from({ length: 128 }, (_, counter) => splitMix64(0x473eaee7582f9acen, counter).toString(16).padStart(16, "0")));
+  assert.deepEqual(portableVector.splitMix64Words, Array.from({ length: 128 }, (_, counter) => splitMix64(0xb7a931a7a401d843n, counter).toString(16).padStart(16, "0")));
   const traceA = emitterTrace(recipe, seedA, 90), traceB = emitterTrace(recipe, seedB, 90);
   assert.deepEqual(traceA, traceB);
   assert.equal(await emitterReplayHash(recipe, seedA, 90), await emitterReplayHash(recipe, seedB, 90));
@@ -782,7 +782,7 @@ test("sprite-emitter v1 is bounded, counter-deterministic, map-variable, and ind
 
 function proceduralMaterialStem(stemId, { mode = "autonomous", targets = ["s.face"], controllerId } = {}) {
   return {
-    schema: "oca-material-stem@1",
+    schema: "keel-material-stem@1",
     stemId,
     revision: 1,
     catalogRevision: 1,
@@ -807,7 +807,7 @@ function proceduralMaterialStem(stemId, { mode = "autonomous", targets = ["s.fac
 
 function singleRegionComposition(stems, region = "s.face") {
   return {
-    schema: "oca-material-composition@1",
+    schema: "keel-material-composition@1",
     revision: 1,
     semanticTargets: ["background", region],
     maximumAutonomousStems: 2,
@@ -822,7 +822,7 @@ function singleRegionComposition(stems, region = "s.face") {
 
 test("material-stem v1 closes commitments, pins RGBA/poster frames, and starts first-visible phase at zero", async () => {
   const recipe = {
-    schema: "oca-material-stem@1",
+    schema: "keel-material-stem@1",
     stemId: "film.holographic-glint",
     revision: 1,
     catalogRevision: 3,
@@ -855,7 +855,7 @@ test("material-stem v1 closes commitments, pins RGBA/poster frames, and starts f
   };
   const semanticTargets = ["background", "s.face", "s.bevel", "s.side", "foreground", "ui.diagnostics"];
   const composition = {
-    schema: "oca-material-composition@1", revision: 1, semanticTargets, maximumAutonomousStems: 2,
+    schema: "keel-material-composition@1", revision: 1, semanticTargets, maximumAutonomousStems: 2,
     diagnosticPolicy: "preserve-selected-contributions", stems: [recipe], materialRegions: ["s.face", "s.bevel"],
     assignments: [{ id: "film.face-and-bevel", regions: ["s.face", "s.bevel"], contribution: { stemId: recipe.stemId, contributionId: "clear-film" } }],
     adjacencies: [], transitions: [],
@@ -867,7 +867,7 @@ test("material-stem v1 closes commitments, pins RGBA/poster frames, and starts f
   const seedA = await deriveMaterialStemSeed(recipe, context);
   const seedB = await deriveMaterialStemSeed(recipe, context);
   assert.deepEqual(seedA, seedB);
-  assert.equal(Buffer.from(seedA).toString("hex"), "9872bbd842ec6caf94153ab8ce7dfce9e49d66edbe09dc77c886c212d5a9c4dc");
+  assert.equal(Buffer.from(seedA).toString("hex"), "529aa8d4d9e5dc8068a4f66d941165391f799413d811521435c51e09f28aeb50");
   assert.notDeepEqual(await deriveMaterialStemSeed(recipe, { ...context, tokenId: "18446744073709551618" }), seedA);
 
   const poster = sampleMaterialStem(recipe, seedA, semanticTargets, { mode: "poster" });
@@ -888,8 +888,8 @@ test("material-stem v1 closes commitments, pins RGBA/poster frames, and starts f
   );
   assert.equal(await materialStemDigest(recipe), await materialStemDigest(structuredClone(recipe)));
   assert.equal(await materialCompositionDigest(composition), await materialCompositionDigest(structuredClone(composition)));
-  assert.equal(await materialStemDigest(recipe), "db543dd92e2104efab1f2e0948a7ee52f2cc2bd6237f09b4963adb7214b3c7fb");
-  assert.equal(await materialCompositionDigest(composition), "3f95abe719cac805644acfaeca256a37c30cbc40e7b1ce70a1ac36d71cef6a30");
+  assert.equal(await materialStemDigest(recipe), "785e4b134945cb0ced6f1616c7497aa496a8a1f3697d0ad92cf808d2b438a36f");
+  assert.equal(await materialCompositionDigest(composition), "f6872df7986b08a46859878a2dfeffcb1ffbd66ab6057929081aeeda78ceea6a");
 
   assert.deepEqual(inspectMaterialPixels(recipe, Uint8ClampedArray.from([
     0, 0, 0, 0, 32, 16, 8, 64, 255, 255, 255, 255,
@@ -956,7 +956,7 @@ test("material-stem v1 closes commitments, pins RGBA/poster frames, and starts f
 
 test("material ping-pong preserves unequal frame durations and explicit clock modes control advancement", () => {
   const sprite = {
-    schema: "oca-material-stem@1", stemId: "timeline.unequal", revision: 1, catalogRevision: 1, seedDomainVersion: 1,
+    schema: "keel-material-stem@1", stemId: "timeline.unequal", revision: 1, catalogRevision: 1, seedDomainVersion: 1,
     source: { kind: "sprite", sprite: { bundleId: 1, bundleRevision: 1, assetId: 1, selectionRevision: 1, frameIndices: [0, 1, 2], frameSha256: ["11".repeat(32), "22".repeat(32), "33".repeat(32)] } },
     alphaMode: "opaque-color", alphaPolicy: { requireTransparentPixels: false, requirePartialPixels: false },
     channels: [
@@ -1003,7 +1003,7 @@ test("regional assignments require exact adjacency coverage and pinned transitio
   const left = proceduralMaterialStem("media.graphite", { targets: ["s.vertical"] });
   const right = proceduralMaterialStem("media.watercolor", { targets: ["s.connector"] });
   const composition = {
-    schema: "oca-material-composition@1", revision: 1,
+    schema: "keel-material-composition@1", revision: 1,
     semanticTargets: ["paper", "s.vertical", "s.connector"], maximumAutonomousStems: 2,
     diagnosticPolicy: "preserve-selected-contributions", stems: [left, right],
     materialRegions: ["s.vertical", "s.connector"],

@@ -14,7 +14,7 @@ The compiler requires Node 22 or newer. The loader is browser-safe and has no No
 
 ```json
 {
-  "schema": "oca-sprite-source@1",
+  "schema": "keel-sprite-source@1",
   "id": "my-game-items",
   "frame": { "width": 32, "height": 32 },
   "defaultDisplaySize": 32,
@@ -63,7 +63,7 @@ The library graph keeps character, shared equipment, and world geometry independ
 
 ```json
 {
-  "schema": "oca-sprite-library-source@1",
+  "schema": "keel-sprite-library-source@1",
   "id": "my-game-v1",
   "bundles": [
     { "bundleId": 1, "revision": 1, "key": "character", "role": "standalone-character", "source": "character.sprite.json", "lock": "character.lock.json", "dependencies": [] },
@@ -127,11 +127,11 @@ This uses nearest-neighbor `image-rendering: pixelated` and scales atlas coordin
 
 ## Deterministic material stems
 
-`oca-material-stem@1` generalizes the sprite runtime for layered generative materials. A stem can be sprite-based, procedural, or hybrid. It pins its bundle/asset/frame hashes or procedural kernel/parameter digest, runs on the common 60-tick clock, declares its RGBA channel meanings and alpha contract, and routes one or more contributions to named semantic surfaces.
+`keel-material-stem@1` generalizes the sprite runtime for layered generative materials. A stem can be sprite-based, procedural, or hybrid. It pins its bundle/asset/frame hashes or procedural kernel/parameter digest, runs on the common 60-tick clock, declares its RGBA channel meanings and alpha contract, and routes one or more contributions to named semantic surfaces.
 
 Physical surface deposits, transparent physical films, and optical post-effects are separate contribution domains. A primary contribution may name an explicit counter-contribution on disjoint other or inverse layers. Resolution fails when a route references a missing target or resolves to nothing; selected contributions cannot use zero opacity.
 
-`oca-material-composition@1` commits material regions, region-to-contribution assignments, declared adjacency topology, and exactly one transition for every adjacency. Each transition pins its oriented assignment/contribution endpoints, method ID/revision, parameter digest, and implementation digest. This lets a project prove that regional media remain distinct and that every declared material boundary uses a named implementation rather than a hidden global shader. The composition also limits autonomous clocks to at most two, distinguishes static, externally controlled, and autonomous stems, and preserves selected physical and optical contributions in diagnostics.
+`keel-material-composition@1` commits material regions, region-to-contribution assignments, declared adjacency topology, and exactly one transition for every adjacency. Each transition pins its oriented assignment/contribution endpoints, method ID/revision, parameter digest, and implementation digest. This lets a project prove that regional media remain distinct and that every declared material boundary uses a named implementation rather than a hidden global shader. The composition also limits autonomous clocks to at most two, distinguishes static, externally controlled, and autonomous stems, and preserves selected physical and optical contributions in diagnostics.
 
 ```js
 import {
@@ -164,7 +164,7 @@ const pointerDriven = sampleMaterialStem(externalStem, externalSeed, composition
 inspectMaterialPixels(stem, decodedRgbaPixels);
 ```
 
-The v1 per-stem seed is SHA-256 over this exact 156-byte preimage: UTF-8 `oca.material-stem.v1`, 32-byte token seed, 32-byte collection ID, big-endian uint256 token ID, SHA-256 of the UTF-8 stem ID, big-endian uint32 stem revision, and big-endian uint32 catalog revision. The checked cross-language vector for token seed `ab` repeated 32 bytes, collection ID `cd` repeated 32 bytes, token ID `18446744073709551617`, stem `film.holographic-glint`, revision 1, and catalog revision 3 is `9872bbd842ec6caf94153ab8ce7dfce9e49d66edbe09dc77c886c212d5a9c4dc`.
+The v1 per-stem seed is SHA-256 over this exact 156-byte preimage: UTF-8 `keel.material-stem.v1`, 32-byte token seed, 32-byte collection ID, big-endian uint256 token ID, SHA-256 of the UTF-8 stem ID, big-endian uint32 stem revision, and big-endian uint32 catalog revision. The checked cross-language vector for token seed `ab` repeated 32 bytes, collection ID `cd` repeated 32 bytes, token ID `18446744073709551617`, stem `film.holographic-glint`, revision 1, and catalog revision 3 is `529aa8d4d9e5dc8068a4f66d941165391f799413d811521435c51e09f28aeb50`.
 
 Transparent sources must require real transparent pixels, can require partial-alpha pixels, and premultiplied sources are rejected when any color channel exceeds alpha. Runtime inspection accepts only genuinely one-byte-per-element `Uint8Array` or `Uint8ClampedArray` pixels, using typed-array intrinsic getters so a spoofed `Symbol.toStringTag` or wider typed array cannot cross the byte boundary. Opaque data atlases require linear RGBA channels and an entirely opaque alpha channel.
 

@@ -1,5 +1,5 @@
 {
-  "schema": "oca-sprite-source@1", "id": "vault-world-entities-209-v1", "frame": { "width": 209, "height": 209 }, "defaultDisplaySize": 32,
+  "schema": "keel-sprite-source@1", "id": "vault-world-entities-209-v1", "frame": { "width": 209, "height": 209 }, "defaultDisplaySize": 32,
   "assets": [
     { "id": 1, "key": "forge-props-pickups", "label": "Forge props and pickups", "slot": 0, "frameCapacity": 8, "frames": [
       { "path": "../../../examples/demos/vault-arcade/generated-attribute-proxy/assets/game/forge-atlas-grayscale-v1.png", "x": 0, "y": 418, "removeConnectedLightBackground": true },

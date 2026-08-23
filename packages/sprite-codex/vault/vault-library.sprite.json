@@ -1,5 +1,5 @@
 {
-  "schema": "oca-sprite-library-source@1",
+  "schema": "keel-sprite-library-source@1",
   "id": "vault-assets-v1",
   "bundles": [
     { "bundleId": 1, "revision": 1, "key": "character-orb", "role": "standalone-character-body-material-panels-directions", "source": "character-orb.sprite.json", "lock": "character-orb.sprite.lock.json", "dependencies": [] },
