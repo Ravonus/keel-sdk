@@ -274,7 +274,7 @@
     "byteLength": 57228
   },
   "sharedReader": {
-    "fileName": "oca-readers.js",
+    "fileName": "keel-readers.js",
     "api": [
       "decodeAtlasMaterialMapBits",
       "decodeMaterialBits",

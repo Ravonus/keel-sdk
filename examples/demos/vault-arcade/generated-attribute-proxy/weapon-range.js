@@ -1,5 +1,5 @@
 import {WEAPON_REGION_OVERRIDE_STORAGE_KEY,loadWeaponRegionOverrides,resolveWeaponRegion} from "./weapon-region-resolver.js";
-import {KEEL_SOUND_BITS_CODEC,createAudioReader,parseSpriteSoundCatalog,resolveSpriteSound} from "./oca-readers.js";
+import {KEEL_SOUND_BITS_CODEC,createAudioReader,parseSpriteSoundCatalog,resolveSpriteSound} from "./keel-readers.js";
 
 const paletteSelect=document.querySelector("#weapon-palette");
 const particleColorSelect=document.querySelector("#weapon-particle-color");

@@ -7,7 +7,7 @@
 import {
   KEEL_SOUND_BITS_CODEC,
   createAudioReader,
-} from "/content/oca-readers.js";
+} from "/content/keel-readers.js";
 
 const PATCHES = [
   { id: "shot", label: "Shot", accent: "#ff8ad4", resourceId: "shot.ocas" },
@@ -68,7 +68,7 @@ async function boot() {
     bootButton.textContent = "Rendering…";
     setStatus("Unlocking audio and decoding verified bitstreams…");
     const runtime = globalThis.__KEEL_RUNTIME__;
-    const seed = runtime?.context?.derivedTokenSeed ?? runtime?.manifestDigest ?? "oca-soundbox-live";
+    const seed = runtime?.context?.derivedTokenSeed ?? runtime?.manifestDigest ?? "keel-soundbox-live";
     reader = createAudioReader({
       content: globalThis.__KEEL_CONTENT__,
       noiseSeed: seed,

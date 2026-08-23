@@ -5,7 +5,7 @@
 import {
   createSpritePlayer,
   decodeSpriteBitAtlas,
-} from "/content/oca-readers.js";
+} from "/content/keel-readers.js";
 
 const LAYERS = [
   { resourceId: "body.webp", hue: 222, opacity: 1 },
@@ -24,7 +24,7 @@ const playButton = document.getElementById("play");
 function seedFromRuntime() {
   const value = globalThis.__KEEL_RUNTIME__?.context?.derivedTokenSeed ??
     globalThis.__KEEL_RUNTIME__?.manifestDigest ??
-    "oca-sprite-forge";
+    "keel-sprite-forge";
   let seed = 0x811c9dc5;
   for (const character of String(value)) {
     seed ^= character.charCodeAt(0);

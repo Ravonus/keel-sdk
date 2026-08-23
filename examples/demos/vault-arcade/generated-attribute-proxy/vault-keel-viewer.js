@@ -13,7 +13,7 @@ import {
 } from "/content/weapon-material-runtime.mjs";
 import { evaluateVaultVerification } from "/content/vault-verification.js";
 import { allowCollectionVerificationFixtureQuery, evaluateCollectionVerification } from "/content/collection-verification.js";
-import { KEEL_SOUND_BITS_CODEC, createAudioReader } from "/content/oca-readers.js";
+import { KEEL_SOUND_BITS_CODEC, createAudioReader } from "/content/keel-readers.js";
 import {
   VAULT_MOB_ABILITIES,
   VAULT_MOB_ABILITY_RULES,

@@ -9,7 +9,7 @@
  * The Sonant renderer below is derived from Dominic Szablewski's pl_synth
  * (MIT, Copyright 2024-2025 Dominic Szablewski), itself based on Sonant.
  * It is adapted here to use a per-render deterministic noise seed, bounded
- * allocation, and the historical named Sonant-X JSON format used by OCA.
+ * allocation, and the historical named Sonant-X JSON format.
  */
 export const KEEL_SOUND_BITS_CODEC = "keel-sonant-bits@1";
 export const KEEL_SPRITE_SOUND_SCHEMA = "keel-sprite-sounds@1";
@@ -265,7 +265,7 @@ class ByteReader {
         }
     }
 }
-const SOUND_MAGIC = [0x4f, 0x43, 0x41, 0x53]; // OCAS
+const SOUND_MAGIC = [0x4f, 0x43, 0x41, 0x53]; // legacy sound magic
 /** Compile human-readable Sonant-X JSON into the compact on-chain bit codec. */
 export function encodeSoundBits(value) {
     const song = parseSonantLegacySong(value);
@@ -355,7 +355,7 @@ export function compactSonantSong(value) {
 function seed32(value) {
     if (typeof value === "number" && Number.isInteger(value))
         return value >>> 0;
-    const text = String(value ?? "oca-audio");
+    const text = String(value ?? "keel-audio");
     let state = 0x811c9dc5;
     for (let index = 0; index < text.length; index += 1) {
         state ^= text.charCodeAt(index);
@@ -728,7 +728,7 @@ export function resolveSpriteSound(catalogValue, assetId, eventId, seed, occurre
         throw new Error("Sprite sound selection overflowed its weight table.");
     return { profile, event, sound };
 }
-const SPRITE_MAGIC = [0x4f, 0x43, 0x41, 0x41]; // OCAA
+const SPRITE_MAGIC = [0x4f, 0x43, 0x41, 0x41]; // legacy sprite-atlas magic
 /** Build equal-sized, left-to-right/top-to-bottom frame rectangles. */
 export function createGridSpriteAtlas(options) {
     const imageWidth = integer(options.imageWidth, "imageWidth", 1, 65_535);
@@ -1053,7 +1053,7 @@ export function decodeSpriteBitAtlas(bytes) {
     };
 }
 const MATERIAL_MAGIC = [0x4f, 0x43, 0x4d, 0x50]; // OCMP
-const ATLAS_MATERIAL_MAGIC = [0x4f, 0x43, 0x41, 0x4d]; // OCAM
+const ATLAS_MATERIAL_MAGIC = [0x4f, 0x43, 0x41, 0x4d]; // legacy material-atlas magic
 const TRAIT_MAGIC = [0x4f, 0x43, 0x54, 0x52]; // OCTR
 const CHARACTER_METADATA_MAGIC = [0x4f, 0x43, 0x4d, 0x56]; // OCMV
 const MAX_MATERIAL_REGIONS = 64;

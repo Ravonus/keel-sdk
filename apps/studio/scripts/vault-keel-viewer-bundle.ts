@@ -19,7 +19,7 @@ export const VAULT_VIEWER_BUNDLE_INPUTS: readonly string[] = Object.freeze([
   `${VIEWER_DEMO_PREFIX}/weapon-region-layouts-v2.json`,
   `${VIEWER_DEMO_PREFIX}/weapon-region-overrides-v1.json`,
   `${VIEWER_DEMO_PREFIX}/weapon-sounds-v1.json`,
-  `${VIEWER_DEMO_PREFIX}/oca-readers.js`,
+  `${VIEWER_DEMO_PREFIX}/keel-readers.js`,
   ...["gyro-saw-attack.ocas", "rift-fork-attack.ocas", "aegis-star-attack.ocas", "needle-array-attack.ocas"]
     .map((name) => `${VIEWER_DEMO_PREFIX}/audio/${name}`),
   `${VIEWER_DEMO_PREFIX}/orb-core-v1-turnaround.png`,
@@ -103,7 +103,7 @@ export async function buildVaultKeelViewer(demoRoot: string): Promise<Uint8Array
     readFile(path.join(demoRoot, "weapon-material-runtime.mjs"), "utf8"),
     readFile(path.join(demoRoot, "vault-verification.js"), "utf8"),
     readFile(path.join(repositoryRoot, "packages/viewer/dist/collection-verification.js"), "utf8"),
-    readFile(path.join(demoRoot, "oca-readers.js"), "utf8"),
+    readFile(path.join(demoRoot, "keel-readers.js"), "utf8"),
     readFile(path.join(demoRoot, "vault-keel-viewer.js"), "utf8"),
     readFile(path.join(demoRoot, "orb-core-v1-attribute-targets.json")),
     readFile(path.join(demoRoot, "weapon-attributes-v1.json")),
@@ -141,7 +141,7 @@ export async function buildVaultKeelViewer(demoRoot: string): Promise<Uint8Array
   viewer = viewer.replace(/^import\s*\{[\s\S]*?\}\s*from\s*"\/content\/weapon-material-runtime\.mjs";\s*/mu, "");
   viewer = viewer.replace(/^import\s*\{\s*evaluateVaultVerification\s*\}\s*from\s*"\/content\/vault-verification\.js";\s*/mu, "");
   viewer = viewer.replace(/^import\s*\{\s*allowCollectionVerificationFixtureQuery,\s*evaluateCollectionVerification\s*\}\s*from\s*"\/content\/collection-verification\.js";\s*/mu, "");
-  viewer = viewer.replace(/^import\s*\{\s*KEEL_SOUND_BITS_CODEC,\s*createAudioReader\s*\}\s*from\s*"\/content\/oca-readers\.js";\s*/mu, "");
+  viewer = viewer.replace(/^import\s*\{\s*KEEL_SOUND_BITS_CODEC,\s*createAudioReader\s*\}\s*from\s*"\/content\/keel-readers\.js";\s*/mu, "");
   viewer = viewer.replace(/^import\s*\{[\s\S]*?\}\s*from\s*"\/content\/vault-combat-shared\.mjs";\s*/mu, "");
   viewer = viewer.replace(/^import\s*\{[\s\S]*?\}\s*from\s*"\/content\/vault-input-shared\.mjs";\s*/mu, "");
   viewer = viewer.replace(

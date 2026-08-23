@@ -16,7 +16,7 @@ export const demosDirectory = path.dirname(fileURLToPath(import.meta.url));
  */
 export const DEMOS = [
   {
-    id: "oca-three-vault",
+    id: "keel-three-vault",
     slug: "three-vault",
     name: "Vault Of The Fallen",
     tagline:
@@ -67,7 +67,7 @@ export const DEMOS = [
     ],
   },
   {
-    id: "oca-p5-flowfield",
+    id: "keel-p5-flowfield",
     slug: "p5-flowfield",
     name: "Synthwave Flow Field",
     tagline:
@@ -109,7 +109,7 @@ export const DEMOS = [
     ],
   },
   {
-    id: "oca-soundbox-sfx",
+    id: "keel-soundbox-sfx",
     slug: "soundbox-synth",
     name: "On-Chain SFX",
     tagline:
@@ -129,7 +129,7 @@ export const DEMOS = [
         executable: true,
       },
       {
-        id: "oca-readers.js",
+        id: "keel-readers.js",
         role: "library",
         mediaType: "text/javascript",
         file: "../../../packages/viewer/dist/readers.js",
@@ -169,7 +169,7 @@ export const DEMOS = [
     ],
   },
   {
-    id: "oca-sprite-forge",
+    id: "keel-sprite-forge",
     slug: "sprite-forge",
     name: "Sprite Forge",
     tagline:
@@ -189,7 +189,7 @@ export const DEMOS = [
         executable: true,
       },
       {
-        id: "oca-readers.js",
+        id: "keel-readers.js",
         role: "library",
         mediaType: "text/javascript",
         file: "../../../packages/viewer/dist/readers.js",
@@ -247,7 +247,7 @@ export const DEMOS = [
     ],
   },
   {
-    id: "oca-vault-arcade",
+    id: "keel-vault-arcade",
     slug: "vault-arcade",
     name: "Vault Arcade",
     tagline:
