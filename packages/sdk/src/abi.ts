@@ -1,6 +1,6 @@
 /** Minimal human-readable ABIs suitable for viem, ethers, or code generation. */
 /** KeelFactory capability marker for the shared mint-capacity KEEL721 build. */
-export const OCA_CAPACITY_FACTORY_VERSION =
+export const KEEL_CAPACITY_FACTORY_VERSION =
   "0x0c9cae5d5d90d4e1376492a08111dd1ffbadf0ecf76bb1ebe527263b6330272e" as const;
 
 export const keelHoldAbi = [
