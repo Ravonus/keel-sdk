@@ -106,7 +106,7 @@ An Keel on-chain source declares:
 
 `createKeelHoldObjectReader()` walks the graph with limits for depth, nodes, bytes, page size, and concurrent carrier reads. It caches verified nodes and returns the exact decoded bytes to the manifest resolver.
 
-Creator iframe code never performs RPC calls. After verification, the same bytes are exposed under `oca://`, `/content/`, `/onchain/`, and EIP-155 aliases.
+Creator iframe code never performs RPC calls. After verification, the same bytes are exposed under `keel://`, `/content/`, `/onchain/`, and EIP-155 aliases.
 
 ## Reuse
 

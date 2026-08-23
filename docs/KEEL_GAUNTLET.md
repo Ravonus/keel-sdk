@@ -50,7 +50,7 @@ as end-to-end mega-tests that prove the pipeline still works.
 
 | Path | What it is | Treat it as |
 | --- | --- | --- |
-| `/Users/ravonus/dev/oca-modern` | The modern TypeScript reconstruction. Working, tested, deployable. | **The codebase you modify.** |
+| `/Users/ravonus/dev/keel-sdk` | The modern TypeScript reconstruction. Working, tested, deployable. | **The codebase you modify.** |
 | `/Users/ravonus/dev/chainrougesolidity-inventory` | The real Keel contracts + the original encoded artifacts. From GitLab (`gitlab.com/ravonus/chainrougesolidity`), Sep 2023. | **Authoritative reference. Read-only.** |
 | `/Users/ravonus/dev/chainrougesolidity-development` | Earlier snapshot, Mar 2023. Game-focused. 97 generated per-token game HTML files. | **Test material. Read-only.** |
 
@@ -59,11 +59,11 @@ Two public GitHub repos are also relevant but contain no source of value:
 `Ravonus/Keel-demo` (an old uploader UI). `Ravonus/soundbox` has the
 zlib-licensed SoundBox player.
 
-**Do not modify the two chainrouge trees.** Copy what you need into `oca-modern`.
+**Do not modify the two chainrouge trees.** Copy what you need into `keel-sdk`.
 
 ---
 
-## 3. State of `oca-modern` right now
+## 3. State of `keel-sdk` right now
 
 Everything in this section is currently true and passing. **Do not regress it.**
 
@@ -79,7 +79,7 @@ pnpm studio:test:e2e # green: 9 ordinary Playwright tests; 3 seeded live Keel te
 Docker is **not** used — the host has native Postgres and Foundry.
 
 ```bash
-psql "postgresql://oca:oca@localhost:5432/oca_studio"   # role + db already created
+psql "postgresql://keel:keel@localhost:5432/keel_studio"   # role + db already created
 anvil --host 127.0.0.1 --chain-id 31337 --block-time 1  # native, not docker
 pnpm studio:db:migrate && pnpm contracts:compile
 pnpm local:deploy && pnpm studio:seed && pnpm studio:index
@@ -170,12 +170,12 @@ holding: `hide`, on-chain-vs-IPFS view type, `isImmutable`, **`highResLink`,
 **`history[]` — a pack of every parent viewer ID, so anyone can fork a viewer
 from an existing one.**
 
-### 4.2 Concepts oca-modern does **not** have
+### 4.2 Concepts keel-sdk does **not** have
 
 These are the reasons the reconstruction is thinner than the original. Each is a
 candidate work item.
 
-| Keel concept | Why it matters | oca-modern today |
+| Keel concept | Why it matters | keel-sdk today |
 | --- | --- | --- |
 | **Tiered fidelity links** — `highResLink` / `previewLink` / `hybridLink` per object | One object, three qualities: cheap on-chain preview, high-res off-chain, hybrid | Only *ordered fallbacks* (weaker: same content, different transport) |
 | **Per-object versions** — `versions[]`, `versionPush`, `getVersionedId`, mutability ∈ {Updatable, Version, None} | An object evolves independently of any token | Revisions exist only on the registry presentation |
@@ -185,7 +185,7 @@ candidate work item.
 | **Links as first-class** — hashed host, packed mutability + linkType | External storage described and constrained | Source policy exists but no link registry |
 | **Inventory layer** — `Backpack`, `Equipment`, `EquipmentMix`, `Inventory`, `ERC1155P` | Composable equippable state feeding the render | Nothing |
 
-### 4.3 What oca-modern has that Keel left unfinished
+### 4.3 What keel-sdk has that Keel left unfinished
 
 Keel is **~75% done by the author's own assessment**, and the missing quarter
 is precisely the verification layer:
@@ -199,7 +199,7 @@ function verify()        public {}    // empty
 `pushDataObject`, `managerSetter`, `setDataObjectInfo`, and `setVersion` are
 `public`/`external` with **no access control**.
 
-oca-modern supplies the missing quarter: RFC 8785 canonicalization, exact-byte
+keel-sdk supplies the missing quarter: RFC 8785 canonicalization, exact-byte
 verified gateway, CSP + egress-denied sandbox, registry commitment chain,
 recursive `KeelHold` composites. **The two halves are complementary. The goal
 is the union, not a rewrite of either.**
@@ -437,7 +437,7 @@ Do not guess these; they change the design.
 
 1. **Contract scope.** Bring the §4.2 Keel concepts into
    `packages/contracts` (tiered links, per-object versions, viewer lineage,
-   token-owned objects, on-chain seeds), or keep oca-modern's contracts as they
+   token-owned objects, on-chain seeds), or keep keel-sdk's contracts as they
    are and prove only the storage/index/render layer?
 2. **`gameStaked6-9`** are a different ~73 KB format. Superseded, or a variant
    that must be supported?

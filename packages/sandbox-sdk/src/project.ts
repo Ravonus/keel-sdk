@@ -4,7 +4,7 @@ import { createSandboxDocument, resolveArtifact, type FetchResponseLike } from "
 import { inspectSandboxManifest } from "./inspect.js";
 import type { PreparedSandboxProject, SandboxProjectInput } from "./types.js";
 
-const BASE_URL = "https://sandbox.oca.invalid/project/";
+const BASE_URL = "https://sandbox.keel.invalid/project/";
 
 function response(bytes: Uint8Array, url: string): FetchResponseLike {
   return {

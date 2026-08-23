@@ -5,18 +5,18 @@
   "anatomicalFiringHand": "right",
   "anatomicalSupportHand": "left",
   "base": {
-    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-firearm-v2-source/True_Modular_Base/rotations/west.png",
+    "path": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-firearm-v2-source/True_Modular_Base/rotations/west.png",
     "sha256": "83334d9fb04bbe73f79525ef5b0e52187932b9055c735e0a9a580f96eafb7ec7"
   },
-  "inputDirectory": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-pistol-v3-source/True_Modular_Base/animations/manager-pistol-v3/west",
-  "outputDirectory": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-pistol-v4-masked-west",
+  "inputDirectory": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-pistol-v3-source/True_Modular_Base/animations/manager-pistol-v3/west",
+  "outputDirectory": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-pistol-v4-masked-west",
   "lockFromX": 45,
   "lockedColumns": [
     45,
     91
   ],
   "mask": {
-    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-pistol-v4-masked-west/west-rear-lock-mask.png",
+    "path": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-pistol-v4-masked-west/west-rear-lock-mask.png",
     "sha256": "f920b8ed8bd80b8349f6eb35df7280a17a42f385a1bbd3059ceefbc6021ad920"
   },
   "frames": [

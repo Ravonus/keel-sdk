@@ -10,7 +10,7 @@ function escapeAttribute(value: string): string {
 }
 
 function presentation(mode: EntrypointMode, resourceId: string, mediaType: string, name: string): string {
-  const source = `oca://${escapeAttribute(resourceId)}`;
+  const source = `keel://${escapeAttribute(resourceId)}`;
   switch (mode) {
     case "image":
     case "svg":
@@ -38,7 +38,7 @@ export function createGeneratedWrapper(input: {
 }): string {
   const main = presentation(input.mode, input.resourceId, input.mediaType, input.name);
   const download = input.downloads
-    ? `<a class="download" href="oca://${escapeAttribute(input.resourceId)}" download>Download verified original</a>`
+    ? `<a class="download" href="keel://${escapeAttribute(input.resourceId)}" download>Download verified original</a>`
     : "";
   return `<!doctype html>
 <html lang="en">

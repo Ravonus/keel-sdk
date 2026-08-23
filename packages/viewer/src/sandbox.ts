@@ -393,10 +393,10 @@ function contentGatewayBootstrap(artifact: ResolvedArtifact): string {
   const normalize = value => {
     const raw = rawName(value);
     if (Object.hasOwn(aliases, raw)) return raw;
-    if (raw.startsWith("oca://") || raw.startsWith("/")) return raw;
+    if (raw.startsWith("keel://") || raw.startsWith("/")) return raw;
     try {
-      const parsed = new URL(raw, "https://oca.invalid/");
-      if (parsed.origin === "https://oca.invalid") return parsed.pathname + parsed.search + parsed.hash;
+      const parsed = new URL(raw, "https://keel.invalid/");
+      if (parsed.origin === "https://keel.invalid") return parsed.pathname + parsed.search + parsed.hash;
       return parsed.href;
     } catch {
       return raw;

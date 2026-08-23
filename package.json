@@ -1,5 +1,5 @@
 {
-  "name": "oca-modern",
+  "name": "keel-sdk",
   "version": "0.3.0",
   "private": true,
   "description": "Keel/Keel protocol resurrection: browser-native artifacts, immutable chunk storage, revisioned viewers, and modular mint access.",

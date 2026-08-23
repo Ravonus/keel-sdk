@@ -1,7 +1,7 @@
 {
   "schema": "vault-gun-animation-normalization@1",
-  "source": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/imagegen/west-sidearm-v19/codex-imagegen-transparent-source-v2.png",
-  "reference": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/sidearm-mask-guide-v12/east-row.png",
+  "source": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/imagegen/west-sidearm-v19/codex-imagegen-transparent-source-v2.png",
+  "reference": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/sidearm-mask-guide-v12/east-row.png",
   "grid": [
     9,
     1

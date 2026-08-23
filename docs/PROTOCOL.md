@@ -177,7 +177,7 @@ A manifest declares revision number, optional parent/digest, compatibility range
 
 Creator content may reference declared resources through:
 
-- `oca://id`
+- `keel://id`
 - `/content/id`
 - `/content/<manifest-id>/id`
 - an explicit alias

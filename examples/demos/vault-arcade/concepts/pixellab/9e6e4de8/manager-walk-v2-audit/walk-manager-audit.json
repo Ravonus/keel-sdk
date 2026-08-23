@@ -801,7 +801,7 @@
     }
   ],
   "sourceContactSheet": {
-    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-walk-v2-audit/walk-source-contact-sheet.png",
+    "path": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-walk-v2-audit/walk-source-contact-sheet.png",
     "sha256": "9caad3c6fd168af97aad3e7083779d7082259795598c8635965548aa9a921038"
   },
   "decision": "approved"

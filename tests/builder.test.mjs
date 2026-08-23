@@ -113,7 +113,7 @@ test("image wrapper emits a deterministic v2 verified-only manifest and can omit
     assert.equal(output.manifest.downloads, undefined);
     assert.ok(output.manifest.resources.every((resource) => resource.sources[0].kind === "uri"));
     const wrapper = await readFile(output.wrapperPath, "utf8");
-    assert.equal(wrapper.includes("oca://original"), false);
+    assert.equal(wrapper.includes("keel://original"), false);
     assert.ok(wrapper.includes("&lt;safe&gt;"));
     const expected = await manifestIntegrity(output.manifest);
     assert.equal(output.manifestIntegrity.digest, expected.digest);

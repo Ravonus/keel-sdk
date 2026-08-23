@@ -52,7 +52,7 @@ const handle = createVerifiedContentFetchHandler(gateway);
 const webResponse = handle(new Request("https://viewer.example/content/model"));
 ```
 
-The gateway exposes exact committed aliases only. It supports `/content/`, `/onchain/`, `/ipfs/`, `oca://`, declared source URIs, and custom aliases. It never performs runtime network fallback.
+The gateway exposes exact committed aliases only. It supports `/content/`, `/onchain/`, `/ipfs/`, `keel://`, declared source URIs, and custom aliases. It never performs runtime network fallback.
 
 ## Mounting
 

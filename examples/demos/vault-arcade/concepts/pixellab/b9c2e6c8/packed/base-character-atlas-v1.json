@@ -189,12 +189,12 @@
     ]
   },
   "png": {
-    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/b9c2e6c8/packed/base-character-atlas-v1.png",
+    "path": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/pixellab/b9c2e6c8/packed/base-character-atlas-v1.png",
     "bytes": 90928,
     "sha256": "8a18b2fb1cc7ee928690e635219b2b214faebed73a30c3bbf8ac2c0a990641a5"
   },
   "webp": {
-    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/b9c2e6c8/packed/base-character-atlas-v1-q50.webp",
+    "path": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/pixellab/b9c2e6c8/packed/base-character-atlas-v1-q50.webp",
     "quality": 50,
     "bytes": 54576,
     "sha256": "160223f69b5dd7ecfaca7683fa707db2cbba518c37e1c90d36eb9a411ee10366"

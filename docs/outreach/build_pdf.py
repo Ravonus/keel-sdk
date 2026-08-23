@@ -19,7 +19,7 @@ TEZ    = colors.HexColor("#0E7DD6")
 WARN   = colors.HexColor("#B25E09")
 PAPER  = colors.HexColor("#FBFCFD")
 
-OUT = "/Users/ravonus/dev/oca-modern/docs/outreach/keel-zkverify.pdf"
+OUT = "/Users/ravonus/dev/keel-sdk/docs/outreach/keel-zkverify.pdf"
 M = 0.85 * inch
 
 

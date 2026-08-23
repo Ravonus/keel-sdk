@@ -131,7 +131,7 @@
   "provenance": {
     "createdAt": "2026-08-07T22:04:43.049Z",
     "creator": "Ravonus",
-    "sourceRepository": "oca-modern"
+    "sourceRepository": "keel-sdk"
   },
   "downloads": [
     {
@@ -141,7 +141,7 @@
     }
   ],
   "extensions": {
-    "oca:derived": {
+    "keel:derived": {
       "preview": "WebP",
       "originalPreserved": true,
       "sourceMode": "files",

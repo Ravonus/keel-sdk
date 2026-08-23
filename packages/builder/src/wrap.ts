@@ -281,7 +281,7 @@ export async function wrapImage(options: WrapImageOptions): Promise<WrappedArtif
       ? { downloads: [{ resource: "original", label: "Download original", filename: path.basename(input) }] }
       : {}),
     extensions: {
-      "oca:derived": {
+      "keel:derived": {
         preview: "WebP",
         originalPreserved: preserveOriginal,
         sourceMode,

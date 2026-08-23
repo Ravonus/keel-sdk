@@ -1,7 +1,7 @@
 {
   "schema": "vault-sprite-grid-report@1",
-  "sourcePath": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/base-character-walk-4dir-6f-alpha-v2.png",
-  "maskPath": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/base-rig-walk-4dir-6f-safe-mask.png",
+  "sourcePath": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/base-character-walk-4dir-6f-alpha-v2.png",
+  "maskPath": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/base-rig-walk-4dir-6f-safe-mask.png",
   "grid": [
     6,
     4

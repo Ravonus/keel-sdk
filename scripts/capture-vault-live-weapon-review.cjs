@@ -1,6 +1,6 @@
 const { chromium } = require("playwright");
 
-const root = "/Users/ravonus/dev/oca-modern";
+const root = "/Users/ravonus/dev/keel-sdk";
 const url = "http://127.0.0.1:4186/vault-game.html?mapSeed=vault-gauntlet-0001&characterSeed=orb-character-001&v=weapon-material-live-1";
 
 (async () => {

@@ -75,10 +75,10 @@ test("studio-core wrapper uses virtual content paths only", () => {
 
 test("ordinary Keel modules select the creator media renderer without owning verification", () => {
   const cases = [
-    ["image", "image/png", /<img src="oca:\/\/creator-resource"/u],
-    ["video", "video/mp4", /<video src="oca:\/\/creator-resource" controls playsinline>/u],
-    ["audio", "audio\/mpeg", /<audio src="oca:\/\/creator-resource" controls>/u],
-    ["module", "text\/javascript", /<script type="module" src="oca:\/\/creator-resource"><\/script>/u],
+    ["image", "image/png", /<img src="keel:\/\/creator-resource"/u],
+    ["video", "video/mp4", /<video src="keel:\/\/creator-resource" controls playsinline>/u],
+    ["audio", "audio\/mpeg", /<audio src="keel:\/\/creator-resource" controls>/u],
+    ["module", "text\/javascript", /<script type="module" src="keel:\/\/creator-resource"><\/script>/u],
   ];
   for (const [mode, mediaType, expected] of cases) {
     const child = createGeneratedWrapper({

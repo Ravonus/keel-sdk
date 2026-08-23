@@ -112,11 +112,11 @@ export async function buildDemoManifest(demo) {
     provenance: {
       createdAt: CREATED_AT,
       creator: "Ravonus",
-      sourceRepository: "oca-modern",
+      sourceRepository: "keel-sdk",
       license: demo.license,
     },
     extensions: {
-      "oca:demo": { slug: demo.slug, accent: demo.accent, tagline: demo.tagline },
+      "keel:demo": { slug: demo.slug, accent: demo.accent, tagline: demo.tagline },
     },
   };
 

@@ -46,7 +46,7 @@ export function resourceGatewayAliases(artifact: ResolvedArtifact, resource: Res
   const encodedId = encodeURIComponent(resource.resource.id);
   const encodedManifest = encodeURIComponent(artifact.manifest.id);
 
-  addAlias(aliases, `oca://${resource.resource.id}`);
+  addAlias(aliases, `keel://${resource.resource.id}`);
   addAlias(aliases, `${resourcePrefix}${encodedId}`);
   addAlias(aliases, `${resourcePrefix}${encodedManifest}/${encodedId}`);
   for (const alias of resource.resource.aliases ?? []) addAlias(aliases, alias);
@@ -101,7 +101,7 @@ function responseFor(entry: GatewayEntry, method: string): VerifiedContentRespon
 }
 
 /**
- * Framework-neutral handler for `/content/`, `/onchain/`, `/ipfs/`, `oca://`,
+ * Framework-neutral handler for `/content/`, `/onchain/`, `/ipfs/`, `keel://`,
  * and exact committed source URIs. Undeclared names never fall through to the
  * public network.
  */

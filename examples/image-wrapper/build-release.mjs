@@ -82,10 +82,10 @@ const manifest = {
     timeoutMs: 15_000,
   },
   revision: { number: 1, compatibility: { min: 1, max: 1 }, policy: "creator" },
-  provenance: { createdAt, creator: "Ravonus", sourceRepository: "oca-modern" },
+  provenance: { createdAt, creator: "Ravonus", sourceRepository: "keel-sdk" },
   downloads: [{ resource: "original", label: "Download original", filename: "source.svg" }],
   extensions: {
-    "oca:derived": {
+    "keel:derived": {
       preview: "WebP",
       originalPreserved: true,
       sourceMode: "files",

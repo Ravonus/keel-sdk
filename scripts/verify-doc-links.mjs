@@ -20,7 +20,7 @@ for (const file of await walk(root)) {
   for (const match of text.matchAll(pattern)) {
     const raw = match[1]?.trim() ?? "";
     const target = raw.replace(/^<|>$/g, "").split("#", 1)[0] ?? "";
-    if (!target || /^(?:https?:|mailto:|data:|ipfs:|ar:|oca:)/i.test(target)) continue;
+    if (!target || /^(?:https?:|mailto:|data:|ipfs:|ar:|keel:)/i.test(target)) continue;
     const decoded = decodeURIComponent(target);
     const resolved = path.resolve(path.dirname(file), decoded);
     try {

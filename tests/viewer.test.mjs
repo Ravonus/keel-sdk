@@ -75,7 +75,7 @@ async function manifest() {
     "viewer",
     "entrypoint",
     "text/html",
-    '<main><img src="/content/image"><script src="oca://script"></script></main>',
+    '<main><img src="/content/image"><script src="keel://script"></script></main>',
     true,
   );
   const image = await inline(

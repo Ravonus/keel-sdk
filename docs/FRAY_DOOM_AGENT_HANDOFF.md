@@ -7,7 +7,7 @@ task produces evidence; it does not authorize self-approval.
 
 ```text
 You are the release manager for FRAY Doom Sprint 01 in
-/Users/ravonus/dev/oca-modern.
+/Users/ravonus/dev/keel-sdk.
 
 Read completely before acting:
 - docs/FRAY_DOOM_WASM_GAUNTLET.md

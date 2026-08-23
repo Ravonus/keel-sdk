@@ -111,7 +111,7 @@ For a local end-to-end proof (deploy, account sign, agent submit, receipt
 verification, replay rejection, and creator nonce invalidation), run:
 
 ```sh
-pnpm oca:local:e2e
+pnpm keel:local:e2e
 ```
 
 It starts a disposable Anvil instance with the code-size limit disabled for

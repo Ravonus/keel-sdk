@@ -219,7 +219,7 @@ async function recoverLibraryTransaction(
     preparedWrites: PreparedWrite[];
   }>;
   if (
-    value.schema !== "oca-sprite-library-recovery@2"
+    value.schema !== "keel-sprite-library-recovery@2"
     || value.libraryId !== libraryId
     || value.transactionId !== transactionId
     || await canonicalLeafOrUndefined(value.outputDirectory) !== outputDirectory
@@ -355,7 +355,7 @@ function processIsAlive(pid: number): boolean {
 
 async function writeTransactionOwner(lockDirectory: string, libraryId: string, outputDirectory: string, transactionId: string): Promise<void> {
   await writeFile(path.join(lockDirectory, "OWNER.json"), `${JSON.stringify({
-    schema: "oca-sprite-library-owner@2",
+    schema: "keel-sprite-library-owner@2",
     libraryId,
     outputDirectory,
     transactionId,
@@ -400,7 +400,7 @@ async function acquireLibraryTransaction(
       if (
         owner !== null
         && typeof owner === "object"
-        && (owner as { schema?: unknown }).schema === "oca-sprite-library-owner@2"
+        && (owner as { schema?: unknown }).schema === "keel-sprite-library-owner@2"
         && (owner as { libraryId?: unknown }).libraryId === libraryId
         && ownerOutputDirectory === outputDirectory
         && typeof (owner as { transactionId?: unknown }).transactionId === "string"
@@ -412,7 +412,7 @@ async function acquireLibraryTransaction(
       if (
         owner === null
         || typeof owner !== "object"
-        || (owner as { schema?: unknown }).schema !== "oca-sprite-library-owner@2"
+        || (owner as { schema?: unknown }).schema !== "keel-sprite-library-owner@2"
         || (owner as { libraryId?: unknown }).libraryId !== libraryId
         || ownerOutputDirectory !== outputDirectory
         || typeof (owner as { transactionId?: unknown }).transactionId !== "string"
@@ -591,7 +591,7 @@ async function inventory(
       bundles,
     });
   }
-  return { schema: "oca-sprite-inventory@1", libraryId: source.id, entries, included: entries.filter((entry) => entry.status === "included").length, excluded: entries.filter((entry) => entry.status === "excluded").length };
+  return { schema: "keel-sprite-inventory@1", libraryId: source.id, entries, included: entries.filter((entry) => entry.status === "included").length, excluded: entries.filter((entry) => entry.status === "excluded").length };
 }
 
 export async function compileSpriteLibrary(options: CompileLibraryOptions): Promise<{ manifest: SpriteLibraryBuildManifest; lock: SpriteLibraryLock; inventory: SpriteInventoryReport }> {
@@ -723,7 +723,7 @@ export async function compileSpriteLibrary(options: CompileLibraryOptions): Prom
   const journalTemporary = path.join(transaction.directory, "RECOVERY_REQUIRED.json.new");
   const journalPath = path.join(transaction.directory, "RECOVERY_REQUIRED.json");
   await writeFile(journalTemporary, `${JSON.stringify({
-    schema: "oca-sprite-library-recovery@2",
+    schema: "keel-sprite-library-recovery@2",
     libraryId: source.id,
     transactionId,
     outputDirectory,

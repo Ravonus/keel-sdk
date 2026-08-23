@@ -33,7 +33,7 @@ ERC-721 / existing collection
                               │
                               ▼
                    virtual content gateway
-          oca://  /content/  /ipfs/  /onchain/
+          keel://  /content/  /ipfs/  /onchain/
                               │
                               ▼
                 unique-origin deterministic iframe

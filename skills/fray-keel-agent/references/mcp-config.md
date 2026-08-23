@@ -8,7 +8,7 @@ Claude/Codex client can connect over stdio with a configuration equivalent to:
   "mcpServers": {
     "oca-keel": {
       "command": "node",
-      "args": ["/path/to/oca-modern/packages/mcp/dist/cli.js", "--workspace", "/path/to/artwork-workspace"],
+      "args": ["/path/to/keel-sdk/packages/mcp/dist/cli.js", "--workspace", "/path/to/artwork-workspace"],
       "env": {
         "FRAY_STUDIO_URL": "https://your-studio.example",
         "FRAY_STUDIO_AGENT_TOKEN": "<server-to-server-token>"

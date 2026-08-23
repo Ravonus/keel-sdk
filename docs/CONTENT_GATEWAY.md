@@ -34,7 +34,7 @@ A creator-controlled server can replace its file, disappear, or return malicious
 For a resource with ID `hero-model`, the gateway automatically exposes:
 
 ```text
-oca://hero-model
+keel://hero-model
 /content/hero-model
 /content/<manifest-id>/hero-model
 ```
@@ -106,7 +106,7 @@ The sandbox exposes:
 await fetch("/content/hero-model")
 __KEEL_CONTENT__.bytes("hero-model")
 __KEEL_CONTENT__.text("/content/config")
-__KEEL_CONTENT__.json("oca://metadata")
+__KEEL_CONTENT__.json("keel://metadata")
 __KEEL_CONTENT__.url("ipfs://...")
 ```
 

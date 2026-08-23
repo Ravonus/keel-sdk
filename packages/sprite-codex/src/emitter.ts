@@ -1,7 +1,7 @@
 import { canonicalJson, sha256 } from "./hash.js";
 import type { SpriteCodex } from "./loader.js";
 
-export const SPRITE_EMITTER_SCHEMA = "oca-sprite-emitter@1" as const;
+export const SPRITE_EMITTER_SCHEMA = "keel-sprite-emitter@1" as const;
 export const EMITTER_TICKS_PER_SECOND = 60;
 export const EMITTER_LIMITS = Object.freeze({ maxLive: 512, maxTotal: 4_096, maxTicks: 3_600, maxFrames: 64, maxCurvePoints: 16, maxTrailSamples: 64 });
 const Q16 = 65_536;
@@ -129,7 +129,7 @@ function join(parts: Uint8Array[]): Uint8Array { const length = parts.reduce((su
 export async function deriveEmitterEventSeedFromIdentity(identity: EmitterSeedIdentity, context: EmitterSeedContext): Promise<Uint8Array> {
   integer(identity.mapGenerationEpoch, "mapGenerationEpoch", 1, 0xffffffff); integer(identity.presetId, "presetId", 1, 0xffffffff); integer(identity.revision, "revision", 1, 0xffffffff); integer(identity.eventKind, "eventKind", 0, 0xffff);
   integer(context.worldEntityIndex, "worldEntityIndex", 0, 0xffffffff); integer(context.eventOrdinal, "eventOrdinal", 0, 0xffffffff);
-  const domain = new TextEncoder().encode("oca.sprite-emitter.v1");
+  const domain = new TextEncoder().encode("keel.sprite-emitter.v1");
   const input = join([domain, u32be(identity.mapGenerationEpoch), bytes32(context.mapSeed, "mapSeed"), bytes32(context.mapId, "mapId"), u32be(identity.presetId), u32be(identity.revision), u16be(identity.eventKind), u32be(context.worldEntityIndex), u32be(context.eventOrdinal)]);
   const digestHex = await sha256(input); return Uint8Array.from({ length: 32 }, (_, index) => Number.parseInt(digestHex.slice(index * 2, index * 2 + 2), 16));
 }

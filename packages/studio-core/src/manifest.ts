@@ -107,7 +107,7 @@ export async function buildStudioManifest(input: StudioManifestInput): Promise<B
     ...(input.attributes === undefined ? {} : { attributes: input.attributes }),
     ...(input.attributions === undefined ? {} : { attributions: input.attributions }),
     extensions: {
-      "oca:studio": { generatedBy: "@keel/studio-core", contentPolicy: "verified-only" },
+      "keel:studio": { generatedBy: "@keel/studio-core", contentPolicy: "verified-only" },
       ...(input.extensions ?? {}),
     },
   };

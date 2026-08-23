@@ -330,7 +330,7 @@ async function loadSource(
         if (index > 0 && separator.byteLength > 0) parts.push(separator);
         parts.push((await resolveResourceInternal(context, resourceId, depth + 1)).bytes);
       }
-      return { bytes: concatBytes(parts), location: `oca:composite:${source.parts.join(",")}` };
+      return { bytes: concatBytes(parts), location: `keel:composite:${source.parts.join(",")}` };
     }
   }
 }

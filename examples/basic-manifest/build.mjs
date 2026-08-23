@@ -87,7 +87,7 @@ const manifest = {
   provenance: {
     createdAt: "2026-08-07T00:00:00.000Z",
     creator: "Ravonus",
-    sourceRepository: "oca-modern",
+    sourceRepository: "keel-sdk",
     license: "MIT",
   },
 };

@@ -1,6 +1,6 @@
 const { chromium } = require("playwright");
 
-const root = "/Users/ravonus/dev/oca-modern";
+const root = "/Users/ravonus/dev/keel-sdk";
 const base = "http://127.0.0.1:4186/vault-game.html";
 const reviews = [
   ["material-review-2", ""],

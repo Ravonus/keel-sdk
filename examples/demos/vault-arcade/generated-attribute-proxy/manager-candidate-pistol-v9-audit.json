@@ -779,7 +779,7 @@
     }
   ],
   "sourceContactSheet": {
-    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-pistol-onehand-v9-audit/pistol-fire-source-contact-sheet.png",
+    "path": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-pistol-onehand-v9-audit/pistol-fire-source-contact-sheet.png",
     "sha256": "7ca22710e62cf2ad2769ac09f8a48bd94543c583159fcf4559179ed734465733"
   },
   "mathDecision": "approved",

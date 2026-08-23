@@ -1,7 +1,7 @@
 import { canonicalJson, sha256 } from "./hash.js";
 
-export const MATERIAL_STEM_SCHEMA = "oca-material-stem@1" as const;
-export const MATERIAL_COMPOSITION_SCHEMA = "oca-material-composition@1" as const;
+export const MATERIAL_STEM_SCHEMA = "keel-material-stem@1" as const;
+export const MATERIAL_COMPOSITION_SCHEMA = "keel-material-composition@1" as const;
 export const MATERIAL_TICKS_PER_SECOND = 60;
 export const MATERIAL_STEM_LIMITS = Object.freeze({
   maxStems: 32,
@@ -670,7 +670,7 @@ export async function deriveMaterialStemSeed(recipe: MaterialStemRecipe, context
   const catalogRevisionBytes = u32be(catalogRevision);
   const stemIdDigest = await sha256(new TextEncoder().encode(stemId));
   return bytes32(await sha256(join([
-    new TextEncoder().encode("oca.material-stem.v1"),
+    new TextEncoder().encode("keel.material-stem.v1"),
     tokenSeed,
     collectionId,
     tokenId,

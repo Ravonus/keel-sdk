@@ -24,7 +24,7 @@ For a local agent configuration, point the MCP client at the built CLI:
   "mcpServers": {
     "oca-keel": {
       "command": "node",
-      "args": ["/path/to/oca-modern/packages/mcp/dist/cli.js", "--workspace", "/path/to/project"]
+      "args": ["/path/to/keel-sdk/packages/mcp/dist/cli.js", "--workspace", "/path/to/project"]
     }
   }
 }

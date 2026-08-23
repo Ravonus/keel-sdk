@@ -609,7 +609,7 @@
     }
   ],
   "sourceContactSheet": {
-    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-firearm-v2-audit/firearm-fire-source-contact-sheet.png",
+    "path": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-firearm-v2-audit/firearm-fire-source-contact-sheet.png",
     "sha256": "9014ebe6bb5fc005c96931cb26d381271d77dcc8558ef6b70b568d6545f5ebac"
   },
   "mathDecision": "approved",
@@ -657,7 +657,7 @@
     "east": "provisionally-usable-only"
   },
   "packedAtlas": {
-    "path": "/Users/ravonus/dev/oca-modern/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-firearm-v2-audit/firearm-fire-packed-q50.webp",
+    "path": "/Users/ravonus/dev/keel-sdk/examples/demos/vault-arcade/concepts/pixellab/9e6e4de8/manager-firearm-v2-audit/firearm-fire-packed-q50.webp",
     "format": "image/webp",
     "quality": 50,
     "cell": [48, 48],
