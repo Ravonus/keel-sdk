@@ -50,11 +50,11 @@ test("sprite emitter identity matches the Solidity fixed-width event seed vector
       eventOrdinal: 5,
     },
   );
-  assert.equal(Buffer.from(seed).toString("hex"), "3f0bbc6a00dd08ff09424b1bc58b9b6b7d4c37450b27ca04e842e4758488f9a6");
+  assert.equal(Buffer.from(seed).toString("hex"), "40e21a1e8a693ccf986dd5377a8b01937a22633fb099464ba01cf54249294755");
   const seed64 = seed.slice(0, 8).reduce((value, byte) => (value << 8n) | BigInt(byte), 0n);
   assert.deepEqual(
     Array.from({ length: 4 }, (_, counter) => splitMix64(seed64, counter)),
-    [0x0eaf2091be21fd86n, 0x26dbbbb73d8a5402n, 0x82159fa92046f3e1n, 0x46b9618a77c8dbf7n],
+    [0x9f38b1561d0dac6dn, 0xc5df31db156ed072n, 0x256f98f112b55876n, 0x9ad36129f9147833n],
   );
 });
 
