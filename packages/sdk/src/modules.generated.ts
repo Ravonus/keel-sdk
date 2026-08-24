@@ -8,7 +8,7 @@ export type KeelModuleId = "keel-kernel" | "keel-codecs" | "keel-hold" | "keel-a
  * Concrete products built on the modules. Apps consume modules exactly as an
  * outside integrator does, and no module may depend on one.
  */
-export type KeelAppId = "keel-canvas" | "cool-s" | "onchaininator" | "line" | "vault-runner";
+export type KeelAppId = "keel-canvas" | "cool-s" | "line" | "vault-runner";
 
 /** Anything with contracts on a chain — a module or an app. */
 export type KeelUnitId = KeelModuleId | KeelAppId;
@@ -160,10 +160,12 @@ export const KEEL_MODULES: readonly KeelModule[] = [
       "KeelPluginRegistry.sol",
       "KeelModuleReviewRegistry.sol",
       "KeelLibraryRegistry.sol",
+      "KeelAssetTagRegistry.sol",
       "interfaces/IKeelGraphRegistry.sol",
       "interfaces/IKeelContractPlugin.sol"
     ],
     "deployable": [
+      "KeelAssetTagRegistry",
       "KeelGraphRegistry",
       "KeelLibraryRegistry",
       "KeelModuleReviewRegistry",
@@ -512,11 +514,13 @@ export const KEEL_MODULES: readonly KeelModule[] = [
     "contracts": [
       "KeelCrossChainMintBridge.sol",
       "KeelCarrierBatcher.sol",
+      "KeelHistoryPublicationJob.sol",
       "KeelPublicationJob.sol"
     ],
     "deployable": [
       "KeelCarrierBatcher",
       "KeelCrossChainMintBridge",
+      "KeelHistoryPublicationJob",
       "KeelPublicationJob"
     ]
   },
@@ -570,13 +574,7 @@ export const KEEL_APPS: readonly KeelModule[] = [
       "interfaces/ILINEThumbnailSource.sol",
       "libraries/CoolSCanvasStorage.sol"
     ],
-    "deployable": [
-      "CoolSCanvas721",
-      "CoolSCanvasMintController",
-      "CoolSCanvasRenderer",
-      "CoolSCanvasSplitter",
-      "CoolSComposer"
-    ]
+    "deployable": []
   },
   {
     "id": "cool-s",
@@ -605,42 +603,7 @@ export const KEEL_APPS: readonly KeelModule[] = [
       "interfaces/ICoolSReleaseResolverV1.sol",
       "libraries/CoolSVisualStateCodecV1.sol"
     ],
-    "deployable": [
-      "CoolS721",
-      "CoolSLocalVRFCoordinator",
-      "CoolSMetadataRendererV1",
-      "CoolSNoveltyLedgerV1",
-      "CoolSReleaseResolverV1",
-      "CoolSTargetTableV1",
-      "CoolSVisualRegistryV1"
-    ]
-  },
-  {
-    "id": "onchaininator",
-    "kind": "app",
-    "title": "Onchaininator",
-    "group": "apps",
-    "visibility": null,
-    "summary": "Wrapper collection that preserves a legacy token's art and proves the preservation on chain.",
-    "version": "0.3.0",
-    "repo": null,
-    "deps": [
-      "keel-kernel",
-      "keel-codecs"
-    ],
-    "contracts": [
-      "Onchaininator721.sol",
-      "OnchaininatorFactory.sol",
-      "OnchaininatorProofLedger.sol",
-      "PreservationBounty.sol",
-      "interfaces/IERC5192.sol"
-    ],
-    "deployable": [
-      "Onchaininator721",
-      "OnchaininatorFactory",
-      "OnchaininatorProofLedger",
-      "OnchaininatorProofRenderer"
-    ]
+    "deployable": []
   },
   {
     "id": "line",
@@ -661,11 +624,7 @@ export const KEEL_APPS: readonly KeelModule[] = [
       "LINEThumbnail.sol",
       "LINEThumbnailRenderer.sol"
     ],
-    "deployable": [
-      "LINE721",
-      "LINEThumbnail",
-      "LINEThumbnailRenderer"
-    ]
+    "deployable": []
   },
   {
     "id": "vault-runner",
@@ -705,20 +664,7 @@ export const KEEL_APPS: readonly KeelModule[] = [
       "interfaces/IVaultRunSignatureAuthority.sol"
     ],
     "deployable": [
-      "VaultAchievementRegistry",
-      "VaultArcadeRegistry",
-      "VaultCharacter721",
-      "VaultCharacterMetadataRenderer",
-      "VaultCharacterPackV2",
-      "VaultCharacterRegistry",
-      "VaultCharacterStarterPack",
-      "VaultGameCard",
-      "VaultItem1155",
-      "VaultMapAuction",
-      "VaultRunLeaderboard",
-      "VaultRunLootExtraction",
-      "VaultRunSignatureAuthority",
-      "VaultSpriteAssetRegistry"
+      "VaultItem1155"
     ]
   }
 ] as const;
@@ -873,18 +819,18 @@ export const KEEL_DEPLOYMENTS: readonly KeelDeployment[] = [
     "chainId": 11155111,
     "instance": "showcase",
     "contract": "KeelHold",
-    "address": "0x10a44bb5d9107ee2dd244a2fc0cea6cc8979c5a3",
-    "block": "11476918",
-    "txHash": "0x541fbe11dd80bb3a1da643371b681ce951b8b946d1d6aaa2090e459b1595acc8"
+    "address": "0x0a4f31d5ab08029e4c68f6f3227d9fa3a2d66267",
+    "block": "11559677",
+    "txHash": "0xae9e37ce8705258f4395498747e03682207d3a4e04e23e734086fedd01d404ef"
   },
   {
     "module": "keel-hold",
     "chainId": 11155111,
     "instance": "showcase",
     "contract": "KeelIndex",
-    "address": "0x0146f7b087d64ad6351c99471ce1fdbcc024ccb6",
-    "block": "11476920",
-    "txHash": "0xbccbbe39e0080a87404c0abd50e708a55a637aa3e9ab118f803e84a1c36dec52"
+    "address": "0x2b706ded15fb27a582da256321f2b3295413b8ac",
+    "block": "11559678",
+    "txHash": "0x93bdfd7694deb532a01aee4092020b8aad25a1720317d609949ab68166e944fc"
   },
   {
     "module": "keel-ip-control",
