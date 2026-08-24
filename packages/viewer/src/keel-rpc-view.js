@@ -32,7 +32,7 @@
  */
 
 /** `KeelHold.haulObject(bytes32)`. */
-export const KEEL_READ_OBJECT_SELECTOR = "0x5ea5306e";
+export const KEEL_READ_OBJECT_SELECTOR = "0xed12d693";
 
 /**
  * The governed host list as it stood when this document was sealed. A document

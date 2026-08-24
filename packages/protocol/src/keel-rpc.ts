@@ -65,12 +65,12 @@ import {
 
 export type KeelRpcFamily = "ethereum" | "tezos";
 
-/** `KeelHold.haulObject(bytes32)`. Verified against the deployed contract. */
-export const KEEL_READ_OBJECT_SELECTOR = "0x5ea5306e" as const;
+/** `KeelHold.haulObject(bytes32)`. Verified against the live KeelHold interface. */
+export const KEEL_READ_OBJECT_SELECTOR = "0xed12d693" as const;
 /** `KeelHold.getObject(bytes32)`. */
 export const KEEL_GET_OBJECT_SELECTOR = "0x05144857" as const;
 /** The Tezos on-chain view every Keel store exposes. */
-export const KEEL_TEZOS_OBJECT_VIEW = "read_keel_object" as const;
+export const KEEL_TEZOS_OBJECT_VIEW = "haul_object" as const;
 
 const DEFAULT_TIMEOUT_MS = 20_000;
 const DEFAULT_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;

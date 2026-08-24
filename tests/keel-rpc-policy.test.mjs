@@ -1,9 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { toFunctionSelector } from "viem";
 
 import {
   MAX_KEEL_RPC_HOSTS,
   KEEL_DEFAULT_RPC_HOSTS,
+  KEEL_READ_OBJECT_SELECTOR as protocolReadObjectSelector,
   createKeelRpcClient,
   createIntegrity,
   decodeAbiBytes,
@@ -17,9 +22,14 @@ import {
   keelRpcHostListStale,
   keelRpcUrlAllowed,
 } from "../packages/protocol/dist/index.js";
-import { rpcHostAllowed } from "../packages/viewer/src/keel-rpc-view.js";
+import {
+  KEEL_READ_OBJECT_SELECTOR as viewerReadObjectSelector,
+  rpcHostAllowed,
+} from "../packages/viewer/src/keel-rpc-view.js";
+import { siblingRepositories } from "./sibling-repository.mjs";
 
 const text = (bytes) => new TextDecoder().decode(bytes);
+const keelContractsSibling = siblingRepositories("keel-contracts");
 
 // ---------------------------------------------------------------- host list
 
@@ -227,7 +237,30 @@ test("haulObject reads like a contract call and decodes what the node returns", 
   assert.deepEqual(await chain.haulObject(STORE, OBJECT), artwork);
   assert.equal(seen.method, "eth_call");
   assert.equal(seen.params[0].to, STORE);
-  assert.equal(seen.params[0].data, `0x5ea5306e${"ab".repeat(32)}`);
+  assert.equal(seen.params[0].data, `${toFunctionSelector("haulObject(bytes32)")}${"ab".repeat(32)}`);
+});
+
+test("Ethereum readers derive haulObject's selector from the live KeelHold signature", {
+  skip: keelContractsSibling.skip,
+}, () => {
+  const signature = "haulObject(bytes32)";
+  const keelContracts = resolve(dirname(fileURLToPath(import.meta.url)), "../../keel-contracts");
+  const interfaceSource = readFileSync(
+    resolve(keelContracts, "src/modules/keel-hold/interfaces/IKeelHold.sol"),
+    "utf8",
+  );
+  const implementationSource = readFileSync(
+    resolve(keelContracts, "src/modules/keel-hold/KeelHold.sol"),
+    "utf8",
+  );
+
+  for (const source of [interfaceSource, implementationSource]) {
+    assert.match(source, /function\s+haulObject\s*\(\s*bytes32\s+objectId\s*\)\s+external\s+view/u);
+  }
+
+  const selector = toFunctionSelector(signature);
+  assert.equal(protocolReadObjectSelector, selector);
+  assert.equal(viewerReadObjectSelector, selector);
 });
 
 test("failover moves to the next endpoint and the disclosure names the one that answered", async () => {
@@ -277,7 +310,7 @@ test("a Tezos client reads the same objects through the same call", async () => 
   });
   assert.deepEqual(await chain.haulObject("KT1TestStoreAddressAAAAAAAAAAAAAAAA", OBJECT), artwork);
   assert.match(seen.url, /run_script_view$/u);
-  assert.equal(seen.body.view, "read_keel_object");
+  assert.equal(seen.body.view, "haul_object");
   assert.equal(seen.body.chain_id, "NetXdQprcVkpaWU");
   assert.equal(chain.disclosure().chain, "tezos:NetXdQprcVkpaWU");
   // A read shaped for the wrong family is refused rather than mangled.
