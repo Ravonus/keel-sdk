@@ -38,6 +38,7 @@
     }
   },
   "devDependencies": {
-    "@keel/studio-core": "workspace:*"
+    "@keel/studio-core": "workspace:*",
+    "typescript": "^5.9.0"
   }
 }

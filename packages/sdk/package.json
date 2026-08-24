@@ -10,6 +10,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./abi": {
+      "types": "./dist/abi.d.ts",
+      "import": "./dist/abi.js"
+    },
     "./verification-shell": {
       "types": "./dist/verification-shell.d.ts",
       "import": "./dist/verification-shell.js"
@@ -28,6 +32,11 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@keel/protocol": "workspace:*"
+    "@keel/protocol": "workspace:*",
+    "esbuild": "0.28.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "typescript": "^5.9.0"
   }
 }

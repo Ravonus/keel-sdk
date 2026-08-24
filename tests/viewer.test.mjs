@@ -34,11 +34,19 @@ import {
   resolveKeelContractPlugin,
   resolveKeelArtifact,
   transitionViewerVerificationHost,
+  uriLocations,
   viewerLaunches,
 } from "../packages/viewer/dist/index.js";
 import { getAddress, keccak256 } from "viem";
 import { deriveEmitterEventSeedFromIdentity, splitMix64 } from "../packages/sprite-codex/dist/index.js";
 import { baseManifest, runtimePolicy } from "./fixtures.mjs";
+
+test("viewer root exports URI source policy for application consumers", () => {
+  assert.deepEqual(
+    uriLocations("ipfs://bafy-test/metadata.json", { ipfsGateways: ["https://gateway.example/ipfs/"] }),
+    ["https://gateway.example/ipfs/bafy-test/metadata.json"],
+  );
+});
 
 test("sprite emitter identity matches the Solidity fixed-width event seed vector", async () => {
   const seed = await deriveEmitterEventSeedFromIdentity(

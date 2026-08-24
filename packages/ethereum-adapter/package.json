@@ -19,5 +19,8 @@
     "@keel/protocol": "workspace:*",
     "@keel/sdk": "workspace:*",
     "viem": "^2.55.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
   }
 }

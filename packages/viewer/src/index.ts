@@ -5,6 +5,7 @@ export * from "./mount.js";
 export * from "./chunk-store.js";
 export * from "./manifest.js";
 export * from "./gateway.js";
+export * from "./source-policy.js";
 export * from "./viewer-bundle.js";
 export * from "./registry-adapter.js";
 export * from "./keel-adapter.js";

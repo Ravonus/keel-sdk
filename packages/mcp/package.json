@@ -24,6 +24,9 @@
     "@keel/protocol": "workspace:*",
     "@keel/sdk": "workspace:*"
   },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  },
   "bin": {
     "keel-mcp": "./dist/cli.js"
   }

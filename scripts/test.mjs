@@ -17,6 +17,8 @@ run("node", [
   "tests/keel-frozen-dataset-limits.test.mjs",
   "tests/readers.test.mjs",
   "tests/sdk.test.mjs",
+  "tests/cool-s-abi-conformance.test.mjs",
+  "tests/sdk-browser-abi.test.mjs",
   "tests/sdk-wallet-request.test.mjs",
   "tests/sdk-wallet-intent.test.mjs",
   "tests/keel-wallet-theft-simulator.test.mjs",

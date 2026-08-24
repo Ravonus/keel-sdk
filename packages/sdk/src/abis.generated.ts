@@ -21,7 +21,6 @@ export const ABI_CONTRACTS: Readonly<Record<string, readonly string[]>> = {
   "keel-stake": ["KeelStakeObjectManager"],
   "keel-canvas": ["CoolSCanvas721","CoolSCanvasMintController","CoolSCanvasRenderer","CoolSCanvasSplitter","CoolSComposer"],
   "cool-s": ["CoolS721","CoolSLocalVRFCoordinator","CoolSMetadataRendererV1","CoolSNoveltyLedgerV1","CoolSReleaseResolverV1","CoolSTargetTableV1","CoolSVisualRegistryV1"],
-  "onchaininator": ["Onchaininator721","OnchaininatorFactory","OnchaininatorProofLedger","OnchaininatorProofRenderer"],
   "line": ["LINE721","LINEThumbnail","LINEThumbnailRenderer"],
   "vault-runner": ["VaultAchievementRegistry","VaultArcadeRegistry","VaultCharacter721","VaultCharacterMetadataRenderer","VaultCharacterPackV2","VaultCharacterRegistry","VaultCharacterStarterPack","VaultGameCard","VaultItem1155","VaultMapAuction","VaultRunLeaderboard","VaultRunLootExtraction","VaultRunSignatureAuthority","VaultSpriteAssetRegistry"],
 };
@@ -47,7 +46,6 @@ export const ABI_LOADERS: Readonly<Record<string, () => Promise<{ ABIS: Record<s
   "keel-stake": () => import("./abis/keel-stake.generated.js"),
   "keel-canvas": () => import("./abis/keel-canvas.generated.js"),
   "cool-s": () => import("./abis/cool-s.generated.js"),
-  "onchaininator": () => import("./abis/onchaininator.generated.js"),
   "line": () => import("./abis/line.generated.js"),
   "vault-runner": () => import("./abis/vault-runner.generated.js"),
 };

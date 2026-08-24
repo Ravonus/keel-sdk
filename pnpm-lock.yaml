@@ -90,9 +90,15 @@ importers:
       '@keel/sdk':
         specifier: workspace:*
         version: link:../sdk
+      esbuild:
+        specifier: 0.28.2
+        version: 0.28.2
       terser:
         specifier: 5.44.0
         version: 5.44.0
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
     optionalDependencies:
       sharp:
         specifier: ^0.34.4
@@ -109,6 +115,10 @@ importers:
       viem:
         specifier: ^2.55.0
         version: 2.55.19(typescript@5.9.3)
+    devDependencies:
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
 
   packages/mcp:
     dependencies:
@@ -124,8 +134,16 @@ importers:
       '@keel/sdk':
         specifier: workspace:*
         version: link:../sdk
+    devDependencies:
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
 
-  packages/protocol: {}
+  packages/protocol:
+    devDependencies:
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
 
   packages/sandbox-sdk:
     dependencies:
@@ -139,12 +157,25 @@ importers:
       '@keel/studio-core':
         specifier: workspace:*
         version: link:../studio-core
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
 
   packages/sdk:
     dependencies:
       '@keel/protocol':
         specifier: workspace:*
         version: link:../protocol
+      esbuild:
+        specifier: 0.28.2
+        version: 0.28.2
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.0
+        version: 22.20.1
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
 
   packages/sprite-codex:
     dependencies:
@@ -173,6 +204,10 @@ importers:
       sharp:
         specifier: 0.35.3
         version: 0.35.3(@types/node@22.20.1)
+    devDependencies:
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
 
   packages/viewer:
     dependencies:
@@ -183,6 +218,9 @@ importers:
       esbuild:
         specifier: ^0.25.0
         version: 0.25.12
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
 
   packages/web3-boundary-tests:
     devDependencies:
