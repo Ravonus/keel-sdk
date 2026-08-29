@@ -4,6 +4,7 @@ import {
   assertValidKeelModuleResolverSnapshot,
   createRecursiveUploadPlan,
   createUploadPlan,
+  planMediaOptimization,
   resolveModule,
   runMediaPipeline,
   verifyBuiltArtifact,
@@ -115,6 +116,24 @@ async function analyzeTool(context: ToolContext, value: unknown): Promise<unknow
   const file = await context.workspace.resolveExistingFile(requiredString(input, "input"), MAX_MEDIA_BYTES);
   const mediaType = optionalString(input, "mediaType");
   return analyzeMedia({ input: file, maxInputBytes: MAX_MEDIA_BYTES, ...(mediaType === undefined ? {} : { mediaType }) });
+}
+
+/** Always dry-run: MCP can review optimizer settings but cannot replace artwork. */
+async function mediaOptimizeTool(context: ToolContext, value: unknown): Promise<unknown> {
+  const input = record(value, ["input", "mediaType", "quality", "effort", "selectedStorageMode"], "media optimize arguments");
+  const file = await context.workspace.resolveExistingFile(requiredString(input, "input"), MAX_MEDIA_BYTES);
+  const mediaType = optionalString(input, "mediaType");
+  const quality = optionalNumber(input, "quality");
+  const effort = optionalNumber(input, "effort");
+  const selectedStorageMode = optionalString(input, "selectedStorageMode");
+  return planMediaOptimization({
+    input: file,
+    maxInputBytes: MAX_MEDIA_BYTES,
+    ...(mediaType === undefined ? {} : { mediaType }),
+    ...(quality === undefined ? {} : { quality }),
+    ...(effort === undefined ? {} : { effort }),
+    ...(selectedStorageMode === undefined ? {} : { selectedStorageMode }),
+  });
 }
 
 async function buildTool(context: ToolContext, value: unknown): Promise<unknown> {
@@ -543,6 +562,7 @@ function tool(name: string, description: string, inputSchema: JsonSchema, run: T
 
 export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
   tool("analyze", "Analyze a workspace media file and report integrity and wrapper support.", TOOL_SCHEMAS.analyze, analyzeTool),
+  tool("media-optimize", "Dry-run a reversible media optimization. It reports only repository-supported adapters and never writes, changes storage mode, uploads, or touches a chain.", TOOL_SCHEMAS.mediaOptimize, mediaOptimizeTool),
   tool("build", "Build and verify a deterministic local media artifact; no chain or wallet action occurs.", TOOL_SCHEMAS.build, buildTool),
   tool("verify", "Verify a local artifact manifest and its available relative resources.", TOOL_SCHEMAS.verify, verifyTool),
   tool("cost", "Estimate compression, chunks, recursive depth, transactions, and calldata using an offline model.", TOOL_SCHEMAS.cost, costTool),

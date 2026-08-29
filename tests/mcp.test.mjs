@@ -9,6 +9,10 @@ import { createIntegrity } from "../packages/protocol/dist/index.js";
 import { createMcpServer } from "../packages/mcp/dist/index.js";
 
 const bytes = (value) => new TextEncoder().encode(value);
+const ONE_PIXEL_PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVR4nGP8z8Dwn4GBgYGJAQoAHxcCAk+Uzr4AAAAASUVORK5CYII=",
+  "base64",
+);
 
 async function moduleSnapshot() {
   const content = bytes("export const demo = true;\n");
@@ -67,7 +71,7 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.equal(initialized?.result.serverInfo.name, "keel-mcp");
     assert.deepEqual(Object.keys(initialized?.result.capabilities), ["tools", "prompts", "resources"]);
     const listed = await server.handle({ jsonrpc: "2.0", id: 5, method: "tools/list", params: {} });
-    assert.deepEqual(listed?.result.tools.map((tool) => tool.name), ["analyze", "build", "verify", "cost", "upload-plan", "chain-plan", "ethereum-encode", "publish-plan", "module-resolve", "module-lock", "wallet-request-prepare", "wallet-link", "module-review-prepare", "fray-auction-intake", "fray-stage-project", "keel-chain-guide", "keel-library-search", "keel-endpoint-config", "keel-studio-capabilities", "keel-studio-project-intake"]);
+    assert.deepEqual(listed?.result.tools.map((tool) => tool.name), ["analyze", "media-optimize", "build", "verify", "cost", "upload-plan", "chain-plan", "ethereum-encode", "publish-plan", "module-resolve", "module-lock", "wallet-request-prepare", "wallet-link", "module-review-prepare", "fray-auction-intake", "fray-stage-project", "keel-chain-guide", "keel-library-search", "keel-endpoint-config", "keel-studio-capabilities", "keel-studio-project-intake"]);
     const malformed = await server.handle({ jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "cost", unexpected: true } });
     assert.equal(malformed?.error?.code, -32602);
     const malformedArguments = await server.handle({ jsonrpc: "2.0", id: 12, method: "tools/call", params: { name: "cost", arguments: null } });
@@ -129,6 +133,7 @@ test("MCP cost, module lock, and wallet preparation stay offline and bounded", a
   const directory = await mkdtemp(path.join("/tmp", "keel-mcp-"));
   try {
     await writeFile(path.join(directory, "asset.js"), "export const asset = true;\n");
+    await writeFile(path.join(directory, "art.png"), ONE_PIXEL_PNG);
     await writeFile(path.join(directory, "snapshot.json"), JSON.stringify(await moduleSnapshot()));
     const server = await createMcpServer({ workspaceRoot: directory });
     await server.handle({ jsonrpc: "2.0", id: 1, method: "initialize", params: initializeParams });
@@ -151,6 +156,14 @@ test("MCP cost, module lock, and wallet preparation stay offline and bounded", a
     assert.equal(oversizedPromptMedia?.error?.code, -32602);
     const cost = await call(server, 2, "cost", { input: "asset.js", compression: "none" });
     assert.equal(cost?.result.structuredContent.model.caveat, "modeled-estimate-not-gas-quote");
+    const optimizerFiles = await readdir(directory);
+    const optimize = await call(server, 7, "media-optimize", { input: "art.png", selectedStorageMode: "inline" });
+    assert.equal(optimize?.result.structuredContent.mode, "dry-run");
+    assert.equal(optimize?.result.structuredContent.measurements.state, "measured-in-memory");
+    assert.equal(typeof optimize?.result.structuredContent.measurements.afterBytes, "number");
+    assert.deepEqual(optimize?.result.structuredContent.storage, { selectedMode: "inline", changed: false });
+    assert.equal(optimize?.result.structuredContent.sourceRetention.sourceRemoved, false);
+    assert.deepEqual(await readdir(directory), optimizerFiles);
     const uploadPlan = await call(server, 8, "upload-plan", { input: "asset.js", objectName: "asset", mediaType: "text/javascript", strategy: "flat", compression: "none" });
     assert.equal(uploadPlan?.result.structuredContent.dryRun, true);
     assert.equal(uploadPlan?.result.structuredContent.materialized, false);
@@ -368,7 +381,7 @@ test("MCP rejects symlink inputs and CLI emits protocol JSON only", async () => 
     const lines = output.trim().split("\n").map((line) => JSON.parse(line));
     assert.equal(lines.length, 4);
     assert.equal(lines[0].id, 1);
-    assert.equal(lines[1].result.tools.length, 20);
+    assert.equal(lines[1].result.tools.length, 21);
     assert.equal(lines[2].result.resources.length, 3);
     assert.equal(JSON.parse(lines[3].result.contents[0].text).kind, "offline-workflow");
   } finally {
@@ -537,7 +550,7 @@ test("MCP CLI help, version, and self-test are explicit non-stdio modes", async 
     const health = JSON.parse(first);
     assert.equal(health.status, "ok");
     assert.equal(health.protocolVersion, "2024-11-05");
-    assert.equal(health.toolCount, 20);
+    assert.equal(health.toolCount, 21);
     assert.deepEqual(health.checks, ["initialize", "ping", "tools/list", "prompts/list", "prompts/get", "resources/list", "resources/read"]);
     assert.equal(health.jsonrpc, undefined);
   } finally {

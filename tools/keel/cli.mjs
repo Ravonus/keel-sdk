@@ -18,6 +18,8 @@
  *   keel repos [--sync]           reconcile module repositories with GitHub
  *   keel reconcile [--write]      check the registry against the repo's deployment files
  *   keel sync                     regenerate manifests + SDK registry
+ *   keel studio-drafts --config <file> [--format json|yaml]
+ *                                 run one creator-scoped Studio draft operation
  */
 import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync, statSync } from "node:fs";
 import { execFileSync, spawnSync } from "node:child_process";
@@ -48,6 +50,12 @@ function deploymentsOf(id) {
 function die(msg) { console.error(`keel: ${msg}`); process.exit(1); }
 function run(cmdline, cwd = CONTRACTS) {
   const r = spawnSync("sh", ["-c", cmdline], { cwd, stdio: "inherit" });
+  return r.status ?? 1;
+}
+
+function runNodeScript(script, args) {
+  const r = spawnSync(process.execPath, [script, ...args], { cwd: REPO, stdio: "inherit" });
+  if (r.error) { console.error(`keel: ${r.error.message}`); return 1; }
   return r.status ?? 1;
 }
 
@@ -207,6 +215,7 @@ switch (cmd) {
   case "repos": process.exit(run(`node ${join(import.meta.dirname, "repos.mjs")} ${rest.join(" ")}`, REPO)); break;
   case "reconcile": process.exit(run(`node ${join(import.meta.dirname, "seed-deployments.mjs")} ${rest.join(" ")}`, REPO)); break;
   case "sync": cmdSync(); break;
+  case "studio-drafts": process.exit(runNodeScript(join(import.meta.dirname, "studio-drafts.mjs"), rest)); break;
   default:
     console.log(readFileSync(import.meta.filename, "utf8").split("\n").slice(2, 12).map((l) => l.replace(/^ \* ?/, "")).join("\n"));
 }

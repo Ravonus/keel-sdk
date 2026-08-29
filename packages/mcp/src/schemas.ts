@@ -190,6 +190,11 @@ const endpointConfig: JsonSchema = object({
 
 export const TOOL_SCHEMAS = {
   analyze: object({ input: string("Workspace-relative media path."), mediaType: string() }, ["input"]),
+  mediaOptimize: object({
+    input: string("Workspace-relative image, video, or 3D source path."), mediaType: string("Optional explicit source media type."),
+    quality: integer("WebP quality for a supported image plan.", 1, 100), effort: integer("WebP encoder effort for a supported image plan.", 0, 6),
+    selectedStorageMode: string("Informational current storage selection. The optimizer never changes it.", 128),
+  }, ["input"]),
   build: object({
     input: string(), outputDirectory: string(), createdAt: string(), name: string(), description: string(), id: string(),
     creator: string(), sourceRepository: string(), viewerBaseUrl: string(), webpQuality: integer(), preserveOriginal: boolean(),

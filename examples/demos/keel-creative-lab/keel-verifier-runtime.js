@@ -151,7 +151,7 @@ async function readOnchainObject(item, active = new Set()) {
       let offset = 0;
       for (const part of parts) { decoded.set(part, offset); offset += part.byteLength; }
     } else {
-      const pointers = decodeArray(await ethCall(item.store, `0x6e2250b1${item.objectId.slice(2)}${padWord(0)}${padWord(record.count)}`), true);
+      const pointers = decodeArray(await ethCall(item.store, `0x144658f2${item.objectId.slice(2)}${padWord(0)}${padWord(record.count)}`), true);
       const carriers = await Promise.all(pointers.map(async (pointer) => {
         const code = bytesFromHex(await rpc("eth_getCode", [pointer, envelope.blockTag ?? "latest"]));
         if (code[0] !== 0) throw new Error(`Invalid immutable carrier ${pointer}.`);

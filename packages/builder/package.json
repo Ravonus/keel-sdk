@@ -31,7 +31,7 @@
     "typescript": "^5.9.0"
   },
   "optionalDependencies": {
-    "sharp": "^0.34.4"
+    "sharp": "0.34.5"
   },
   "bin": {
     "keel": "./dist/cli.js",

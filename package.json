@@ -105,7 +105,8 @@
     "@keel/ethereum-adapter": "workspace:*",
     "@keel/sandbox-sdk": "workspace:*",
     "@keel/studio-core": "workspace:*",
-    "@keel/sprite-codex": "workspace:*"
+    "@keel/sprite-codex": "workspace:*",
+    "yaml": "2.8.2"
   },
   "packageManager": "pnpm@10.15.0"
 }

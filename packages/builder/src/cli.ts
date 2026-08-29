@@ -10,6 +10,7 @@ import { buildKeelWorkspace, indexKeelWorkspace, testKeelWorkspace, verifyKeelWo
 import { bumpKeelModuleRegistration, registerKeelModuleFromOrigin } from "./module-registration.js";
 import { verifyKeelModuleFromOrigin } from "./module-verification.js";
 import { analyzeCost } from "./cost-analysis.js";
+import { applyMediaOptimization, planMediaOptimization } from "./media-optimization.js";
 import { analyzeMedia, runMediaPipeline, verifyBuiltArtifact } from "./pipeline.js";
 import { createRecursiveUploadPlan } from "./recursive-plan.js";
 import { wrapImage } from "./wrap.js";
@@ -52,8 +53,34 @@ function required(value: string | undefined, message: string): string {
   return value;
 }
 
-function output(value: unknown, json: boolean, summary: string): void {
-  process.stdout.write(json ? `${JSON.stringify(value, null, 2)}\n` : `${summary}\n`);
+function yamlScalar(value: string | number | boolean | null): string {
+  return JSON.stringify(value);
+}
+
+function yaml(value: unknown, depth = 0): string {
+  const indent = "  ".repeat(depth);
+  if (value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean") return `${indent}${yamlScalar(value)}`;
+  if (Array.isArray(value)) {
+    if (value.length === 0) return `${indent}[]`;
+    return value.map((entry) => {
+      if (entry === null || typeof entry !== "object") return `${indent}- ${yamlScalar(entry as string | number | boolean | null)}`;
+      return `${indent}-\n${yaml(entry, depth + 1)}`;
+    }).join("\n");
+  }
+  if (typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>).sort(([left], [right]) => left.localeCompare(right));
+    if (entries.length === 0) return `${indent}{}`;
+    return entries.map(([key, entry]) => {
+      if (entry === null || typeof entry !== "object") return `${indent}${yamlScalar(key)}: ${yamlScalar(entry as string | number | boolean | null)}`;
+      return `${indent}${yamlScalar(key)}:\n${yaml(entry, depth + 1)}`;
+    }).join("\n");
+  }
+  throw new TypeError("YAML output only supports JSON-compatible values.");
+}
+
+function output(value: unknown, json: boolean, summary: string, yamlOutput = false): void {
+  if (json && yamlOutput) throw new TypeError("Choose either --json or --yaml, not both.");
+  process.stdout.write(json ? `${JSON.stringify(value, null, 2)}\n` : yamlOutput ? `${yaml(value)}\n` : `${summary}\n`);
 }
 
 const MAX_COST_INPUT_BYTES = 256 * 1024 * 1024;
@@ -101,6 +128,8 @@ Commands:
   keel verify <release-directory> [--manifest <file-name>] [--json]
   keel cost <input> [--media-type <type>] [--compression auto|none|brotli|gzip|deflate]
     [--chunk-bytes 23000] [--leaf-bytes 524288] [--parts 64] [--max-depth 8] [--json]
+  keel optimize <input> [--media-type <type>] [--quality 82] [--effort 6] [--storage-mode <mode>]
+    [--json|--yaml] [--apply --out <new-file.webp>]
   keel module-resolve <snapshot.json> (--name <name> | --digest <0xsha256> --byte-length <n>)
     [--namespace npm|keel|github] [--version <version>] [--entry <path>]
     [--artist <artist>] [--tag <a,b>] [--json]
@@ -439,6 +468,35 @@ async function main(): Promise<void> {
         args.flags.json === true,
         `${analysis.inputByteLength} bytes; compression=${analysis.selectedCompression}; strategy=${recommendation.strategy}; ` +
         `transactions=${recommendation.transactionCount}; calldata=${recommendation.calldataBytes} bytes (modeled estimate, not a gas quote).`,
+      );
+      return;
+    }
+
+    case "optimize": {
+      const input = required(args.positional[0], "optimize requires an input file.");
+      const mediaType = flag(args, "media-type");
+      const quality = flag(args, "quality");
+      const effort = flag(args, "effort");
+      const selectedStorageMode = flag(args, "storage-mode");
+      const plan = await planMediaOptimization({
+        input,
+        ...(mediaType === undefined ? {} : { mediaType }),
+        ...(quality === undefined ? {} : { quality: Number(quality) }),
+        ...(effort === undefined ? {} : { effort: Number(effort) }),
+        ...(selectedStorageMode === undefined ? {} : { selectedStorageMode }),
+      });
+      const requestedOutput = flag(args, "out");
+      if (args.flags.apply !== true) {
+        if (requestedOutput !== undefined) throw new TypeError("optimize only accepts --out together with explicit --apply; dry-run does not write files.");
+        output(plan, args.flags.json === true, `${plan.input.fileName}: dry-run; ${plan.capability.available ? "ready for explicit apply" : plan.capability.reason ?? "adapter unavailable"}.`, args.flags.yaml === true);
+        return;
+      }
+      const result = await applyMediaOptimization({ plan, output: required(requestedOutput, "optimize --apply requires --out <new-file.webp>.") });
+      output(
+        result,
+        args.flags.json === true,
+        `${result.input.fileName}: ${result.measurements.beforeBytes} -> ${result.measurements.afterBytes} bytes (${result.measurements.percentSaved}% saved); source retained.`,
+        args.flags.yaml === true,
       );
       return;
     }

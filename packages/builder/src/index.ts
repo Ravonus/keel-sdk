@@ -4,6 +4,7 @@ export * from "./plan.js";
 export * from "./wrap.js";
 export * from "./recursive-plan.js";
 export * from "./pipeline.js";
+export * from "./media-optimization.js";
 export * from "./module-resolver.js";
 export * from "./module-legacy.js";
 export * from "./module-receipt.js";
