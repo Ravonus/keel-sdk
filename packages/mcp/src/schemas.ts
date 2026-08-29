@@ -182,6 +182,54 @@ const studioProjectIntake: JsonSchema = object({
     endsAt: string("Optional ISO timestamp.", 64),
   }),
 });
+const studioDraft: JsonSchema = object({
+  studioUrl: string("Optional HTTPS Studio URL; KEEL_STUDIO_URL is used otherwise.", 512),
+  operation: { type: "string", enum: ["list", "read", "create", "update"] },
+  releaseId: string("Required for read or update.", 128),
+  expectedRevision: integer("Required for update; prevents a stale agent from overwriting newer browser work.", 1),
+  draft: {
+    type: "object",
+    description: "Complete Studio release draft. Required for create or update and validated again by the SDK and Studio.",
+  },
+}, ["operation"]);
+const studioStageFile: JsonSchema = object({
+  path: string("Workspace-relative project file.", 512),
+  mediaType: string("Printable media type.", 160),
+  role: { type: "string", enum: ["entrypoint", "renderer", "runtime", "script", "module", "style", "data", "library", "image", "other"] },
+  format: { type: "string", enum: ["asset", "classic-script", "es-module", "umd", "wasm"] },
+  updateMode: { type: "string", enum: ["locked", "manual"] },
+  label: string("Creator-facing component label.", 96),
+}, ["path", "mediaType", "role", "format"]);
+const studioStageProject: JsonSchema = object({
+  studioUrl: string("Optional HTTPS Studio URL; KEEL_STUDIO_URL is used otherwise.", 512),
+  title: string("Project title.", 160),
+  description: string("Collector-facing project description.", 2_000),
+  storageStrategy: { type: "string", enum: ["local", "onchain", "hybrid"] },
+  marketplaceExportMode: { type: "string", enum: ["recursive", "packed", "hybrid", "onchfs"] },
+  viewer: { type: "string", enum: ["keel-verification-shell", "none"] },
+  files: { type: "array", items: studioStageFile, minItems: 1, maxItems: 256 },
+  releaseIntent: { type: "object", description: "Optional editable keel-release-intent@1 produced by keel-studio-project-intake." },
+}, ["title", "storageStrategy", "files"]);
+const creator721Config: JsonSchema = object({
+  name: string("Collection name.", 128), symbol: string("Collection symbol.", 32), maxSupply: integer("Maximum ERC-721 supply.", 1),
+  royaltyReceiver: string("Optional ERC-2981 receiver."), royaltyBps: integer("Optional royalty basis points.", 0, 10_000), metadataDigest: string("Exact bytes32 project metadata digest."),
+}, ["name", "symbol", "maxSupply", "metadataDigest"]);
+const creator1155Config: JsonSchema = object({
+  name: string("Collection name.", 128), symbol: string("Collection symbol.", 32),
+  royaltyReceiver: string("Optional ERC-2981 receiver."), royaltyBps: integer("Optional royalty basis points.", 0, 10_000), metadataDigest: string("Exact bytes32 project metadata digest."),
+}, ["name", "symbol", "metadataDigest"]);
+const creatorCollectionOperation: JsonSchema = {
+  oneOf: [
+    object({ kind: { type: "string", enum: ["dedicated-erc721"] }, config: creator721Config }, ["kind", "config"]),
+    object({ kind: { type: "string", enum: ["dedicated-erc1155"] }, config: creator1155Config }, ["kind", "config"]),
+    object({ kind: { type: "string", enum: ["shared-erc1155"] }, name: string(undefined, 128), metadataDigest: string() }, ["kind", "name", "metadataDigest"]),
+    object({ kind: { type: "string", enum: ["external"] }, tokenContract: string(), name: string(undefined, 128), metadataDigest: string() }, ["kind", "tokenContract", "name", "metadataDigest"]),
+  ],
+};
+const creatorCollectionPrepare: JsonSchema = object({
+  chainId: integer("Ethereum chain ID.", 1), creator: string("Creator wallet that will review the call."),
+  instance: string("Optional exact recorded deployment instance.", 96), operation: creatorCollectionOperation,
+}, ["chainId", "creator", "operation"]);
 const endpointConfig: JsonSchema = object({
   studioUrl: string("Optional credential-free HTTPS Studio origin.", 512),
   publicRpcUrl: string("Optional credential-free HTTPS public wallet/browser RPC origin.", 512),
@@ -236,4 +284,7 @@ export const TOOL_SCHEMAS = {
   endpointConfig,
   studioCapabilities,
   studioProjectIntake,
+  studioDraft,
+  studioStageProject,
+  creatorCollectionPrepare,
 } as const;

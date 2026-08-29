@@ -2,10 +2,9 @@ import { execFileSync } from "node:child_process";
 import { access, readFile, readdir } from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { root, siteRoot } from "./run.mjs";
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const studio = path.join(root, "apps", "studio");
+const studio = path.join(siteRoot, "apps", "studio");
 
 async function loadTypeScript() {
   try {
@@ -75,7 +74,6 @@ await Promise.all(required.map((relative) => access(path.join(studio, relative))
 const ts = await loadTypeScript();
 const sourceFiles = [
   ...(await walk(path.join(studio, "src"))),
-  ...(await walk(path.join(studio, "tests"))),
   path.join(studio, "playwright.config.ts"),
 ].filter((file) => /\.tsx?$/u.test(file));
 let issueCount = 0;
@@ -138,16 +136,16 @@ for (const enumName of enumNames) {
   }
 }
 
-const protectedPostRoutes = [
-  "src/app/api/artifacts/route.ts",
-  "src/app/api/artifacts/import/route.ts",
-  "src/app/api/deployment/[artifactId]/complete/route.ts",
-  "src/app/api/indexer/run/route.ts",
-];
-for (const relative of protectedPostRoutes) {
+const protectedPostRoutes = new Map([
+  ["src/app/api/artifacts/route.ts", ["assertSameOriginRequest(request.headers)", "resolveArtifactCreator(request"]],
+  ["src/app/api/artifacts/import/route.ts", ["assertStudioWriteAccess(request.headers)"]],
+  ["src/app/api/deployment/[artifactId]/complete/route.ts", ["assertArtifactPublicationAccess(request, artifactId)"]],
+  ["src/app/api/indexer/run/route.ts", ["assertStudioWriteAccess(request.headers)"]],
+]);
+for (const [relative, requiredGuards] of protectedPostRoutes) {
   const source = await readFile(path.join(studio, relative), "utf8");
-  if (!source.includes("assertStudioWriteAccess(request.headers)")) {
-    console.error(`Mutating route ${relative} is missing the Studio write guard.`);
+  if (!requiredGuards.every((guard) => source.includes(guard))) {
+    console.error(`Mutating route ${relative} is missing its expected write or creator guard.`);
     issueCount += 1;
   }
 }
@@ -179,7 +177,8 @@ for (const file of routerFiles) {
   const source = await readFile(file, "utf8");
   const mutationCount = (source.match(/\.mutation\s*\(/gu) ?? []).length;
   const writeOccurrences = (source.match(/writeProcedure/gu) ?? []).length;
-  const protectedCount = Math.max(0, writeOccurrences - 1);
+  const operatorOccurrences = (source.match(/operatorProcedure/gu) ?? []).length;
+  const protectedCount = Math.max(0, writeOccurrences - 1) + Math.max(0, operatorOccurrences - 1);
   if (mutationCount > protectedCount) {
     console.error(`Mutating tRPC procedure in ${path.relative(root, file)} may bypass writeProcedure.`);
     issueCount += 1;

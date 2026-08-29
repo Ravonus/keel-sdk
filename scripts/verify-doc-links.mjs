@@ -5,7 +5,7 @@ import { root } from "./run.mjs";
 async function walk(directory) {
   const output = [];
   for (const entry of await readdir(directory, { withFileTypes: true })) {
-    if (["node_modules", "dist", "artifacts"].includes(entry.name)) continue;
+    if (entry.name.startsWith(".") || ["node_modules", "dist", "artifacts"].includes(entry.name)) continue;
     const absolute = path.join(directory, entry.name);
     if (entry.isDirectory()) output.push(...await walk(absolute));
     else if (entry.isFile() && entry.name.endsWith(".md")) output.push(absolute);

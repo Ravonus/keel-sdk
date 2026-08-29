@@ -7,7 +7,7 @@ export const ABI_CONTRACTS: Readonly<Record<string, readonly string[]>> = {
   "keel-graph": ["KeelAssetTagRegistry","KeelGraphRegistry","KeelLibraryRegistry","KeelModuleReviewRegistry","KeelPluginRegistry"],
   "keel-harness": ["KeelHarnessBuilder"],
   "keel-presentation": ["KeelPresentationStateRegistry","KeelVisualStateLedger"],
-  "keel-die": ["KEEL721","KEEL721Deployer","KeelCreator1155","KeelCreator721","KeelCreatorFactory","KeelFactory","KeelFactorySepolia","KeelShared1155"],
+  "keel-die": ["KEEL721","KEEL721Deployer","KeelArtifactTokenRenderer","KeelCreator1155","KeelCreator721","KeelCreatorFactory","KeelFactory","KeelFactorySepolia","KeelShared1155"],
   "keel-creator-identity": ["KeelAttributionRegistry","KeelCreatorCommitmentRegistry","KeelCreatorProfileRegistry"],
   "keel-mint-access": ["KeelMintGate","OneMintController","OpenOneMintController"],
   "keel-equipment": ["KeelEquipmentDescriptorValidator","KeelEquipmentDistributor","KeelEquipmentInventory","KeelEquipmentInventoryReader","KeelEquipmentReservationEngine","KeelOneUseDuplicator"],

@@ -31,14 +31,14 @@ through them.
 
 | # | Layer | Its one job | Where it lives |
 |---|-------|-------------|----------------|
-| 01 | **THE DIE** | The artist's contract. Strikes the tokens: who may buy, how many exist, what each one points at. | [`KEEL721`](../packages/contracts/src/modules/keel-die/KEEL721.sol), [`KeelFactory`](../packages/contracts/src/modules/keel-die/KeelFactory.sol), [`KeelMintGate`](../packages/contracts/src/modules/keel-mint-access/KeelMintGate.sol) |
-| 02 | **THE HOLD** | Where the bytes live on the chain. Shared, permanent, never moves. | [`KeelHold`](../packages/contracts/src/modules/keel-hold/KeelHold.sol), [`Ingot`](../packages/contracts/src/modules/keel-hold/Ingot.sol) |
-| 03 | **THE INDEX** | The sealed inventory. Every piece the work is made of, and its Mark. | [`KeelIndex`](../packages/contracts/src/modules/keel-hold/KeelIndex.sol), [`KeelArtifactRegistry`](../packages/contracts/src/modules/keel-artifacts/KeelArtifactRegistry.sol) |
+| 01 | **THE DIE** | The artist's contract. Strikes the tokens: who may buy, how many exist, what each one points at. | [`KEEL721`](../../keel-contracts/src/modules/keel-die/KEEL721.sol), [`KeelFactory`](../../keel-contracts/src/modules/keel-die/KeelFactory.sol), [`KeelMintGate`](../../keel-contracts/src/modules/keel-mint-access/KeelMintGate.sol) |
+| 02 | **THE HOLD** | Where the bytes live on the chain. Shared, permanent, never moves. | [`KeelHold`](../../keel-contracts/src/modules/keel-hold/KeelHold.sol), [`Ingot`](../../keel-contracts/src/modules/keel-hold/Ingot.sol) |
+| 03 | **THE INDEX** | The sealed inventory. Every piece the work is made of, and its Mark. | [`KeelIndex`](../../keel-contracts/src/modules/keel-hold/KeelIndex.sol), [`KeelArtifactRegistry`](../../keel-contracts/src/modules/keel-artifacts/KeelArtifactRegistry.sol) |
 | 04 | **THE CRUCIBLE** | Proves the work on every open, on the viewer's own machine. Clean, or slag. | `keel-crucible/` registries + the viewer-side verifier |
-| 05 | **THE HARNESS** | Runs the art sealed off from your wallet and the open internet. Contains the Cage. | [`KeelHarnessRegistry`](../packages/contracts/src/modules/keel-artifacts/KeelHarnessRegistry.sol), [`KeelHarnessBuilder`](../packages/contracts/src/modules/keel-harness/KeelHarnessBuilder.sol) |
+| 05 | **THE HARNESS** | Runs the art sealed off from your wallet and the open internet. Contains the Cage. | [`KeelHarnessRegistry`](../../keel-contracts/src/modules/keel-artifacts/KeelHarnessRegistry.sol), [`KeelHarnessBuilder`](../../keel-contracts/src/modules/keel-harness/KeelHarnessBuilder.sol) |
 | 06 | **THE ANCHOR** | A copy of the exact bytes driven into another chain. | `keel-anchors/` — attested, portable, zk, IPFS |
 | 07 | **PARTS & INLAYS** | Art built out of other art, verified as hard as its host. | `keel-graph/`, `keel-equipment/` |
-| 08 | **THE SLEEVE** | What ordinary marketplaces see. Boring, standard, works everywhere. | [`KeelSleeve`](../packages/contracts/src/modules/keel-sleeve/KeelSleeve.sol), the ERC-721/2981/4906 surface of `KEEL721` |
+| 08 | **THE SLEEVE** | What ordinary marketplaces see. Boring, standard, works everywhere. | [`KeelSleeve`](../../keel-contracts/src/modules/keel-sleeve/KeelSleeve.sol), the ERC-721/2981/4906 surface of `KEEL721` |
 
 ## The parts
 

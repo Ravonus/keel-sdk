@@ -71,7 +71,20 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.equal(initialized?.result.serverInfo.name, "keel-mcp");
     assert.deepEqual(Object.keys(initialized?.result.capabilities), ["tools", "prompts", "resources"]);
     const listed = await server.handle({ jsonrpc: "2.0", id: 5, method: "tools/list", params: {} });
-    assert.deepEqual(listed?.result.tools.map((tool) => tool.name), ["analyze", "media-optimize", "build", "verify", "cost", "upload-plan", "chain-plan", "ethereum-encode", "publish-plan", "module-resolve", "module-lock", "wallet-request-prepare", "wallet-link", "module-review-prepare", "fray-auction-intake", "fray-stage-project", "keel-chain-guide", "keel-library-search", "keel-endpoint-config", "keel-studio-capabilities", "keel-studio-project-intake"]);
+    assert.deepEqual(listed?.result.tools.map((tool) => tool.name), ["analyze", "media-optimize", "build", "verify", "cost", "upload-plan", "chain-plan", "ethereum-encode", "publish-plan", "module-resolve", "module-lock", "wallet-request-prepare", "wallet-link", "module-review-prepare", "fray-auction-intake", "fray-stage-project", "keel-chain-guide", "keel-library-search", "keel-endpoint-config", "keel-studio-capabilities", "keel-studio-project-intake", "keel-studio-draft", "keel-studio-stage-project", "keel-creator-collection-prepare"]);
+    const creatorPlan = await call(server, 31, "keel-creator-collection-prepare", {
+      chainId: 11155111,
+      creator: "0x1111111111111111111111111111111111111111",
+      instance: "creator-v1",
+      operation: {
+        kind: "dedicated-erc721",
+        config: { name: "One of One", symbol: "ONE", maxSupply: 1, metadataDigest: `0x${"a".repeat(64)}` },
+      },
+    });
+    assert.equal(creatorPlan?.result.structuredContent.status, "blocked");
+    assert.equal(creatorPlan?.result.structuredContent.walletApproval, "not-requested");
+    assert.equal(creatorPlan?.result.structuredContent.signing, "not-performed");
+    assert.equal(creatorPlan?.result.structuredContent.submission, "not-performed");
     const malformed = await server.handle({ jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "cost", unexpected: true } });
     assert.equal(malformed?.error?.code, -32602);
     const malformedArguments = await server.handle({ jsonrpc: "2.0", id: 12, method: "tools/call", params: { name: "cost", arguments: null } });
@@ -381,7 +394,7 @@ test("MCP rejects symlink inputs and CLI emits protocol JSON only", async () => 
     const lines = output.trim().split("\n").map((line) => JSON.parse(line));
     assert.equal(lines.length, 4);
     assert.equal(lines[0].id, 1);
-    assert.equal(lines[1].result.tools.length, 21);
+    assert.equal(lines[1].result.tools.length, 24);
     assert.equal(lines[2].result.resources.length, 3);
     assert.equal(JSON.parse(lines[3].result.contents[0].text).kind, "offline-workflow");
   } finally {
@@ -550,7 +563,7 @@ test("MCP CLI help, version, and self-test are explicit non-stdio modes", async 
     const health = JSON.parse(first);
     assert.equal(health.status, "ok");
     assert.equal(health.protocolVersion, "2024-11-05");
-    assert.equal(health.toolCount, 21);
+    assert.equal(health.toolCount, 24);
     assert.deepEqual(health.checks, ["initialize", "ping", "tools/list", "prompts/list", "prompts/get", "resources/list", "resources/read"]);
     assert.equal(health.jsonrpc, undefined);
   } finally {

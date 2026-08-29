@@ -128,8 +128,8 @@ Commands:
   keel verify <release-directory> [--manifest <file-name>] [--json]
   keel cost <input> [--media-type <type>] [--compression auto|none|brotli|gzip|deflate]
     [--chunk-bytes 23000] [--leaf-bytes 524288] [--parts 64] [--max-depth 8] [--json]
-  keel optimize <input> [--media-type <type>] [--quality 82] [--effort 6] [--storage-mode <mode>]
-    [--json|--yaml] [--apply --out <new-file.webp>]
+  keel optimize <input> [--media-type <type>] [--quality 82] [--effort 6] [--video-crf 32] [--video-cpu-used 4]
+    [--storage-mode <mode>] [--json|--yaml] [--apply --out <new-file.{webp,webm,glb}>]
   keel module-resolve <snapshot.json> (--name <name> | --digest <0xsha256> --byte-length <n>)
     [--namespace npm|keel|github] [--version <version>] [--entry <path>]
     [--artist <artist>] [--tag <a,b>] [--json]
@@ -477,12 +477,16 @@ async function main(): Promise<void> {
       const mediaType = flag(args, "media-type");
       const quality = flag(args, "quality");
       const effort = flag(args, "effort");
+      const videoCrf = flag(args, "video-crf");
+      const videoCpuUsed = flag(args, "video-cpu-used");
       const selectedStorageMode = flag(args, "storage-mode");
       const plan = await planMediaOptimization({
         input,
         ...(mediaType === undefined ? {} : { mediaType }),
         ...(quality === undefined ? {} : { quality: Number(quality) }),
         ...(effort === undefined ? {} : { effort: Number(effort) }),
+        ...(videoCrf === undefined ? {} : { videoCrf: Number(videoCrf) }),
+        ...(videoCpuUsed === undefined ? {} : { videoCpuUsed: Number(videoCpuUsed) }),
         ...(selectedStorageMode === undefined ? {} : { selectedStorageMode }),
       });
       const requestedOutput = flag(args, "out");
@@ -491,7 +495,7 @@ async function main(): Promise<void> {
         output(plan, args.flags.json === true, `${plan.input.fileName}: dry-run; ${plan.capability.available ? "ready for explicit apply" : plan.capability.reason ?? "adapter unavailable"}.`, args.flags.yaml === true);
         return;
       }
-      const result = await applyMediaOptimization({ plan, output: required(requestedOutput, "optimize --apply requires --out <new-file.webp>.") });
+      const result = await applyMediaOptimization({ plan, output: required(requestedOutput, "optimize --apply requires --out <a-new-file-with-the-planned-extension>.") });
       output(
         result,
         args.flags.json === true,

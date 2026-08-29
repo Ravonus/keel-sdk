@@ -4,7 +4,7 @@
   "canonicalization": "RFC8785",
   "integrity": {
     "algorithm": "sha256",
-    "digest": "0x65f572f507048748031f3928a0d73cee4280b8820b343dadc58c15c87ad48d1d",
-    "byteLength": 2556
+    "digest": "0x6e1456ce1b948fe68affed8c854b24713a80b70fc376620abff30c5bf3d4a1b1",
+    "byteLength": 2559
   }
 }

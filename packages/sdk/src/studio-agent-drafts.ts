@@ -75,6 +75,85 @@ export interface KeelStudioAgentDraftClient {
   readonly update: (releaseId: string, draft: KeelStudioAgentReleaseDraft, expectedRevision: number) => Promise<KeelStudioAgentReleaseView>;
 }
 
+const RELEASE_DRAFT_FIELDS = [
+  "artifactId", "title", "description", "story", "releaseType", "accessMode", "supply", "priceEth",
+  "maxPerTransaction", "maxPerWallet", "startsAt", "endsAt", "networkLabel", "payoutAddress", "page",
+] as const;
+
+function boundedDraftText(value: unknown, label: string, maximum: number): string {
+  if (typeof value !== "string" || value.length > maximum || /[\u0000-\u001f\u007f]/u.test(value)) {
+    throw new TypeError(`${label} must be text of at most ${maximum} characters without control characters.`);
+  }
+  return value;
+}
+
+function nullableDraftText(value: unknown, label: string, maximum: number): string | null {
+  return value === null ? null : boundedDraftText(value, label, maximum);
+}
+
+function positiveDraftInteger(value: unknown, label: string): number {
+  if (!Number.isSafeInteger(value) || (value as number) < 1 || (value as number) > 1_000_000) {
+    throw new TypeError(`${label} must be an integer from 1 through 1000000.`);
+  }
+  return value as number;
+}
+
+/**
+ * Validate the portable JSON/YAML draft shape before a CLI or MCP client sends
+ * it to Studio. Studio remains authoritative and performs the same validation
+ * again against the creator-owned record.
+ */
+export function validateKeelStudioAgentReleaseDraft(value: unknown): KeelStudioAgentReleaseDraft {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) throw new TypeError("Studio release draft must be an object.");
+  const input = value as Record<string, unknown>;
+  // A creator or agent commonly edits the object returned by `read`; accept
+  // those read-only view fields and strip them from the update payload.
+  const allowed = new Set<string>([...RELEASE_DRAFT_FIELDS, "id", "revision", "status", "slug"]);
+  for (const key of Object.keys(input)) if (!allowed.has(key)) throw new TypeError(`Studio release draft.${key} is not supported.`);
+  for (const key of RELEASE_DRAFT_FIELDS) if (!(key in input)) throw new TypeError(`Studio release draft.${key} is required.`);
+
+  const title = boundedDraftText(input.title, "Studio release draft.title", 140).trim();
+  if (title.length === 0) throw new TypeError("Studio release draft.title must not be empty.");
+  const description = boundedDraftText(input.description, "Studio release draft.description", 2_000).trim();
+  const story = boundedDraftText(input.story, "Studio release draft.story", 8_000).trim();
+  if (typeof input.releaseType !== "string" || !(KEEL_STUDIO_RELEASE_TYPES as readonly string[]).includes(input.releaseType)) {
+    throw new TypeError("Studio release draft.releaseType is unsupported.");
+  }
+  if (typeof input.accessMode !== "string" || !["public", "allowlist", "holder", "claim", "custom"].includes(input.accessMode)) {
+    throw new TypeError("Studio release draft.accessMode is unsupported.");
+  }
+  if (typeof input.supply !== "string" || !/^(?:open|[1-9][0-9]*)$/u.test(input.supply.trim())) {
+    throw new TypeError("Studio release draft.supply must be open or a positive integer string.");
+  }
+  if (typeof input.priceEth !== "string" || !/^(?:0|[1-9][0-9]*)(?:\.[0-9]{1,18})?$/u.test(input.priceEth.trim())) {
+    throw new TypeError("Studio release draft.priceEth must be a non-negative ETH decimal with at most 18 places.");
+  }
+  const artifactId = nullableDraftText(input.artifactId, "Studio release draft.artifactId", 128);
+  const startsAt = nullableDraftText(input.startsAt, "Studio release draft.startsAt", 64);
+  const endsAt = nullableDraftText(input.endsAt, "Studio release draft.endsAt", 64);
+  const payoutAddress = nullableDraftText(input.payoutAddress, "Studio release draft.payoutAddress", 42);
+  if (payoutAddress !== null && !/^0x[0-9a-f]{40}$/iu.test(payoutAddress)) throw new TypeError("Studio release draft.payoutAddress must be a valid address or null.");
+  if (input.page === null || typeof input.page !== "object" || Array.isArray(input.page)) throw new TypeError("Studio release draft.page must be an object.");
+
+  return Object.freeze({
+    artifactId,
+    title,
+    description,
+    story,
+    releaseType: input.releaseType as KeelStudioReleaseType,
+    accessMode: input.accessMode as KeelStudioReleaseAccessMode,
+    supply: input.supply.trim(),
+    priceEth: input.priceEth.trim(),
+    maxPerTransaction: positiveDraftInteger(input.maxPerTransaction, "Studio release draft.maxPerTransaction"),
+    maxPerWallet: positiveDraftInteger(input.maxPerWallet, "Studio release draft.maxPerWallet"),
+    startsAt,
+    endsAt,
+    networkLabel: boundedDraftText(input.networkLabel, "Studio release draft.networkLabel", 80).trim(),
+    payoutAddress: payoutAddress as `0x${string}` | null,
+    page: input.page as Readonly<Record<string, unknown>>,
+  });
+}
+
 function isDraftOperation(value: unknown): value is KeelStudioAgentDraftOperation {
   return typeof value === "string" && (KEEL_STUDIO_AGENT_DRAFT_OPERATIONS as readonly string[]).includes(value);
 }
@@ -141,19 +220,22 @@ export function createKeelStudioAgentDraftClient(options: KeelStudioAgentDraftCl
       responseJson(await clientRequest(options, "/api/agent/drafts", { cache: "no-store" }), [options.grantToken]);
   const read = async (releaseId: string): Promise<KeelStudioAgentReleaseView> =>
       responseJson(await clientRequest(options, releasePath(releaseId), { cache: "no-store" }), [options.grantToken]);
-  const create = async (draft: KeelStudioAgentReleaseDraft): Promise<KeelStudioAgentReleaseView> =>
-      responseJson(await clientRequest(options, "/api/agent/drafts", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(draft),
-      }), [options.grantToken]);
+  const create = async (draft: KeelStudioAgentReleaseDraft): Promise<KeelStudioAgentReleaseView> => {
+    const validated = validateKeelStudioAgentReleaseDraft(draft);
+    return responseJson(await clientRequest(options, "/api/agent/drafts", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(validated),
+    }), [options.grantToken]);
+  };
   const update = async (releaseId: string, draft: KeelStudioAgentReleaseDraft, expectedRevision: number): Promise<KeelStudioAgentReleaseView> => {
     if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 1) throw new TypeError("Expected draft revision must be a positive integer.");
+    const validated = validateKeelStudioAgentReleaseDraft(draft);
     return responseJson(await clientRequest(options, releasePath(releaseId), {
-        method: "PATCH",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ draft, expectedRevision }),
-      }), [options.grantToken]);
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ draft: validated, expectedRevision }),
+    }), [options.grantToken]);
   };
   return Object.freeze<KeelStudioAgentDraftClient>({ list, read, create, update });
 }
@@ -164,8 +246,8 @@ function operationReleaseId(config: KeelStudioAgentDraftOperationConfig): string
 }
 
 function operationDraft(config: KeelStudioAgentDraftOperationConfig): KeelStudioAgentReleaseDraft {
-  if (config.draft === undefined || config.draft === null || typeof config.draft !== "object" || Array.isArray(config.draft)) throw new TypeError(`${config.operation} requires a draft object.`);
-  return config.draft;
+  if (config.draft === undefined) throw new TypeError(`${config.operation} requires a draft object.`);
+  return validateKeelStudioAgentReleaseDraft(config.draft);
 }
 
 /** Execute one explicitly configured, creator-scoped draft operation. */

@@ -147,6 +147,30 @@ ready versus blocked chains, staging limits, quote/authorization rules, and
 the Studio's current MSP features. The document is strictly parsed by
 `@keel/sdk`; unknown fields and unsupported protocol versions fail closed.
 
+`keel-studio-draft` lists, reads, creates, or revision-safely edits a private
+release draft through the creator's scoped `KEEL_STUDIO_AGENT_TOKEN`. The token
+is read only from the MCP process environment and is never accepted in tool
+arguments. Updates require the current revision, so an old agent response
+cannot overwrite newer browser work. The tool has no operation for transaction
+review, cancellation, signing, publication, or chain submission.
+
+`keel-studio-stage-project` reads a bounded list of workspace-relative files,
+preserves their declared roles, and uploads them to Studio's temporary staging
+store. The creator's scoped key stays in `KEEL_STUDIO_AGENT_TOKEN`; the tool
+returns the server-issued handoff and reports wallet signing/submission as
+`not-performed`. A normal image project contains the image file, not a locally
+manufactured `viewer.js` or `index.html`; Studio supplies the verified KEEL
+shell policy.
+
+`keel-creator-collection-prepare` prepares one exact creator collection call
+from the SDK's durable deployment registry. It supports a compact dedicated
+ERC-721, a compact dedicated ERC-1155, a logical collection in the shared
+ERC-1155, or authority-checked bring-your-own registration. A missing or
+ambiguous `KeelCreatorFactory` + `KeelArtifactTokenRenderer` pair stops safely
+without requesting wallet approval. A configured result is still review-only:
+the caller must re-read the factory's immutable `metadataRenderer` before a
+wallet request may be emitted.
+
 `wallet-link` accepts the exact KeelFactory `castDieFor` target,
 including factory/version commitments, the Keccak config digest encoding, and
 the account's creator nonce. Supply the exact `collectionConfig` tuple (name,

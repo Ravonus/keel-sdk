@@ -2,6 +2,14 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 
 export const root = path.resolve(new URL("..", import.meta.url).pathname);
+/** Canonical contracts live beside the SDK; an explicit checkout may override this for CI. */
+export const contractsRoot = path.resolve(
+  process.env.KEEL_CONTRACTS_ROOT ?? path.join(root, "..", "keel-contracts"),
+);
+/** Canonical Studio lives in the sibling site repository; CI may pin another checkout. */
+export const siteRoot = path.resolve(
+  process.env.KEEL_SITE_ROOT ?? path.join(root, "..", "keel-site"),
+);
 
 export function run(command, args, options = {}) {
   const result = spawnSync(command, args, {

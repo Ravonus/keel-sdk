@@ -102,9 +102,9 @@ export const MODULES = [
     group: "token",
     title: "Token base",
     summary: "Compact creator-owned ERC-721/ERC-1155 collections, a shared multi-creator ERC-1155, renderer boundaries, and factories that organize them.",
-    deps: ["keel-kernel", "keel-harness", "keel-presentation"],
+    deps: ["keel-kernel", "keel-harness", "keel-presentation", "keel-artifacts"],
     devDeps: ["keel-hold"],
-    contracts: ["KEEL721.sol", "KEEL721Deployer.sol", "KeelFactory.sol", "KeelFactorySepolia.sol", "KeelCreator721.sol", "KeelCreator1155.sol", "KeelShared1155.sol", "KeelCreatorFactory.sol", "interfaces/IKeelMintable.sol", "interfaces/IKeelMintCapacity.sol", "interfaces/IKeelCampaignAuthorizer.sol", "interfaces/IKeelItemMintTarget.sol", "interfaces/IKeelTokenRenderer.sol", "interfaces/IKeelCreatorDirectory.sol"],
+    contracts: ["KEEL721.sol", "KEEL721Deployer.sol", "KeelFactory.sol", "KeelFactorySepolia.sol", "KeelCreator721.sol", "KeelCreator1155.sol", "KeelShared1155.sol", "KeelCreatorFactory.sol", "KeelArtifactTokenRenderer.sol", "interfaces/IKeelMintable.sol", "interfaces/IKeelMintCapacity.sol", "interfaces/IKeelCampaignAuthorizer.sol", "interfaces/IKeelItemMintTarget.sol", "interfaces/IKeelTokenRenderer.sol", "interfaces/IKeelCreatorDirectory.sol"],
   },
   {
     id: "keel-creator-identity",

@@ -57,11 +57,11 @@ the external-rule path uses a live `code_hash` plus `is_authorized` view just
 like the EVM code-hash pin.
 
 The EVM implementation is in
-[`KeelIPControl.sol`](../packages/contracts/src/modules/keel-ip-control/KeelIPControl.sol). The
+[`KeelIPControl.sol`](../../keel-contracts/src/modules/keel-ip-control/KeelIPControl.sol). The
 Tezos policy evaluator is in
-[`keel_ip_control.py`](../packages/tezos/contracts/keel_ip_control.py),
+[`keel_ip_control.py`](../../keel-contracts/src/modules/keel-ip-control/tezos/keel_ip_control.py),
 and the Tezos license catalog is deliberately separate in
-[`keel_ip_license.py`](../packages/tezos/contracts/keel_ip_license.py).
+[`keel_ip_license.py`](../../keel-contracts/src/modules/keel-ip-control/tezos/keel_ip_license.py).
 
 ## Manifest and verifier boundary
 

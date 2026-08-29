@@ -150,3 +150,19 @@ test("agent draft operation config keeps stale edits and unsupported actions exp
   await assert.rejects(executeKeelStudioAgentDraftOperation({ ...editConfig, expectedRevision: undefined, fetchImplementation }), /positive integer/u);
   await assert.rejects(executeKeelStudioAgentDraftOperation({ ...jsonConfig, chainId: 11155111, fetchImplementation }), /not supported/u);
 });
+
+test("portable draft validation rejects malformed or stale-agent payloads before network access", async () => {
+  const { validateKeelStudioAgentReleaseDraft, createKeelStudioAgentDraftClient } = await import(MODULE);
+  assert.deepEqual(validateKeelStudioAgentReleaseDraft(baseDraft), baseDraft);
+  assert.throws(() => validateKeelStudioAgentReleaseDraft({ ...baseDraft, title: "" }), /title must not be empty/u);
+  assert.throws(() => validateKeelStudioAgentReleaseDraft({ ...baseDraft, priceEth: "0.1234567890123456789" }), /at most 18/u);
+  assert.throws(() => validateKeelStudioAgentReleaseDraft({ ...baseDraft, publicationState: "published" }), /publicationState is not supported/u);
+  let requests = 0;
+  const client = createKeelStudioAgentDraftClient({
+    studioUrl: "https://studio.example",
+    grantToken: `keel_agent_${"z".repeat(48)}`,
+    fetchImplementation: async () => { requests += 1; return Response.json({}); },
+  });
+  await assert.rejects(client.create({ ...baseDraft, supply: "0" }), /positive integer/u);
+  assert.equal(requests, 0);
+});

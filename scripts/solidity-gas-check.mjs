@@ -1,7 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
-import { root } from "./run.mjs";
+import { contractsRoot, root } from "./run.mjs";
 import { SOLIDITY_COMPILER_SETTINGS } from "./solidity-compiler.mjs";
 
 async function filesBelow(directory) {
@@ -28,12 +28,9 @@ function functionHeaders(code) {
   ].map((match) => match[0]);
 }
 
-const contractsRoot = path.join(root, "packages", "contracts");
 const sourceRoot = path.join(contractsRoot, "src");
-const foundryConfig = await readFile(
-  path.join(contractsRoot, "foundry.toml"),
-  "utf8",
-);
+const foundryPath = path.join(contractsRoot, "foundry.toml");
+const foundryConfig = await readFile(foundryPath, "utf8");
 
 const expectedFoundrySettings = [
   ["optimizer", /^optimizer\s*=\s*true$/mu],
@@ -71,7 +68,7 @@ const expectedFoundrySettings = [
 const failures = [];
 for (const [label, pattern] of expectedFoundrySettings) {
   if (!pattern.test(foundryConfig)) {
-    failures.push(`packages/contracts/foundry.toml: expected ${label}`);
+    failures.push(`${path.relative(root, foundryPath)}: expected ${label}`);
   }
 }
 

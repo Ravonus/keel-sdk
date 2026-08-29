@@ -104,7 +104,7 @@ test("studio draft CLI reads JSON and YAML configs without wallet or chain actio
     assert.doesNotMatch(hostile.stderr, new RegExp(token, "u"));
 
     const unsupportedPath = path.join(directory, "unsupported.yaml");
-    await writeFile(unsupportedPath, `studioUrl: ${studioUrl}\ngrantToken: ${token}\noperation: list\nchainId: 11155111\n`);
+    await writeFile(unsupportedPath, `studioUrl: ${studioUrl}\noperation: list\nchainId: 11155111\n`);
     const unsupported = await runCli(["studio-drafts", "--config", unsupportedPath]);
     assert.equal(unsupported.status, 1);
     assert.match(unsupported.stderr, /configuration\.chainId is not supported/u);

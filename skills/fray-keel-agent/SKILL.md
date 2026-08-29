@@ -82,6 +82,50 @@ to Studio with the wallet session. The agent never receives a private key or a
 wallet signature. A project that has been attached appears in **Agent-prepared
 projects** and can be reopened later.
 
+For ordinary KEEL work that is not a Fray auction, use
+`keel-studio-stage-project`. Declare only creator-owned project files. An image
+project normally stages the image alone with role `image`; p5 or Three work
+stages only its creator script/assets and exact module declarations. Do not add
+`viewer.js`, `index.html`, p5, Three, seeded-random, or the verification shell
+as creator files when the same-chain catalog already supplies them. Studio
+generates the KEEL shell from the verified declaration and returns the only
+handoff URL the agent should show.
+
+## Repair an existing draft
+
+When a creator opens a draft and asks the agent to rename it, change the sale,
+or attach a corrected prepared artifact, use `keel-studio-draft`. The scoped
+key belongs in `KEEL_STUDIO_AGENT_TOKEN`; never copy it into tool arguments,
+chat, logs, or a handoff URL.
+
+1. `list` or `read` the creator-owned draft first.
+2. Preserve its returned `revision` and every field the creator did not ask to
+   change.
+3. For media changes, run `media-optimize` as a dry-run and show the measured
+   before/after bytes and percentage. Do not change storage mode. A local CLI
+   user may explicitly apply a smaller candidate to a new file; the source is
+   retained.
+4. Stage corrected project bytes as a new project handoff. The creator still
+   signs in and prepares those bytes in Studio; an agent grant does not bypass
+   project verification.
+5. After Studio returns the new artifact ID, call `update` with the exact prior
+   `revision`. A stale revision stops instead of erasing newer browser work.
+
+Draft tools never review, cancel, sign, submit, or confirm a publication. If a
+release is already under review, stop and let the creator cancel that review in
+Studio before editing.
+
+When the creator wants a new token contract or wants to organize an existing
+contract, call `keel-creator-collection-prepare` only after the project and
+metadata digest are exact. Choose one lane: dedicated ERC-721 for individually
+numbered works, dedicated ERC-1155 for many edition items in one creator
+contract, shared ERC-1155 for the lowest deployment cost, or external for a
+creator-controlled bring-your-own contract. Never substitute one lane for
+another. Missing or ambiguous factory/renderer deployment records are a safe
+stop, not a reason to invent an address or request approval. A review-only plan
+still requires an exact factory-to-renderer read-back before Studio may show the
+wallet action; collection creation does not mint an item or create its sale.
+
 ## Approval handoff
 
 The completed intake returns a digest-bound `fray-approval-request@1` envelope.

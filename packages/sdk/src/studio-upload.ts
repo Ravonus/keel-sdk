@@ -26,6 +26,7 @@ export type KeelStudioComponentRole =
   | "style"
   | "data"
   | "library"
+  | "image"
   | "other";
 
 export type KeelStudioComponentFormat = "asset" | "classic-script" | "es-module" | "umd" | "wasm";

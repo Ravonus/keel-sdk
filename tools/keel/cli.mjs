@@ -20,6 +20,10 @@
  *   keel sync                     regenerate manifests + SDK registry
  *   keel studio-drafts --config <file> [--format json|yaml]
  *                                 run one creator-scoped Studio draft operation
+ *   keel studio-stage --config <file> [--format json|yaml]
+ *                                 stage a bounded project and return its Studio handoff
+ *   keel creator-collection --config <file> [--format json|yaml]
+ *                                 prepare one exact review-only creator collection call
  */
 import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync, statSync } from "node:fs";
 import { execFileSync, spawnSync } from "node:child_process";
@@ -216,6 +220,8 @@ switch (cmd) {
   case "reconcile": process.exit(run(`node ${join(import.meta.dirname, "seed-deployments.mjs")} ${rest.join(" ")}`, REPO)); break;
   case "sync": cmdSync(); break;
   case "studio-drafts": process.exit(runNodeScript(join(import.meta.dirname, "studio-drafts.mjs"), rest)); break;
+  case "studio-stage": process.exit(runNodeScript(join(import.meta.dirname, "studio-stage.mjs"), rest)); break;
+  case "creator-collection": process.exit(runNodeScript(join(import.meta.dirname, "creator-collection.mjs"), rest)); break;
   default:
     console.log(readFileSync(import.meta.filename, "utf8").split("\n").slice(2, 12).map((l) => l.replace(/^ \* ?/, "")).join("\n"));
 }

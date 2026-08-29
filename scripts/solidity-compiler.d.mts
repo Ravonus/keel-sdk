@@ -26,7 +26,7 @@ export interface CanonicalSolidityCompilation {
 
 export const EIP170_MAX_RUNTIME_BYTES: number;
 export const SOLIDITY_COMPILER_SETTINGS: {
-  readonly evmVersion: "cancun";
+  readonly evmVersion: "prague";
   readonly optimizerRuns: 200;
   readonly viaIR: true;
   readonly bytecodeHash: "none";

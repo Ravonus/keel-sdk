@@ -227,7 +227,8 @@ export const KEEL_MODULES: readonly KeelModule[] = [
     "deps": [
       "keel-kernel",
       "keel-harness",
-      "keel-presentation"
+      "keel-presentation",
+      "keel-artifacts"
     ],
     "contracts": [
       "KEEL721.sol",
@@ -238,6 +239,7 @@ export const KEEL_MODULES: readonly KeelModule[] = [
       "KeelCreator1155.sol",
       "KeelShared1155.sol",
       "KeelCreatorFactory.sol",
+      "KeelArtifactTokenRenderer.sol",
       "interfaces/IKeelMintable.sol",
       "interfaces/IKeelMintCapacity.sol",
       "interfaces/IKeelCampaignAuthorizer.sol",
@@ -248,11 +250,12 @@ export const KEEL_MODULES: readonly KeelModule[] = [
     "deployable": [
       "KEEL721",
       "KEEL721Deployer",
-      "KeelFactory",
-      "KeelFactorySepolia",
+      "KeelArtifactTokenRenderer",
       "KeelCreator1155",
       "KeelCreator721",
       "KeelCreatorFactory",
+      "KeelFactory",
+      "KeelFactorySepolia",
       "KeelShared1155"
     ]
   },

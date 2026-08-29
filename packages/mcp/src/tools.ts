@@ -23,9 +23,13 @@ import {
   fetchStudioCapabilities,
   buildKeelModuleReviewRequest,
   prepareKeelStudioProjectIntake,
+  executeKeelStudioAgentDraftOperation,
+  prepareKeelCreatorCollectionReview,
+  stageKeelStudioProject,
   resolveKeelEndpoints,
   type KeelWalletLinkInput,
   type KeelModuleReviewInput,
+  type KeelCreatorCollectionReviewInput,
 } from "@keel/sdk";
 import {
   createKeelFactoryConfigDigest,
@@ -556,6 +560,100 @@ async function studioProjectIntakeTool(_context: ToolContext, value: unknown): P
   return prepareKeelStudioProjectIntake(input as Parameters<typeof prepareKeelStudioProjectIntake>[0]);
 }
 
+async function studioDraftTool(_context: ToolContext, value: unknown): Promise<unknown> {
+  const input = record(value, ["studioUrl", "operation", "releaseId", "expectedRevision", "draft"], "Studio draft arguments");
+  const operation = requiredString(input, "operation");
+  if (!["list", "read", "create", "update"].includes(operation)) throw new TypeError("operation must be list, read, create, or update.");
+  const token = process.env.KEEL_STUDIO_AGENT_TOKEN;
+  if (typeof token !== "string" || token.length < 48) {
+    throw new TypeError("KEEL Studio draft access requires KEEL_STUDIO_AGENT_TOKEN. Create a scoped key in Studio account settings; never put it in MCP arguments.");
+  }
+  const configuredStudioUrl = optionalString(input, "studioUrl");
+  const studioUrl = resolveKeelEndpoints({
+    ...(configuredStudioUrl === undefined ? {} : { studioUrl: configuredStudioUrl }),
+  }, process.env).studioUrl;
+  const releaseId = optionalString(input, "releaseId");
+  const expectedRevision = optionalNumber(input, "expectedRevision");
+  return executeKeelStudioAgentDraftOperation({
+    studioUrl,
+    grantToken: token,
+    operation: operation as "list" | "read" | "create" | "update",
+    ...(releaseId === undefined ? {} : { releaseId }),
+    ...(input.draft === undefined ? {} : { draft: input.draft as never }),
+    ...(expectedRevision === undefined ? {} : { expectedRevision }),
+  });
+}
+
+async function studioStageProjectTool(context: ToolContext, value: unknown): Promise<unknown> {
+  const input = record(value, ["studioUrl", "title", "description", "storageStrategy", "marketplaceExportMode", "viewer", "files", "releaseIntent"], "Studio stage project arguments");
+  const token = process.env.KEEL_STUDIO_AGENT_TOKEN;
+  if (typeof token !== "string" || token.length < 48) {
+    throw new TypeError("KEEL Studio staging requires KEEL_STUDIO_AGENT_TOKEN. Create a scoped key in Studio account settings; never put it in MCP arguments.");
+  }
+  const configuredStudioUrl = optionalString(input, "studioUrl");
+  const studioUrl = resolveKeelEndpoints({ ...(configuredStudioUrl === undefined ? {} : { studioUrl: configuredStudioUrl }) }, process.env).studioUrl;
+  const title = requiredBoundedString(input, "title", 160);
+  const description = optionalString(input, "description") ?? "";
+  if (description.length > 2_000 || /[\u0000-\u001f\u007f]/u.test(description)) throw new TypeError("description must be bounded text.");
+  const storageStrategy = requiredString(input, "storageStrategy");
+  if (!["local", "onchain", "hybrid"].includes(storageStrategy)) throw new TypeError("storageStrategy must be local, onchain, or hybrid.");
+  const marketplaceExportMode = optionalString(input, "marketplaceExportMode");
+  if (marketplaceExportMode !== undefined && !["recursive", "packed", "hybrid", "onchfs"].includes(marketplaceExportMode)) throw new TypeError("marketplaceExportMode is unsupported.");
+  const viewer = optionalString(input, "viewer");
+  if (viewer !== undefined && viewer !== "keel-verification-shell" && viewer !== "none") throw new TypeError("viewer must be keel-verification-shell or none.");
+  if (!Array.isArray(input.files) || input.files.length < 1 || input.files.length > 256) throw new TypeError("files must contain from 1 through 256 entries.");
+  let totalBytes = 0;
+  const files = [];
+  for (const [index, candidate] of input.files.entries()) {
+    const file = record(candidate, ["path", "mediaType", "role", "format", "updateMode", "label"], `files[${index}]`);
+    const sourcePath = requiredString(file, "path");
+    const loaded = await context.workspace.readFile(sourcePath, MAX_MEDIA_BYTES);
+    totalBytes += loaded.bytes.byteLength;
+    if (totalBytes > MAX_MEDIA_BYTES) throw new RangeError(`Staged project exceeds the ${MAX_MEDIA_BYTES.toString()} byte MCP limit.`);
+    const role = requiredString(file, "role");
+    if (!["entrypoint", "renderer", "runtime", "script", "module", "style", "data", "library", "image", "other"].includes(role)) throw new TypeError(`files[${index}].role is unsupported.`);
+    const format = requiredString(file, "format");
+    if (!["asset", "classic-script", "es-module", "umd", "wasm"].includes(format)) throw new TypeError(`files[${index}].format is unsupported.`);
+    const updateMode = optionalString(file, "updateMode");
+    if (updateMode !== undefined && updateMode !== "locked" && updateMode !== "manual") throw new TypeError(`files[${index}].updateMode is unsupported.`);
+    const label = optionalString(file, "label");
+    files.push({
+      path: sourcePath,
+      bytes: loaded.bytes,
+      mediaType: requiredBoundedString(file, "mediaType", 160),
+      role: role as "entrypoint" | "renderer" | "runtime" | "script" | "module" | "style" | "data" | "library" | "image" | "other",
+      format: format as "asset" | "classic-script" | "es-module" | "umd" | "wasm",
+      ...(updateMode === undefined ? {} : { updateMode: updateMode as "locked" | "manual" }),
+      ...(label === undefined ? {} : { label }),
+    });
+  }
+  return stageKeelStudioProject({
+    studioUrl,
+    agentToken: token,
+    title,
+    description,
+    storageStrategy: storageStrategy as "local" | "onchain" | "hybrid",
+    ...(marketplaceExportMode === undefined ? {} : { marketplaceExportMode: marketplaceExportMode as "recursive" | "packed" | "hybrid" | "onchfs" }),
+    ...(viewer === undefined ? {} : { viewer: viewer as "keel-verification-shell" | "none" }),
+    files,
+    ...(input.releaseIntent === undefined ? {} : { releaseIntent: input.releaseIntent as never }),
+  });
+}
+
+async function creatorCollectionPrepareTool(_context: ToolContext, value: unknown): Promise<unknown> {
+  const input = record(value, ["chainId", "creator", "instance", "operation"], "Creator collection prepare arguments");
+  if (typeof input.chainId !== "number" || !Number.isSafeInteger(input.chainId) || input.chainId <= 0) throw new TypeError("chainId must be a positive safe integer.");
+  const creator = requiredString(input, "creator");
+  const instance = optionalString(input, "instance");
+  const operation = record(input.operation, ["kind", "config", "name", "metadataDigest", "tokenContract"], "Creator collection operation");
+  return prepareKeelCreatorCollectionReview({
+    chainId: input.chainId,
+    creator: creator as `0x${string}`,
+    ...(instance === undefined ? {} : { instance }),
+    operation: operation as unknown as KeelCreatorCollectionReviewInput["operation"],
+  });
+}
+
 function tool(name: string, description: string, inputSchema: JsonSchema, run: ToolDefinition["run"]): ToolDefinition {
   return { descriptor: { name, description, inputSchema }, run };
 }
@@ -582,6 +680,9 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
   tool("keel-endpoint-config", "Resolve the Studio, public RPC, and optional indexer URLs using explicit input, KEEL environment configuration, then canonical test defaults; no network request occurs.", TOOL_SCHEMAS.endpointConfig, endpointConfigTool),
   tool("keel-studio-capabilities", "Inspect a Studio's supported chains, zero-spend sandbox, staging, authorization, and MSP readiness before any upload or wallet action.", TOOL_SCHEMAS.studioCapabilities, studioCapabilitiesTool),
   tool("keel-studio-project-intake", "Ask only for missing project decisions, then return either storage-only preparation or an editable release/listing intent. No upload, signature, wallet request, or transaction occurs.", TOOL_SCHEMAS.studioProjectIntake, studioProjectIntakeTool),
+  tool("keel-studio-draft", "List, read, create, or revision-safely edit a creator's private Studio release draft through a scoped key. It cannot prepare, sign, submit, cancel, or publish a chain action.", TOOL_SCHEMAS.studioDraft, studioDraftTool),
+  tool("keel-studio-stage-project", "Stage a bounded multi-file KEEL project and return the server-issued Studio handoff. The scoped agent key remains in the MCP environment; no wallet signature or chain action occurs.", TOOL_SCHEMAS.studioStageProject, studioStageProjectTool),
+  tool("keel-creator-collection-prepare", "Prepare one exact recorded KeelCreatorFactory collection call for review. Missing or ambiguous factory/renderer deployments stop before any wallet approval, signing, RPC, or submission.", TOOL_SCHEMAS.creatorCollectionPrepare, creatorCollectionPrepareTool),
 ];
 
 export function toolByName(name: string): ToolDefinition | undefined {
