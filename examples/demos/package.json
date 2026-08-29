@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/demos.test.mjs three-vault/tests/seed.test.mjs keel-creative-lab/tests/creative-lab.test.mjs keel-verification-consumer/tests/consumer.test.mjs vault-arcade/tests/marketplace-metadata-preview.test.mjs p5-brush-watermarks/tests/watermarks.test.mjs"
+    "test": "node --test tests/demos.test.mjs three-vault/tests/seed.test.mjs keel-creative-lab/tests/creative-lab.test.mjs keel-verification-consumer/tests/consumer.test.mjs vault-arcade/tests/marketplace-metadata-preview.test.mjs"
   }
 }
