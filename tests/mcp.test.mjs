@@ -48,6 +48,10 @@ const initializeParams = { protocolVersion: "2024-11-05", capabilities: {}, clie
 test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors", async () => {
   const directory = await mkdtemp(path.join("/tmp", "keel-mcp-"));
   try {
+    const agentSkill = await readFile(new URL("../skills/fray-keel-agent/SKILL.md", import.meta.url), "utf8");
+    assert.match(agentSkill, /omit `viewer` for the normal path/iu);
+    assert.match(agentSkill, /does \*\*not\*\* ask\s+the agent to create another shell/iu);
+    assert.match(agentSkill, /Creator-authored HTML is still valid project content/iu);
     const server = await createMcpServer({ workspaceRoot: directory });
     const before = await server.handle({ jsonrpc: "2.0", id: 1, method: "tools/list", params: {} });
     assert.equal(before?.error?.code, -32002);
@@ -72,6 +76,10 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.deepEqual(Object.keys(initialized?.result.capabilities), ["tools", "prompts", "resources"]);
     const listed = await server.handle({ jsonrpc: "2.0", id: 5, method: "tools/list", params: {} });
     assert.deepEqual(listed?.result.tools.map((tool) => tool.name), ["analyze", "media-optimize", "build", "verify", "cost", "upload-plan", "chain-plan", "ethereum-encode", "publish-plan", "module-resolve", "module-lock", "wallet-request-prepare", "wallet-link", "module-review-prepare", "fray-auction-intake", "fray-stage-project", "keel-chain-guide", "keel-library-search", "keel-endpoint-config", "keel-studio-capabilities", "keel-studio-project-intake", "keel-studio-draft", "keel-studio-stage-project", "keel-creator-collection-prepare"]);
+    const stageTool = listed?.result.tools.find((tool) => tool.name === "keel-studio-stage-project");
+    assert.match(stageTool?.description, /creator resources\/modules/iu);
+    assert.match(stageTool?.description, /canonical KEEL Inline graph/iu);
+    assert.match(stageTool?.inputSchema.properties.viewer.description, /artifact\/storage-only/iu);
     const creatorPlan = await call(server, 31, "keel-creator-collection-prepare", {
       chainId: 11155111,
       creator: "0x1111111111111111111111111111111111111111",
@@ -110,6 +118,9 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     const frayPrompt = await server.handle({ jsonrpc: "2.0", id: 11, method: "prompts/get", params: { name: "fray-auction-review" } });
     assert.match(frayPrompt?.result.messages[0].content.text, /exactly three auction setups/iu);
     assert.match(frayPrompt?.result.messages[0].content.text, /stop and wait/iu);
+    const keelPrompt = await server.handle({ jsonrpc: "2.0", id: 12, method: "prompts/get", params: { name: "keel-asset-review", arguments: { input: "asset.js" } } });
+    assert.match(keelPrompt?.result.messages[0].content.text, /canonical KEEL Inline graph/iu);
+    assert.match(keelPrompt?.result.messages[0].content.text, /protected-harness wrapper/iu);
     const malformedPromptList = await server.handle({ jsonrpc: "2.0", id: 10, method: "prompts/list", params: { unexpected: true } });
     assert.equal(malformedPromptList?.error?.code, -32602);
     const malformedResourceList = await server.handle({ jsonrpc: "2.0", id: 22, method: "resources/list", params: null });
@@ -130,6 +141,8 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.equal(publicationModes.defaultMode, "native-carrier-v1");
     assert.equal(publicationModes.modes.find((mode) => mode.id === "history-inscription-v1").contractReadable, false);
     assert.match(publicationModes.presentation.sdkPlanner.portableThreeDefault, /Three\.js r180/u);
+    assert.equal(publicationModes.staging.defaultViewer, "keel-verification-shell");
+    assert.match(publicationModes.staging.catalogFailure, /fail closed/iu);
     assert.deepEqual(await readdir(directory), resourceFiles);
     const unknownResource = await server.handle({ jsonrpc: "2.0", id: 25, method: "resources/read", params: { uri: "keel://mcp/unknown" } });
     assert.equal(unknownResource?.error?.code, -32002);

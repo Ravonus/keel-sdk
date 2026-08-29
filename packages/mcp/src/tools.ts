@@ -599,8 +599,8 @@ async function studioStageProjectTool(context: ToolContext, value: unknown): Pro
   if (!["local", "onchain", "hybrid"].includes(storageStrategy)) throw new TypeError("storageStrategy must be local, onchain, or hybrid.");
   const marketplaceExportMode = optionalString(input, "marketplaceExportMode");
   if (marketplaceExportMode !== undefined && !["recursive", "packed", "hybrid", "onchfs"].includes(marketplaceExportMode)) throw new TypeError("marketplaceExportMode is unsupported.");
-  const viewer = optionalString(input, "viewer");
-  if (viewer !== undefined && viewer !== "keel-verification-shell" && viewer !== "none") throw new TypeError("viewer must be keel-verification-shell or none.");
+  const viewer = optionalString(input, "viewer") ?? "keel-verification-shell";
+  if (viewer !== "keel-verification-shell" && viewer !== "none") throw new TypeError("viewer must be keel-verification-shell or none.");
   if (!Array.isArray(input.files) || input.files.length < 1 || input.files.length > 256) throw new TypeError("files must contain from 1 through 256 entries.");
   let totalBytes = 0;
   const files = [];
@@ -634,7 +634,7 @@ async function studioStageProjectTool(context: ToolContext, value: unknown): Pro
     description,
     storageStrategy: storageStrategy as "local" | "onchain" | "hybrid",
     ...(marketplaceExportMode === undefined ? {} : { marketplaceExportMode: marketplaceExportMode as "recursive" | "packed" | "hybrid" | "onchfs" }),
-    ...(viewer === undefined ? {} : { viewer: viewer as "keel-verification-shell" | "none" }),
+    viewer: viewer as "keel-verification-shell" | "none",
     files,
     ...(input.releaseIntent === undefined ? {} : { releaseIntent: input.releaseIntent as never }),
   });
@@ -681,7 +681,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
   tool("keel-studio-capabilities", "Inspect a Studio's supported chains, zero-spend sandbox, staging, authorization, and MSP readiness before any upload or wallet action.", TOOL_SCHEMAS.studioCapabilities, studioCapabilitiesTool),
   tool("keel-studio-project-intake", "Ask only for missing project decisions, then return either storage-only preparation or an editable release/listing intent. No upload, signature, wallet request, or transaction occurs.", TOOL_SCHEMAS.studioProjectIntake, studioProjectIntakeTool),
   tool("keel-studio-draft", "List, read, create, or revision-safely edit a creator's private Studio release draft through a scoped key. It cannot prepare, sign, submit, cancel, or publish a chain action.", TOOL_SCHEMAS.studioDraft, studioDraftTool),
-  tool("keel-studio-stage-project", "Stage a bounded multi-file KEEL project and return the server-issued Studio handoff. The scoped agent key remains in the MCP environment; no wallet signature or chain action occurs.", TOOL_SCHEMAS.studioStageProject, studioStageProjectTool),
+  tool("keel-studio-stage-project", "Stage bounded creator resources/modules and return the server-issued Studio handoff. Omitted viewer selects Studio's canonical KEEL Inline graph for later preparation; `none` is artifact/storage-only. Creator HTML is content, never a replacement shell, and agents must not upload a locally manufactured KEEL shell, protected-harness wrapper, or local wrapper when the catalog is incomplete. Studio must fail closed for an incomplete selected-chain catalog during preparation. The scoped agent key remains in the MCP environment; no wallet signature or chain action occurs.", TOOL_SCHEMAS.studioStageProject, studioStageProjectTool),
   tool("keel-creator-collection-prepare", "Prepare one exact recorded KeelCreatorFactory collection call for review. Missing or ambiguous factory/renderer deployments stop before any wallet approval, signing, RPC, or submission.", TOOL_SCHEMAS.creatorCollectionPrepare, creatorCollectionPrepareTool),
 ];
 

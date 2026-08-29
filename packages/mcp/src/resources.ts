@@ -78,6 +78,14 @@ const RESOURCE_TEXT: Readonly<Record<string, string>> = {
         portableThreeDefault: "Once-per-chain exact Three.js r180 ESM main/core graph. Bind both verified current-chain objects; never embed Three.js in each creator project.",
       },
     },
+    staging: {
+      defaultViewer: "keel-verification-shell",
+      defaultPresentation: "During later Studio preparation, the selected chain resolves to its catalog-backed, pre-encoded canonical KEEL Inline graph.",
+      viewerNone: "Explicit artifact/storage-only opt-out.",
+      agentScope: "Agents supply only creator resources/modules and never manufacture or upload Studio's default KEEL shell, protected-harness wrapper, or local replacement wrapper.",
+      creatorHtml: "Creator-authored HTML is project content, not a replacement verification shell.",
+      catalogFailure: "Studio must fail closed when the selected chain's canonical Inline graph catalog is incomplete; agents must not substitute a protected-harness or local wrapper.",
+    },
     modes: [{
       id: "native-carrier-v1",
       status: "implemented",

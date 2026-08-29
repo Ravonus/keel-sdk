@@ -193,12 +193,12 @@ const studioDraft: JsonSchema = object({
   },
 }, ["operation"]);
 const studioStageFile: JsonSchema = object({
-  path: string("Workspace-relative project file.", 512),
+  path: string("Workspace-relative creator resource or module; never a locally manufactured KEEL shell, protected-harness wrapper, or local replacement wrapper.", 512),
   mediaType: string("Printable media type.", 160),
   role: { type: "string", enum: ["entrypoint", "renderer", "runtime", "script", "module", "style", "data", "library", "image", "other"] },
   format: { type: "string", enum: ["asset", "classic-script", "es-module", "umd", "wasm"] },
   updateMode: { type: "string", enum: ["locked", "manual"] },
-  label: string("Creator-facing component label.", 96),
+  label: string("Creator-facing component label. Do not declare a KEEL verification shell or replacement wrapper.", 96),
 }, ["path", "mediaType", "role", "format"]);
 const studioStageProject: JsonSchema = object({
   studioUrl: string("Optional HTTPS Studio URL; KEEL_STUDIO_URL is used otherwise.", 512),
@@ -206,7 +206,7 @@ const studioStageProject: JsonSchema = object({
   description: string("Collector-facing project description.", 2_000),
   storageStrategy: { type: "string", enum: ["local", "onchain", "hybrid"] },
   marketplaceExportMode: { type: "string", enum: ["recursive", "packed", "hybrid", "onchfs"] },
-  viewer: { type: "string", enum: ["keel-verification-shell", "none"] },
+  viewer: { type: "string", enum: ["keel-verification-shell", "none"], description: "Omit to select Studio's canonical KEEL Inline graph for later preparation. `none` is the explicit artifact/storage-only opt-out; creator HTML remains content, never a replacement shell or protected-harness/local wrapper." },
   files: { type: "array", items: studioStageFile, minItems: 1, maxItems: 256 },
   releaseIntent: { type: "object", description: "Optional editable keel-release-intent@1 produced by keel-studio-project-intake." },
 }, ["title", "storageStrategy", "files"]);

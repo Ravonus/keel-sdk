@@ -32,6 +32,19 @@ read must also pass the 30M-gas public-RPC safety check. See
 [`docs/KEEL_PRESENTATION.md`](../../docs/KEEL_PRESENTATION.md) for the complete
 contract and SDK terminology.
 
+## Stage creator projects without manufacturing a shell
+
+`stageKeelStudioProject` treats an omitted `viewer` as the canonical KEEL Inline
+graph selector (`keel-verification-shell`) and sends the existing canonical
+publication intent. `viewer: "none"` is the explicit artifact/storage-only
+opt-out and suppresses that intent. During later Studio preparation, the
+selected chain resolves the catalog-backed, pre-encoded Inline graph and must
+fail closed if that catalog is incomplete. Agents may stage only creator
+resources and modules; they must never manufacture or upload a local file
+declared as the default KEEL shell, a protected-harness wrapper, or a local
+replacement wrapper when catalog resolution fails. A creator-authored HTML file
+is ordinary project content, not a replacement shell.
+
 ## Discover a Studio before uploading
 
 `fetchStudioCapabilities` reads the non-mutating

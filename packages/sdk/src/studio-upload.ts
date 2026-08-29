@@ -71,7 +71,7 @@ export interface StageKeelStudioProjectInput {
   readonly description?: string;
   readonly storageStrategy: "local" | "onchain" | "hybrid";
   readonly marketplaceExportMode?: "recursive" | "packed" | "hybrid" | "onchfs";
-  /** Defaults to the reusable KEEL verification shell. */
+  /** Defaults to Studio's canonical KEEL Inline graph selector. `none` is storage-only. */
   readonly viewer?: "keel-verification-shell" | "none";
   readonly files: readonly KeelStudioStagedProjectFile[];
   readonly reusableModule?: {
@@ -169,6 +169,36 @@ function safeProjectPath(value: string): string {
   return normalized;
 }
 
+const KEEL_VERIFICATION_SHELL = "keel-verification-shell" as const;
+
+function declaresLocallyManufacturedKeelShell(declaration: string): boolean {
+  return /(?:^|[^a-z0-9])keel(?:[-_\s]+)verification(?:[-_\s]+)shell(?:$|[^a-z0-9])/iu.test(declaration) ||
+    /protectedharnessdatauri|protected[-_\s]+harness[-_\s]+(?:shell|wrapper)|local[-_\s]+(?:shell|wrapper)/iu.test(declaration);
+}
+
+function stageComponents(files: readonly KeelStudioStagedProjectFile[], paths: readonly string[]): readonly Record<string, string>[] {
+  return files.map((file, index) => {
+    const path = paths[index] as string;
+    const explicitLabel = file.label;
+    const label = explicitLabel ?? path.split("/").at(-1) ?? path;
+    if (typeof label !== "string" || label.length === 0 || label.length > 96) throw new TypeError(`Invalid staged component label for ${JSON.stringify(path)}.`);
+    // An explicit creator-facing label is the declaration of intent. This
+    // catches an agent presenting bytes as KEEL's shell without banning a
+    // creator artwork merely because its filename happens to contain "shell".
+    if (explicitLabel !== undefined && declaresLocallyManufacturedKeelShell(explicitLabel)) {
+      throw new TypeError("Agents stage creator resources/modules only; Studio supplies the canonical KEEL Inline graph. Do not upload a locally manufactured KEEL shell.");
+    }
+    return {
+      path,
+      mediaType: file.mediaType,
+      role: file.role,
+      format: file.format,
+      updateMode: file.updateMode ?? "locked",
+      label,
+    };
+  });
+}
+
 /**
  * Stages a creator-editable project and returns a secret continuation URL.
  * This is an off-chain upload only: it neither requests a wallet signature nor
@@ -181,22 +211,17 @@ export async function stageKeelStudioProject(
   if (title.length < 2 || title.length > 160) throw new RangeError("Staged project title must contain from 2 through 160 characters.");
   if (input.agentToken.length < 32) throw new TypeError("KEEL Studio agent token must contain at least 32 characters.");
   if (input.files.length < 1 || input.files.length > 256) throw new RangeError("Stage from 1 through 256 project files.");
-  if (input.viewer === "none" && input.publicationIntent !== undefined) {
+  const viewer = input.viewer ?? KEEL_VERIFICATION_SHELL;
+  if (viewer !== KEEL_VERIFICATION_SHELL && viewer !== "none") throw new TypeError("viewer must be keel-verification-shell or none.");
+  if (viewer === "none" && input.publicationIntent !== undefined) {
     throw new TypeError("A storage-only project cannot also require the KEEL verification shell.");
   }
 
   const paths = input.files.map((file) => safeProjectPath(file.path));
   if (new Set(paths).size !== paths.length) throw new TypeError("Staged project paths must be unique.");
   const form = new FormData();
-  const components = input.files.map((file, index) => ({
-    path: paths[index],
-    mediaType: file.mediaType,
-    role: file.role,
-    format: file.format,
-    updateMode: file.updateMode ?? "locked",
-    label: file.label ?? paths[index]?.split("/").at(-1) ?? paths[index],
-  }));
-  const publicationIntent = input.viewer === "none"
+  const components = stageComponents(input.files, paths);
+  const publicationIntent = viewer === "none"
     ? undefined
     : input.publicationIntent ?? defaultKeelStudioPublicationIntent();
   form.set("metadata", JSON.stringify({

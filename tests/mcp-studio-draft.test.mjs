@@ -126,10 +126,50 @@ test("MCP stages an image-only KEEL shell project without uploading a local view
     });
     assert.equal(result?.result.structuredContent.fileCount, 1);
     assert.equal(result?.result.structuredContent.wallet.signing, "not-performed");
+    assert.equal("viewer" in metadata, false);
     assert.deepEqual(metadata.components.map(({ path: filePath, role }) => [filePath, role]), [["signal.webp", "image"]]);
     assert.equal(metadata.publicationIntent.viewer.mode, "keel-sandbox");
     assert.equal(metadata.components.some(({ path: filePath }) => filePath === "viewer.js" || filePath === "index.html"), false);
     assert.equal(uploadedFiles.length, 1);
+  } finally {
+    globalThis.fetch = previousFetch;
+    if (previousToken === undefined) delete process.env.KEEL_STUDIO_AGENT_TOKEN;
+    else process.env.KEEL_STUDIO_AGENT_TOKEN = previousToken;
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("MCP rejects a locally declared KEEL shell before staging while allowing creator HTML", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "keel-mcp-shell-"));
+  const previousToken = process.env.KEEL_STUDIO_AGENT_TOKEN;
+  const previousFetch = globalThis.fetch;
+  process.env.KEEL_STUDIO_AGENT_TOKEN = token;
+  await writeFile(path.join(root, "viewer.js"), "console.log('creator');");
+  let uploads = 0;
+  globalThis.fetch = async () => {
+    uploads += 1;
+    throw new Error("rejected before upload");
+  };
+  try {
+    const server = await createMcpServer({ workspaceRoot: root });
+    await server.handle({ jsonrpc: "2.0", id: 1, method: "initialize", params: initializeParams });
+    const result = await server.handle({
+      jsonrpc: "2.0",
+      id: 2,
+      method: "tools/call",
+      params: {
+        name: "keel-studio-stage-project",
+        arguments: {
+          studioUrl: "https://studio.example",
+          title: "No local shell",
+          storageStrategy: "onchain",
+          files: [{ path: "viewer.js", label: "KEEL verification shell", mediaType: "text/javascript", role: "script", format: "classic-script" }],
+        },
+      },
+    });
+    assert.equal(result?.result.isError, true);
+    assert.match(result?.result.content[0].text, /creator resources\/modules only/u);
+    assert.equal(uploads, 0);
   } finally {
     globalThis.fetch = previousFetch;
     if (previousToken === undefined) delete process.env.KEEL_STUDIO_AGENT_TOKEN;

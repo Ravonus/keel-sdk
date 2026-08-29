@@ -78,6 +78,7 @@ test("agent staging preserves exact component declarations and never invokes a w
   assert.equal(request.init.body instanceof FormData, true);
   const metadata = JSON.parse(request.init.body.get("metadata"));
   assert.equal(metadata.storageStrategy, "onchain");
+  assert.equal("viewer" in metadata, false);
   assert.deepEqual(metadata.components.map(({ path: item, role, format, updateMode }) => ({ path: item, role, format, updateMode })), [
     { path: "index.html", role: "entrypoint", format: "asset", updateMode: "locked" },
     { path: "modules/p5.min.js", role: "renderer", format: "umd", updateMode: "locked" },
@@ -122,6 +123,7 @@ test("agent staging defaults projects to the reusable KEEL verification shell", 
     verifyManifest: true,
     verifyChunks: true,
   });
+  assert.equal("viewer" in metadata, false);
 });
 
 test("agent staging requires an explicit viewerless storage-only choice", async () => {
@@ -149,11 +151,65 @@ test("agent staging requires an explicit viewerless storage-only choice", async 
     },
   };
   await stageKeelStudioProject(input);
+  assert.equal("viewer" in metadata, false);
   assert.equal("publicationIntent" in metadata, false);
   await assert.rejects(
     stageKeelStudioProject({ ...input, publicationIntent: defaultKeelStudioPublicationIntent() }),
     /storage-only project cannot also require/u,
   );
+});
+
+test("agent staging rejects a locally declared KEEL shell but preserves creator HTML content", async () => {
+  const { stageKeelStudioProject } = await import(MODULE);
+  let requests = 0;
+  let metadata;
+  const fetchImplementation = async (_url, init) => {
+    requests += 1;
+    metadata = JSON.parse(init.body.get("metadata"));
+    return new Response(JSON.stringify({
+      schema: "keel-studio-project-handoff@1",
+      id: "draft-html",
+      handoffUrl: "https://studio.example/studio/projects/new?handoff=html",
+      expiresAt: "2030-01-01T00:00:00.000Z",
+      fileCount: 1,
+      totalBytes: 1,
+      wallet: { signing: "not-performed", submission: "not-performed" },
+    }), { status: 201, headers: { "content-type": "application/json" } });
+  };
+  const base = {
+    studioUrl: "https://studio.example",
+    agentToken: "k".repeat(48),
+    title: "Creator HTML",
+    storageStrategy: "onchain",
+    fetchImplementation,
+  };
+  await assert.rejects(
+    stageKeelStudioProject({
+      ...base,
+      files: [{ path: "viewer.js", label: "Locally manufactured KEEL verification shell", bytes: new Uint8Array([1]), mediaType: "text/javascript", role: "script", format: "classic-script" }],
+    }),
+    /creator resources\/modules only/u,
+  );
+  assert.equal(requests, 0);
+  await stageKeelStudioProject({
+    ...base,
+    files: [{ path: "index.html", label: "Creator HTML artwork", bytes: new Uint8Array([1]), mediaType: "text/html", role: "entrypoint", format: "asset" }],
+  });
+  assert.equal(requests, 1);
+  assert.equal("viewer" in metadata, false);
+  assert.deepEqual(metadata.components.map(({ path: componentPath, label }) => [componentPath, label]), [["index.html", "Creator HTML artwork"]]);
+  await stageKeelStudioProject({
+    ...base,
+    files: [{ path: "local-shell.html", label: "Creator HTML artwork", bytes: new Uint8Array([2]), mediaType: "text/html", role: "entrypoint", format: "asset" }],
+  });
+  assert.equal(requests, 2);
+  assert.deepEqual(metadata.components.map(({ path: componentPath, label }) => [componentPath, label]), [["local-shell.html", "Creator HTML artwork"]]);
+  await stageKeelStudioProject({
+    ...base,
+    files: [{ path: "local-shell.html", bytes: new Uint8Array([3]), mediaType: "text/html", role: "entrypoint", format: "asset" }],
+  });
+  assert.equal(requests, 3);
+  assert.deepEqual(metadata.components.map(({ path: componentPath, label }) => [componentPath, label]), [["local-shell.html", "local-shell.html"]]);
 });
 
 test("agent staging fails closed on ambiguous paths, weak tokens, and invalid responses", async () => {

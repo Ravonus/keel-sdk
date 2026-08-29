@@ -158,9 +158,15 @@ review, cancellation, signing, publication, or chain submission.
 preserves their declared roles, and uploads them to Studio's temporary staging
 store. The creator's scoped key stays in `KEEL_STUDIO_AGENT_TOKEN`; the tool
 returns the server-issued handoff and reports wallet signing/submission as
-`not-performed`. A normal image project contains the image file, not a locally
-manufactured `viewer.js` or `index.html`; Studio supplies the verified KEEL
-shell policy.
+`not-performed`. Omit `viewer` to select the canonical KEEL Inline graph
+(`keel-verification-shell`) for later Studio preparation; `viewer: "none"` is
+the explicit artifact/storage-only opt-out. During preparation, Studio resolves
+the selected chain's catalog-backed, pre-encoded graph and must fail closed for
+an incomplete catalog. Agents supply only creator resources/modules and must
+never manufacture or upload a file declared as the default KEEL shell, a
+protected-harness wrapper, or a local replacement wrapper when catalog
+resolution fails. Creator-authored HTML (including `index.html`) is project
+content, not a replacement shell.
 
 `keel-creator-collection-prepare` prepares one exact creator collection call
 from the SDK's durable deployment registry. It supports a compact dedicated

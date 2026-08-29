@@ -83,13 +83,22 @@ wallet signature. A project that has been attached appears in **Agent-prepared
 projects** and can be reopened later.
 
 For ordinary KEEL work that is not a Fray auction, use
-`keel-studio-stage-project`. Declare only creator-owned project files. An image
-project normally stages the image alone with role `image`; p5 or Three work
-stages only its creator script/assets and exact module declarations. Do not add
-`viewer.js`, `index.html`, p5, Three, seeded-random, or the verification shell
-as creator files when the same-chain catalog already supplies them. Studio
-generates the KEEL shell from the verified declaration and returns the only
-handoff URL the agent should show.
+`keel-studio-stage-project`. Omit `viewer` for the normal path: the SDK selects
+`keel-verification-shell`, and Studio later resolves and reuses the selected
+chain's existing pre-encoded KEEL Inline shell graph. Studio does **not** ask
+the agent to create another shell. Use `viewer: "none"` only when the creator
+explicitly requests an artifact/storage-only project with no viewer.
+
+Declare only creator-owned project files. An image project normally stages the
+image alone with role `image`; p5 or Three work stages only its creator
+script/assets plus exact same-chain module declarations. Never manufacture or
+label a local `viewer.js`, `index.html`, protected-harness wrapper, or other
+file as the default KEEL verification shell. If the selected-chain shell or
+module catalog is missing, stale, or ambiguous, stop: do not substitute a local
+wrapper. Creator-authored HTML is still valid project content, including an
+actual artwork named `index.html`; it runs inside the canonical KEEL shell and
+does not replace it. The server-issued handoff URL is the only project link the
+agent should show.
 
 ## Repair an existing draft
 
