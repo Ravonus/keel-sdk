@@ -61,6 +61,10 @@
     "./inline-viewer-graph": {
       "types": "./dist/inline-viewer-graph.d.ts",
       "import": "./dist/inline-viewer-graph.js"
+    },
+    "./shell-registry": {
+      "types": "./dist/shell-registry.d.ts",
+      "import": "./dist/shell-registry.js"
     }
   },
   "files": [

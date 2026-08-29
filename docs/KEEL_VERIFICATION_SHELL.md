@@ -23,11 +23,13 @@ one system, and this page is the map that was previously missing.
   `storage`, `resources`, `identity`, `commitments`, `object-trail`,
   `staking`, `contract-facets`. Presentation can rearrange proof data but can
   never add proof claims or change check results.
-- **Shell sources** (markup, rendering, verification logic):
-  `examples/demos/vault-arcade/generated-attribute-proxy/vault-keel-viewer.html`,
-  `vault-keel-viewer.js`, and `vault-verification.js`. Landmarks:
-  `id="verify-seal"`, `id="verify-panel"`, `data-keel-seal="stamp"`, and
-  the `keel-verification-presentation` JSON script tag that themes it.
+- **Canonical default shell** (markup, rendering, verification logic):
+  `packages/sdk/src/verification-shell.ts`, specifically
+  `buildCompactInlineKeelShell`. Its stable landmarks are
+  `id="keel-verify-stamp"`, `id="keel-verify-panel"`, and the frozen
+  `__KEEL_SHELL_API__`. The K control belongs to the outer shell; creator code
+  runs in an opaque child frame and cannot replace it. Vault Arcade is a demo
+  presentation and regression fixture, not a source agents copy into projects.
 - **Builders** (bundle the shell byte-identically for every carrier):
   `packages/sdk/src/verification-shell.ts` (`buildStandaloneKeelViewer`,
   `buildEmbeddedKeelViewerShell`, and the one-call
@@ -69,9 +71,66 @@ storage with no gateway:
   `packages/tezos/tests/test_keel_immutable_checkpoint.py`, which checks
   the injected document byte-for-byte against a Python reference.
 
+## Ethereum shell registry
+
+`KeelHarnessBuilder` also exposes a registry for reusable presentation shells.
+A shell is exactly one immutable top object plus one immutable bottom object;
+the ordered work/module graph is inserted between them. The shell is not an
+uploaded `index.html`, and ordinary project agents do not author one:
+
+- `INLINE_PROTECTION_SHELL_ID()` is the stable canonical composable shell ID.
+  It uses `PreEncodedGraph`: registered top, any ordered shared modules and
+  creator work, then registered bottom. `registeredPreEncodedTokenURI(...)`
+  checks those exact graph boundaries and copies the already encoded graph.
+  It does not rebuild or Base64-encode the p5 runtime, shell, or creator work.
+- `PROTECTION_SHELL_ID()` keeps the older complete-document protection wrapper
+  separate. Its three-argument `shellDataURI` overload remains compatible for
+  advanced callers, but it is not the canonical Inline graph assembler.
+- `setShell(shellId, prefixObjectId, suffixObjectId, payloadMode,
+  metadataObjectId)` registers or replaces a platform shell plus the committed
+  catalogue manifest needed for creator/tag search. `SandboxedHTML` carries a
+  complete document in an isolated frame; `GzipBase64` carries a gzip object;
+  `PreEncodedGraph` is the composable top/graph/bottom path. Only the builder
+  keeper can change platform registrations.
+- `shellDataURI(shellId, artifactObjectId, artifactDigest, contextJSON)` selects
+  an explicit shell. A non-protection shell is presentation only and must not
+  display the Keel seal or imply verification.
+- `setProtector(prefix, suffix)` remains compatible and updates the registry
+  entry identified by `PROTECTION_SHELL_ID`.
+- `registerShell(salt, prefix, suffix, payloadMode, metadataObjectId)` lets any
+  creator register an immutable, creator-namespaced shell version. The JSON
+  metadata object carries its name, description, version, creator, and tags;
+  `ShellRegistered` exposes creator, metadata object, metadata digest, and both
+  fragment IDs so an indexer can catalogue shells exactly like artifacts.
+- A creator shell can never overwrite the default KEEL protection shell or an
+  older creator version. A new version uses a new salt and keeps prior receipts
+  stable.
+
+The SDK exports `keelShellId`, `keelCreatorShellId`,
+`createKeelShellManifest`, `buildKeelCreatorShellRegistrationCall`,
+`buildKeelShellRegistrationCall`, `buildKeelShellDataURICall`, and
+`buildKeelRegisteredPreEncodedTokenURICall`. The MCP
+equivalent is `keel-shell-prepare`. Registration builders remain review-only:
+they do not sign or submit a transaction.
+
+## Protected K and extension API
+
+The default shell keeps the work hidden until every resource length and
+SHA-256 commitment matches. Success turns the lower-left K green; failure turns
+it red, opens the explanation, and never mounts the work. Clicking K opens the
+resource commitments, collector context, and declared extension panels.
+
+`__KEEL_SHELL_API__` is a frozen, non-configurable, data-only surface with the
+protocol `keel-shell-plugin@1`. It exposes read-only verification, resource,
+and bounded plain-text extension data. It exposes no wallet, DOM, or proof-state
+mutation authority. Creator code runs in an iframe without `allow-same-origin`,
+and the child CSP denies network, forms, frames, and objects, so code placed
+after the shell cannot change the K, the proof result, or the outer panel.
+
 ## The wrapper is a forced verifier
 
-Any system can build this around any content, and that is the point: the
+This section applies to the protection shell, not arbitrary registry shells.
+Any system can build the protection shell around any content, and that is the point: the
 verifier IS the entrypoint. A browser cannot display the work without
 executing the wrapper, and the wrapper hash-checks its complete committed
 resource graph before mounting anything — so rendering and verifying are the

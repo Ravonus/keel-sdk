@@ -16,6 +16,7 @@ import {
   buildEmbeddedKeelViewerSlot,
   type KeelStandaloneViewerItem,
 } from "./verification-shell.js";
+import { orderKeelModules, type KeelModulePhase } from "./data-layer.js";
 
 const RFC_4648_BASE64 = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/u;
 
@@ -131,6 +132,8 @@ export interface KeelInlineModuleFragment extends KeelInlineFragmentBytes {
   readonly moduleId: string;
   readonly version: string;
   readonly execution: "classic" | "module";
+  readonly phase: KeelModulePhase;
+  readonly weight: number;
   readonly item: KeelStandaloneViewerItem;
 }
 
@@ -145,6 +148,8 @@ export interface KeelInlineLocalDocument {
     readonly moduleId?: string;
     readonly moduleVersion?: string;
     readonly execution?: "classic" | "module";
+    readonly phase?: KeelModulePhase;
+    readonly weight?: number;
     readonly bytes: Uint8Array;
     readonly byteLength: number;
     readonly integrity: Integrity;
@@ -384,13 +389,22 @@ export async function buildKeelInlineModuleFragment(input: {
   readonly decodedBytes: Uint8Array;
   readonly compression?: "none" | "gzip" | "deflate";
   readonly execution?: "classic" | "module";
+  readonly phase?: KeelModulePhase;
+  readonly weight?: number;
 }): Promise<KeelInlineModuleFragment> {
   if (input.moduleId.trim() === "" || input.version.trim() === "") {
     throw new TypeError("An Inline module fragment needs an exact module ID and version.");
   }
+  const phase = input.phase ?? "runtime";
+  const execution = input.execution ?? "module";
+  if (phase === "data" && execution !== "classic") {
+    throw new TypeError("Inline data modules must use classic execution so they run before renderer code.");
+  }
+  const weight = input.weight ?? 0;
+  orderKeelModules([{ moduleId: input.moduleId, phase, weight }]);
   const slot = await buildEmbeddedKeelViewerSlot({
     id: input.moduleId,
-    role: "module",
+    role: phase === "data" ? "data" : "module",
     mediaType: input.mediaType,
     ...(input.aliases === undefined ? {} : { aliases: input.aliases }),
     bytes: input.decodedBytes,
@@ -400,7 +414,9 @@ export async function buildKeelInlineModuleFragment(input: {
     schema: "keel-inline-module-fragment@1",
     moduleId: input.moduleId,
     version: input.version,
-    execution: input.execution ?? "module",
+    execution,
+    phase,
+    weight,
     item: slot.item,
     bytes: slot.fragment,
     integrity: slot.fragmentIntegrity,
@@ -422,7 +438,8 @@ export async function buildKeelInlineLocalDocument(input: {
     readonly aliases?: readonly string[];
   };
 }): Promise<KeelInlineLocalDocument> {
-  for (const module of input.modules) {
+  const orderedModules = orderKeelModules(input.modules);
+  for (const module of orderedModules) {
     if (module.item.embedded?.compression === "brotli") {
       throw new TypeError(`Inline module ${module.moduleId} requires a declared Brotli decoder shell profile.`);
     }
@@ -431,10 +448,18 @@ export async function buildKeelInlineLocalDocument(input: {
   if (input.entry.mediaType === "text/javascript" && /<\/script/iu.test(source)) {
     throw new TypeError("An Inline JavaScript entry cannot contain a closing script tag.");
   }
+  const dataScripts = orderedModules
+    .filter((module) => module.phase === "data")
+    .map((module) => `<script src="${module.item.aliases[0] ?? module.moduleId}"></script>`);
+  const htmlEntry = dataScripts.length === 0 ? input.entry.source : new TextEncoder().encode(
+    /<head(?:\s[^>]*)?>/iu.test(source)
+      ? source.replace(/<head(?:\s[^>]*)?>/iu, (head) => `${head}${dataScripts.join("")}`)
+      : `<!doctype html><html><head>${dataScripts.join("")}</head><body>${source}</body></html>`,
+  );
   const entrySource = input.entry.mediaType === "text/javascript"
     ? new TextEncoder().encode([
         '<div id="stage"></div>',
-        ...input.modules
+        ...orderedModules
           .filter((module) => module.execution === "classic")
           .map((module) => {
             const alias = module.item.aliases[0] ?? module.moduleId;
@@ -442,7 +467,7 @@ export async function buildKeelInlineLocalDocument(input: {
           }),
         `<script type="module">${source}</script>`,
       ].join(""))
-    : input.entry.source;
+    : htmlEntry;
   const entry = await buildEmbeddedKeelViewerSlot({
     id: input.entry.id,
     role: "entrypoint",
@@ -453,12 +478,14 @@ export async function buildKeelInlineLocalDocument(input: {
   });
   const parts: KeelInlineLocalDocument["parts"] = [
     { kind: "existing", role: "shell-prefix", bytes: input.shell.prefix.bytes, byteLength: input.shell.prefix.bytes.byteLength, integrity: input.shell.prefix.integrity },
-    ...input.modules.map((module) => ({
+    ...orderedModules.map((module) => ({
       kind: "existing" as const,
       role: "module" as const,
       moduleId: module.moduleId,
       moduleVersion: module.version,
       execution: module.execution,
+      phase: module.phase,
+      weight: module.weight,
       bytes: module.bytes,
       byteLength: module.bytes.byteLength,
       integrity: module.integrity,

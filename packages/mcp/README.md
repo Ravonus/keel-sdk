@@ -31,11 +31,15 @@ For a local agent configuration, point the MCP client at the built CLI:
 ```
 
 Messages are newline-delimited JSON-RPC. Initialize first, then use
-`tools/list` and `tools/call`. The seventeen tools are `analyze`, `build`, `verify`,
-`cost`, `upload-plan`, `chain-plan`, `ethereum-encode`, `publish-plan`,
+`tools/list` and `tools/call`. The twenty-six tools are `analyze`,
+`media-optimize`, `media-optimize-apply`, `build`, `verify`, `cost`,
+`upload-plan`, `chain-plan`, `ethereum-encode`, `publish-plan`,
 `module-resolve`, `module-lock`, `wallet-request-prepare`, `wallet-link`,
-`fray-auction-intake`, `fray-stage-project`, `keel-chain-guide`,
-`keel-library-search`, and `keel-studio-capabilities`.
+`module-review-prepare`, `fray-auction-intake`, `fray-stage-project`,
+`keel-chain-guide`, `keel-library-search`, `keel-endpoint-config`,
+`keel-studio-capabilities`, `keel-studio-project-intake`, `keel-studio-draft`,
+`keel-studio-stage-project`, `keel-creator-collection-prepare`, and
+`keel-shell-prepare`.
 File arguments must resolve inside the selected workspace; regular-file reads
 reject final symlinks, traversal, unstable content, and oversized frames/files.
 Builds and lock sidecars are local writes only. Wallet preparation returns a
@@ -147,6 +151,16 @@ ready versus blocked chains, staging limits, quote/authorization rules, and
 the Studio's current MSP features. The document is strictly parsed by
 `@keel/sdk`; unknown fields and unsupported protocol versions fail closed.
 
+`media-optimize` measures image, video, or self-contained GLB candidates in
+memory and reports exact before/after bytes, percentage saved, output digest,
+adapter version, and settings. It never writes. After the creator reviews that
+result, `media-optimize-apply` may write one new workspace-relative file only
+when the recomputed digest and byte length exactly match the reviewed result.
+It never overwrites or removes the source, changes the selected storage mode,
+uploads, signs, or touches a chain. The JSON/YAML CLI equivalent is
+`keel media-optimize --config <file>`; omitted `operation` means `plan`, while
+`apply-reviewed` requires the exact reviewed digest and output byte length.
+
 `keel-studio-draft` lists, reads, creates, or revision-safely edits a private
 release draft through the creator's scoped `KEEL_STUDIO_AGENT_TOKEN`. The token
 is read only from the MCP process environment and is never accepted in tool
@@ -176,6 +190,21 @@ ambiguous `KeelCreatorFactory` + `KeelArtifactTokenRenderer` pair stops safely
 without requesting wallet approval. A configured result is still review-only:
 the caller must re-read the factory's immutable `metadataRenderer` before a
 wallet request may be emitted.
+
+`keel-shell-prepare` creates the canonical `keel-shell-manifest@1` JSON used to
+index a reusable shell by creator, name, version, and tags, or prepares the
+review-only `registerShell` call after its top, bottom, and metadata objects
+exist on the selected chain. It never uploads those objects, signs, submits, or
+lets an agent replace the platform default. Ordinary project agents should
+still omit `viewer` and use the registered KEEL verification shell. The
+default registration mode is `pre-encoded-graph`: one top, ordered shared
+modules/work, and one bottom. `sandboxed-html` and `gzip-base64` are explicit
+advanced modes, not reasons to manufacture another `index.html`.
+
+`keel-shell-search` queries Studio's independently read-back-verified shell
+catalogue by creator, name, version, or tags. It returns only the committed
+top, bottom, and metadata pointers; it never downloads carrier bytes or asks
+for a wallet action.
 
 `wallet-link` accepts the exact KeelFactory `castDieFor` target,
 including factory/version commitments, the Keccak config digest encoding, and

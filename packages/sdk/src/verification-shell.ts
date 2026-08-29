@@ -363,12 +363,22 @@ function compactInlineRuntime(): void {
     __KEEL_ITEMS__?: unknown;
     __KEEL_CONTEXT__?: unknown;
     __KEEL_VERIFICATION__?: unknown;
+    __KEEL_SHELL_API__?: unknown;
   };
   const source = Array.isArray(globals.__KEEL_ITEMS__) ? globals.__KEEL_ITEMS__.filter(Boolean) : [];
   const stage = document.querySelector("#keel-stage");
   const status = document.querySelector("#keel-status");
-  const proof = document.querySelector("#keel-proof");
-  if (!(stage instanceof HTMLElement) || !(status instanceof HTMLElement) || !(proof instanceof HTMLElement)) {
+  const stamp = document.querySelector("#keel-verify-stamp");
+  const panel = document.querySelector("#keel-verify-panel");
+  const title = document.querySelector("#keel-verify-title");
+  const summary = document.querySelector("#keel-verify-summary");
+  const resourceList = document.querySelector("#keel-verify-resources");
+  const contextPanel = document.querySelector("#keel-verify-context");
+  const pluginPanels = document.querySelector("#keel-verify-plugin-panels");
+  if (!(stage instanceof HTMLElement) || !(status instanceof HTMLElement) || !(stamp instanceof HTMLButtonElement)
+    || !(panel instanceof HTMLElement) || !(title instanceof HTMLElement) || !(summary instanceof HTMLElement)
+    || !(resourceList instanceof HTMLElement)
+    || !(contextPanel instanceof HTMLElement) || !(pluginPanels instanceof HTMLElement)) {
     throw new Error("Invalid KEEL Inline shell.");
   }
   const items = source as KeelStandaloneViewerItem[];
@@ -448,6 +458,11 @@ function compactInlineRuntime(): void {
     .replaceAll("<", "\\u003c")
     .replaceAll("\u2028", "\\u2028")
     .replaceAll("\u2029", "\\u2029");
+  const togglePanel = (open: boolean) => {
+    panel.hidden = !open;
+    stamp.setAttribute("aria-expanded", String(open));
+  };
+  stamp.addEventListener("click", () => togglePanel(panel.hidden));
   const verify = async (bytes: Uint8Array, integrity: Sha256Integrity, label: string) => {
     if (bytes.byteLength !== integrity.byteLength) throw new Error(`${label} length mismatch.`);
     const seen = await sha256(bytes);
@@ -456,7 +471,7 @@ function compactInlineRuntime(): void {
   };
   const decompress = async (compression: "none" | "gzip" | "deflate" | "brotli", bytes: Uint8Array) => {
     if (compression === "none") return bytes;
-    if (compression === "brotli") throw new Error("Brotli needs an explicit declared KEEL decoder module.");
+    if (compression !== "gzip" && compression !== "deflate") throw new Error("Unsupported KEEL resource compression.");
     if (typeof DecompressionStream !== "function") throw new Error(`${compression} decompression is unavailable.`);
     const stream = new Blob([bytes as BlobPart]).stream().pipeThrough(new DecompressionStream(compression));
     return new Uint8Array(await new Response(stream).arrayBuffer());
@@ -484,14 +499,16 @@ function compactInlineRuntime(): void {
     }
     return output;
   };
-  const childHTML = (html: string, context: unknown, verification: unknown) => {
+  const childHTML = (html: string, context: unknown, verification: unknown, contentUrls: Record<string, string>) => {
     // Construct the child terminator at runtime so the parent HTML parser
     // never sees a literal closing script tag inside this shell script.
     const closeScript = String.fromCharCode(60, 47, 115, 99, 114, 105, 112, 116, 62);
-    const injection = `<script>globalThis.__KEEL_CONTEXT__=Object.freeze(${safeJSON(context ?? {})});globalThis.__KEEL_VERIFICATION__=Object.freeze(${safeJSON(verification)})${closeScript}`;
+    const policy = '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'unsafe-inline\' data: blob:; style-src \'unsafe-inline\' data:; img-src data: blob:; media-src data: blob:; font-src data:; connect-src \'none\'; object-src \'none\'; frame-src \'none\'; form-action \'none\'; base-uri \'none\'">';
+    const injection = `<script>{const c=Object.freeze(${safeJSON(context ?? {})});globalThis.__KEEL_CONTEXT__=c;const s=c?.derivedTokenSeed??c?.tokenSeed??c?.seed;if(typeof s==="string"&&/^0x[0-9a-f]{64}$/i.test(s))Object.defineProperty(globalThis,"KEEL_SEED",{value:s.toLowerCase(),enumerable:true,writable:false,configurable:false});Object.defineProperty(globalThis,"__KEEL_VERIFICATION__",{value:Object.freeze(${safeJSON(verification)}),enumerable:true,writable:false,configurable:false})}${closeScript}`;
+    const content = `<script>(()=>{const u=Object.freeze(${safeJSON(contentUrls)}),bytes=id=>{const value=u[id];if(typeof value!=="string")throw new Error("Undeclared verified content "+id);const encoded=value.slice(value.indexOf(",")+1);return Uint8Array.from(atob(encoded),character=>character.charCodeAt(0))},resources=()=>Object.freeze(Object.entries(u).map(([id,url])=>Object.freeze({id,url})));Object.defineProperty(globalThis,"__KEEL_CONTENT__",{value:Object.freeze({url:id=>u[id]??null,bytes,resources}),enumerable:true,writable:false,configurable:false})})()${closeScript}`;
     return /<head(?:\s[^>]*)?>/iu.test(html)
-      ? html.replace(/<head(?:\s[^>]*)?>/iu, (head) => `${head}${injection}`)
-      : `<!doctype html><html><head><meta charset="utf-8">${injection}</head><body>${html}</body></html>`;
+      ? html.replace(/<head(?:\s[^>]*)?>/iu, (head) => `${head}${policy}${injection}${content}`)
+      : `<!doctype html><html><head><meta charset="utf-8">${policy}${injection}${content}</head><body>${html}</body></html>`;
   };
   const launch = async () => {
     if (items.length === 0) throw new Error("The KEEL Inline graph is empty.");
@@ -520,12 +537,49 @@ function compactInlineRuntime(): void {
       state: "verified",
       checks: Object.freeze(items.map((item) => Object.freeze({ id: item.id, digest: item.integrity.digest, byteLength: item.integrity.byteLength }))),
     });
+    const contentUrls = Object.fromEntries(items.map((item) => {
+      const bytes = resolved.get(item.id);
+      if (bytes === undefined) throw new Error(`Resolved bytes missing for ${item.id}.`);
+      return [item.id, dataURL(bytes, item.mediaType)];
+    }));
     globals.__KEEL_VERIFICATION__ = verification;
+    const resources = Object.freeze(items.map((item) => Object.freeze({
+      id: item.id,
+      digest: item.integrity.digest,
+      byteLength: item.integrity.byteLength,
+    })));
+    resourceList.textContent = resources.map((item) => `${item.id}\n${item.byteLength} bytes · ${item.digest}`).join("\n\n");
+    const context = globals.__KEEL_CONTEXT__;
+    contextPanel.textContent = JSON.stringify(context ?? {}, null, 2);
+    const extensions = typeof context === "object" && context !== null && Array.isArray((context as { shellPlugins?: unknown }).shellPlugins)
+      ? (context as { shellPlugins: unknown[] }).shellPlugins.slice(0, 8).flatMap((value) => {
+        if (typeof value !== "object" || value === null) return [];
+        const candidate = value as { id?: unknown; title?: unknown; body?: unknown };
+        return typeof candidate.id === "string" && /^[a-z0-9][a-z0-9-]{0,31}$/u.test(candidate.id)
+          && typeof candidate.title === "string" && candidate.title.length > 0 && candidate.title.length <= 64
+          && typeof candidate.body === "string" && candidate.body.length <= 2_048
+          ? [Object.freeze({ id: candidate.id, title: candidate.title, body: candidate.body })]
+          : [];
+      })
+      : [];
+    const plugins = Object.freeze(extensions);
+    pluginPanels.textContent = plugins.map((plugin) => `${plugin.title}\n${plugin.body}`).join("\n\n");
+    Object.defineProperty(globals, "__KEEL_SHELL_API__", {
+      value: Object.freeze({
+        protocol: "keel-shell-plugin@1",
+        verification: () => verification,
+        resources: () => resources,
+        plugins: () => plugins,
+      }),
+      enumerable: true,
+      writable: false,
+      configurable: false,
+    });
     const frame = document.createElement("iframe");
     frame.title = "Verified KEEL work";
     frame.sandbox.add("allow-scripts", "allow-pointer-lock");
     frame.referrerPolicy = "no-referrer";
-    frame.srcdoc = childHTML(replaceAliases(decoder.decode(entryBytes), aliases), globals.__KEEL_CONTEXT__, verification);
+    frame.srcdoc = childHTML(replaceAliases(decoder.decode(entryBytes), aliases), globals.__KEEL_CONTEXT__, verification, contentUrls);
     stage.replaceChildren(frame);
     await new Promise<void>((resolveReady, reject) => {
       const timer = setTimeout(() => reject(new Error("Verified entrypoint timed out.")), 15_000);
@@ -540,14 +594,19 @@ function compactInlineRuntime(): void {
     });
     document.body.dataset.verification = "verified";
     status.hidden = true;
-    proof.textContent = "KEEL VERIFIED";
+    stamp.dataset.state = "verified";
+    title.textContent = "KEEL verified";
+    summary.textContent = `${items.length} committed resources matched before the work was mounted.`;
   };
   void launch().catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
     document.body.dataset.verification = "failed";
     status.hidden = false;
     status.textContent = `KEEL VERIFICATION FAILED\n${message}`;
-    proof.textContent = "KEEL REJECTED";
+    stamp.dataset.state = "failed";
+    title.textContent = "Verification failed";
+    summary.textContent = message;
+    togglePanel(true);
   });
 }
 
@@ -569,7 +628,7 @@ export async function buildCompactInlineKeelShell(): Promise<{
   });
   const runtime = runtimeBuild.outputFiles[0]?.text;
   if (runtime === undefined) throw new Error("Compact KEEL Inline runtime produced no JavaScript.");
-  const prefix = utf8ToBytes('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:," /><style>*{box-sizing:border-box}html,body,#keel-stage,iframe{width:100%;height:100%;margin:0;border:0;overflow:hidden;background:#05060b}#keel-status{position:fixed;inset:0;z-index:2;display:grid;place-items:center;white-space:pre-wrap;text-align:center;color:#d7ff63;background:#05060b;font:700 12px/1.7 ui-monospace,monospace}#keel-status[hidden]{display:none}#keel-proof{position:fixed;right:12px;bottom:12px;z-index:3;padding:6px 9px;border:1px solid #55e9ff;color:#55e9ff;background:#05060bcc;font:700 9px ui-monospace,monospace;letter-spacing:.12em}</style></head><body data-verification="pending"><div id="keel-stage"></div><div id="keel-status">VERIFYING KEEL GRAPH</div><div id="keel-proof">KEEL VERIFYING</div><script>globalThis.__KEEL_ITEMS__=[null');
+  const prefix = utf8ToBytes('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}html,body,#keel-stage,iframe{width:100%;height:100%;margin:0;border:0;overflow:hidden;background:#05060b;color:#eafff8}#keel-status{position:fixed;inset:0;z-index:2;display:grid;place-items:center;white-space:pre-wrap;text-align:center;color:#d7ff63;background:#05060b;font:700 12px/1.7 monospace}[hidden]{display:none!important}#keel-verify-stamp{position:fixed;left:10px;bottom:10px;z-index:5;width:38px;height:38px;border:1px solid;background:#07120fea;color:#ffd166;opacity:.4;cursor:pointer;font:900 17px monospace}#keel-verify-stamp:hover,#keel-verify-stamp:focus-visible,#keel-verify-stamp[aria-expanded="true"]{opacity:1;box-shadow:0 0 20px}#keel-verify-stamp[data-state="verified"]{color:#67f6c5}#keel-verify-stamp[data-state="failed"]{color:#ff6573}#keel-verify-panel{position:fixed;z-index:6;left:10px;bottom:54px;width:min(520px,calc(100% - 20px));max-height:calc(100% - 64px);overflow:auto;border:1px solid #67f6c566;background:#07120ff5;padding:13px;font:11px/1.45 monospace;box-shadow:0 18px 60px #000c}#keel-verify-panel h2,#keel-verify-panel h3,#keel-verify-panel p{margin:0}#keel-verify-panel section,#keel-verify-plugin-panels{margin-top:10px;padding:9px;border:1px solid #ffffff14}#keel-verify-resources,#keel-verify-context,#keel-verify-plugin-panels{overflow-wrap:anywhere;white-space:pre-wrap}</style></head><body data-verification="pending"><div id="keel-stage"></div><div id="keel-status">VERIFYING KEEL GRAPH</div><button id="keel-verify-stamp" type="button" data-state="pending" aria-expanded="false" aria-controls="keel-verify-panel" aria-label="Open KEEL verification proof">K</button><aside id="keel-verify-panel" role="dialog" aria-labelledby="keel-verify-title" hidden><h2 id="keel-verify-title">Checking KEEL proof</h2><p id="keel-verify-summary">The work stays hidden until every commitment matches.</p><section><h3>Verified resources</h3><div id="keel-verify-resources"></div></section><section><h3>Collector context</h3><pre id="keel-verify-context"></pre></section><div id="keel-verify-plugin-panels"></div></aside><script>globalThis.__KEEL_ITEMS__=[null');
   const suffix = utf8ToBytes(`];${runtime}</script></body></html>`);
   const [prefixIntegrity, suffixIntegrity] = await Promise.all([sha256Integrity(prefix), sha256Integrity(suffix)]);
   return { prefix, suffix, prefixIntegrity, suffixIntegrity };

@@ -91,7 +91,7 @@ export const DEFAULT_KEEL_VERIFICATION_PRESENTATION: KeelVerificationPresentatio
   protocol: KEEL_VERIFICATION_PRESENTATION_PROTOCOL,
   revision: 2,
   seal: Object.freeze({
-    glyph: "S",
+    glyph: "K",
     shape: "stamp",
     motion: "slide",
     color: "verification-state",

@@ -83,7 +83,7 @@ test("composable Base64 rejects malformed Unicode and padded non-terminal fragme
 test("Gzip Inline graph reuses shell and p5 fragments and publishes only creator bytes", async () => {
   const shell = await buildKeelInlineShellFragments({ repositoryRoot });
   assert.equal(shell.codecProfile, "browser-gzip-deflate");
-  assert.ok(shell.prefix.bytes.byteLength + shell.suffix.bytes.byteLength < 8_000);
+  assert.ok(shell.prefix.bytes.byteLength + shell.suffix.bytes.byteLength < 12_000);
   const shellText = new TextDecoder().decode(new Uint8Array([
     ...shell.prefix.bytes,
     ...shell.suffix.bytes,
@@ -92,7 +92,8 @@ test("Gzip Inline graph reuses shell and p5 fragments and publishes only creator
   assert.match(shellText, /globalThis\.crypto\?\.subtle/u);
   assert.match(shellText, /Uint32Array\.from/u);
   assert.match(shellText, /__KEEL_ITEMS__/u);
-  assert.doesNotMatch(shellText, /brotli-dec-wasm|keel-verification-envelope|verify-corner|eth_call|fetch\(/iu);
+  assert.match(shellText, /id="keel-verify-stamp"/u);
+  assert.doesNotMatch(shellText, /brotli-dec-wasm|keel-verification-envelope|eth_call|fetch\(/iu);
 
   const p5 = await buildKeelInlineModuleFragment({
     moduleId: "p5",
