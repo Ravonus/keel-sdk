@@ -126,6 +126,40 @@ test("agent staging defaults projects to the reusable KEEL verification shell", 
   assert.equal("viewer" in metadata, false);
 });
 
+test("agent staging preserves standard image, video, and model roles without manufacturing a viewer", async () => {
+  const { stageKeelStudioProject } = await import(MODULE);
+  let metadata;
+  await stageKeelStudioProject({
+    studioUrl: "https://studio.example",
+    agentToken: "k".repeat(48),
+    title: "Mixed media",
+    storageStrategy: "onchain",
+    files: [
+      { path: "poster.webp", bytes: new Uint8Array([1]), mediaType: "image/webp", role: "image", format: "asset" },
+      { path: "loop.webm", bytes: new Uint8Array([2]), mediaType: "video/webm", role: "video", format: "asset" },
+      { path: "scene.glb", bytes: new Uint8Array([3]), mediaType: "model/gltf-binary", role: "model", format: "asset" },
+    ],
+    fetchImplementation: async (_url, init) => {
+      metadata = JSON.parse(init.body.get("metadata"));
+      return Response.json({
+        schema: "keel-studio-project-handoff@1",
+        id: "draft-mixed-media",
+        handoffUrl: "https://studio.example/studio/projects/new?handoff=mixed-media",
+        expiresAt: "2030-01-01T00:00:00.000Z",
+        fileCount: 3,
+        totalBytes: 3,
+        wallet: { signing: "not-performed", submission: "not-performed" },
+      }, { status: 201 });
+    },
+  });
+  assert.deepEqual(metadata.components.map(({ path, role }) => [path, role]), [
+    ["poster.webp", "image"],
+    ["loop.webm", "video"],
+    ["scene.glb", "model"],
+  ]);
+  assert.equal(metadata.components.some(({ path }) => path === "viewer.js" || path === "index.html"), false);
+});
+
 test("agent staging requires an explicit viewerless storage-only choice", async () => {
   const { stageKeelStudioProject } = await import(MODULE);
   const { defaultKeelStudioPublicationIntent } = await import("../packages/sdk/dist/studio-publication.js");

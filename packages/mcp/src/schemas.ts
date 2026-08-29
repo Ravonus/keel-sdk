@@ -195,7 +195,7 @@ const studioDraft: JsonSchema = object({
 const studioStageFile: JsonSchema = object({
   path: string("Workspace-relative creator resource or module; never a locally manufactured KEEL shell, protected-harness wrapper, or local replacement wrapper.", 512),
   mediaType: string("Printable media type.", 160),
-  role: { type: "string", enum: ["entrypoint", "renderer", "runtime", "script", "module", "style", "data", "library", "image", "other"] },
+  role: { type: "string", enum: ["entrypoint", "renderer", "runtime", "script", "module", "style", "shader", "sprite-atlas", "sprite-loader", "audio-engine", "wallet-runtime", "font", "audio", "video", "model", "data", "plugin", "library", "image", "other"] },
   format: { type: "string", enum: ["asset", "classic-script", "es-module", "umd", "wasm"] },
   updateMode: { type: "string", enum: ["locked", "manual"] },
   label: string("Creator-facing component label. Do not declare a KEEL verification shell or replacement wrapper.", 96),

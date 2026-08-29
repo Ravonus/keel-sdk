@@ -197,6 +197,21 @@ test("canonical Inline publication has one shell top, ordered middle, and one sh
   assert.equal(graph.parts.some((part) => part.sourceObjectId !== undefined), false);
 });
 
+test("creator HTML is one verified middle slot inside the canonical shell", async () => {
+  const shell = await buildKeelInlineShellFragments({ repositoryRoot });
+  const source = utf8('<main id="work"><canvas></canvas><script>globalThis.rendered=true</script></main>');
+  const local = await buildKeelInlineLocalDocument({
+    shell,
+    modules: [],
+    entry: { id: "creator.html", mediaType: "text/html", source },
+  });
+  assert.deepEqual(local.parts.map((part) => part.role), ["shell-prefix", "entrypoint", "shell-suffix"]);
+  assert.equal(local.parts.filter((part) => part.role === "shell-prefix").length, 1);
+  assert.equal(local.parts.filter((part) => part.role === "shell-suffix").length, 1);
+  assert.equal(new TextDecoder().decode(local.rootBytes).includes("creator.html"), true);
+  assert.equal(local.rootBytes.byteLength < source.byteLength + shell.prefix.bytes.byteLength + shell.suffix.bytes.byteLength + 1_000, true);
+});
+
 test("published canonical fragments survive platform-specific module recompression", async () => {
   const shell = await buildKeelInlineShellFragments({ repositoryRoot });
   const moduleBytes = utf8(`globalThis.p5=${JSON.stringify("flow".repeat(20_000))}`);

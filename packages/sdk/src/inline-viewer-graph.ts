@@ -428,7 +428,7 @@ export async function buildKeelInlineLocalDocument(input: {
     }
   }
   const source = new TextDecoder("utf-8", { fatal: true }).decode(input.entry.source);
-  if (/<\/script/iu.test(source)) {
+  if (input.entry.mediaType === "text/javascript" && /<\/script/iu.test(source)) {
     throw new TypeError("An Inline JavaScript entry cannot contain a closing script tag.");
   }
   const entrySource = input.entry.mediaType === "text/javascript"

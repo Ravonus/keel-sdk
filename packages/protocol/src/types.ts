@@ -214,6 +214,7 @@ export type KeelComponentRole =
   | "audio-engine"
   | "wallet-runtime"
   | "audio"
+  | "video"
   | "image"
   | "font"
   | "model"

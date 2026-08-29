@@ -7,7 +7,7 @@ import { stageKeelStudioProject } from "../../packages/sdk/dist/studio-upload.js
 import { readStudioConfig } from "./studio-config.mjs";
 
 const MAX_PROJECT_BYTES = 256 * 1024 * 1024;
-const ROLES = new Set(["entrypoint", "renderer", "runtime", "script", "module", "style", "data", "library", "image", "other"]);
+const ROLES = new Set(["entrypoint", "renderer", "runtime", "script", "module", "style", "shader", "sprite-atlas", "sprite-loader", "audio-engine", "wallet-runtime", "font", "audio", "video", "model", "data", "plugin", "library", "image", "other"]);
 const FORMATS = new Set(["asset", "classic-script", "es-module", "umd", "wasm"]);
 
 function object(value, label) {

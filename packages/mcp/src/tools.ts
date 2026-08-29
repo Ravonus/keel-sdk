@@ -611,7 +611,7 @@ async function studioStageProjectTool(context: ToolContext, value: unknown): Pro
     totalBytes += loaded.bytes.byteLength;
     if (totalBytes > MAX_MEDIA_BYTES) throw new RangeError(`Staged project exceeds the ${MAX_MEDIA_BYTES.toString()} byte MCP limit.`);
     const role = requiredString(file, "role");
-    if (!["entrypoint", "renderer", "runtime", "script", "module", "style", "data", "library", "image", "other"].includes(role)) throw new TypeError(`files[${index}].role is unsupported.`);
+    if (!["entrypoint", "renderer", "runtime", "script", "module", "style", "shader", "sprite-atlas", "sprite-loader", "audio-engine", "wallet-runtime", "font", "audio", "video", "model", "data", "plugin", "library", "image", "other"].includes(role)) throw new TypeError(`files[${index}].role is unsupported.`);
     const format = requiredString(file, "format");
     if (!["asset", "classic-script", "es-module", "umd", "wasm"].includes(format)) throw new TypeError(`files[${index}].format is unsupported.`);
     const updateMode = optionalString(file, "updateMode");
@@ -621,7 +621,7 @@ async function studioStageProjectTool(context: ToolContext, value: unknown): Pro
       path: sourcePath,
       bytes: loaded.bytes,
       mediaType: requiredBoundedString(file, "mediaType", 160),
-      role: role as "entrypoint" | "renderer" | "runtime" | "script" | "module" | "style" | "data" | "library" | "image" | "other",
+      role: role as "entrypoint" | "renderer" | "runtime" | "script" | "module" | "style" | "shader" | "sprite-atlas" | "sprite-loader" | "audio-engine" | "wallet-runtime" | "font" | "audio" | "video" | "model" | "data" | "plugin" | "library" | "image" | "other",
       format: format as "asset" | "classic-script" | "es-module" | "umd" | "wasm",
       ...(updateMode === undefined ? {} : { updateMode: updateMode as "locked" | "manual" }),
       ...(label === undefined ? {} : { label }),

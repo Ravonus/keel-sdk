@@ -79,3 +79,50 @@ test("studio-stage CLI accepts JSON and YAML image projects and returns only ser
     await once(server, "close");
   }
 });
+
+test("studio-stage CLI accepts JSON video and YAML model roles", async () => {
+  const requests = [];
+  const server = createServer((request, response) => {
+    let body = Buffer.alloc(0);
+    request.on("data", (chunk) => { body = Buffer.concat([body, chunk]); });
+    request.on("end", () => {
+      requests.push(body.toString("utf8"));
+      response.statusCode = 201;
+      response.setHeader("content-type", "application/json");
+      response.end(JSON.stringify({
+        schema: "keel-studio-project-handoff@1",
+        id: `media-${requests.length}`,
+        handoffUrl: `https://studio.example/studio/projects/new?handoff=media-${requests.length}`,
+        expiresAt: "2030-01-01T00:00:00.000Z",
+        fileCount: 1,
+        totalBytes: 4,
+        wallet: { signing: "not-performed", submission: "not-performed" },
+      }));
+    });
+  });
+  server.listen(0, "127.0.0.1");
+  await once(server, "listening");
+  const address = server.address();
+  assert.ok(address && typeof address === "object");
+  const studioUrl = `http://127.0.0.1:${address.port}`;
+  const directory = await mkdtemp(path.join(os.tmpdir(), "keel-studio-stage-media-cli-"));
+  try {
+    await writeFile(path.join(directory, "loop.webm"), Uint8Array.of(0x1a, 0x45, 0xdf, 0xa3));
+    await writeFile(path.join(directory, "scene.glb"), Uint8Array.of(0x67, 0x6c, 0x54, 0x46));
+    const jsonPath = path.join(directory, "video.json");
+    await writeFile(jsonPath, JSON.stringify({ studioUrl, title: "Loop", storageStrategy: "onchain", files: [{ path: "loop.webm", mediaType: "video/webm", role: "video", format: "asset" }] }));
+    const video = await runCli(["studio-stage", "--config", jsonPath], { KEEL_STUDIO_AGENT_TOKEN: token });
+    assert.equal(video.status, 0, video.stderr);
+    const yamlPath = path.join(directory, "model.yaml");
+    await writeFile(yamlPath, `studioUrl: ${studioUrl}\ntitle: Scene\nstorageStrategy: onchain\nfiles:\n  - path: scene.glb\n    mediaType: model/gltf-binary\n    role: model\n    format: asset\n`);
+    const model = await runCli(["studio-stage", "--config", yamlPath], { KEEL_STUDIO_AGENT_TOKEN: token });
+    assert.equal(model.status, 0, model.stderr);
+    assert.equal(requests.length, 2);
+    assert.match(requests[0], /"role":"video"/u);
+    assert.match(requests[1], /"role":"model"/u);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+    server.close();
+    await once(server, "close");
+  }
+});

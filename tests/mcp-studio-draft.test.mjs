@@ -139,6 +139,61 @@ test("MCP stages an image-only KEEL shell project without uploading a local view
   }
 });
 
+test("MCP stages standard video and model roles through the canonical viewer policy", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "keel-mcp-media-stage-"));
+  const previousToken = process.env.KEEL_STUDIO_AGENT_TOKEN;
+  const previousFetch = globalThis.fetch;
+  process.env.KEEL_STUDIO_AGENT_TOKEN = token;
+  await writeFile(path.join(root, "loop.webm"), Uint8Array.of(0x1a, 0x45, 0xdf, 0xa3));
+  await writeFile(path.join(root, "scene.glb"), Uint8Array.of(0x67, 0x6c, 0x54, 0x46));
+  let metadata;
+  globalThis.fetch = async (_url, init = {}) => {
+    metadata = JSON.parse(init.body.get("metadata"));
+    return Response.json({
+      schema: "keel-studio-project-handoff@1",
+      id: "stage-media",
+      handoffUrl: "https://studio.example/studio/projects/new?handoff=secret",
+      expiresAt: "2026-09-01T00:00:00.000Z",
+      fileCount: 2,
+      totalBytes: 8,
+      wallet: { signing: "not-performed", submission: "not-performed" },
+    });
+  };
+  try {
+    const server = await createMcpServer({ workspaceRoot: root });
+    await server.handle({ jsonrpc: "2.0", id: 1, method: "initialize", params: initializeParams });
+    const result = await server.handle({
+      jsonrpc: "2.0",
+      id: 2,
+      method: "tools/call",
+      params: {
+        name: "keel-studio-stage-project",
+        arguments: {
+          studioUrl: "https://studio.example",
+          title: "Media roles",
+          storageStrategy: "onchain",
+          files: [
+            { path: "loop.webm", mediaType: "video/webm", role: "video", format: "asset" },
+            { path: "scene.glb", mediaType: "model/gltf-binary", role: "model", format: "asset" },
+          ],
+        },
+      },
+    });
+    assert.equal(result?.result.isError, undefined, result?.result.content?.[0]?.text);
+    assert.equal(result?.result.structuredContent.fileCount, 2);
+    assert.deepEqual(metadata.components.map(({ path: filePath, role }) => [filePath, role]), [
+      ["loop.webm", "video"],
+      ["scene.glb", "model"],
+    ]);
+    assert.equal(metadata.publicationIntent.viewer.mode, "keel-sandbox");
+  } finally {
+    globalThis.fetch = previousFetch;
+    if (previousToken === undefined) delete process.env.KEEL_STUDIO_AGENT_TOKEN;
+    else process.env.KEEL_STUDIO_AGENT_TOKEN = previousToken;
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("MCP rejects a locally declared KEEL shell before staging while allowing creator HTML", async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), "keel-mcp-shell-"));
   const previousToken = process.env.KEEL_STUDIO_AGENT_TOKEN;
