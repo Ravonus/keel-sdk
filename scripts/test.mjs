@@ -18,6 +18,7 @@ run("node", [
   "tests/keel-frozen-dataset-limits.test.mjs",
   "tests/readers.test.mjs",
   "tests/sdk.test.mjs",
+  "tests/one-mint-drop-read-compatibility.test.mjs",
   "tests/sdk-asset-tag-abi.test.mjs",
   "tests/sdk-browser-abi.test.mjs",
   "tests/sdk-wallet-request.test.mjs",

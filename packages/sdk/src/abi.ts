@@ -707,6 +707,16 @@ export const keelFactoryAbi = [
   "event CreatorNonceInvalidated(address indexed creator,uint256 previousNonce,uint256 nextNonce)",
 ] as const;
 
+/**
+ * Stable OneMint drop projection shared by legacy and item-aware controllers.
+ * New fields may only be appended to the onchain tuple; readers that do not
+ * need those capabilities should decode this prefix so old receipts remain
+ * recoverable after an SDK upgrade.
+ */
+export const oneMintCoreDropReadAbi = [
+  "function getDrop(bytes32 dropId) view returns ((address creator,address target,address payout,uint64 supply,uint64 minted,uint32 defaultMaxPerTransaction,uint32 defaultMaxPerWallet,uint16 stageCount,bool paused,bool closed,bool capacityReserved,bool exists,bytes32 metadataDigest))",
+] as const;
+
 export const oneMintControllerAbi = [
   "function OPEN_SUPPLY() view returns (uint64)",
   "function creatorProfileRegistry() view returns (address)",
