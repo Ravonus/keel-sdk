@@ -49,6 +49,15 @@ export interface NormalizedOneMintDrop {
   readonly metadataDigest: Hex;
 }
 
+export interface OneMintItemDropInput extends OneMintDropInput {
+  /** ERC-1155 item fixed into the drop at creation; collector mintData cannot redirect it. */
+  readonly targetTokenId: bigint | number;
+}
+
+export interface NormalizedOneMintItemDrop extends NormalizedOneMintDrop {
+  readonly targetTokenId: bigint;
+}
+
 export interface OneMintPerTokenMintDataInput {
   readonly quantity: bigint | number;
   /** Exact bytes consumed by each token's pre-receiver hook, in token order. */
@@ -169,6 +178,17 @@ export function buildOneMintDrop(input: OneMintDropInput): NormalizedOneMintDrop
     stages: Object.freeze(stages),
     metadataDigest,
   });
+}
+
+/**
+ * Mirrors OneMintController.createItemDrop. The item id is part of the
+ * reviewed operation itself, never inferred from collector-controlled
+ * mintData.
+ */
+export function buildOneMintItemDrop(input: OneMintItemDropInput): NormalizedOneMintItemDrop {
+  const drop = buildOneMintDrop(input);
+  const targetTokenId = uint(input.targetTokenId, 0n, "targetTokenId");
+  return Object.freeze({ ...drop, targetTokenId });
 }
 
 export function oneMintStageKindName(kind: OneMintStageKind): string {

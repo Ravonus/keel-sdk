@@ -278,6 +278,36 @@ onchain with `setStageMerkleRoot`, and have the wallet call `merkleMint` with it
 allowance and proof. The contract records consumed Merkle allowance per wallet
 and emits the root update so an indexer can rebuild the access state.
 
+### ERC-1155 item drops and creator collections
+
+`buildOneMintItemDrop` mirrors `OneMintController.createItemDrop`. It commits
+the ERC-1155 item id in the reviewed operation, so collector `mintData` cannot
+redirect a purchase to another item.
+
+Use `buildKeelCreator721Config` or `buildKeelCreator1155Config` before encoding
+a `KeelCreatorFactory` call. Both builders validate UTF-8 bounds, metadata
+digests, royalties, and integer widths. Shared ERC-1155 token ids are
+deterministic:
+
+```ts
+import {
+  keelSharedCollectionIdOf,
+  keelSharedItemIndexOf,
+  keelSharedTokenId,
+} from "@keel/sdk";
+
+const tokenId = keelSharedTokenId(logicalCollectionId, itemIndex);
+keelSharedCollectionIdOf(tokenId); // high 128 bits
+keelSharedItemIndexOf(tokenId);    // low 128 bits
+```
+
+The creator token contract is only the ownership/supply shell. `tokenURI`,
+ERC-1155 `uri`, and `contractURI` delegate to the shared KEEL renderer. The
+verification shell, p5, gzip loader, and other reusable modules are not copied
+into every creator collection or item; only project-specific object bindings
+belong to the work. A complete inline `animation_url` may still be returned at
+read time without duplicating those shared module bytes in token storage.
+
 ## Cool S release-readiness surface
 
 The SDK exports the creator-owned Cool S shell, visual registry, target table,

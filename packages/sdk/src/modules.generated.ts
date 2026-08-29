@@ -221,7 +221,7 @@ export const KEEL_MODULES: readonly KeelModule[] = [
     "title": "Token base",
     "group": "token",
     "visibility": "private",
-    "summary": "The KEEL721 base collection, its deployer, and the factories that stamp out collections.",
+    "summary": "Compact creator-owned ERC-721/ERC-1155 collections, a shared multi-creator ERC-1155, renderer boundaries, and factories that organize them.",
     "version": "0.3.0",
     "repo": "keel-web3/keel-die",
     "deps": [
@@ -234,15 +234,26 @@ export const KEEL_MODULES: readonly KeelModule[] = [
       "KEEL721Deployer.sol",
       "KeelFactory.sol",
       "KeelFactorySepolia.sol",
+      "KeelCreator721.sol",
+      "KeelCreator1155.sol",
+      "KeelShared1155.sol",
+      "KeelCreatorFactory.sol",
       "interfaces/IKeelMintable.sol",
       "interfaces/IKeelMintCapacity.sol",
-      "interfaces/IKeelCampaignAuthorizer.sol"
+      "interfaces/IKeelCampaignAuthorizer.sol",
+      "interfaces/IKeelItemMintTarget.sol",
+      "interfaces/IKeelTokenRenderer.sol",
+      "interfaces/IKeelCreatorDirectory.sol"
     ],
     "deployable": [
       "KEEL721",
       "KEEL721Deployer",
       "KeelFactory",
-      "KeelFactorySepolia"
+      "KeelFactorySepolia",
+      "KeelCreator1155",
+      "KeelCreator721",
+      "KeelCreatorFactory",
+      "KeelShared1155"
     ]
   },
   {
@@ -275,7 +286,7 @@ export const KEEL_MODULES: readonly KeelModule[] = [
     "title": "Mint access",
     "group": "token",
     "visibility": "private",
-    "summary": "Campaign-based mint authorization: access gates, adapters, and ordered shared-allocation stages.",
+    "summary": "Campaign-based mint authorization for ERC-721 collections and exact ERC-1155 items, with ordered shared-allocation stages.",
     "version": "0.3.0",
     "repo": "keel-web3/keel-mint-access",
     "deps": [

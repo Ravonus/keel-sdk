@@ -1,6 +1,7 @@
 export * from "./types.js";
 export * from "./campaign.js";
 export * from "./one-mint.js";
+export * from "./creator-collections.js";
 export * from "./cool-s.js";
 export * from "./typed-data.js";
 export * from "./abi.js";
