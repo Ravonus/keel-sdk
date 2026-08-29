@@ -1,0 +1,19 @@
+{
+  "schema": "keel-network-denied-fixture@1",
+  "network": "denied",
+  "entrypoint": "index.html",
+  "creatorResources": ["index.html", "scene.mjs", "fixture-probe.mjs"],
+  "externalModules": [
+    {
+      "id": "three-r180-module",
+      "version": "0.180.0",
+      "alias": "/content/three.module.min.js",
+      "requires": ["three-r180-core@0.180.0"]
+    },
+    {
+      "id": "three-r180-core",
+      "version": "0.180.0",
+      "alias": "./three.core.min.js"
+    }
+  ]
+}

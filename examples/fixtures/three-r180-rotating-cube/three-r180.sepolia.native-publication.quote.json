@@ -1,0 +1,201 @@
+{
+  "schema": "keel-three-r180-shared-module-quote@1",
+  "status": "READY_FOR_REVIEW",
+  "route": "native-carrier-v1",
+  "chain": {
+    "family": "ethereum",
+    "chainId": 11155111,
+    "store": "0x0a4f31d5ab08029e4c68f6f3227d9fa3a2d66267"
+  },
+  "source": {
+    "package": "three@0.180.0",
+    "license": "MIT",
+    "maintainedBy": "three.js-authors",
+    "modules": [
+      {
+        "id": "three-r180-module",
+        "identity": {
+          "namespace": "npm",
+          "name": "three",
+          "version": "0.180.0",
+          "entry": "build/three.module.min.js"
+        },
+        "sourceUrl": "https://unpkg.com/three@0.180.0/build/three.module.min.js",
+        "digest": "sha256:e2b5ee6bccd38fd6d8a2428546b83c5f2426d84b152ef82be8055556e3b40eb6",
+        "decodedByteLength": 338908,
+        "compression": "brotli",
+        "storedByteLength": 66437,
+        "chunkByteLengths": [
+          23000,
+          23000,
+          20437
+        ],
+        "currentStoreMatch": false
+      },
+      {
+        "id": "three-r180-core",
+        "identity": {
+          "namespace": "npm",
+          "name": "three",
+          "version": "0.180.0",
+          "entry": "build/three.core.min.js"
+        },
+        "sourceUrl": "https://unpkg.com/three@0.180.0/build/three.core.min.js",
+        "digest": "sha256:61ba0df005b05991361d040d8ff670e1aadfd0ce7aeebd1fdb0725957a8957de",
+        "decodedByteLength": 381124,
+        "compression": "brotli",
+        "storedByteLength": 81286,
+        "chunkByteLengths": [
+          23000,
+          23000,
+          23000,
+          12286
+        ],
+        "currentStoreMatch": false
+      }
+    ]
+  },
+  "deduplication": {
+    "schema": "keel-three-r180-sepolia-evidence@1",
+    "endpoint": "https://ethereum-sepolia-rpc.publicnode.com/",
+    "chainId": 11155111,
+    "hold": "0x0a4f31d5ab08029e4c68f6f3227d9fa3a2d66267",
+    "range": {
+      "from": {
+        "number": 11589190,
+        "hash": "0x3bc03fa19bf95c4f8ca399651379652adf6aafd5bb546ac580efdf9e903d50db"
+      },
+      "to": {
+        "number": 11591237,
+        "hash": "0xdb6edd2a456d3ccc3ee6e042547fa755125cb741114cdd70821eb5fa32f3a6b4"
+      },
+      "head": {
+        "number": 11591237,
+        "hash": "0xdb6edd2a456d3ccc3ee6e042547fa755125cb741114cdd70821eb5fa32f3a6b4"
+      },
+      "headAtEnd": {
+        "number": 11591237,
+        "hash": "0xdb6edd2a456d3ccc3ee6e042547fa755125cb741114cdd70821eb5fa32f3a6b4"
+      }
+    },
+    "eventTopic": "0xa9b747b717f45aa5e0058b2f0ab1a924631f6adcdc0070c0a2a8fc3ac2f4e633",
+    "modules": [
+      {
+        "id": "three-r180-module",
+        "digest": "0xe2b5ee6bccd38fd6d8a2428546b83c5f2426d84b152ef82be8055556e3b40eb6",
+        "queryTopics": [
+          "0xa9b747b717f45aa5e0058b2f0ab1a924631f6adcdc0070c0a2a8fc3ac2f4e633",
+          null,
+          "0xe2b5ee6bccd38fd6d8a2428546b83c5f2426d84b152ef82be8055556e3b40eb6"
+        ],
+        "logCount": 0,
+        "objectIds": [],
+        "objectQueries": [],
+        "currentStoreMatch": false
+      },
+      {
+        "id": "three-r180-core",
+        "digest": "0x61ba0df005b05991361d040d8ff670e1aadfd0ce7aeebd1fdb0725957a8957de",
+        "queryTopics": [
+          "0xa9b747b717f45aa5e0058b2f0ab1a924631f6adcdc0070c0a2a8fc3ac2f4e633",
+          null,
+          "0x61ba0df005b05991361d040d8ff670e1aadfd0ce7aeebd1fdb0725957a8957de"
+        ],
+        "logCount": 0,
+        "objectIds": [],
+        "objectQueries": [],
+        "currentStoreMatch": false
+      }
+    ],
+    "outcome": "absent"
+  },
+  "packing": {
+    "maxChunkBytes": 23000,
+    "maxCarriersPerExecutorTransaction": 3,
+    "totalChunks": 7,
+    "carrierBatches": [
+      {
+        "index": 0,
+        "chunkIndexes": [
+          0,
+          1,
+          2
+        ],
+        "chunkByteLengths": [
+          23000,
+          23000,
+          20437
+        ],
+        "storedByteLength": 66437
+      },
+      {
+        "index": 1,
+        "chunkIndexes": [
+          3,
+          4,
+          5
+        ],
+        "chunkByteLengths": [
+          23000,
+          23000,
+          23000
+        ],
+        "storedByteLength": 69000
+      },
+      {
+        "index": 2,
+        "chunkIndexes": [
+          6
+        ],
+        "chunkByteLengths": [
+          12286
+        ],
+        "storedByteLength": 12286
+      }
+    ]
+  },
+  "operations": [
+    {
+      "kind": "weld-object",
+      "moduleId": "three-r180-module",
+      "status": "not-encoded-until-explicit-approval"
+    },
+    {
+      "kind": "weld-object",
+      "moduleId": "three-r180-core",
+      "status": "not-encoded-until-explicit-approval"
+    }
+  ],
+  "gas": {
+    "calldataIntrinsicGas": 2423568,
+    "nativeCarrierWriteGas": 30551892,
+    "objectCreationGas": 300000,
+    "logicalRegistryOperationGas": 300000,
+    "executorControlGas": 200000,
+    "totalExecutorGas": 33775460,
+    "executorEscrowWei": null,
+    "actualTransactionFeeWei": null,
+    "mainnetReferencePriceWei": null,
+    "selectedTestnetGasPriceWei": null,
+    "note": "No escrow or fee amount is quoted until an explicit owner, executor, deadline, and selected gas price are supplied."
+  },
+  "recovery": {
+    "job": "not-opened",
+    "futureJobMatch": [
+      "owner",
+      "executor",
+      "planDigest",
+      "chunkCount",
+      "operationCount",
+      "cursor"
+    ],
+    "confirmedChunksNeverRepeated": true,
+    "failedChunkIndexesPersisted": true,
+    "receiptReconciledBeforeRetry": true
+  },
+  "wallet": {
+    "approval": "not-requested",
+    "signing": "not-performed",
+    "submitted": false
+  }
+}

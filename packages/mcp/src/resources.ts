@@ -75,6 +75,7 @@ const RESOURCE_TEXT: Readonly<Record<string, string>> = {
         localDocument: "buildKeelInlineLocalDocument",
         publishableGraph: "buildKeelInlinePreEncodedTokenURIGraph",
         portableP5Default: "Once-per-chain Gzip p5 fragment plus the browser Gzip/Deflate shell profile.",
+        portableThreeDefault: "Once-per-chain exact Three.js r180 ESM main/core graph. Bind both verified current-chain objects; never embed Three.js in each creator project.",
       },
     },
     modes: [{

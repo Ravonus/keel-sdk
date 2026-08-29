@@ -112,6 +112,7 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     const publicationModes = JSON.parse(publicationModesRead?.result.contents[0].text);
     assert.equal(publicationModes.defaultMode, "native-carrier-v1");
     assert.equal(publicationModes.modes.find((mode) => mode.id === "history-inscription-v1").contractReadable, false);
+    assert.match(publicationModes.presentation.sdkPlanner.portableThreeDefault, /Three\.js r180/u);
     assert.deepEqual(await readdir(directory), resourceFiles);
     const unknownResource = await server.handle({ jsonrpc: "2.0", id: 25, method: "resources/read", params: { uri: "keel://mcp/unknown" } });
     assert.equal(unknownResource?.error?.code, -32002);

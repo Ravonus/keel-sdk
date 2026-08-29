@@ -18,6 +18,7 @@ export * from "./publish-plan.js";
 export * from "./library-publication-plan.js";
 export * from "./managed-publication.js";
 export * from "./three-scene-publication.js";
+export * from "./three-module.js";
 export * from "./studio-upload.js";
 export * from "./studio-agent-drafts.js";
 export * from "./studio-publication.js";
