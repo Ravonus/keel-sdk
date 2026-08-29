@@ -134,6 +134,7 @@ export function normalizeAssets(inputs: readonly StudioAssetInput[]): readonly N
       ...(asset.remoteUri === undefined ? {} : { remoteUri: asset.remoteUri }),
       ...(asset.stack === undefined ? {} : { stack: asset.stack }),
       ...(asset.additionalSources === undefined ? {} : { additionalSources: asset.additionalSources }),
+      sourceMode: asset.sourceMode ?? "local-and-additional",
       entrypoint: asset.entrypoint ?? role === "entrypoint",
       mode: entrypointMode(mediaType),
     };

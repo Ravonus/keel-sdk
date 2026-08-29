@@ -33,9 +33,9 @@ import {
   validateEmitterRecipe,
   validateMaterialComposition,
   validateMaterialStemRecipe,
-} from "../packages/sprite-codex/dist/index.js";
+} from "../dist/index.js";
 
-const packageRequire = createRequire(new URL("../packages/sprite-codex/package.json", import.meta.url));
+const packageRequire = createRequire(new URL("../package.json", import.meta.url));
 const sharp = packageRequire("sharp");
 
 async function png(file, rgba) {
@@ -242,7 +242,7 @@ test("strict configurable limits bound downloads, metadata, counts, masks, and d
   assert.throws(() => decodeCodex(codex, { maxAssets: 0 }), /invalid sprite codex limit/);
   assert.deepEqual(parseWebpDimensions(atlas), { width: 4, height: 4 });
   assert.throws(() => parseWebpDimensions(Uint8Array.from([1, 2, 3])), /not a WebP/);
-  const vaultCodex = new Uint8Array(await readFile(new URL("../packages/sprite-codex/vault/generated/vault-weapons-v1.codex.bin", import.meta.url)));
+  const vaultCodex = new Uint8Array(await readFile(new URL("../vault/generated/vault-weapons-v1.codex.bin", import.meta.url)));
   assert.throws(() => decodeCodex(vaultCodex, { maxFramesPerAsset: 8 }), /frame count/);
 
   const fetch = async (url) => new Response(String(url).endsWith(".bin") ? codex : atlas);
@@ -274,7 +274,7 @@ test("strict configurable limits bound downloads, metadata, counts, masks, and d
 
 test("CLI rejects dangling values and requires an existing lock for check mode", async () => {
   const built = await fixture();
-  const cli = fileURLToPath(new URL("../packages/sprite-codex/dist/cli.js", import.meta.url));
+  const cli = fileURLToPath(new URL("../dist/cli.js", import.meta.url));
   const run = (...args) => spawnSync(process.execPath, [cli, ...args], { encoding: "utf8" });
   assert.notEqual(run("compile", built.manifestPath, "--out").status, 0);
   assert.notEqual(run("compile", built.manifestPath, "--out", "--check").status, 0);
@@ -287,7 +287,7 @@ test("CLI rejects dangling values and requires an existing lock for check mode",
 });
 
 test("Vault build preserves all 36 frames and every authored Gyro/Rift/Needle override", async () => {
-  const vault = new URL("../packages/sprite-codex/vault/", import.meta.url);
+  const vault = new URL("../vault/", import.meta.url);
   const source = JSON.parse(await readFile(new URL("weapons.sprite.json", vault), "utf8"));
   const authored = JSON.parse(await readFile(new URL("../../../examples/demos/vault-arcade/generated-attribute-proxy/weapon-region-overrides-v1.json", vault), "utf8"));
   const build = JSON.parse(await readFile(new URL("generated/vault-weapons-v1.build.json", vault), "utf8"));
@@ -310,7 +310,7 @@ test("Vault build preserves all 36 frames and every authored Gyro/Rift/Needle ov
 });
 
 test("sheet descriptors preserve exact Orb cells and Vault bundles keep incompatible geometry separate", async () => {
-  const root = new URL("../packages/sprite-codex/vault/generated/library/", import.meta.url);
+  const root = new URL("../vault/generated/library/", import.meta.url);
   const graph = JSON.parse(await readFile(new URL("vault-assets-v1.library.json", root), "utf8"));
   const geometries = new Map();
   for (const bundle of graph.bundles) {
@@ -327,7 +327,7 @@ test("sheet descriptors preserve exact Orb cells and Vault bundles keep incompat
   const orbBuildUrl = new URL(orbBundle.buildManifest, root);
   const orbBuild = JSON.parse(await readFile(orbBuildUrl, "utf8"));
   const orbAtlas = new URL(orbBuild.atlas.file, orbBuildUrl);
-  const orbSource = new URL("../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-turnaround.png", import.meta.url);
+  const orbSource = new URL("../../../examples/demos/vault-arcade/generated-attribute-proxy/orb-core-v1-turnaround.png", import.meta.url);
   const { data: sourceCell } = await sharp(fileURLToPath(orbSource)).extract({ left: 68, top: 0, width: 34, height: 34 }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const { data: atlasCell } = await sharp(fileURLToPath(orbAtlas)).extract({ left: 68, top: 0, width: 34, height: 34 }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   for (let offset = 0; offset < sourceCell.length; offset += 4) {
@@ -337,7 +337,7 @@ test("sheet descriptors preserve exact Orb cells and Vault bundles keep incompat
 });
 
 test("Vault dependency profiles load standalone characters without world and staked maps with all shared bundles", async () => {
-  const root = new URL("../packages/sprite-codex/vault/generated/library/", import.meta.url);
+  const root = new URL("../vault/generated/library/", import.meta.url);
   const graphBytes = new Uint8Array(await readFile(new URL("vault-assets-v1.library.json", root)));
   const graph = JSON.parse(new TextDecoder().decode(graphBytes));
   assert.deepEqual(resolveProfilePlan(graph, "unstaked-character", 1).map((entry) => entry.key), ["character-orb", "shared-weapons"]);
@@ -360,7 +360,7 @@ test("Vault dependency profiles load standalone characters without world and sta
 });
 
 test("Vault inventory excludes every candidate/rejected source from active bundles and deterministic check matches locks", async () => {
-  const vault = new URL("../packages/sprite-codex/vault/", import.meta.url);
+  const vault = new URL("../vault/", import.meta.url);
   const report = JSON.parse(await readFile(new URL("generated/library/vault-assets-v1.inventory.json", vault), "utf8"));
   assert.ok(report.included > 0);
   assert.ok(report.excluded > 0);
@@ -757,7 +757,7 @@ test("sprite-emitter v1 is bounded, counter-deterministic, map-variable, and ind
   assert.deepEqual(seedA, seedB);
   assert.equal(Buffer.from(seedA).toString("hex"), "b7a931a7a401d843cb4a2230b3744e5af9b7c15fe543e4fe23d297b01e3ae27d");
   assert.deepEqual(Array.from({ length: 4 }, (_, counter) => splitMix64(0xb7a931a7a401d843n, counter).toString(16)), ["99906df5c5ef3241", "e104bd1ba1f7a3fc", "64c9a5fe9ff087be", "b14a411a1fd2a8bf"]);
-  const portableVector = JSON.parse(await readFile(new URL("../packages/sprite-codex/vault/emitter-v1.portable-vector.json", import.meta.url), "utf8"));
+  const portableVector = JSON.parse(await readFile(new URL("../vault/emitter-v1.portable-vector.json", import.meta.url), "utf8"));
   assert.equal(portableVector.eventSeed, Buffer.from(seedA).toString("hex"));
   assert.deepEqual(portableVector.splitMix64Words, Array.from({ length: 128 }, (_, counter) => splitMix64(0xb7a931a7a401d843n, counter).toString(16).padStart(16, "0")));
   const traceA = emitterTrace(recipe, seedA, 90), traceB = emitterTrace(recipe, seedB, 90);

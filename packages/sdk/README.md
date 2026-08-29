@@ -2,6 +2,36 @@
 
 Framework-neutral types, validation, ABIs, and EIP-712 helpers for the Keel contracts. The package deliberately does not depend on a wallet stack; its output can be passed to viem, ethers, wagmi, a relayer, or a smart-account client.
 
+## Choose Inline, Hybrid, or IPFS without changing storage
+
+KEEL uses a small uncompressed **boot shell** plus a digest-bound **resource
+graph**. Heavy child scripts, modules, assets, and data may be Brotli/Gzip/
+Deflate-compressed; the committed browser/WASM decoder expands them only after
+their stored bytes verify. The Solidity builder does not decompress Brotli.
+Gzip/Deflate use a capability-checked browser decoder path; Brotli uses an
+exact declared KEEL decoder module, normally the reusable thin WASM module
+published once per chain. Creator plans reference that module and must not
+carry another copy.
+
+For Node-side publication planning, `@keel/sdk/inline-viewer-graph` builds the
+once-per-chain Gzip shell/module fragments and the creator's ordered composite
+root. It reports creator publication bytes separately and rejects a shared
+fragment that is missing from the selected chain/store.
+
+- **Inline** means `animation_url` is the complete onchain-assembled
+  `data:text/html` document. It has no gateway, IPFS, `/content`, or RPC fetch.
+- **Hybrid** can still be entirely native KEEL storage. Its boot shell resolves
+  exact onchain objects through an RPC reader.
+- **IPFS** is an explicit external delivery selection and is never inferred
+  from Hybrid.
+
+Use `assessKeelInlinePresentation` from `@keel/sdk/presentation` before wallet
+review. It enforces the uncompressed root, 2 MB reconstruction ceiling,
+self-contained document, and configured-builder boundary. The exact builder
+read must also pass the 30M-gas public-RPC safety check. See
+[`docs/KEEL_PRESENTATION.md`](../../docs/KEEL_PRESENTATION.md) for the complete
+contract and SDK terminology.
+
 ## Discover a Studio before uploading
 
 `fetchStudioCapabilities` reads the non-mutating

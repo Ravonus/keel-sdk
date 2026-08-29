@@ -21,8 +21,14 @@ function resourceById(input: StudioManifestInput, id: string): StudioManifestInp
 export async function buildStudioManifest(input: StudioManifestInput): Promise<BuiltStudioManifest> {
   if (input.resources.length === 0) throw new RangeError("A studio artifact requires at least one resource.");
   const entrypoint = resourceById(input, input.entrypointResourceId);
-  const fallbackId = input.fallbackImageResourceId ?? input.entrypointResourceId;
-  resourceById(input, fallbackId);
+  const fallbackId = input.fallbackImageResourceId ?? (entrypoint.mediaType.startsWith("image/") ? input.entrypointResourceId : undefined);
+  if (fallbackId === undefined) {
+    throw new RangeError("An executable Studio project requires a verified image fallback captured from its sandbox preview.");
+  }
+  const fallback = resourceById(input, fallbackId);
+  if (!fallback.mediaType.toLowerCase().startsWith("image/")) {
+    throw new TypeError(`Studio fallback ${fallbackId} uses ${fallback.mediaType}, not an image media type.`);
+  }
   const totalBytes = input.resources.reduce((sum, resource) => sum + (resource.integrity.byteLength ?? 0), 0);
   const largestBytes = input.resources.reduce((largest, resource) => Math.max(largest, resource.integrity.byteLength ?? 0), 0);
 

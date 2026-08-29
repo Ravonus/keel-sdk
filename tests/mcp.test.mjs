@@ -67,7 +67,7 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.equal(initialized?.result.serverInfo.name, "keel-mcp");
     assert.deepEqual(Object.keys(initialized?.result.capabilities), ["tools", "prompts", "resources"]);
     const listed = await server.handle({ jsonrpc: "2.0", id: 5, method: "tools/list", params: {} });
-    assert.deepEqual(listed?.result.tools.map((tool) => tool.name), ["analyze", "build", "verify", "cost", "upload-plan", "chain-plan", "ethereum-encode", "publish-plan", "module-resolve", "module-lock", "wallet-request-prepare", "wallet-link", "module-review-prepare", "fray-auction-intake", "fray-stage-project", "keel-chain-guide", "keel-library-search", "keel-studio-capabilities"]);
+    assert.deepEqual(listed?.result.tools.map((tool) => tool.name), ["analyze", "build", "verify", "cost", "upload-plan", "chain-plan", "ethereum-encode", "publish-plan", "module-resolve", "module-lock", "wallet-request-prepare", "wallet-link", "module-review-prepare", "fray-auction-intake", "fray-stage-project", "keel-chain-guide", "keel-library-search", "keel-endpoint-config", "keel-studio-capabilities", "keel-studio-project-intake"]);
     const malformed = await server.handle({ jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "cost", unexpected: true } });
     assert.equal(malformed?.error?.code, -32602);
     const malformedArguments = await server.handle({ jsonrpc: "2.0", id: 12, method: "tools/call", params: { name: "cost", arguments: null } });
@@ -99,7 +99,7 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.equal(malformedResourceList?.error?.code, -32602);
     const resourceFiles = await readdir(directory);
     const resourceList = await server.handle({ jsonrpc: "2.0", id: 23, method: "resources/list", params: {} });
-    assert.deepEqual(resourceList?.result.resources.map((resource) => resource.uri), ["keel://mcp/workflow", "keel://mcp/limits"]);
+    assert.deepEqual(resourceList?.result.resources.map((resource) => resource.uri), ["keel://mcp/workflow", "keel://mcp/limits", "keel://mcp/publication-modes"]);
     const resourceRead = await server.handle({ jsonrpc: "2.0", id: 24, method: "resources/read", params: { uri: "keel://mcp/limits" } });
     assert.equal(JSON.parse(resourceRead?.result.contents[0].text).kind, "offline-limits");
     const workflowRead = await server.handle({ jsonrpc: "2.0", id: 27, method: "resources/read", params: { uri: "keel://mcp/workflow" } });
@@ -108,6 +108,10 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.ok(workflow.steps.includes("module-lock"));
     assert.ok(workflow.steps.includes("ethereum-encode"));
     assert.ok(workflow.steps.includes("publish-plan"));
+    const publicationModesRead = await server.handle({ jsonrpc: "2.0", id: 29, method: "resources/read", params: { uri: "keel://mcp/publication-modes" } });
+    const publicationModes = JSON.parse(publicationModesRead?.result.contents[0].text);
+    assert.equal(publicationModes.defaultMode, "native-carrier-v1");
+    assert.equal(publicationModes.modes.find((mode) => mode.id === "history-inscription-v1").contractReadable, false);
     assert.deepEqual(await readdir(directory), resourceFiles);
     const unknownResource = await server.handle({ jsonrpc: "2.0", id: 25, method: "resources/read", params: { uri: "keel://mcp/unknown" } });
     assert.equal(unknownResource?.error?.code, -32002);
@@ -363,8 +367,8 @@ test("MCP rejects symlink inputs and CLI emits protocol JSON only", async () => 
     const lines = output.trim().split("\n").map((line) => JSON.parse(line));
     assert.equal(lines.length, 4);
     assert.equal(lines[0].id, 1);
-    assert.equal(lines[1].result.tools.length, 18);
-    assert.equal(lines[2].result.resources.length, 2);
+    assert.equal(lines[1].result.tools.length, 20);
+    assert.equal(lines[2].result.resources.length, 3);
     assert.equal(JSON.parse(lines[3].result.contents[0].text).kind, "offline-workflow");
   } finally {
     await rm(directory, { recursive: true, force: true });
@@ -417,9 +421,37 @@ test("Fray intake asks for creator choices and emits a digest-bound approval han
     assert.equal(chainGuide?.result.structuredContent.chains[0].network, "shadownet");
     assert.equal(chainGuide?.result.structuredContent.chains[0].faucet.agentAction, "show-links-only");
 
+    const missingOutcome = await call(server, 40, "keel-studio-project-intake", {
+      title: "Seed Current",
+      description: "A p5 work.",
+    });
+    assert.deepEqual(missingOutcome?.result.structuredContent.questions.map(({ field }) => field), ["outcome"]);
+    const storageOnly = await call(server, 41, "keel-studio-project-intake", {
+      title: "Seed Current",
+      description: "A p5 work.",
+      outcome: "storage-only",
+    });
+    assert.equal(storageOnly?.result.structuredContent.status, "ready");
+    assert.equal(storageOnly?.result.structuredContent.releaseIntent, undefined);
+    const release = await call(server, 42, "keel-studio-project-intake", {
+      title: "Seed Current",
+      description: "A p5 work.",
+      outcome: "release",
+      chainId: 11155111,
+      release: { type: "one-of-one", saleMechanism: "fixed-price", priceEth: "0.1" },
+    });
+    assert.equal(release?.result.structuredContent.releaseIntent.release.priceEth, "0.1");
+
     const search = await call(server, 5, "keel-library-search", { query: "three.js" });
     assert.equal(search?.result.structuredContent.status, "unconfigured");
     assert.match(search?.result.structuredContent.message, /no carrier bytes were fetched/iu);
+    const endpoints = await call(server, 6, "keel-endpoint-config", {
+      studioUrl: "https://studio.example",
+      publicRpcUrl: "https://rpc.example",
+      indexerUrl: "https://indexer.example",
+    });
+    assert.equal(endpoints?.result.structuredContent.studioUrl, "https://studio.example");
+    assert.equal(endpoints?.result.structuredContent.sources.studioUrl, "explicit");
     assert.deepEqual(await readdir(directory), []);
   } finally {
     await rm(directory, { recursive: true, force: true });
@@ -504,7 +536,7 @@ test("MCP CLI help, version, and self-test are explicit non-stdio modes", async 
     const health = JSON.parse(first);
     assert.equal(health.status, "ok");
     assert.equal(health.protocolVersion, "2024-11-05");
-    assert.equal(health.toolCount, 18);
+    assert.equal(health.toolCount, 20);
     assert.deepEqual(health.checks, ["initialize", "ping", "tools/list", "prompts/list", "prompts/get", "resources/list", "resources/read"]);
     assert.equal(health.jsonrpc, undefined);
   } finally {

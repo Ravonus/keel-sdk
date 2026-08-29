@@ -14,3 +14,4 @@ export * from "./module-testing.js";
 export * from "./module-registration.js";
 export * from "./module-workspace.js";
 export * from "./cost-analysis.js";
+export * from "./creator-module.js";

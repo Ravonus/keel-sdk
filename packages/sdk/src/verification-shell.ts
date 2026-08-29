@@ -197,6 +197,8 @@ export async function buildStandaloneKeelViewer(input: {
   readonly repositoryRoot: string;
   readonly envelope: KeelStandaloneViewerEnvelope;
   readonly verificationPresentation?: KeelVerificationPresentationOverrides;
+  /** Embed Brotli WASM only when this exact graph declares Brotli resources. */
+  readonly brotliDecoder?: "embedded" | "disabled";
 }): Promise<KeelStandaloneViewerBuild> {
   if (input.envelope.protocol !== KEEL_STANDALONE_VIEWER_PROTOCOL) throw new TypeError("Unsupported standalone viewer protocol.");
   if (!input.envelope.items.some((item) => item.id === input.envelope.entrypoint)) throw new TypeError("Standalone viewer entrypoint is missing.");
@@ -208,10 +210,11 @@ export async function buildStandaloneKeelViewer(input: {
     throw new TypeError("Every embedded assembled viewer item requires committed inline bytes.");
   }
   const runtimePath = path.join(input.repositoryRoot, "examples/demos/keel-creative-lab/keel-verifier-runtime.js");
+  const decoderMode = input.brotliDecoder ?? "embedded";
   const wasmPath = path.join(input.repositoryRoot, "apps/studio/node_modules/brotli-dec-wasm/pkg/brotli_dec_wasm_bg.wasm");
   const [runtimeSource, wasm, verificationChrome] = await Promise.all([
     readFile(runtimePath),
-    readFile(wasmPath),
+    decoderMode === "embedded" ? readFile(wasmPath) : Promise.resolve(Buffer.from(new Uint8Array())),
     loadVaultVerificationChrome(input.repositoryRoot, input.verificationPresentation),
   ]);
   const wasmIntegrity = await sha256Integrity(wasm);
@@ -233,13 +236,23 @@ export async function buildStandaloneKeelViewer(input: {
     write: false,
     stdin: { contents: runtimeWithVerificationChrome, resolveDir: path.dirname(runtimePath), sourcefile: "keel-verifier-runtime.js", loader: "js" },
     plugins: [{
-      name: "keel-embedded-brotli",
+      name: "keel-compression-runtime",
       setup(plugin) {
+        plugin.onResolve({ filter: /^keel:compression-runtime$/ }, () => ({ path: "keel:compression-runtime", namespace: "keel" }));
         plugin.onResolve({ filter: /^brotli-dec-wasm\/web$/ }, () => ({
           path: path.join(input.repositoryRoot, "apps/studio/node_modules/brotli-dec-wasm/pkg/brotli_dec_wasm.js"),
         }));
-        plugin.onResolve({ filter: /^keel:brotli-wasm-base64$/ }, () => ({ path: "keel:brotli-wasm-base64", namespace: "keel" }));
-        plugin.onLoad({ filter: /.*/, namespace: "keel" }, () => ({ contents: `export default ${JSON.stringify(wasm.toString("base64"))}`, loader: "js" }));
+        plugin.onResolve({ filter: /^keel:brotli-wasm-base64$/ }, () => ({ path: "keel:brotli-wasm-base64", namespace: "keel-wasm" }));
+        plugin.onLoad({ filter: /.*/, namespace: "keel-wasm" }, () => ({
+          contents: `export default ${JSON.stringify(wasm.toString("base64"))}`,
+          loader: "js",
+        }));
+        plugin.onLoad({ filter: /.*/, namespace: "keel" }, () => ({
+          contents: decoderMode === "embedded"
+            ? `import {decompress,initSync} from "brotli-dec-wasm/web";import encoded from "keel:brotli-wasm-base64";const bytes=()=>Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));export const decodeBrotli=decompress;export function initBrotli(){initSync({module:bytes()})}`
+            : `export function initBrotli(){}export function decodeBrotli(){throw new Error("This verified shell did not declare the KEEL Brotli decoder module.")}`,
+          loader: "js",
+        }));
       },
     }],
   });
@@ -262,7 +275,9 @@ export async function buildStandaloneKeelViewer(input: {
     format: "iife",
     minify: true,
     target: "es2022",
-    brotliDecoder: { package: "brotli-dec-wasm@2.3.2", digest: wasmIntegrity.digest },
+    brotliDecoder: decoderMode === "embedded"
+      ? { kind: "embedded", package: "brotli-dec-wasm@2.3.2", digest: wasmIntegrity.digest }
+      : { kind: "disabled" },
     verificationChrome: {
       html: "examples/demos/vault-arcade/generated-attribute-proxy/vault-keel-viewer.html",
       javascript: "examples/demos/vault-arcade/generated-attribute-proxy/vault-keel-viewer.js",
@@ -296,6 +311,7 @@ export async function buildStandaloneKeelViewer(input: {
 export async function buildEmbeddedKeelViewerShell(input: {
   readonly repositoryRoot: string;
   readonly verificationPresentation?: KeelVerificationPresentationOverrides;
+  readonly brotliDecoder?: "embedded" | "disabled";
 }): Promise<{
   readonly prefix: Uint8Array;
   readonly suffix: Uint8Array;
@@ -305,6 +321,7 @@ export async function buildEmbeddedKeelViewerShell(input: {
   const emptyDigest = (await sha256Integrity(new Uint8Array())).digest;
   const placeholder = await buildStandaloneKeelViewer({
     repositoryRoot: input.repositoryRoot,
+    ...(input.brotliDecoder === undefined ? {} : { brotliDecoder: input.brotliDecoder }),
     ...(input.verificationPresentation === undefined ? {} : { verificationPresentation: input.verificationPresentation }),
     envelope: {
       protocol: KEEL_STANDALONE_VIEWER_PROTOCOL,
@@ -330,6 +347,230 @@ export async function buildEmbeddedKeelViewerShell(input: {
   if (envelopeEnd < 0) throw new Error("Embedded Keel shell envelope terminator is missing.");
   const prefix = utf8ToBytes(`${html.slice(0, envelopeStart)}{\"deliveryProfile\":\"embedded-assembled\",\"entrypoint\":null,\"items\":[null`);
   const suffix = utf8ToBytes(`],\"protocol\":${JSON.stringify(KEEL_STANDALONE_VIEWER_PROTOCOL)},\"title\":\"Keel verified presentation\"}${html.slice(envelopeEnd)}`);
+  const [prefixIntegrity, suffixIntegrity] = await Promise.all([sha256Integrity(prefix), sha256Integrity(suffix)]);
+  return { prefix, suffix, prefixIntegrity, suffixIntegrity };
+}
+
+/**
+ * Runtime used only by the default composable Inline lane. It intentionally
+ * contains no catalogue client, RPC reader, Brotli decoder, or presentation
+ * chrome. The ordered object graph supplies every byte between the two shell
+ * halves; this code verifies stored and decoded commitments, uses the
+ * browser's native Gzip/Deflate decoder, and mounts the verified entrypoint.
+ */
+function compactInlineRuntime(): void {
+  const globals = globalThis as typeof globalThis & {
+    __KEEL_ITEMS__?: unknown;
+    __KEEL_CONTEXT__?: unknown;
+    __KEEL_VERIFICATION__?: unknown;
+  };
+  const source = Array.isArray(globals.__KEEL_ITEMS__) ? globals.__KEEL_ITEMS__.filter(Boolean) : [];
+  const stage = document.querySelector("#keel-stage");
+  const status = document.querySelector("#keel-status");
+  const proof = document.querySelector("#keel-proof");
+  if (!(stage instanceof HTMLElement) || !(status instanceof HTMLElement) || !(proof instanceof HTMLElement)) {
+    throw new Error("Invalid KEEL Inline shell.");
+  }
+  const items = source as KeelStandaloneViewerItem[];
+  const decoder = new TextDecoder("utf-8", { fatal: true });
+  const fromBase64 = (value: string) => Uint8Array.from(atob(value), (character) => character.charCodeAt(0));
+  const equal = (left: Uint8Array, right: Uint8Array) => left.length === right.length
+    && left.every((value, index) => value === right[index]);
+  const fromHex = (value: string) => Uint8Array.from(value.slice(2).match(/../gu) ?? [], (pair) => Number.parseInt(pair, 16));
+  const sha256Fallback = (bytes: Uint8Array) => {
+    const constants = Uint32Array.from([
+      0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+      0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+      0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+      0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+      0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+      0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+      0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+      0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+    ]);
+    const rotateRight = (value: number, count: number) => (value >>> count) | (value << (32 - count));
+    const paddedLength = Math.ceil((bytes.byteLength + 9) / 64) * 64;
+    const padded = new Uint8Array(paddedLength);
+    padded.set(bytes);
+    padded[bytes.byteLength] = 0x80;
+    const bitLength = bytes.byteLength * 8;
+    const paddedView = new DataView(padded.buffer);
+    paddedView.setUint32(paddedLength - 8, Math.floor(bitLength / 0x1_0000_0000), false);
+    paddedView.setUint32(paddedLength - 4, bitLength >>> 0, false);
+    const hash = Uint32Array.from([
+      0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+      0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
+    ]);
+    const schedule = new Uint32Array(64);
+    for (let block = 0; block < paddedLength; block += 64) {
+      for (let index = 0; index < 16; index += 1) schedule[index] = paddedView.getUint32(block + index * 4, false);
+      for (let index = 16; index < 64; index += 1) {
+        const left = schedule[index - 15] as number;
+        const right = schedule[index - 2] as number;
+        schedule[index] = (
+          (schedule[index - 16] as number)
+          + (rotateRight(left, 7) ^ rotateRight(left, 18) ^ (left >>> 3))
+          + (schedule[index - 7] as number)
+          + (rotateRight(right, 17) ^ rotateRight(right, 19) ^ (right >>> 10))
+        ) >>> 0;
+      }
+      let [a, b, c, d, e, f, g, h] = hash as unknown as [number, number, number, number, number, number, number, number];
+      for (let index = 0; index < 64; index += 1) {
+        const upper = rotateRight(e, 6) ^ rotateRight(e, 11) ^ rotateRight(e, 25);
+        const choice = (e & f) ^ (~e & g);
+        const temporary1 = (h + upper + choice + (constants[index] as number) + (schedule[index] as number)) >>> 0;
+        const lower = rotateRight(a, 2) ^ rotateRight(a, 13) ^ rotateRight(a, 22);
+        const majority = (a & b) ^ (a & c) ^ (b & c);
+        const temporary2 = (lower + majority) >>> 0;
+        h = g; g = f; f = e; e = (d + temporary1) >>> 0; d = c; c = b; b = a; a = (temporary1 + temporary2) >>> 0;
+      }
+      hash[0] = ((hash[0] as number) + a) >>> 0;
+      hash[1] = ((hash[1] as number) + b) >>> 0;
+      hash[2] = ((hash[2] as number) + c) >>> 0;
+      hash[3] = ((hash[3] as number) + d) >>> 0;
+      hash[4] = ((hash[4] as number) + e) >>> 0;
+      hash[5] = ((hash[5] as number) + f) >>> 0;
+      hash[6] = ((hash[6] as number) + g) >>> 0;
+      hash[7] = ((hash[7] as number) + h) >>> 0;
+    }
+    const output = new Uint8Array(32);
+    const outputView = new DataView(output.buffer);
+    hash.forEach((value, index) => outputView.setUint32(index * 4, value, false));
+    return output;
+  };
+  const sha256 = async (bytes: Uint8Array) => {
+    const subtle = globalThis.crypto?.subtle;
+    return subtle?.digest
+      ? new Uint8Array(await subtle.digest("SHA-256", bytes.slice().buffer as ArrayBuffer))
+      : sha256Fallback(bytes);
+  };
+  const safeJSON = (value: unknown) => JSON.stringify(value)
+    .replaceAll("<", "\\u003c")
+    .replaceAll("\u2028", "\\u2028")
+    .replaceAll("\u2029", "\\u2029");
+  const verify = async (bytes: Uint8Array, integrity: Sha256Integrity, label: string) => {
+    if (bytes.byteLength !== integrity.byteLength) throw new Error(`${label} length mismatch.`);
+    const seen = await sha256(bytes);
+    if (!equal(seen, fromHex(integrity.digest))) throw new Error(`${label} SHA-256 mismatch.`);
+    return bytes;
+  };
+  const decompress = async (compression: "none" | "gzip" | "deflate" | "brotli", bytes: Uint8Array) => {
+    if (compression === "none") return bytes;
+    if (compression === "brotli") throw new Error("Brotli needs an explicit declared KEEL decoder module.");
+    if (typeof DecompressionStream !== "function") throw new Error(`${compression} decompression is unavailable.`);
+    const stream = new Blob([bytes as BlobPart]).stream().pipeThrough(new DecompressionStream(compression));
+    return new Uint8Array(await new Response(stream).arrayBuffer());
+  };
+  const resolve = async (item: KeelStandaloneViewerItem) => {
+    const embedded = item.embedded;
+    if (embedded === undefined || typeof embedded.storedBase64 !== "string") {
+      throw new Error(`Missing embedded bytes for ${item.id}.`);
+    }
+    const stored = fromBase64(embedded.storedBase64);
+    if (embedded.storedIntegrity !== undefined) await verify(stored, embedded.storedIntegrity, `${item.id} stored`);
+    return verify(await decompress(embedded.compression, stored), item.integrity, item.id);
+  };
+  const dataURL = (bytes: Uint8Array, mediaType: string) => {
+    let binary = "";
+    for (let offset = 0; offset < bytes.byteLength; offset += 0x8000) {
+      binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + 0x8000, bytes.byteLength)));
+    }
+    return `data:${mediaType};base64,${btoa(binary)}`;
+  };
+  const replaceAliases = (text: string, aliases: ReadonlyMap<string, string>) => {
+    let output = text;
+    for (const [alias, url] of [...aliases].sort(([left], [right]) => right.length - left.length || left.localeCompare(right))) {
+      output = output.replaceAll(alias, url);
+    }
+    return output;
+  };
+  const childHTML = (html: string, context: unknown, verification: unknown) => {
+    // Construct the child terminator at runtime so the parent HTML parser
+    // never sees a literal closing script tag inside this shell script.
+    const closeScript = String.fromCharCode(60, 47, 115, 99, 114, 105, 112, 116, 62);
+    const injection = `<script>globalThis.__KEEL_CONTEXT__=Object.freeze(${safeJSON(context ?? {})});globalThis.__KEEL_VERIFICATION__=Object.freeze(${safeJSON(verification)})${closeScript}`;
+    return /<head(?:\s[^>]*)?>/iu.test(html)
+      ? html.replace(/<head(?:\s[^>]*)?>/iu, (head) => `${head}${injection}`)
+      : `<!doctype html><html><head><meta charset="utf-8">${injection}</head><body>${html}</body></html>`;
+  };
+  const launch = async () => {
+    if (items.length === 0) throw new Error("The KEEL Inline graph is empty.");
+    status.textContent = `VERIFYING ${items.length} ITEMS`;
+    const resolved = new Map<string, Uint8Array>();
+    for (const item of items) {
+      status.textContent = `VERIFYING ${item.id.toUpperCase()}`;
+      resolved.set(item.id, await resolve(item));
+    }
+    const entry = items.find((item) => item.role === "entrypoint");
+    if (entry === undefined) throw new Error("The KEEL Inline graph has no entrypoint.");
+    const aliases = new Map<string, string>();
+    for (const item of items.filter((candidate) => candidate !== entry)) {
+      const bytes = resolved.get(item.id);
+      if (bytes === undefined) throw new Error(`Resolved bytes missing for ${item.id}.`);
+      const output = /^(?:text\/|application\/(?:javascript|json))/u.test(item.mediaType)
+        ? new TextEncoder().encode(replaceAliases(decoder.decode(bytes), aliases))
+        : bytes;
+      const url = dataURL(output, item.mediaType);
+      for (const alias of item.aliases) aliases.set(alias, url);
+    }
+    const entryBytes = resolved.get(entry.id);
+    if (entryBytes === undefined) throw new Error("Resolved entrypoint bytes are missing.");
+    const verification = Object.freeze({
+      protocol: "keel-inline-verification@1",
+      state: "verified",
+      checks: Object.freeze(items.map((item) => Object.freeze({ id: item.id, digest: item.integrity.digest, byteLength: item.integrity.byteLength }))),
+    });
+    globals.__KEEL_VERIFICATION__ = verification;
+    const frame = document.createElement("iframe");
+    frame.title = "Verified KEEL work";
+    frame.sandbox.add("allow-scripts", "allow-pointer-lock");
+    frame.referrerPolicy = "no-referrer";
+    frame.srcdoc = childHTML(replaceAliases(decoder.decode(entryBytes), aliases), globals.__KEEL_CONTEXT__, verification);
+    stage.replaceChildren(frame);
+    await new Promise<void>((resolveReady, reject) => {
+      const timer = setTimeout(() => reject(new Error("Verified entrypoint timed out.")), 15_000);
+      frame.addEventListener("load", () => {
+        clearTimeout(timer);
+        resolveReady();
+      }, { once: true });
+      frame.addEventListener("error", () => {
+        clearTimeout(timer);
+        reject(new Error("Verified entrypoint failed to load."));
+      }, { once: true });
+    });
+    document.body.dataset.verification = "verified";
+    status.hidden = true;
+    proof.textContent = "KEEL VERIFIED";
+  };
+  void launch().catch((error: unknown) => {
+    const message = error instanceof Error ? error.message : String(error);
+    document.body.dataset.verification = "failed";
+    status.hidden = false;
+    status.textContent = `KEEL VERIFICATION FAILED\n${message}`;
+    proof.textContent = "KEEL REJECTED";
+  });
+}
+
+/** Build the two small reusable halves for the composable Inline lane. */
+export async function buildCompactInlineKeelShell(): Promise<{
+  readonly prefix: Uint8Array;
+  readonly suffix: Uint8Array;
+  readonly prefixIntegrity: Sha256Integrity;
+  readonly suffixIntegrity: Sha256Integrity;
+}> {
+  const runtimeBuild = await build({
+    bundle: false,
+    minify: true,
+    platform: "browser",
+    format: "iife",
+    target: ["es2022"],
+    write: false,
+    stdin: { contents: `(${compactInlineRuntime.toString()})()`, sourcefile: "keel-inline-runtime.js", loader: "js" },
+  });
+  const runtime = runtimeBuild.outputFiles[0]?.text;
+  if (runtime === undefined) throw new Error("Compact KEEL Inline runtime produced no JavaScript.");
+  const prefix = utf8ToBytes('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:," /><style>*{box-sizing:border-box}html,body,#keel-stage,iframe{width:100%;height:100%;margin:0;border:0;overflow:hidden;background:#05060b}#keel-status{position:fixed;inset:0;z-index:2;display:grid;place-items:center;white-space:pre-wrap;text-align:center;color:#d7ff63;background:#05060b;font:700 12px/1.7 ui-monospace,monospace}#keel-status[hidden]{display:none}#keel-proof{position:fixed;right:12px;bottom:12px;z-index:3;padding:6px 9px;border:1px solid #55e9ff;color:#55e9ff;background:#05060bcc;font:700 9px ui-monospace,monospace;letter-spacing:.12em}</style></head><body data-verification="pending"><div id="keel-stage"></div><div id="keel-status">VERIFYING KEEL GRAPH</div><div id="keel-proof">KEEL VERIFYING</div><script>globalThis.__KEEL_ITEMS__=[null');
+  const suffix = utf8ToBytes(`];${runtime}</script></body></html>`);
   const [prefixIntegrity, suffixIntegrity] = await Promise.all([sha256Integrity(prefix), sha256Integrity(suffix)]);
   return { prefix, suffix, prefixIntegrity, suffixIntegrity };
 }

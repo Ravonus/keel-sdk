@@ -10,6 +10,7 @@ import {
 } from "@keel/protocol";
 import { resolveArtifact } from "./resolver.js";
 import { remoteUrlAllowed, uriLocations } from "./source-policy.js";
+import { parseKeelWakeUri, verifyKeelWakeObjectRead } from "./wake-adapter.js";
 import type {
   ArtifactPresentationResult,
   FetchLike,
@@ -165,6 +166,30 @@ export async function loadArtifactManifest(
   let lastError: unknown;
 
   const load = async (): Promise<LoadedArtifactManifest> => {
+    const wake = parseKeelWakeUri(uri);
+    if (wake !== undefined) {
+      if (wake.kind !== "object") {
+        throw new TypeError("KEEL Wake chunk URIs are transport-only and cannot be used as manifest locators.");
+      }
+      const reader = options.adapters?.readWakeObject;
+      if (reader === undefined) throw new Error("KEEL Wake URI requires a readWakeObject adapter.");
+      const result = await reader({
+        chainId: wake.chainId,
+        coordinator: wake.coordinator,
+        publicationId: wake.publicationId,
+        expectedIntegrity: integrity,
+      }, controller.signal);
+      const provenance = await verifyKeelWakeObjectRead(wake, result);
+      if (result.bytes.byteLength > maxBytes) throw new RangeError(`Manifest exceeds ${maxBytes} bytes.`);
+      const loaded = await parsedManifest(result.bytes, integrity, uri, options);
+      return {
+        ...loaded,
+        commitment: {
+          ...loaded.commitment,
+          wake: provenance,
+        },
+      };
+    }
     const onchain = onchainManifestRequest(uri);
     if (onchain !== undefined) {
       const reader = options.adapters?.readOnchainObject;

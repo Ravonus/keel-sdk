@@ -74,7 +74,7 @@ export const MODULES = [
     summary: "Graph/plugin/library/module registries — the on-chain trust lattice the runtime re-derives against.",
     deps: [],
     devDeps: ["keel-market"],
-    contracts: ["KeelGraphRegistry.sol", "KeelPluginRegistry.sol", "KeelModuleReviewRegistry.sol", "KeelLibraryRegistry.sol", "interfaces/IKeelGraphRegistry.sol", "interfaces/IKeelContractPlugin.sol"],
+    contracts: ["KeelGraphRegistry.sol", "KeelPluginRegistry.sol", "KeelModuleReviewRegistry.sol", "KeelLibraryRegistry.sol", "KeelAssetTagRegistry.sol", "interfaces/IKeelGraphRegistry.sol", "interfaces/IKeelContractPlugin.sol"],
   },
   {
     id: "keel-harness",
@@ -84,7 +84,7 @@ export const MODULES = [
     summary: "Assembles viewer HTML from chunk-stored resources entirely on chain.",
     deps: ["keel-hold"],
     devDeps: [],
-    contracts: ["KeelHarnessBuilder.sol", "interfaces/IKeelHarnessBuilder.sol", "libraries/KeelHarnessContextDispatch.sol"],
+    contracts: ["KeelHarnessBuilder.sol", "interfaces/IKeelHarnessBuilder.sol", "libraries/KeelHarnessContextDispatch.sol", "libraries/KeelPreEncodedTokenURI.sol", "libraries/KeelPreparedTokenURI.sol"],
   },
   {
     id: "keel-presentation",
@@ -124,7 +124,7 @@ export const MODULES = [
     summary: "Campaign-based mint authorization: access gates, adapters, and ordered shared-allocation stages.",
     deps: ["keel-die", "keel-creator-identity"],
     devDeps: [],
-    contracts: ["KeelMintGate.sol", "OneMintController.sol", "interfaces/IKeelAccessGate.sol", "interfaces/IKeelMintAdapter.sol"],
+    contracts: ["KeelMintGate.sol", "OneMintController.sol", "OpenOneMintController.sol", "interfaces/IKeelAccessGate.sol", "interfaces/IKeelMintAdapter.sol"],
   },
   {
     id: "keel-equipment",
@@ -204,7 +204,7 @@ export const MODULES = [
     summary: "Bridged mint intents and the batcher that carries them between chains.",
     deps: ["keel-kernel", "keel-die"],
     devDeps: ["keel-anchors", "keel-artifacts", "keel-hold"],
-    contracts: ["KeelCrossChainMintBridge.sol", "KeelCarrierBatcher.sol", "KeelPublicationJob.sol"],
+    contracts: ["KeelCrossChainMintBridge.sol", "KeelCarrierBatcher.sol", "KeelHistoryPublicationJob.sol", "KeelPublicationJob.sol"],
   },
   {
     id: "keel-stake",
@@ -237,17 +237,6 @@ export const MODULES = [
     deps: ["keel-kernel", "keel-die", "keel-equipment", "keel-presentation"],
     devDeps: ["keel-creator-identity", "keel-harness", "keel-mint-access", "keel-artifacts", "keel-hold"],
     contracts: ["CoolS721.sol", "CoolSMetadataRendererV1.sol", "CoolSNoveltyLedgerV1.sol", "CoolSReleaseResolverV1.sol", "CoolSTargetTableV1.sol", "CoolSVisualRegistryV1.sol", "CoolSLocalVRFCoordinator.sol", "KeelGenerativeMintHookBase.sol", "interfaces/ICoolSReleaseResolverV1.sol", "libraries/CoolSVisualStateCodecV1.sol"],
-  },
-  {
-    id: "onchaininator",
-    external: true, // sources live in their own repository since the 2026-08-22 split
-    kind: "app",
-    group: "apps",
-    title: "Onchaininator",
-    summary: "Wrapper collection that preserves a legacy token's art and proves the preservation on chain.",
-    deps: ["keel-kernel", "keel-codecs"],
-    devDeps: ["keel-crucible", "keel-creator-identity", "keel-harness", "keel-hold"],
-    contracts: ["Onchaininator721.sol", "OnchaininatorFactory.sol", "OnchaininatorProofLedger.sol", "PreservationBounty.sol", "interfaces/IERC5192.sol"],
   },
   {
     id: "line",

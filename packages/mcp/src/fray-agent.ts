@@ -383,12 +383,12 @@ export async function prepareFrayAuctionIntake(value: unknown): Promise<unknown>
  * wallet-facing handoff. The agent token is only used for this server-to-server
  * upload; it never has wallet authority and is never returned. */
 export async function stageFrayProject(input: FrayStageProjectInput): Promise<unknown> {
-  const base = safeStudioBase(input.studioUrl ?? process.env.FRAY_STUDIO_URL ?? process.env.KEEL_STUDIO_URL);
+  const base = safeStudioBase(input.studioUrl ?? process.env.KEEL_STUDIO_URL ?? process.env.FRAY_STUDIO_URL);
   if (base === undefined) {
     return {
       schema: FRAY_AGENT_PROTOCOL,
       status: "unconfigured",
-      message: "Set FRAY_STUDIO_URL (or KEEL_STUDIO_URL) and FRAY_STUDIO_AGENT_TOKEN to stage a project in the Studio.",
+      message: "Set KEEL_STUDIO_URL and FRAY_STUDIO_AGENT_TOKEN to stage a project in the Studio. FRAY_STUDIO_URL remains a deprecated compatibility alias.",
       wallet: { signing: "not-performed", submission: "not-performed" },
     };
   }

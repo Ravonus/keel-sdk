@@ -10,6 +10,7 @@ import {
   sha256Hex,
   utf8ToBytes,
 } from "../packages/protocol/dist/index.js";
+import { prepareStudioArtifact } from "../packages/studio-core/dist/index.js";
 import {
   INITIAL_VIEWER_VERIFICATION_HOST_STATE,
   createKeelIndexPresentationReader,
@@ -41,13 +42,6 @@ import { getAddress, keccak256 } from "viem";
 import { deriveEmitterEventSeedFromIdentity, splitMix64 } from "../packages/sprite-codex/dist/index.js";
 import { baseManifest, runtimePolicy } from "./fixtures.mjs";
 
-test("viewer root exports URI source policy for application consumers", () => {
-  assert.deepEqual(
-    uriLocations("ipfs://bafy-test/metadata.json", { ipfsGateways: ["https://gateway.example/ipfs/"] }),
-    ["https://gateway.example/ipfs/bafy-test/metadata.json"],
-  );
-});
-
 test("sprite emitter identity matches the Solidity fixed-width event seed vector", async () => {
   const seed = await deriveEmitterEventSeedFromIdentity(
     { mapGenerationEpoch: 3, presetId: 9, revision: 2, eventKind: 7 },
@@ -63,6 +57,13 @@ test("sprite emitter identity matches the Solidity fixed-width event seed vector
   assert.deepEqual(
     Array.from({ length: 4 }, (_, counter) => splitMix64(seed64, counter)),
     [0x9f38b1561d0dac6dn, 0xc5df31db156ed072n, 0x256f98f112b55876n, 0x9ad36129f9147833n],
+  );
+});
+
+test("viewer root exports URI source policy for application consumers", () => {
+  assert.deepEqual(
+    uriLocations("ipfs://bafy-test/metadata.json", { ipfsGateways: ["https://gateway.example/ipfs/"] }),
+    ["https://gateway.example/ipfs/bafy-test/metadata.json"],
   );
 });
 
@@ -101,6 +102,32 @@ async function manifest() {
     fallback: { image: "image", animation: "viewer" },
   });
 }
+
+test("viewer decodes the one canonical Inline graph as its HTML entrypoint", async () => {
+  const html = '<!doctype html><html><body><main data-inline="ready">Inline</main></body></html>';
+  const inner = Buffer.from(html).toString("base64");
+  let outerRaw = `${inner}#keel-context=`;
+  while (Buffer.byteLength(outerRaw) % 3 !== 0) outerRaw += "x";
+  const graph = Buffer.from(outerRaw).toString("base64");
+  assert.doesNotMatch(graph, /=/u);
+  const entry = await inline(
+    "keel-inline-token-uri-fragment",
+    "entrypoint",
+    "application/vnd.keel.token-uri-base64-fragment",
+    graph,
+    true,
+  );
+  const image = await inline("image", "fallback", "image/svg+xml", '<svg xmlns="http://www.w3.org/2000/svg"/>');
+  const value = baseManifest([entry, image], {
+    id: "inline-graph-viewer",
+    name: "Inline graph viewer",
+    entrypoint: { resource: entry.id, mode: "html" },
+    fallback: { image: image.id, animation: entry.id },
+  });
+  const sandbox = createSandboxDocument(await resolveArtifact(value));
+  assert.match(sandbox.html, /data-inline="ready"/u);
+  assert.doesNotMatch(sandbox.html, /keel-context=/u);
+});
 
 test("stake objects gate the staked entrypoint and expose global/token counters", async () => {
   const value = await manifest();
@@ -587,7 +614,8 @@ test("declared external URLs become local verified aliases instead of runtime ne
   const sandbox = createSandboxDocument(artifact);
   assert.ok(sandbox.html.includes("data:image/svg+xml;base64,"));
   assert.ok(sandbox.html.includes(externalUrl)); // alias table only; runtime lookup is local
-  assert.ok(sandbox.csp.includes("connect-src 'none'"));
+  assert.ok(sandbox.csp.includes("connect-src blob:"));
+  assert.equal(sandbox.csp.includes("connect-src 'none' blob:"), false);
 });
 
 test("sandbox wraps doctype-only HTML so CSP cannot be skipped", async () => {
@@ -623,7 +651,8 @@ test("sandbox materializes static virtual routes and blocks all raw creator netw
   assert.ok(sandbox.html.includes("!sameDocument && !download"));
   assert.ok(sandbox.sandboxTokens.includes("allow-scripts"));
   assert.equal(sandbox.sandboxTokens.includes("allow-same-origin"), false);
-  assert.ok(sandbox.csp.includes("connect-src 'none'"));
+  assert.ok(sandbox.csp.includes("connect-src blob:"));
+  assert.equal(sandbox.csp.includes("connect-src 'none' blob:"), false);
   // Chromium removed CSP `navigate-to`; retaining it only creates a noisy
   // unsupported-directive warning. Navigation stays blocked by the iframe
   // sandbox and the guarded Navigation/Location APIs asserted above.
@@ -781,6 +810,51 @@ test("recursive KeelHold reader verifies leaf and composite objects", async () =
   const controller = new AbortController();
   const result = await reader({ chainId: 1, store: "0x1111111111111111111111111111111111111111", objectId: rootObject }, controller.signal);
   assert.equal(new TextDecoder().decode(result), "left-right");
+});
+
+test("recursive KeelHold reader falls back to verified immutable descriptors", async () => {
+  const payload = new TextEncoder().encode("legacy-pointer-reader");
+  const integrity = await createIntegrity(payload);
+  const objectId = `0x${"44".repeat(32)}`;
+  const descriptorPointer = `0x${"cc".repeat(20)}`;
+  const carrierPointer = `0x${"dd".repeat(20)}`;
+  const media = new TextEncoder().encode("text/plain");
+  const descriptor = Buffer.alloc(93 + media.length + 20);
+  descriptor.set(Buffer.from("4f434133", "hex"), 0);
+  descriptor[4] = 1;
+  descriptor.writeUInt32BE(1, 8);
+  descriptor.writeBigUInt64BE(BigInt(payload.length), 12);
+  descriptor.writeBigUInt64BE(BigInt(payload.length), 20);
+  descriptor.set(Buffer.from(integrity.digest.slice(2), "hex"), 28);
+  descriptor.set(Buffer.alloc(32, 0x11), 60);
+  descriptor[92] = media.length;
+  descriptor.set(media, 93);
+  descriptor.set(Buffer.from(carrierPointer.slice(2), "hex"), 93 + media.length);
+  const reader = createKeelHoldObjectReader({
+    async getObject() {
+      return {
+        digest: integrity.digest,
+        descriptorPointer,
+        byteLength: payload.length,
+        storedByteLength: payload.length,
+        chunkCount: 1,
+        compression: 0,
+        composite: false,
+      };
+    },
+    async getObjectSlugPointers() { throw new Error("legacy selector unavailable"); },
+    async getObjectPartIds() { throw new Error("not composite"); },
+    async getCode({ address }) {
+      return address === descriptorPointer
+        ? new Uint8Array([0, ...descriptor])
+        : new Uint8Array([0, ...payload]);
+    },
+  });
+  const result = await reader(
+    { chainId: 11155111, store: "0x1111111111111111111111111111111111111111", objectId },
+    new AbortController().signal,
+  );
+  assert.equal(new TextDecoder().decode(result), "legacy-pointer-reader");
 });
 
 test("manifest loader verifies RFC 8785 JSON and resolves relative resources", async () => {
@@ -960,11 +1034,114 @@ test("sandbox recursively materializes nested text resource references", async (
   assert.ok(css.includes("data:image/svg+xml;base64,"));
 });
 
+test("sandbox resolves creator imports through committed module file aliases", async () => {
+  const entrypoint = await inline(
+    "index.html",
+    "entrypoint",
+    "text/html",
+    '<script src="/content/p5.min.js"></script><script type="module" src="/content/sketch.js"></script>',
+    true,
+    ["/content/index.html"],
+  );
+  const p5 = await inline(
+    "module-p5-js",
+    "script",
+    "text/javascript",
+    'globalThis.p5RuntimeReady = true;',
+    true,
+    ["/content/module-p5-js", "/content/p5.min.js"],
+  );
+  const sketch = await inline(
+    "sketch.js",
+    "script",
+    "text/javascript",
+    'import { marker } from "/content/seeded-random.js"; globalThis.seedMarker = marker;',
+    true,
+    ["/content/sketch.js"],
+  );
+  const seed = await inline(
+    "module-keel-seeded-random",
+    "script",
+    "text/javascript",
+    'export const marker = "seed-alias-ok";',
+    true,
+    ["/content/module-keel-seeded-random", "/content/seeded-random.js"],
+  );
+  const value = baseManifest([entrypoint, p5, sketch, seed], {
+    id: "module-file-aliases",
+    name: "Module file aliases",
+    entrypoint: { resource: "index.html", mode: "html" },
+    fallback: { image: "index.html", animation: "index.html" },
+  });
+  const artifact = await resolveArtifact(value);
+  const route = createVerifiedContentGateway(artifact).resolve("/content/seeded-random.js");
+  assert.equal(route.status, 200);
+  assert.match(new TextDecoder().decode(route.body), /seed-alias-ok/u);
+  const sandbox = createSandboxDocument(artifact);
+  assert.match(sandbox.html, /"\/content\/seeded-random\.js":"module-keel-seeded-random"/u);
+  assert.doesNotMatch(sandbox.html, /src="\/content\//u);
+  assert.doesNotMatch(sandbox.html, /from "\/content\//u);
+  const classicScript = sandbox.html.indexOf('<script src="data:text/javascript;base64,');
+  const creatorModule = sandbox.html.indexOf('<script type="module" src="data:text/javascript;base64,');
+  assert.ok(classicScript >= 0, "the verified classic runtime must be materialized into the sandbox");
+  assert.ok(creatorModule > classicScript, "the creator module must execute after the verified classic runtime");
+});
+
 test("sandbox enables WebAssembly only when explicitly declared", async () => {
   const value = await manifest();
   value.runtime.capabilities.webAssembly = true;
   const sandbox = createSandboxDocument(await resolveArtifact(value));
   assert.ok(sandbox.csp.includes("'wasm-unsafe-eval'"));
+  assert.equal(sandbox.sandboxTokens.includes("allow-same-origin"), false);
+});
+
+test("sandbox mounts manifest-declared Flash through verified Ruffle resources without a nested SWF frame", async () => {
+  const javascript = new TextEncoder().encode("export const ready = true;");
+  const wasm = new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]);
+  const prepared = await prepareStudioArtifact({
+    id: "flash-sandbox",
+    name: "Ghost Circuit",
+    createdAt: "2026-08-26T00:00:00.000Z",
+    assets: [
+      { fileName: "GhostCircuit.swf", mediaType: "application/x-shockwave-flash", role: "original", bytes: new Uint8Array([67, 87, 83]) },
+      { fileName: "modules/ruffle-loader.js", mediaType: "text/javascript", role: "script", bytes: javascript },
+      { fileName: "modules/seeded-random.js", mediaType: "text/javascript", role: "script", bytes: javascript },
+      { fileName: "modules/flash-edition.js", mediaType: "text/javascript", role: "script", bytes: javascript },
+      { fileName: "runtime/ruffle.js", mediaType: "text/javascript", role: "script", bytes: javascript },
+      { fileName: "runtime/core-modern.js", mediaType: "text/javascript", role: "script", bytes: javascript },
+      { fileName: "runtime/core-legacy.js", mediaType: "text/javascript", role: "script", bytes: javascript },
+      { fileName: "runtime/modern.wasm", mediaType: "application/wasm", role: "script", bytes: wasm },
+      { fileName: "runtime/legacy.wasm", mediaType: "application/wasm", role: "script", bytes: wasm },
+    ],
+    flashRuntime: {
+      swfPath: "GhostCircuit.swf",
+      loaderPath: "modules/ruffle-loader.js",
+      seededRandomPath: "modules/seeded-random.js",
+      editionPath: "modules/flash-edition.js",
+      ruffleMainPath: "runtime/ruffle.js",
+      ruffleModernCorePath: "runtime/core-modern.js",
+      ruffleLegacyCorePath: "runtime/core-legacy.js",
+      ruffleModernWasmPath: "runtime/modern.wasm",
+      ruffleLegacyWasmPath: "runtime/legacy.wasm",
+      collectionSize: 111,
+    },
+  });
+  const inlineResources = prepared.resources.map((item) => ({
+    ...item.resource,
+    sources: [{ kind: "inline", data: encodeBase64(item.decodedBytes), encoding: "base64", integrity: item.decodedIntegrity }],
+  }));
+  const artifact = await resolveArtifact({ ...prepared.manifest, resources: inlineResources });
+  const entrypoint = new TextDecoder().decode(artifact.entrypoint.bytes);
+  assert.match(entrypoint, /loadModule\(/u);
+  assert.match(entrypoint, /loadModule\("modules\/ruffle-loader\.js"\)/u);
+  assert.match(entrypoint, /loadModule\("modules\/seeded-random\.js"\)/u);
+  assert.match(entrypoint, /loadModule\("modules\/flash-edition\.js"\)/u);
+  assert.doesNotMatch(entrypoint, /<iframe\b/iu);
+  const sandbox = createSandboxDocument(artifact);
+  assert.match(sandbox.html, /data-keel-flash-runtime="ruffle"/u);
+  assert.match(sandbox.csp, /frame-src 'none'/u);
+  assert.match(sandbox.csp, /'wasm-unsafe-eval'/u);
+  assert.ok(sandbox.sandboxTokens.includes("allow-scripts"));
   assert.equal(sandbox.sandboxTokens.includes("allow-same-origin"), false);
 });
 

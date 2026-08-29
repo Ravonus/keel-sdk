@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import nodeTest from "node:test";
-import { siblingTest } from "./sibling-repository.mjs";
+import { siblingTest } from "../../../../tests/sibling-repository.mjs";
 
 // These cases read the contracts test suites and the vault character contracts
 // to prove the chain gates and this consumer app still describe the same
@@ -12,9 +12,9 @@ const source=async(path)=>readFile(new URL(path,import.meta.url),"utf8");
 
 test("consumer matrix uses the canonical builder for real media and hostile verifier cases",async()=>{
   const [builder,app,index]=await Promise.all([
-    source("../apps/studio/scripts/keel-verification-consumer-fixtures.ts"),
-    source("../examples/demos/keel-verification-consumer/app.js"),
-    source("../examples/demos/keel-verification-consumer/index.html"),
+    source("../../../../apps/studio/scripts/keel-verification-consumer-fixtures.ts"),
+    source("../app.js"),
+    source("../index.html"),
   ]);
   for(const id of ["classic-script","p5","three","image","video","vault-game","creator-css-revision","token-owner-palette","staking-adapter-unconfigured","staking-update-locked","staking-controller-enabled","immutable-code-revision","custom-contract-enabled","api-verified","api-wrong-format","api-uncommitted","api-stale","integrity-tampered","verifier-api-disabled"]){
     assert.ok(builder.includes(`"${id}"`),`missing ${id}`);
@@ -54,11 +54,11 @@ test("consumer matrix uses the canonical builder for real media and hostile veri
 
 test("both chain contract gates cover revisions, staking authority, immutable code, API manifests, and permanent materialization",async()=>{
   const [evm,evmObjects,evmMint,tezos,tezosCheckpoint]=await Promise.all([
-    source("../../keel-contracts/test/modules/keel-presentation/KeelPresentationStateRegistry.t.sol"),
-    source("../../keel-contracts/test/modules/keel-artifacts/KeelArtifactRegistry.t.sol"),
-    source("../../vault-of-the-fallen/contracts/test/VaultCharacter721.t.sol"),
-    source("../packages/tezos/tests/test_keel_presentation_state.py"),
-    source("../packages/tezos/tests/test_keel_immutable_checkpoint.py"),
+    source("../../../../../keel-contracts/test/modules/keel-presentation/KeelPresentationStateRegistry.t.sol"),
+    source("../../../../../keel-contracts/test/modules/keel-artifacts/KeelArtifactRegistry.t.sol"),
+    source("../../../../../vault-of-the-fallen/contracts/test/VaultCharacter721.t.sol"),
+    source("../../../../packages/tezos/tests/test_keel_presentation_state.py"),
+    source("../../../../packages/tezos/tests/test_keel_immutable_checkpoint.py"),
   ]);
   for(const pattern of [/CreatorCssRevision/u,/ImmutableExecutable/u,/UnconfiguredPolicyMakesNoStakingClaim/u,/ConfiguredStakingAdapterCanLock/u,/ConfiguredStakingAdapterCanDelegate/u,/ApiSnapshotRequiresOracleManifestFormatAndAdvancingSequence/u,/MutableCarrierBecomesContractImmutableOnlyAfterOnchainMaterialization/u])assert.match(evm,pattern);
   assert.match(evmObjects,/ObjectLargerThanOneSlugManifestSealsThroughCompositeCheckpoints/u);
@@ -69,9 +69,9 @@ test("both chain contract gates cover revisions, staking authority, immutable co
 
 test("consumer UI caps the artwork and keeps warning dismissal separate from repair",async()=>{
   const [css,html,javascript]=await Promise.all([
-    source("../examples/demos/keel-verification-consumer/styles.css"),
-    source("../examples/demos/vault-arcade/generated-attribute-proxy/vault-keel-viewer.html"),
-    source("../examples/demos/vault-arcade/generated-attribute-proxy/vault-keel-viewer.js"),
+    source("../styles.css"),
+    source("../../vault-arcade/generated-attribute-proxy/vault-keel-viewer.html"),
+    source("../../vault-arcade/generated-attribute-proxy/vault-keel-viewer.js"),
   ]);
   assert.match(css,/max-width:\s*500px/u);
   assert.match(css,/max-height:\s*500px/u);

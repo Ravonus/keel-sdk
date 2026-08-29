@@ -1,3 +1,5 @@
+import { ABIS as keelGraphAbis } from "./abis/keel-graph.generated.js";
+
 /** Minimal human-readable ABIs suitable for viem, ethers, or code generation. */
 /** KeelFactory capability marker for the shared mint-capacity KEEL721 build. */
 export const KEEL_CAPACITY_FACTORY_VERSION =
@@ -24,6 +26,58 @@ export const keelHoldAbi = [
   "function getObjectPartIds(bytes32 objectId,uint256 offset,uint256 limit) view returns (bytes32[])",
   "event SlugCast(bytes32 indexed slugId,address indexed pointer,uint256 byteLength)",
   "event ObjectWelded(bytes32 indexed objectId,bytes32 indexed digest,bytes32 indexed indexDigest,address descriptorPointer,uint256 byteLength,uint256 storedByteLength,uint256 chunkCount,uint8 compression,bool composite,string mediaType)",
+] as const;
+
+/** One wallet approval commits a bounded publication plan; an authorized
+ * executor then advances immutable carriers and logical operations by cursor. */
+export const keelPublicationJobAbi = [
+  "function keelHold() view returns (address)",
+  "function openJob(bytes32 planDigest,address executor,uint64 deadline,bytes32[] slugDigests,bytes32[] operationDigests,address[] allowedTargets) payable returns (uint256 jobId)",
+  "function nextJobId() view returns (uint256)",
+  "function getJob(uint256 jobId) view returns ((address owner,address executor,bytes32 planDigest,uint64 deadline,uint32 slugCount,uint32 operationCount,uint32 nextSlug,uint32 nextOperation,uint256 escrow,uint256 executorPaid,bool open))",
+  "function slugDigest(uint256 jobId,uint256 index) view returns (bytes32)",
+  "function operationDigest(uint256 jobId,uint256 index) view returns (bytes32)",
+  "function MAX_OPERATION_BATCH() view returns (uint256)",
+  "function executeCarrier(uint256 jobId,bytes[] payloads)",
+  "function executeOperation(uint256 jobId,address target,uint256 value,bytes operation)",
+  "function executeOperations(uint256 jobId,address[] targets,uint256[] values,bytes[] operationData)",
+  "error InvalidOperationCount(uint256 supplied,uint256 maximum)",
+  "function fundExecutor(uint256 jobId,uint256 amount)",
+  "function completeJob(uint256 jobId)",
+  "function cancelJob(uint256 jobId)",
+  "function expireJob(uint256 jobId)",
+  "event JobOpened(uint256 indexed jobId,address indexed owner,address indexed executor,bytes32 planDigest,uint256 slugCount,uint256 operationCount,uint256 escrow,uint256 deadline)",
+  "event CarrierProgress(uint256 indexed jobId,uint256 indexed firstSlug,uint256 slugCount,uint256 nextSlug)",
+  "event OperationProgress(uint256 indexed jobId,uint256 indexed index,address indexed target,uint256 nextOperation)",
+  "event JobCompleted(uint256 indexed jobId,address indexed owner,address indexed executor,uint256 executorPayment)",
+  "event JobCancelled(uint256 indexed jobId,address indexed owner,uint256 refund)",
+] as const;
+
+/** Experimental Ethereum-history coordinator. Payload bytes remain in the
+ * transaction input; this ABI exposes only the explicit bounded control path. */
+export const keelHistoryPublicationJobAbi = [
+  "function STORAGE_MODE() view returns (bytes32)",
+  "function nextPublicationId() view returns (uint256)",
+  "function openPublication(uint256 expectedPublicationId,bytes32 storageMode,address executor,uint64 deadline,bytes32 planDigest,bytes32 decodedDigest,bytes32 storedDigest,uint64 decodedByteLength,uint64 storedByteLength,uint8 compression,bytes32 mediaTypeHash,bytes32[] chunkDigests,uint8[] batchChunkCounts) payable returns (uint256 publicationId)",
+  "function publishBatch(uint256 publicationId,bytes32 storageMode,bytes32 planDigest,uint256 batchIndex,uint256 firstChunkIndex,uint256 storedByteOffset,bytes[] payloads)",
+  "function finalizePublication(uint256 publicationId,bytes32 storageMode,bytes32 planDigest)",
+  "function rotateExecutor(uint256 publicationId,address newExecutor,uint64 newDeadline)",
+  "function fundExecutor(uint256 publicationId,uint256 amount)",
+  "function cancelPublication(uint256 publicationId)",
+  "function creditOf(address account) view returns (uint256)",
+  "function claimCredit(address recipient)",
+  "function getPublication(uint256 publicationId) view returns ((bool exists,bool completed,bool cancelled,address owner,address initialExecutor,address executor,uint64 deadline,uint256 escrow,uint256 executorPaid,bytes32 planDigest,bytes32 decodedDigest,bytes32 storedDigest,bytes32 commitmentDigest,uint64 decodedByteLength,uint64 storedByteLength,uint8 compression,bytes32 mediaTypeHash,uint32 batchCount,uint32 chunkCount,uint32 nextBatch,uint32 nextChunk,uint64 nextStoredOffset,uint64 firstPublicationBlock,uint64 finalPublicationBlock))",
+  "function chunkDigest(uint256 publicationId,uint256 index) view returns (bytes32)",
+  "function batchChunkCount(uint256 publicationId,uint256 index) view returns (uint256)",
+  "function computeCommitmentDigest(uint256 publicationId,address owner,address executor,bytes32 storageMode,bytes32 planDigest,bytes32 decodedDigest,bytes32 storedDigest,uint64 decodedByteLength,uint64 storedByteLength,uint8 compression,bytes32 mediaTypeHash,bytes32[] chunkDigests,uint8[] batchChunkCounts) view returns (bytes32)",
+  "event HistoryPublicationOpened(uint256 indexed publicationId,address indexed owner,address indexed executor,uint64 deadline,bytes32 planDigest,bytes32 storageMode,bytes32 decodedDigest,bytes32 storedDigest,bytes32 commitmentDigest,uint64 decodedByteLength,uint64 storedByteLength,uint8 compression,bytes32 mediaTypeHash,uint256 batchCount,uint256 chunkCount,uint256 escrow)",
+  "event HistoryBatchPublished(uint256 indexed publicationId,bytes32 indexed planDigest,bytes32 indexed storageMode,uint256 batchIndex,uint256 firstChunkIndex,uint256 orderedChunkCount,uint256 storedByteOffset,uint256 storedByteLength,bytes32[] chunkDigests,bytes32 calldataDigest)",
+  "event HistoryPublicationCompleted(uint256 indexed publicationId,address indexed owner,address indexed executor,bytes32 planDigest,bytes32 storageMode,bytes32 storedDigest,bytes32 decodedDigest,uint256 storedByteLength,uint256 decodedByteLength,uint256 batchCount,uint256 chunkCount,uint256 finalPublicationBlock,uint256 executorPayment)",
+  "event HistoryPublicationExecutorRotated(uint256 indexed publicationId,address indexed owner,address indexed previousExecutor,address newExecutor,uint64 newDeadline,uint256 nextBatch,uint256 nextChunk,uint256 nextStoredOffset,uint256 escrow,uint256 executorPaid)",
+  "event HistoryPublicationCancelled(uint256 indexed publicationId,address indexed owner,bytes32 planDigest,bytes32 storageMode,uint256 cancellationBlock,uint256 refund)",
+  "event HistoryExecutorFunded(uint256 indexed publicationId,address indexed executor,uint256 amount,uint256 remainingEscrow,uint256 executorPaid)",
+  "event HistoryCreditAccrued(uint256 indexed publicationId,address indexed account,uint256 amount,uint256 creditBalance)",
+  "event HistoryCreditClaimed(address indexed account,address indexed recipient,uint256 amount)",
 ] as const;
 
 /** Cross-chain portable roots pinned to one exact Keel object revision. */
@@ -333,6 +387,10 @@ export const keel721Abi = [
   "function onchainHarnessBuilder() view returns (address)",
   "function onchainHarnessDigest() view returns (bytes32)",
   "function onchainHarnessObjectId() view returns (bytes32)",
+  "function onchainTokenURIFragmentDigest() view returns (bytes32)",
+  "function onchainTokenURIFragmentObjectId() view returns (bytes32)",
+  "function preparedTokenURIPrefix() view returns (bytes)",
+  "function preparedTokenURISuffix() view returns (bytes)",
   "function ownerOf(uint256 tokenId) view returns (address)",
   "function presentationDigest(uint256 tokenId) view returns (bytes32)",
   "function presentationURI(uint256 tokenId) view returns (string)",
@@ -352,6 +410,8 @@ export const keel721Abi = [
   "function setInlineThumbnail(bool enabled)",
   "function setKeelIndex(address registry)",
   "function setOnchainHarness(address builder,bytes32 objectId,bytes32 digest)",
+  "function setPreEncodedOnchainHarness(address builder,bytes32 objectId,bytes32 digest)",
+  "function setPreparedOnchainHarness(address builder,bytes32 objectId,bytes32 digest,bytes encodedPrefix,bytes encodedSuffix)",
   "function setTokenOwnerCanEdit(bool enabled)",
   "function setTokenPresentation(uint256 tokenId,string manifestURI,bytes32 manifestDigest,string previewImageURI)",
   "function strikeFromManager(address to,uint256 quantity,bytes data)",
@@ -377,6 +437,8 @@ export const keel721Abi = [
   "event ManagerTokenStrikeData(address indexed recipient,uint256 indexed tokenId,uint256 indexed tokenIndex,bytes32 mintDataDigest)",
   "event MetadataUpdate(uint256 indexed tokenId)",
   "event OnchainHarnessUpdated(address indexed builder,bytes32 indexed objectId,bytes32 indexed digest)",
+  "event OnchainTokenURIFragmentUpdated(bytes32 indexed objectId,bytes32 indexed digest)",
+  "event PreparedTokenURIFragmentsUpdated(bytes32 indexed prefixDigest,bytes32 indexed suffixDigest)",
   "event PresentationFrozenForToken(uint256 indexed tokenId)",
   "event RoleAdminChanged(bytes32 indexed role,bytes32 indexed previousAdminRole,bytes32 indexed newAdminRole)",
   "event RoleGranted(bytes32 indexed role,address indexed account,address indexed sender)",
@@ -635,6 +697,7 @@ export const keelFactoryAbi = [
   "function dieCreationCodeHash() pure returns (bytes32)",
   "function dieConfigDigest((string name,string symbol,address admin,address royaltyReceiver,uint96 royaltyBps,uint256 maxSupply,address mintManager,address keelIndex) config) pure returns (bytes32)",
   "function dieAuthorizationDigest(address creator,address agent,uint256 nonce,uint64 deadline,bytes32 configDigest) view returns (bytes32)",
+  "function predictDieAddress((string name,string symbol,address admin,address royaltyReceiver,uint96 royaltyBps,uint256 maxSupply,address mintManager,address keelIndex) config,address creator,uint256 nonce) view returns (address predicted)",
   "function castDie((string name,string symbol,address admin,address royaltyReceiver,uint96 royaltyBps,uint256 maxSupply,address mintManager,address keelIndex) config) returns (address collection)",
   "function castDieFor(address creator,(string name,string symbol,address admin,address royaltyReceiver,uint96 royaltyBps,uint256 maxSupply,address mintManager,address keelIndex) config,uint64 deadline,uint256 nonce,bytes signature) returns (address collection)",
   "function invalidateCreatorNonce(uint256 nextNonce)",
@@ -754,6 +817,42 @@ export const keelLibraryRegistryAbi = [
   "event AccessPurchased(bytes32 indexed assetId,uint64 indexed policyVersion,address indexed account,uint256 amount,address payout)",
   "event AccessRequested(bytes32 indexed assetId,uint64 indexed policyVersion,address indexed account,bytes32 submissionDigest)",
   "event AccessRequestResolved(bytes32 indexed assetId,uint64 indexed policyVersion,address indexed account,bool approved,bytes32 decisionDigest)",
+] as const;
+
+/** Global normalized asset-tag dictionary with controller-owned canonical and
+ * account-attributed community membership bitmaps. */
+export const keelAssetTagRegistryAbi = [
+  "function MAX_COMMUNITY_ACTIVE_TAGS() view returns (uint256)",
+  "function MAX_LABEL_BYTES() view returns (uint256)",
+  "function MAX_TAG_BATCH() view returns (uint256)",
+  "function bitIndex(uint64 tagId_) pure returns (uint8)",
+  "function canonicalTagWord(bytes32 assetId,uint256 wordIndex_) view returns (uint256)",
+  "function canonicalWord(bytes32 assetId,uint256 wordIndex_) view returns (uint256)",
+  "function communityCount(bytes32 assetId,address account) view returns (uint256)",
+  "function communityTagCount(bytes32 assetId,address account) view returns (uint256)",
+  "function communityTagWord(bytes32 assetId,address account,uint256 wordIndex_) view returns (uint256)",
+  "function communityWord(bytes32 assetId,address account,uint256 wordIndex_) view returns (uint256)",
+  "function defineCanonicalTag(bytes32 assetId,string label_) returns (uint64 tagId_)",
+  "function defineCanonicalTags(bytes32 assetId,string[] labels) returns (uint64[] tagIds)",
+  "function has(bytes32 assetId,uint64 tagId_) view returns (bool)",
+  "function hasCommunityTag(bytes32 assetId,address account,uint64 tagId_) view returns (bool)",
+  "function hasTag(bytes32 assetId,uint64 tagId_) view returns (bool)",
+  "function id(string label_) view returns (uint64)",
+  "function label(uint64 tagId_) view returns (string)",
+  "function libraryRegistry() view returns (address)",
+  "function nextTagId() view returns (uint64)",
+  "function setCanonicalTags(bytes32 assetId,uint64[] tagIds,bool enabled)",
+  "function setCanonicalTagsByLabel(bytes32 assetId,string[] labels,bool enabled) returns (uint64[] tagIds)",
+  "function setCommunityTags(bytes32 assetId,uint64[] tagIds,bool enabled)",
+  "function setCommunityTagsByLabel(bytes32 assetId,string[] labels,bool enabled) returns (uint64[] tagIds)",
+  "function tagId(string label_) view returns (uint64)",
+  "function tagIdFor(string label_) view returns (uint64)",
+  "function tagLabel(uint64 tagId_) view returns (string)",
+  "function word(bytes32 assetId,uint256 wordIndex_) view returns (uint256)",
+  "function wordIndex(uint64 tagId_) pure returns (uint256)",
+  "event CanonicalTagUpdated(bytes32 indexed assetId,uint64 indexed tagId,bool enabled,address indexed actor)",
+  "event CommunityTagUpdated(bytes32 indexed assetId,address indexed account,uint64 indexed tagId,bool enabled)",
+  "event TagDefined(uint64 indexed tagId,bytes32 indexed labelHash,string label,address indexed actor)",
 ] as const;
 
 /** Permissionless plugin submission plus exact, digest-scoped trust review. */
@@ -1657,7 +1756,12 @@ export const keelManagerAbi = [
 
 /** The proof ladder behind a wrapped token, including how its viewer document
  * gets the artwork it renders. `viewerCarriage` is read from the viewer
- * composite's own part list, not from anything the document claims. */
+ * composite's own part list, not from anything the document claims.
+ *
+ * The Onchaininator ships from its own repository and vendors its own ABIs.
+ * This copy is not that inventory: it is the shape Studio's read relay decodes
+ * with, paired with `keelDirectReadPolicy["onchaininator-proof-ledger"]`, and
+ * it stays here because the relay is Keel's. */
 export const onchaininatorProofLedgerAbi = [
   "function viewerCarriage(address wrapper,uint256 tokenId) view returns (uint8)",
   "function viewerOf(address wrapper,uint256 tokenId) view returns (bytes32 objectId,bytes32 digest)",
@@ -1669,8 +1773,7 @@ export const onchaininatorProofLedgerAbi = [
   "function projectedReadGas(uint256 artworkBytes) pure returns (uint256)",
 ] as const;
 
-/** @deprecated Use {@link onchaininatorProofLedgerAbi}. */
-export const keelBackpackProofLedgerAbi = onchaininatorProofLedgerAbi;
+export const keelModuleReviewRegistryAbi = keelGraphAbis.KeelModuleReviewRegistry;
 
 export const keelCreatorProfileRegistryAbi = [
   "function CREATOR_ID_DOMAIN() view returns (bytes32)",

@@ -95,7 +95,30 @@ export interface RecursiveCompositeObjectPlan {
   readonly parts: readonly string[];
 }
 
-export type RecursiveObjectPlan = RecursiveLeafObjectPlan | RecursiveCompositeObjectPlan;
+/**
+ * An immutable object that is already present in the selected KeelHold.
+ *
+ * Referenced objects contribute bytes to an ordered composite, but contribute
+ * no carrier payload and no weld operation to this publication. A publisher
+ * must verify every field against the selected chain before requesting a
+ * wallet action; this record is never permission to trust an arbitrary ID.
+ */
+export interface RecursiveExistingObjectPlan {
+  readonly id: string;
+  readonly kind: "existing";
+  readonly level: 0;
+  readonly byteOffset: number;
+  readonly byteLength: number;
+  readonly storedByteLength: number;
+  readonly mediaType: string;
+  readonly compression: Compression;
+  readonly integrity: Integrity;
+  readonly chainId: number;
+  readonly store: `0x${string}`;
+  readonly objectId: `0x${string}`;
+}
+
+export type RecursiveObjectPlan = RecursiveLeafObjectPlan | RecursiveCompositeObjectPlan | RecursiveExistingObjectPlan;
 
 export interface RecursiveUploadPlan {
   readonly schema: "keel-recursive-upload-plan@2";

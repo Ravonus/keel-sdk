@@ -1,0 +1,8 @@
+{
+  "name": "@keel/example-agent-p5-project",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/project.test.mjs"
+  }
+}

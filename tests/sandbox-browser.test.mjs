@@ -14,7 +14,8 @@ test("browser sandbox prepares HTML entirely in memory through the production vi
 
   assert.equal(result.report.valid, true);
   assert.match(result.manifestIntegrity.digest, /^0x[0-9a-f]{64}$/u);
-  assert.match(result.sandbox.csp, /connect-src 'none'/u);
+  assert.match(result.sandbox.csp, /connect-src blob:/u);
+  assert.doesNotMatch(result.sandbox.csp, /connect-src 'none' blob:/u);
   assert.equal(result.sandbox.sandboxTokens.includes("allow-same-origin"), false);
   assert.equal(result.manifest.extensions?.sandbox?.persistence, "none");
   assert.equal(result.manifest.extensions?.sandbox?.networkWrites, false);

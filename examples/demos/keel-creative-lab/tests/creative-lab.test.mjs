@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-const root = new URL("../examples/demos/keel-creative-lab/", import.meta.url);
+const root = new URL("../", import.meta.url);
 const source = async (name) => readFile(new URL(name, root), "utf8");
 
 test("Creative Lab edge matrix binds real compact and hybrid image bytes", async () => {
@@ -113,13 +113,13 @@ test("Creative Lab release contract keeps preview controls separate from tracked
 
 test("Standalone Viewer Builder commits recursive and ordered URL delivery without route magic", async () => {
   const [builder, runtime, seeder, readme, gatewayRoute] = await Promise.all([
-    readFile(new URL("../packages/sdk/src/verification-shell.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../../../packages/sdk/src/verification-shell.ts", import.meta.url), "utf8"),
     source("keel-verifier-runtime.js"),
-    readFile(new URL("../apps/studio/scripts/seed-keel-creative-lab.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../../../../keel-site/apps/studio/scripts/seed-keel-creative-lab.ts", import.meta.url), "utf8"),
     source("README.md"),
-    readFile(new URL("../apps/studio/src/app/api/onchain/[chainId]/[store]/[objectId]/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../../../../keel-site/apps/studio/src/app/api/onchain/[chainId]/[store]/[objectId]/route.ts", import.meta.url), "utf8"),
   ]);
-  const studioBuilder = await readFile(new URL("../apps/studio/scripts/keel-viewer-builder.ts", import.meta.url), "utf8");
+  const studioBuilder = await readFile(new URL("../../../../../keel-site/apps/studio/scripts/keel-viewer-builder.ts", import.meta.url), "utf8");
   assert.match(studioBuilder, /@keel\/sdk\/verification-shell/u);
   assert.match(builder, /deliveryProfile: "onchain-recursive" \| "ordered-url"/u);
   assert.match(builder, /Every ordered URL viewer item requires at least one committed source/u);
@@ -151,8 +151,8 @@ test("Standalone Viewer Builder commits recursive and ordered URL delivery witho
 
 test("both chain viewers refuse to invent a receipt for an unsupported contract API", async () => {
   const [ethereumViewer, tezosViewer] = await Promise.all([
-    readFile(new URL("../examples/demos/vault-arcade/generated-attribute-proxy/vault-keel-viewer.js", import.meta.url), "utf8"),
-    readFile(new URL("../packages/tezos/viewer/runtime.js", import.meta.url), "utf8"),
+    readFile(new URL("../../vault-arcade/generated-attribute-proxy/vault-keel-viewer.js", import.meta.url), "utf8"),
+    readFile(new URL("../../../../packages/tezos/viewer/runtime.js", import.meta.url), "utf8"),
   ]);
   assert.match(ethereumViewer, /did not enable a supported Keel verifier API/u);
   assert.match(ethereumViewer, /no verifier receipt is being claimed/u);

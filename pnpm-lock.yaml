@@ -169,6 +169,9 @@ importers:
       esbuild:
         specifier: 0.28.2
         version: 0.28.2
+      viem:
+        specifier: ^2.38.0
+        version: 2.55.19(typescript@5.9.3)
     devDependencies:
       '@types/node':
         specifier: ^22.15.0

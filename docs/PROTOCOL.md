@@ -67,6 +67,13 @@ Supported roles include entrypoint, fallback, preview, original, script, style, 
 
 Bytes are encoded as UTF-8, Base64, or Base64URL and may be compressed. Integrity is mandatory.
 
+This is an **inline resource source** inside a manifest. It is not the same
+thing as the **Inline presentation mode** used by an NFT `animation_url`. A
+manifest may contain inline resource sources while its collector presentation
+is Hybrid, and an Inline presentation may assemble reusable onchain resource
+objects rather than copying them into the manifest. See
+[`KEEL_PRESENTATION.md`](./KEEL_PRESENTATION.md).
+
 ### URI
 
 A URI may be:

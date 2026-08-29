@@ -43,6 +43,13 @@ import { mountAsset, backdropPath } from "../keel-asset-view.js";
    * and shows what the explorer would have shown. Same source of truth, no
    * third party, and it works inside the sandbox marketplaces impose.
    */
+  /**
+   * Which chain family this token lives on. Absent means Ethereum, because
+   * every document sealed before Tezos existed carries no such field and must
+   * keep reading exactly as it did.
+   */
+  const FAMILY = C.family === "tezos" ? "tezos" : "ethereum";
+
   const SEL = { name: "0x06fdde03", symbol: "0x95d89b41", ownerOf: "0x6352211e",
     tokenURI: "0xc87b56dd", getObject: "0x05144857", custodyOf: "0x65269e47" };
   const word = (v) => v.replace(/^0x/, "").padStart(64, "0");
@@ -50,6 +57,48 @@ import { mountAsset, backdropPath } from "../keel-asset-view.js";
     !RPC ? Promise.resolve(null) : fetch(RPC, { method: "POST", headers: { "content-type": "application/json" },
       body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to, data }, "latest"] }) })
       .then((r) => r.json()).then((j) => (j.error ? null : j.result));
+
+  /**
+   * A Tezos on-chain view, read the way the DON verifiers read one.
+   *
+   * `run_script_view` is the only shape of read this document can make on
+   * Tezos without help. Storage is reachable too, but a big_map value is keyed
+   * by the hash of its packed key, and packing plus blake2b is more machinery
+   * than a sealed document should carry. Views need none of it.
+   */
+  const view = (contract, name, input) =>
+    !RPC ? Promise.resolve(null) : fetch(
+      `${RPC.replace(/\/$/, "")}/chains/main/blocks/head/helpers/scripts/run_script_view`,
+      { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ contract, view: name, input,
+          chain_id: C.chainId ?? undefined, unparsing_mode: "Readable" }) })
+      .then((r) => (r.ok ? r.json() : null)).then((j) => (j && j.data !== undefined ? j.data : null))
+      .catch(() => null);
+
+  /**
+   * Flatten a right-combed Micheline record into positional fields.
+   *
+   * SmartPy lays a record out as nested pairs, so field five of nine is five
+   * `Pair`s deep. Flattening once and indexing by position is the smallest
+   * thing that reads one reliably, and it fails to `null` rather than throwing
+   * on a shape it did not expect — a panel that says nothing beats a panel
+   * that says something wrong.
+   */
+  const flat = (node, out = []) => {
+    if (!node || typeof node !== "object") return out;
+    if (Array.isArray(node)) { node.forEach((n) => flat(n, out)); return out; }
+    if (node.prim === "Pair" && Array.isArray(node.args)) { node.args.forEach((a) => flat(a, out)); return out; }
+    out.push(node);
+    return out;
+  };
+  const mBytes = (n) => (n && typeof n.bytes === "string" ? n.bytes : null);
+  const mInt = (n) => (n && typeof n.int === "string" ? BigInt(n.int) : null);
+  const utf8 = (hex) => {
+    if (!hex) return null;
+    try {
+      return new TextDecoder().decode(Uint8Array.from(hex.match(/../g) || [], (b) => parseInt(b, 16)));
+    } catch { return null; }
+  };
   const decodeString = (hex) => {
     // ABI string: offset word, length word, then the bytes. Decoded with
     // TextDecoder rather than decodeURIComponent, which throws on anything that
@@ -231,37 +280,96 @@ import { mountAsset, backdropPath } from "../keel-asset-view.js";
     title: "Original collection",
     load: async () => {
       const a = C.underlying;
-      const [nm, sym, owner, uri] = await Promise.all([
-        call(a, SEL.name), call(a, SEL.symbol),
-        call(a, SEL.ownerOf + word(BigInt(C.tokenId || 0).toString(16))),
-        call(a, SEL.tokenURI + word(BigInt(C.tokenId || 0).toString(16))),
+      const id = BigInt(C.tokenId || 0);
+      const rows = [row("Address", a, scan(`/address/${a}`))];
+
+      if (FAMILY === "ethereum") {
+        const [nm, sym, owner, uri] = await Promise.all([
+          call(a, SEL.name), call(a, SEL.symbol),
+          call(a, SEL.ownerOf + word(id.toString(16))),
+          call(a, SEL.tokenURI + word(id.toString(16))),
+        ]);
+        const route = decodeString(uri);
+        rows.push(
+          row("Name", decodeString(nm) ?? "—", null, false),
+          row("Symbol", decodeString(sym) ?? "—", null, false),
+          row("Holder of #" + C.tokenId, short(decodeAddress(owner) ?? "—", 8)),
+          row("Route", route ?? "—", null, false),
+          row("Route kind", route?.startsWith("ipfs://") ? "IPFS · content-addressed" : route ? "location" : "—", null, false),
+        );
+        return rows;
+      }
+
+      // Tezos. Two differences, and both are honest rather than reduced.
+      //
+      // There is no name or symbol to read: FA2 keeps them in a TZIP-16
+      // metadata big_map, and a big_map value is keyed by the hash of its
+      // packed key, which this document cannot compute. Saying "—" is the
+      // truthful answer; guessing from a third-party indexer would not be.
+      //
+      // And custody is asked the only way it can be. There is no reverse
+      // lookup from a token to its holder, so the question becomes "does the
+      // wrapper hold it", which is the question that actually matters and the
+      // same one the wrapper's own transfer gate asks.
+      const key = { prim: "Pair", args: [{ string: C.backpack }, { int: id.toString() }] };
+      const [balance, pointer] = await Promise.all([
+        view(a, "get_balance", key),
+        C.ledger ? view(C.ledger, "pointer_of", key) : Promise.resolve(null),
       ]);
-      const route = decodeString(uri);
-      return [
-        row("Address", a, scan(`/address/${a}`)),
-        row("Name", decodeString(nm) ?? "—", null, false),
-        row("Symbol", decodeString(sym) ?? "—", null, false),
-        row("Holder of #" + C.tokenId, short(decodeAddress(owner) ?? "—", 8)),
+      const held_ = balance === null ? null : (mInt(balance) ?? 0n) > 0n;
+      const route = pointer ? utf8(mBytes(flat(pointer)[1])) : null;
+      rows.push(
+        row("Name", "—", null, false),
+        row("Symbol", "—", null, false),
+        row("Held by wrapper",
+          held_ === null ? "— · the collection publishes no balance view" : held_ ? "yes" : "no",
+          null, false),
         row("Route", route ?? "—", null, false),
-        row("Route kind", route?.startsWith("ipfs://") ? "IPFS · content-addressed" : route ? "location" : "—", null, false),
-      ];
+        row("Route kind",
+          route?.startsWith("ipfs://") ? "IPFS · content-addressed"
+            : route?.startsWith("onchfs://") ? "ONCHFS · content-addressed"
+              : route ? "location" : "—", null, false),
+        // Where the route came from, which differs from the EVM lane and
+        // matters: this is the pointer the ladder was proven against, recorded
+        // at the level it was read, not a fresh read that may have moved since.
+        row("Route source", pointer ? `ledger observation · level ${mInt(flat(pointer)[2]) ?? "?"}` : "—", null, false),
+      );
+      return rows;
     },
   });
 
-  /** The stored bytes, as KeelHold records them. */
+  /** The stored bytes, as Keel records them. */
   const inspectObject = (id, title) => ({
     title,
     load: async () => {
-      const raw = await call(C.keelHold, SEL.getObject + word(id));
-      if (!raw) return [row("Object", id), row("Status", "unreadable", null, false)];
-      // ObjectRecord: digest, indexDigest, pointer, byteLength, storedByteLength, chunkCount, …
-      const hex = raw;
+      if (FAMILY === "ethereum") {
+        const hex = await call(C.keelHold, SEL.getObject + word(id));
+        if (!hex) return [row("Object", id), row("Status", "unreadable", null, false)];
+        // ObjectRecord: digest, indexDigest, pointer, byteLength, storedByteLength, chunkCount, …
+        return [
+          row("Object id", id),
+          row("Digest (sha256)", `0x${hex.slice(2, 66)}`),
+          row("Byte length", uintAt(hex, 3).toLocaleString() + " B", null, false),
+          row("Chunks", uintAt(hex, 5).toString(), null, false),
+          row("Store", C.keelHold, scan(`/address/${C.keelHold}`)),
+          row("Mutability", "immutable · content-addressed", null, false),
+        ];
+      }
+
+      // Tezos. `get_keel_object` returns the same facts under different names,
+      // laid out as a right-combed record: file_cid, manifest, manifest_sha256,
+      // stored_sha256, stored_byte_length, decoded_sha256, decoded_byte_length,
+      // media_type, compression.
+      const record = await view(C.keelHold, "get_keel_object", { bytes: id.replace(/^0x/, "") });
+      if (!record) return [row("Object", id), row("Status", "unreadable", null, false)];
+      const f = flat(record);
+      const length = mInt(f[4]);
       return [
         row("Object id", id),
-        row("Digest (sha256)", `0x${hex.slice(2, 66)}`),
-        row("Byte length", uintAt(hex, 3).toLocaleString() + " B", null, false),
-        row("Chunks", uintAt(hex, 5).toString(), null, false),
-        row("Store", C.keelHold, scan(`/address/${C.keelHold}`)),
+        row("Digest (sha256)", `0x${mBytes(f[3]) ?? "—"}`),
+        row("Byte length", length === null ? "—" : length.toLocaleString() + " B", null, false),
+        row("Media type", utf8(mBytes(f[7])) ?? "—", null, false),
+        row("Store", C.keelHold, scan(`/${C.keelHold}`)),
         row("Mutability", "immutable · content-addressed", null, false),
       ];
     },

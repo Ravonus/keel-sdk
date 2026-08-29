@@ -61,6 +61,27 @@ test("studio-core creates safe names and compression summaries", () => {
   assert.equal(entrypointModeForMediaType("video/mp4"), "video");
 });
 
+test("canonical Inline graph is the entrypoint and never generates a replacement index.html", async () => {
+  const graph = new TextEncoder().encode("QUJDREVGRw");
+  const prepared = await prepareStudioArtifact({
+    id: "canonical-inline-entry",
+    name: "Canonical Inline",
+    createdAt: "2026-08-28T00:00:00.000Z",
+    assets: [{
+      id: "keel-inline-token-uri-fragment",
+      fileName: "keel-inline-token-uri.fragment",
+      mediaType: "application/vnd.keel.token-uri-base64-fragment",
+      role: "entrypoint",
+      executable: true,
+      entrypoint: true,
+      bytes: graph,
+    }],
+  });
+  assert.equal(prepared.manifest.entrypoint.resource, "keel-inline-token-uri-fragment");
+  assert.equal(prepared.manifest.entrypoint.mode, "html");
+  assert.equal(prepared.resources.some((resource) => resource.fileName === "index.html"), false);
+});
+
 test("studio-core wrapper uses virtual content paths only", () => {
   const html = createArtifactWrapper({
     title: "Study",
@@ -87,6 +108,62 @@ test("ordinary Keel modules select the creator media renderer without owning ver
     assert.match(child, expected);
     assert.doesNotMatch(child, /keel-proof-toggle|Keel verification shell|ON-CHAIN VERIFIED/u);
   }
+});
+
+test("SWF-only projects fail closed with a Ruffle requirement instead of a blocked nested frame", () => {
+  const html = createGeneratedWrapper({
+    name: "Ghost Circuit",
+    resourceId: "ghost-circuit-swf",
+    mediaType: "application/x-shockwave-flash",
+    mode: "html",
+    downloads: true,
+  });
+  assert.match(html, /Ruffle runtime required/u);
+  assert.match(html, /data-keel-flash-runtime="missing"/u);
+  assert.doesNotMatch(html, /<iframe\b/iu);
+});
+
+test("manifest-declared Flash runtime generates an in-sandbox Ruffle entrypoint", async () => {
+  const javascript = new TextEncoder().encode("export const ready = true;");
+  const wasm = new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]);
+  const prepared = await prepareStudioArtifact({
+    id: "flash-runtime",
+    name: "Ghost Circuit",
+    createdAt: "2026-08-26T00:00:00.000Z",
+    assets: [
+      { fileName: "GhostCircuit.swf", mediaType: "application/x-shockwave-flash", role: "original", bytes: new Uint8Array([67, 87, 83]) },
+      { fileName: "modules/ruffle-loader.js", mediaType: "text/javascript", role: "script", bytes: javascript },
+      { fileName: "modules/seeded-random.js", mediaType: "text/javascript", role: "script", bytes: javascript },
+      { fileName: "modules/flash-edition.js", mediaType: "text/javascript", role: "script", bytes: javascript },
+      { fileName: "runtime/ruffle.js", mediaType: "text/javascript", role: "script", bytes: javascript },
+      { fileName: "runtime/core-modern.js", mediaType: "text/javascript", role: "script", bytes: javascript },
+      { fileName: "runtime/core-legacy.js", mediaType: "text/javascript", role: "script", bytes: javascript },
+      { fileName: "runtime/modern.wasm", mediaType: "application/wasm", role: "script", bytes: wasm },
+      { fileName: "runtime/legacy.wasm", mediaType: "application/wasm", role: "script", bytes: wasm },
+    ],
+    flashRuntime: {
+      swfPath: "GhostCircuit.swf",
+      loaderPath: "modules/ruffle-loader.js",
+      seededRandomPath: "modules/seeded-random.js",
+      editionPath: "modules/flash-edition.js",
+      ruffleMainPath: "runtime/ruffle.js",
+      ruffleModernCorePath: "runtime/core-modern.js",
+      ruffleLegacyCorePath: "runtime/core-legacy.js",
+      ruffleModernWasmPath: "runtime/modern.wasm",
+      ruffleLegacyWasmPath: "runtime/legacy.wasm",
+      collectionSize: 111,
+      previewRootSeed: `0x${"11".repeat(32)}`,
+    },
+  });
+  const entrypoint = prepared.resources.find((resource) => resource.resource.role === "entrypoint");
+  const source = new TextDecoder().decode(entrypoint.decodedBytes);
+  assert.match(source, /createRuffleLoader/u);
+  assert.match(source, /data-keel-flash-runtime="ruffle"/u);
+  assert.doesNotMatch(source, /<iframe\b/iu);
+  assert.equal(prepared.manifest.extensions["keel:flash"].protocol, "keel-flash@1");
+  assert.equal(prepared.manifest.extensions["keel:flash"].collectionSize, 111);
+  assert.equal(prepared.manifest.runtime.capabilities.webAssembly, true);
+  assert.equal((await verifyPreparedStudioArtifact(prepared)).valid, true);
 });
 
 test("studio-core emits a valid strict manifest", async () => {
@@ -140,6 +217,70 @@ test("studio-core emits a valid strict manifest", async () => {
   assert.deepEqual(manifest.attributions.map((entry) => entry.tag), ["artist", "engineer"]);
 });
 
+test("studio-core requires a verified image fallback for an HTML entrypoint", async () => {
+  const integrity = await createIntegrity(bytes);
+  await assert.rejects(
+    () => buildStudioManifest({
+      id: "html-without-preview",
+      name: "HTML without preview",
+      createdAt: "2026-08-27T00:00:00.000Z",
+      entrypointResourceId: "entrypoint",
+      entrypointMode: "html",
+      resources: [{
+        id: "entrypoint",
+        role: "entrypoint",
+        mediaType: "text/html",
+        integrity,
+        executable: true,
+        uri: "./content/entrypoint",
+      }],
+    }),
+    /requires a verified image fallback/iu,
+  );
+});
+
+test("studio-core rejects an explicit non-image fallback", async () => {
+  const integrity = await createIntegrity(bytes);
+  await assert.rejects(
+    () => buildStudioManifest({
+      id: "html-as-preview",
+      name: "HTML as preview",
+      createdAt: "2026-08-27T00:00:00.000Z",
+      entrypointResourceId: "entrypoint",
+      entrypointMode: "html",
+      fallbackImageResourceId: "entrypoint",
+      resources: [{
+        id: "entrypoint",
+        role: "entrypoint",
+        mediaType: "text/html",
+        integrity,
+        executable: true,
+        uri: "./content/entrypoint",
+      }],
+    }),
+    /not an image media type/iu,
+  );
+});
+
+test("studio-core uses an image entrypoint as its own fallback", async () => {
+  const integrity = await createIntegrity(bytes);
+  const { manifest } = await buildStudioManifest({
+    id: "image-only",
+    name: "Image only",
+    createdAt: "2026-08-27T00:00:00.000Z",
+    entrypointResourceId: "image",
+    entrypointMode: "image",
+    resources: [{
+      id: "image",
+      role: "image",
+      mediaType: "image/png",
+      integrity,
+      uri: "./content/image",
+    }],
+  });
+  assert.equal(manifest.fallback.image, "image");
+});
+
 test("studio-core detects parent-hash reorgs", () => {
   const hashA = `0x${"11".repeat(32)}`;
   const hashB = `0x${"22".repeat(32)}`;
@@ -173,6 +314,8 @@ test("studio-core prepares and verifies exact decoded and compressed bytes", asy
   assert.equal(prepared.manifest.attributions[0].tag, "contributor");
   assert.deepEqual(prepared.manifest.runtime.determinism, { mode: "live" });
   assert.equal(prepared.stats.resourceCount, 2);
+  const originalResource = prepared.resources.find((resource) => resource.fileName === "original.txt");
+  assert.deepEqual(originalResource.resource.aliases, ["/content/original.txt"]);
   assert.ok(prepared.stats.storedByteLength < prepared.stats.decodedByteLength);
   assert.equal((await verifyPreparedStudioArtifact(prepared)).valid, true);
 
@@ -187,6 +330,96 @@ test("studio-core prepares and verifies exact decoded and compressed bytes", asy
   const verification = await verifyPreparedStudioArtifact(corrupt);
   assert.equal(verification.valid, false);
   assert.equal(verification.resourcesValid, false);
+});
+
+test("studio-core keeps the HTML entrypoint contract-readable for inline presentation", async () => {
+  const prepared = await prepareStudioArtifact({
+    id: "inline-contract-readable",
+    name: "Inline contract readable",
+    createdAt: "2026-08-27T00:00:00.000Z",
+    assets: [{
+      fileName: "index.html",
+      mediaType: "text/html",
+      role: "entrypoint",
+      executable: true,
+      entrypoint: true,
+      bytes: new TextEncoder().encode("<!doctype html><script>document.body.textContent='keel';</script>"),
+    }],
+  });
+  const entrypoint = prepared.resources.find((resource) => resource.fileName === "index.html");
+  assert.equal(entrypoint.compression, "none");
+  assert.deepEqual(entrypoint.storedBytes, entrypoint.decodedBytes);
+  assert.equal((await verifyPreparedStudioArtifact(prepared)).valid, true);
+});
+
+test("studio-core exposes both stable IDs and real file paths to verified viewers", async () => {
+  const prepared = await prepareStudioArtifact({
+    id: "module-aliases",
+    name: "Module aliases",
+    createdAt: "2026-08-26T00:00:00.000Z",
+    assets: [{
+      id: "module-keel-seeded-random",
+      fileName: "seeded-random.js",
+      mediaType: "text/javascript",
+      role: "script",
+      executable: true,
+      bytes: new TextEncoder().encode("export const seeded = true;"),
+    }],
+  });
+  const moduleResource = prepared.resources.find((resource) => resource.fileName === "seeded-random.js");
+  assert.deepEqual(moduleResource.resource.aliases, [
+    "/content/module-keel-seeded-random",
+    "/content/seeded-random.js",
+  ]);
+  assert.equal((await verifyPreparedStudioArtifact(prepared)).valid, true);
+});
+
+test("studio-core can explicitly prepare a frozen immutable 1/1 artifact", async () => {
+  const prepared = await prepareStudioArtifact({
+    id: "immutable-three-one",
+    name: "Immutable Three One",
+    createdAt: "2026-08-24T00:00:00.000Z",
+    immutable: true,
+    assets: [{
+      fileName: "index.html",
+      mediaType: "text/html",
+      role: "entrypoint",
+      entrypoint: true,
+      executable: true,
+      bytes: new TextEncoder().encode("<canvas></canvas>"),
+    }],
+  });
+
+  assert.equal(prepared.manifest.revision.number, 1);
+  assert.deepEqual(prepared.manifest.revision.compatibility, { min: 1, max: 1 });
+  assert.equal(prepared.manifest.revision.policy, "immutable");
+  assert.equal(prepared.manifest.revision.frozen, true);
+  assert.equal((await verifyPreparedStudioArtifact(prepared)).valid, true);
+});
+
+test("studio-core keeps the existing creator revision default when immutable is omitted", async () => {
+  const prepared = await prepareStudioArtifact({
+    id: "mutable-default",
+    name: "Mutable default",
+    createdAt: "2026-08-24T00:00:00.000Z",
+    assets: [{ fileName: "index.html", mediaType: "text/html", role: "entrypoint", entrypoint: true, bytes: new TextEncoder().encode("<canvas></canvas>") }],
+  });
+
+  assert.equal(prepared.manifest.revision.policy, "creator");
+  assert.equal(prepared.manifest.revision.frozen, undefined);
+});
+
+test("studio-core rejects immutable revisions other than the canonical 1/1 shape", async () => {
+  await assert.rejects(
+    () => prepareStudioArtifact({
+      id: "immutable-revision-two",
+      name: "Invalid immutable revision",
+      revision: 2,
+      immutable: true,
+      assets: [{ fileName: "index.html", mediaType: "text/html", role: "entrypoint", entrypoint: true, bytes: new TextEncoder().encode("<canvas></canvas>") }],
+    }),
+    /immutable artifacts must use revision 1/iu,
+  );
 });
 
 test("studio-core automatically packs a complete OBJKT ZIP from resolved Keel resources", async () => {
@@ -253,6 +486,87 @@ test("studio-core rejects uncommitted insecure remote transports", async () => {
     }),
     /credential-free HTTPS/u,
   );
+});
+
+test("generated composite entrypoints omit the fictional local file source", async () => {
+  const shellBytes = new TextEncoder().encode("<shell>");
+  const creatorBytes = new TextEncoder().encode("creator");
+  const rootBytes = new Uint8Array([...shellBytes, ...creatorBytes]);
+  const [shellIntegrity, creatorIntegrity, rootIntegrity] = await Promise.all([
+    createIntegrity(shellBytes),
+    createIntegrity(creatorBytes),
+    createIntegrity(rootBytes),
+  ]);
+  const prepared = await prepareStudioArtifact({
+    id: "canonical-shell-composite",
+    name: "Canonical shell composite",
+    assets: [
+      {
+        id: "keel-shell",
+        fileName: "keel-shell.fragment",
+        mediaType: "application/json",
+        role: "library",
+        executable: false,
+        bytes: shellBytes,
+        sourceMode: "additional-only",
+        additionalSources: [{
+          kind: "onchain",
+          chainId: 11_155_111,
+          store: `0x${"11".repeat(20)}`,
+          objectId: `0x${"22".repeat(32)}`,
+          integrity: shellIntegrity,
+        }],
+      },
+      {
+        id: "creator-entry",
+        fileName: "creator-entry.fragment",
+        mediaType: "application/json",
+        role: "script",
+        executable: false,
+        bytes: creatorBytes,
+      },
+      {
+        id: "keel-viewer-root",
+        fileName: "keel-viewer-root.html",
+        mediaType: "text/html",
+        role: "entrypoint",
+        entrypoint: true,
+        executable: true,
+        bytes: rootBytes,
+        sourceMode: "additional-only",
+        additionalSources: [{
+          kind: "composite",
+          parts: ["keel-shell", "creator-entry"],
+          integrity: rootIntegrity,
+        }],
+      },
+    ],
+  });
+  assert.deepEqual(prepared.manifest.resources.find((resource) => resource.id === "keel-shell")?.sources.map((source) => source.kind), ["onchain"]);
+  assert.deepEqual(prepared.manifest.resources.find((resource) => resource.id === "keel-viewer-root")?.sources.map((source) => source.kind), ["composite"]);
+  assert.equal(prepared.manifest.resources.some((resource) => resource.sources.some((source) => source.kind === "uri" && source.uri.endsWith("keel-viewer-root.html"))), false);
+});
+
+test("pre-encoded tokenURI fragments remain exact uncompressed contract-readable bytes", async () => {
+  const bytes = new TextEncoder().encode("QUJD".repeat(512));
+  const prepared = await prepareStudioArtifact({
+    id: "prepared-token-uri-fragment",
+    name: "Prepared token URI fragment",
+    createdAt: "2026-08-27T00:00:00.000Z",
+    assets: [{
+      id: "keel-inline-token-uri-fragment",
+      fileName: "keel-inline-token-uri.fragment",
+      mediaType: "application/vnd.keel.token-uri-base64-fragment",
+      role: "data",
+      executable: false,
+      bytes,
+    }],
+  });
+  const fragment = prepared.resources.find((resource) => resource.resource.id === "keel-inline-token-uri-fragment");
+  assert.ok(fragment);
+  assert.equal(fragment.compression, "none");
+  assert.deepEqual(fragment.storedBytes, bytes);
+  assert.equal(fragment.storedIntegrity.digest, fragment.decodedIntegrity.digest);
 });
 
 test("Keel stores an independently compressed module graph and materializes a directory without ZIP", async () => {

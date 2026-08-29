@@ -1,4 +1,4 @@
-import { assertValidManifest } from "./validate.js";
+import { RESOURCE_ROLES, assertValidManifest } from "./validate.js";
 import { assertValidKeelMediaDerivative, type KeelMediaDerivative } from "./keel-hold.js";
 import { assertValidKeelStakeObject, type KeelStakeObject } from "./stake-object.js";
 import {
@@ -119,27 +119,7 @@ function source(value: unknown, path: string): void {
 function resource(value: unknown, path: string): void {
   const data = object(value, path);
   string(data.id, `${path}.id`);
-  oneOf(
-    data.role,
-    [
-      "entrypoint",
-      "fallback",
-      "preview",
-      "original",
-      "script",
-      "style",
-      "font",
-      "image",
-      "audio",
-      "video",
-      "model",
-      "shader",
-      "data",
-      "library",
-      "other",
-    ],
-    `${path}.role`,
-  );
+  oneOf(data.role, RESOURCE_ROLES, `${path}.role`);
   string(data.mediaType, `${path}.mediaType`);
   optionalBoolean(data.executable, `${path}.executable`);
   optionalString(data.originalName, `${path}.originalName`);

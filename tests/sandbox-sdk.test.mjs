@@ -38,7 +38,8 @@ test("sandbox SDK prepares, resolves, and isolates a labelled project with the p
   assert.deepEqual(result.report.componentCommitments.map((entry) => entry.componentId), ["index.html", "renderer.js"]);
   assert.ok(result.report.componentCommitments.every((entry) => entry.commitment.algorithm === "sha256"));
   assert.equal(result.audit.resolvedResources, 2);
-  assert.match(result.sandbox.csp, /connect-src 'none'/);
+  assert.match(result.sandbox.csp, /connect-src blob:/);
+  assert.doesNotMatch(result.sandbox.csp, /connect-src 'none' blob:/);
   assert.match(result.sandbox.html, /__KEEL_CONTENT__/);
   assert.equal(result.prepared.manifest.stack.components[1].label, "Rendering script");
 });

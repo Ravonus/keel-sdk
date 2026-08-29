@@ -34,6 +34,33 @@ LGPL-2.1 is written for. If you would rather not carry an LGPL file in this
 tree, delete `p5-flowfield` from `demos.mjs` and the `vendor/p5.min.js` file —
 nothing else depends on it.
 
+## `vendor/p5.brush.min.js`
+
+p5.brush.js 1.1.4 — **MIT**, © 2023-2024 Alejandro Campos Uribe.
+<https://github.com/acamposuribe/p5.brush>
+
+Retrieved from the npm registry tarball
+(`https://registry.npmjs.org/p5.brush/-/p5.brush-1.1.4.tgz`, `dist/p5.brush.js`).
+
+**Modified.** The library builds its vector-field grid once, sized to the
+canvas at first init, and `load()` never re-fits it — after a canvas resize,
+field-driven strokes sample a stale grid. One expression was appended to the
+internal `load` path so an already-initialized field grid is rebuilt at the
+new canvas size:
+
+```diff
+-y.load(e),o=!0}
++y.load(e),o=!0,n&&z.create()}
+```
+
+Nothing else was touched. SHA-256 of the patched file:
+`9b13697c3d545973a37233b551504cdacc82fa9539395103b202b7c4f787f411`, 36,861
+bytes — the same commitment `p5-brush-watermarks/shared-module.mjs` pins for
+the on-chain shared-library declaration. Version 1.1.4 is the last release
+targeting p5.js 1.x, matching the vendored (and Sepolia-deployed) p5 1.11.3;
+the 2.x line requires p5 2.x. It is a UMD bundle with no imports, so no
+`/content/` specifier rewriting was needed.
+
 ## `vendor/player-small.js`
 
 SoundBox CPlayer — **zlib/libpng**, © 2011-2013 Marcus Geelnard.

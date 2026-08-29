@@ -17,6 +17,7 @@ import {
   KEEL_IP_CONTROL_EXTENSION_KEY,
 } from "@keel/protocol";
 import { remoteUrlAllowed, sourceLocations } from "./source-policy.js";
+import { parseKeelWakeUri, verifyKeelWakeObjectRead } from "./wake-adapter.js";
 import type {
   FetchLike,
   ResolveOptions,
@@ -72,7 +73,19 @@ interface MutableContext {
   readonly warnings: string[];
   readonly cache: Map<string, Promise<ResolvedResource>>;
   readonly active: Set<string>;
+  /** Canonical immutable locators are shared across resources, but never recursively re-entered. */
+  readonly wakeCache: Map<string, Promise<{ readonly bytes: Uint8Array; readonly location: string; readonly storedByteLength: number }>>;
+  readonly activeLocators: Set<string>;
+  readonly visitedLocators: Set<string>;
   totalBytes: number;
+  totalStoredBytes: number;
+}
+
+interface LoadedSource {
+  readonly bytes: Uint8Array;
+  readonly location?: string;
+  /** Encoded bytes committed by an immutable adapter; ordinary sources use bytes.byteLength. */
+  readonly storedByteLength?: number;
 }
 
 function now(adapters: ResolverAdapters): number {
@@ -99,6 +112,7 @@ function resolveLimits(manifest: ArtifactManifest, overrides: Partial<ResolverLi
   return {
     maxResourceBytes: Math.min(positiveLimit(overrides?.maxResourceBytes, declared.maxResourceBytes, "maxResourceBytes override"), declared.maxResourceBytes),
     maxTotalBytes: Math.min(positiveLimit(overrides?.maxTotalBytes, declared.maxTotalBytes, "maxTotalBytes override"), declared.maxTotalBytes),
+    maxStoredBytes: Math.min(positiveLimit(overrides?.maxStoredBytes, declared.maxTotalBytes, "maxStoredBytes override"), declared.maxTotalBytes),
     maxRecursionDepth: Math.min(positiveLimit(overrides?.maxRecursionDepth, declared.maxRecursionDepth, "maxRecursionDepth override"), declared.maxRecursionDepth),
     maxResources: Math.min(positiveLimit(overrides?.maxResources, declared.maxResources, "maxResources override"), declared.maxResources),
     timeoutMs: Math.min(positiveLimit(overrides?.timeoutMs, declared.timeoutMs, "timeoutMs override"), declared.timeoutMs),
@@ -197,7 +211,7 @@ function defaultFetch(): FetchLike {
   return globalThis.fetch as unknown as FetchLike;
 }
 
-function enforceSize(context: MutableContext, resourceId: string, bytes: Uint8Array): void {
+function enforceSize(context: MutableContext, resourceId: string, bytes: Uint8Array, storedByteLength: number): void {
   if (bytes.byteLength > context.limits.maxResourceBytes) {
     throw new ResolutionError(
       `Resource ${resourceId} is ${bytes.byteLength} bytes; limit is ${context.limits.maxResourceBytes}.`,
@@ -208,6 +222,13 @@ function enforceSize(context: MutableContext, resourceId: string, bytes: Uint8Ar
     throw new ResolutionError(
       `Artifact would exceed total byte limit ${context.limits.maxTotalBytes}.`,
       "limit.total-bytes",
+    );
+  }
+  const maxStoredBytes = context.limits.maxStoredBytes ?? context.limits.maxTotalBytes;
+  if (context.totalStoredBytes + storedByteLength > maxStoredBytes) {
+    throw new ResolutionError(
+      `Artifact would exceed aggregate stored-byte limit ${maxStoredBytes}.`,
+      "limit.stored-bytes",
     );
   }
 }
@@ -234,7 +255,56 @@ async function loadUriSource(
   context: MutableContext,
   resourceId: string,
   source: Extract<ResourceSource, { kind: "uri" }>,
-): Promise<{ readonly bytes: Uint8Array; readonly location: string }> {
+): Promise<LoadedSource> {
+  const wake = parseKeelWakeUri(source.uri);
+  if (wake !== undefined) {
+    if (wake.kind !== "object") {
+      throw new ResolutionError("KEEL Wake chunk URIs are transport-only and cannot be resolved as resources.", "wake.chunk");
+    }
+    const reader = context.adapters.readWakeObject;
+    if (reader === undefined) {
+      throw new ResolutionError("KEEL Wake source requires a readWakeObject adapter.", "wake.adapter");
+    }
+    const locator = source.uri;
+    if (context.activeLocators.has(locator)) {
+      throw new ResolutionError(`Recursive KEEL Wake locator cycle at ${locator}.`, "wake.cycle");
+    }
+    const existing = context.wakeCache.get(locator);
+    if (existing !== undefined) return existing;
+    context.activeLocators.add(locator);
+    const pending = (async () => {
+      const result = await reader({
+        chainId: wake.chainId,
+        coordinator: wake.coordinator,
+        publicationId: wake.publicationId,
+        expectedIntegrity: source.integrity,
+      }, context.controller.signal);
+      await verifyKeelWakeObjectRead(wake, result);
+      if (result.bytes.byteLength > context.limits.maxResourceBytes) {
+        throw new ResolutionError(
+          `Decoded KEEL Wake resource ${resourceId} exceeds its configured byte limit.`,
+          "limit.decoded-bytes",
+        );
+      }
+      if (result.provenance.storedByteLength > (context.limits.maxStoredBytes ?? context.limits.maxTotalBytes)) {
+        throw new ResolutionError(
+          `Stored KEEL Wake resource ${resourceId} exceeds its configured stored-byte limit.`,
+          "limit.stored-bytes",
+        );
+      }
+      context.visitedLocators.add(locator);
+      return { bytes: result.bytes, location: source.uri, storedByteLength: result.provenance.storedByteLength };
+    })();
+    context.wakeCache.set(locator, pending);
+    try {
+      return await pending;
+    } catch (error) {
+      context.wakeCache.delete(locator);
+      throw error;
+    } finally {
+      context.activeLocators.delete(locator);
+    }
+  }
   if (context.options.allowUriSources === false) {
     throw new ResolutionError(`Declared URI retrieval is disabled for ${resourceId}.`, "source-network.disabled");
   }
@@ -278,7 +348,7 @@ async function loadSource(
   resource: ArtifactResource,
   source: ResourceSource,
   depth: number,
-): Promise<{ readonly bytes: Uint8Array; readonly location?: string }> {
+): Promise<LoadedSource> {
   switch (source.kind) {
     case "inline":
       return { bytes: decodeText(source.data, source.encoding) };
@@ -356,7 +426,8 @@ async function resolveResourceUncached(
       const startedAt = now(context.adapters);
       try {
         const loaded = await loadSource(context, resource, source, depth);
-        if (loaded.bytes.byteLength > context.limits.maxResourceBytes) {
+        const storedByteLength = loaded.storedByteLength ?? loaded.bytes.byteLength;
+        if (loaded.bytes.byteLength > context.limits.maxResourceBytes || storedByteLength > (context.limits.maxStoredBytes ?? context.limits.maxTotalBytes)) {
           throw new ResolutionError(
             `Encoded resource ${resourceId} is ${loaded.bytes.byteLength} bytes; limit is ${context.limits.maxResourceBytes}.`,
             "limit.encoded-bytes",
@@ -377,8 +448,9 @@ async function resolveResourceUncached(
 
         // Verify first, then reserve decoded bytes synchronously. This prevents
         // concurrent resources from racing past the aggregate byte ceiling.
-        enforceSize(context, resourceId, bytes);
+        enforceSize(context, resourceId, bytes, storedByteLength);
         context.totalBytes += bytes.byteLength;
+        context.totalStoredBytes += storedByteLength;
         auditEntry(context, {
           resourceId,
           sourceIndex,
@@ -846,7 +918,11 @@ export async function resolveArtifact(manifest: ArtifactManifest, options: Resol
     warnings: [],
     cache: new Map(),
     active: new Set(),
+    wakeCache: new Map(),
+    activeLocators: new Set(),
+    visitedLocators: new Set(),
     totalBytes: 0,
+    totalStoredBytes: 0,
   };
   if (options.commitment === undefined) {
     context.warnings.push(
@@ -887,6 +963,7 @@ export async function resolveArtifact(manifest: ArtifactManifest, options: Resol
       startedAt: new Date(startedAt).toISOString(),
       completedAt: new Date(completedAt).toISOString(),
       totalBytes: context.totalBytes,
+      totalStoredBytes: context.totalStoredBytes,
       resolvedResources: resolved.size,
       entries: context.entries,
       warnings: context.warnings,

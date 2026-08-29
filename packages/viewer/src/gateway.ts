@@ -53,7 +53,10 @@ export function resourceGatewayAliases(artifact: ResolvedArtifact, resource: Res
 
   for (const source of resource.resource.sources) {
     if (source.kind === "uri") {
-      addAlias(aliases, source.uri);
+      // Wake is a verified object locator, never an iframe-visible transport
+      // route. The normal /content/<resource-id> route remains the only
+      // creator-facing path after the object has been fully verified.
+      if (!source.uri.startsWith("keel://wake/")) addAlias(aliases, source.uri);
       addAlias(aliases, ipfsVirtualPath(source.uri, ipfsPrefix));
     } else if (source.kind === "onchain") {
       const route = `${onchainPrefix}${source.chainId}/${source.store.toLowerCase()}/${source.objectId.toLowerCase()}`;
@@ -67,7 +70,9 @@ export function resourceGatewayAliases(artifact: ResolvedArtifact, resource: Res
     }
   }
 
-  addAlias(aliases, resource.location);
+  if (resource.location === undefined || !resource.location.startsWith("keel://wake/")) {
+    addAlias(aliases, resource.location);
+  }
   return [...aliases];
 }
 

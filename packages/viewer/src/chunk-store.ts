@@ -10,6 +10,7 @@ import type { OnchainObjectRequest, ResolverAdapters } from "./types.js";
 
 export interface KeelHoldObjectRecord {
   readonly digest: Hex;
+  readonly descriptorPointer?: Hex;
   readonly byteLength: bigint | number;
   readonly storedByteLength: bigint | number;
   readonly chunkCount: bigint | number;
@@ -141,39 +142,105 @@ function objectKey(request: OnchainObjectRequest): string {
   return `${request.chainId}:${request.store.toLowerCase()}:${request.objectId.toLowerCase()}`;
 }
 
+function readBigEndian(bytes: Uint8Array, offset: number, length: number): bigint {
+  let value = 0n;
+  for (let index = offset; index < offset + length; index += 1) {
+    const byte = bytes[index];
+    if (byte === undefined) throw new Error("Truncated KeelHold descriptor.");
+    value = (value << 8n) | BigInt(byte);
+  }
+  return value;
+}
+
+function bytesHex(bytes: Uint8Array): Hex {
+  return `0x${Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+}
+
+async function descriptorReferences(
+  context: ReadContext,
+  request: OnchainObjectRequest,
+  record: KeelHoldObjectRecord,
+): Promise<readonly Hex[]> {
+  const pointer = record.descriptorPointer;
+  if (pointer === undefined) throw new Error("KeelHold does not expose descriptor fallback data.");
+  const code = await context.client.getCode({ chainId: request.chainId, address: pointer }, context.signal);
+  if (code.byteLength < 94 || code[0] !== 0) throw new Error(`Invalid KeelHold descriptor bytecode at ${pointer}.`);
+  const descriptor = code.subarray(1);
+  // OCA3 is the original deployed v1 descriptor magic; STR3 renamed the same
+  // immutable wire layout. Both must remain readable or existing KEEL objects
+  // would be orphaned by the SDK migration.
+  const magic = bytesHex(descriptor.subarray(0, 4));
+  if ((magic !== "0x4f434133" && magic !== "0x53545233") || descriptor[4] !== 1) {
+    throw new Error(`Unsupported KeelHold descriptor format at ${pointer}.`);
+  }
+  const composite = descriptor[5] === 1;
+  const count = safeNumber(record.chunkCount, "object child count");
+  if ((descriptor[5] !== 0 && descriptor[5] !== 1)
+    || composite !== record.composite
+    || descriptor[6] !== safeNumber(record.compression, "compression")
+    || readBigEndian(descriptor, 8, 4) !== BigInt(count)
+    || readBigEndian(descriptor, 12, 8) !== BigInt(safeNumber(record.byteLength, "object byteLength"))
+    || readBigEndian(descriptor, 20, 8) !== BigInt(safeNumber(record.storedByteLength, "object storedByteLength"))
+    || bytesHex(descriptor.subarray(28, 60)).toLowerCase() !== record.digest.toLowerCase()) {
+    throw new Error(`KeelHold descriptor metadata mismatch at ${pointer}.`);
+  }
+  const mediaLength = descriptor[92];
+  if (mediaLength === undefined) throw new Error(`Truncated KeelHold descriptor at ${pointer}.`);
+  const width = composite ? 32 : 20;
+  const referencesOffset = 93 + mediaLength;
+  if (descriptor.byteLength !== referencesOffset + (count * width)) {
+    throw new Error(`KeelHold descriptor length mismatch at ${pointer}.`);
+  }
+  return Array.from({ length: count }, (_, index) => (
+    bytesHex(descriptor.subarray(referencesOffset + (index * width), referencesOffset + ((index + 1) * width)))
+  ));
+}
+
 async function pageIds(
   context: ReadContext,
   request: OnchainObjectRequest,
   count: number,
+  record: KeelHoldObjectRecord,
 ): Promise<readonly Hex[]> {
-  const result: Hex[] = [];
-  for (let offset = 0; offset < count; offset += context.options.pageSize) {
-    if (context.signal.aborted) throw context.signal.reason;
-    const limit = Math.min(context.options.pageSize, count - offset);
-    const pageRequest = { ...request, offset, limit };
-    const page = await context.client.getObjectPartIds(pageRequest, context.signal);
-    if (page.length === 0 && limit !== 0) throw new Error(`KeelHold returned an empty page at offset ${offset}.`);
-    result.push(...page);
+  try {
+    const result: Hex[] = [];
+    for (let offset = 0; offset < count; offset += context.options.pageSize) {
+      if (context.signal.aborted) throw context.signal.reason;
+      const limit = Math.min(context.options.pageSize, count - offset);
+      const pageRequest = { ...request, offset, limit };
+      const page = await context.client.getObjectPartIds(pageRequest, context.signal);
+      if (page.length === 0 && limit !== 0) throw new Error(`KeelHold returned an empty page at offset ${offset}.`);
+      result.push(...page);
+    }
+    if (result.length !== count) throw new Error(`KeelHold returned ${result.length} IDs; expected ${count}.`);
+    return result;
+  } catch (error) {
+    if (record.descriptorPointer === undefined) throw error;
+    return descriptorReferences(context, request, record);
   }
-  if (result.length !== count) throw new Error(`KeelHold returned ${result.length} IDs; expected ${count}.`);
-  return result;
 }
 
 async function pagePointers(
   context: ReadContext,
   request: OnchainObjectRequest,
   count: number,
+  record: KeelHoldObjectRecord,
 ): Promise<readonly Hex[]> {
-  const result: Hex[] = [];
-  for (let offset = 0; offset < count; offset += context.options.pageSize) {
-    if (context.signal.aborted) throw context.signal.reason;
-    const limit = Math.min(context.options.pageSize, count - offset);
-    const page = await context.client.getObjectSlugPointers({ ...request, offset, limit }, context.signal);
-    if (page.length === 0 && limit !== 0) throw new Error(`KeelHold returned an empty pointer page at offset ${offset}.`);
-    result.push(...page);
+  try {
+    const result: Hex[] = [];
+    for (let offset = 0; offset < count; offset += context.options.pageSize) {
+      if (context.signal.aborted) throw context.signal.reason;
+      const limit = Math.min(context.options.pageSize, count - offset);
+      const page = await context.client.getObjectSlugPointers({ ...request, offset, limit }, context.signal);
+      if (page.length === 0 && limit !== 0) throw new Error(`KeelHold returned an empty pointer page at offset ${offset}.`);
+      result.push(...page);
+    }
+    if (result.length !== count) throw new Error(`KeelHold returned ${result.length} pointers; expected ${count}.`);
+    return result;
+  } catch (error) {
+    if (record.descriptorPointer === undefined) throw error;
+    return descriptorReferences(context, request, record);
   }
-  if (result.length !== count) throw new Error(`KeelHold returned ${result.length} pointers; expected ${count}.`);
-  return result;
 }
 
 async function readCarriers(
@@ -226,14 +293,14 @@ async function haulObjectUncached(
 
     let decoded: Uint8Array;
     if (record.composite) {
-      const partIds = await pageIds(context, request, count);
+      const partIds = await pageIds(context, request, count, record);
       const parts: Uint8Array[] = [];
       for (const objectId of partIds) {
         parts.push(await haulObject(context, { chainId: request.chainId, store: request.store, objectId }, depth + 1));
       }
       decoded = concatBytes(parts);
     } else {
-      const pointers = await pagePointers(context, request, count);
+      const pointers = await pagePointers(context, request, count, record);
       const chunks = await readCarriers(context, request, pointers);
       const stored = concatBytes(chunks);
       if (stored.byteLength !== storedBytes) throw new Error(`Stored length mismatch for ${request.objectId}.`);

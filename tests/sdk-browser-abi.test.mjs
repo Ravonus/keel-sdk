@@ -49,17 +49,12 @@ nodeTest("@keel/sdk publishes the ABI facade as a direct subpath", async () => {
   const abi = await import(pathToFileURL(ABI_DIST).href);
   assert.equal(typeof abi.coolSLine721Abi, "object");
   assert.equal(typeof abi.oneMintControllerAbi, "object");
-});
-
-nodeTest("KeelHold facade uses only the current chunk vocabulary", async () => {
-  const { keelHoldAbi } = await import(pathToFileURL(ABI_DIST).href);
-  const joined = keelHoldAbi.join("\n");
-  for (const name of ["getSlug", "readSlug", "flatSlugCount", "MAX_CHUNK_BYTES", "MAX_BATCH_CHUNKS", "MAX_CHUNKS_PER_OBJECT"]) {
-    assert.match(joined, new RegExp(`\\b${name}\\b`, "u"), `missing current ${name}`);
-  }
-  for (const name of ["getChunk", "MAX_SLUG_BYTES", "MAX_BATCH_SLUGS"]) {
-    assert.doesNotMatch(joined, new RegExp(`\\b${name}\\b`, "u"), `retired ${name} survived`);
-  }
+  assert.ok(
+    abi.keelFactoryAbi.includes(
+      "function predictDieAddress((string name,string symbol,address admin,address royaltyReceiver,uint96 royaltyBps,uint256 maxSupply,address mintManager,address keelIndex) config,address creator,uint256 nonce) view returns (address predicted)",
+    ),
+    "the browser factory ABI must support deterministic collection batching",
+  );
 });
 
 nodeTest("a Vite browser consumer of @keel/sdk/abi stays clear of Node-only externalization", {

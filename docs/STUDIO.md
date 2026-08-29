@@ -43,6 +43,13 @@ collector resolves live registry commitment and re-verifies bytes
 
 The creator wizard accepts files, folders, and one remote source. Folder paths are preserved so HTML projects keep their relative resource graph.
 
+Studio uses the SDK's presentation vocabulary exactly: **Inline** is a
+self-contained onchain `data:text/html` `animation_url`; **Hybrid** resolves
+native KEEL objects through a declared RPC reader and can still be fully
+onchain; **IPFS** is an explicit external delivery choice. Onchain modules are
+shown as existing dependencies and are not counted as new creator upload
+bytes. See [`KEEL_PRESENTATION.md`](./KEEL_PRESENTATION.md).
+
 Every resource has two independently committed forms:
 
 - **decoded bytes** are the bytes the browser ultimately receives;

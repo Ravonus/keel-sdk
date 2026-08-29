@@ -1,6 +1,6 @@
 ---
 name: fray-keel-agent
-description: Prepare a Fray auction through Keel when a creator asks an agent to publish artwork, reuse an indexed module, choose a supported testnet, or hand work to a wallet for approval. Use with the portable Keel Keel MCP server; never sign, submit, claim faucet funds, or move wallet assets on the creator's behalf.
+description: Prepare a KEEL Studio storage-only project, optional release/listing, Fray auction, or large publication when a creator asks an agent to stage artwork, reuse an indexed module, or hand work to Studio for review. Use with the portable KEEL MCP server; never sign, submit, claim faucet funds, or move wallet assets on the creator's behalf.
 ---
 
 # Fray Keel Agent
@@ -10,7 +10,31 @@ Fray auction,” “reuse the Three.js module,” or “prepare this release for
 wallet.” The MCP server is the portable cross-agent layer; this skill supplies
 the conversation and safety rules.
 
-## Intake
+For a large object, storage-route decision, gas quote, retry, or recovery, read
+[publication-modes.md](references/publication-modes.md) before planning. Resolve
+the configured public endpoints with `keel-endpoint-config`; explicit tool input
+wins over KEEL environment configuration, which wins over the canonical KEEL
+test defaults. Never silently retain or substitute a Stratus hostname.
+
+## Studio project intake
+
+Call `keel-studio-project-intake` for an ordinary creator project. Give it every
+decision already present in the request and ask only the questions it returns.
+
+- “Put this on KEEL” may finish as `storage-only`: stage, sandbox, store, and
+  verify the work without inventing a token, sale, or listing.
+- “Make this a one-of-one and list it for 0.1 ETH” is `release`: prefill an
+  editable release intent and let Studio handle the remaining storage, quote,
+  contract, and listing choices.
+- If the requested outcome is ambiguous, ask once: storage and verification
+  only, or also an editable release/listing?
+
+Do not require a listing to complete storage. Do not silently create a sale.
+The MCP agent stages the exact project graph and returns one Studio link;
+Studio owns route benchmarking, the visual gas/read explanation, ETH/USD quote,
+and final editable decisions.
+
+## Fray auction intake
 
 Call `fray-auction-intake` before preparing a publication handoff.
 

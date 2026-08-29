@@ -5,17 +5,18 @@ import path from "node:path";
 import {
   createIntegrity,
   packUint48Ids,
+  parseArtifactManifest,
   unpackUint48Ids,
   verifyIntegrity,
-} from "../packages/protocol/dist/index.js";
-import { chooseSmallestCompression, compressBytes, decompressBytes } from "../packages/builder/dist/index.js";
+} from "../../../packages/protocol/dist/index.js";
+import { chooseSmallestCompression, compressBytes, decompressBytes } from "../../../packages/builder/dist/index.js";
 import {
   createSandboxDocument,
   createVerifiedContentGateway,
   resolveArtifact,
-} from "../packages/viewer/dist/index.js";
-import { DEMOS, demosDirectory, readDemoResources, resourcePath } from "../examples/demos/demos.mjs";
-import { buildDemoManifest } from "../examples/demos/build.mjs";
+} from "../../../packages/viewer/dist/index.js";
+import { DEMOS, demosDirectory, readDemoResources, resourcePath } from "../demos.mjs";
+import { buildDemoManifest } from "../build.mjs";
 
 const built = new Map();
 
@@ -113,7 +114,10 @@ for (const demo of DEMOS) {
       document.html.includes('requested.startsWith("data:")'),
       "the sandbox gateway must handle its own rewritten data: URLs",
     );
-    assert.ok(document.csp.includes("connect-src 'none'"), "no raw network egress may be granted to do it");
+    // connect-src grants only blob: (locally created object URLs, for the
+    // Flash fallback-WASM path) — never a network scheme. blob: fetches cannot
+    // leave the document, so creator code still has no raw egress.
+    assert.match(document.csp, /(?:^|; )connect-src blob:(?:;|$)/u, "no raw network egress may be granted to do it");
   });
 
   test(`${demo.name}: the manifest digest is stable across rebuilds`, async () => {
@@ -121,6 +125,15 @@ for (const demo of DEMOS) {
     const second = await buildDemoManifest(demo);
     assert.equal(first.integrity.digest, second.integrity.digest);
     assert.match(first.integrity.digest, /^0x[0-9a-f]{64}$/u);
+  });
+
+  test(`${demo.name}: the published manifest survives the wire parser`, async () => {
+    // assertValidManifest alone once let a role slip through that
+    // parseArtifactManifest rejects, so consumers choked on a manifest our own
+    // build had blessed. Round-trip through JSON exactly as a consumer would.
+    const { manifest } = await demoArtifact(demo);
+    const parsed = parseArtifactManifest(JSON.parse(JSON.stringify(manifest)));
+    assert.deepEqual(parsed, manifest);
   });
 }
 

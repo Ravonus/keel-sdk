@@ -460,13 +460,21 @@ function mountVerificationUI(result, runtime, runtimeContext, presentationInput)
     }
     const identity = section("Token identity", "identity");
     let identityCount = 0;
-    identityCount += row(identity, "Chain ID", runtimeContext?.chainId ?? contextData?.chainId) ? 1 : 0;
-    const tokenId = runtimeContext?.tokenId ?? contextData?.tokenId;
+    // `contextData` was an outer-scope variable in the vault viewer this file
+    // was extracted from, holding the same object `runtimeContext` holds here.
+    // The extraction kept three `?? contextData?.…` fallbacks without the
+    // variable, and mounting threw a ReferenceError the moment the identity
+    // section rendered - found the first time the module ran standalone.
+    identityCount += row(identity, "Chain ID", runtimeContext?.chainId) ? 1 : 0;
+    const tokenId = runtimeContext?.tokenId;
     identityCount += row(identity, "Token ID", tokenId, tokenId === "preview" ? { display: "Preview · no token binding", plain: true } : {}) ? 1 : 0;
     identityCount += row(identity, "Pinned block", runtimeContext?.blockNumber) ? 1 : 0;
     identityCount += row(identity, "Block hash", runtimeContext?.blockHash) ? 1 : 0;
-    identityCount += row(identity, "Token seed", runtimeContext?.derivedTokenSeed ?? contextData?.derivedTokenSeed) ? 1 : 0;
-    identityCount += row(identity, "Packed attributes", runtimeContext?.packedAttributes ?? localParams.get("attributes")) ? 1 : 0;
+    identityCount += row(identity, "Token seed", runtimeContext?.derivedTokenSeed) ? 1 : 0;
+    // `localParams` was the vault viewer's URLSearchParams over its own URL -
+    // another outer-scope leftover. A mounted module takes its inputs from the
+    // context it is handed, not from whatever URL happens to host it.
+    identityCount += row(identity, "Packed attributes", runtimeContext?.packedAttributes) ? 1 : 0;
     if (identityCount === 0) note(identity, "No token-specific identity was supplied to this viewer.");
     else if (next.syntheticTokenContext) note(identity, "These are preview inputs. A live token proof also needs the pinned block and block hash.");
 

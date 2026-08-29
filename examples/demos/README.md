@@ -8,6 +8,7 @@ a real chain, through the real pipeline, not as screenshots.
 | --- | --- |
 | `three-vault` | A full 3D library (726 KB of three.js) can be committed on chain and verified byte-for-byte before it runs. |
 | `p5-flowfield` | A seeded sketch renders identically for every viewer, because the seed is pinned in the manifest. |
+| `p5-brush-watermarks` | A watercolor PFP series where two shared libraries (p5.js, p5.brush) and a pure trait module derive attributes, palette, and every imperfect stroke from the token seed. |
 | `soundbox-synth` | Sound can be stored as a few hundred bytes of synthesis parameters instead of audio. |
 | `sprite-forge` | Attribute art under 1 KB stays cheap on chain because WebGL supplies colour and lighting at runtime. |
 | `keel-genart` | An exact historical Z85/Brotli object can render through the verified modern gateway without its old remote loader. |

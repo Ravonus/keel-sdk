@@ -187,7 +187,9 @@ export const KEEL_MODULES: readonly KeelModule[] = [
     "contracts": [
       "KeelHarnessBuilder.sol",
       "interfaces/IKeelHarnessBuilder.sol",
-      "libraries/KeelHarnessContextDispatch.sol"
+      "libraries/KeelHarnessContextDispatch.sol",
+      "libraries/KeelPreEncodedTokenURI.sol",
+      "libraries/KeelPreparedTokenURI.sol"
     ],
     "deployable": [
       "KeelHarnessBuilder"
@@ -283,12 +285,14 @@ export const KEEL_MODULES: readonly KeelModule[] = [
     "contracts": [
       "KeelMintGate.sol",
       "OneMintController.sol",
+      "OpenOneMintController.sol",
       "interfaces/IKeelAccessGate.sol",
       "interfaces/IKeelMintAdapter.sol"
     ],
     "deployable": [
       "KeelMintGate",
-      "OneMintController"
+      "OneMintController",
+      "OpenOneMintController"
     ]
   },
   {
@@ -574,7 +578,13 @@ export const KEEL_APPS: readonly KeelModule[] = [
       "interfaces/ILINEThumbnailSource.sol",
       "libraries/CoolSCanvasStorage.sol"
     ],
-    "deployable": []
+    "deployable": [
+      "CoolSCanvas721",
+      "CoolSCanvasMintController",
+      "CoolSCanvasRenderer",
+      "CoolSCanvasSplitter",
+      "CoolSComposer"
+    ]
   },
   {
     "id": "cool-s",
@@ -603,7 +613,15 @@ export const KEEL_APPS: readonly KeelModule[] = [
       "interfaces/ICoolSReleaseResolverV1.sol",
       "libraries/CoolSVisualStateCodecV1.sol"
     ],
-    "deployable": []
+    "deployable": [
+      "CoolS721",
+      "CoolSLocalVRFCoordinator",
+      "CoolSMetadataRendererV1",
+      "CoolSNoveltyLedgerV1",
+      "CoolSReleaseResolverV1",
+      "CoolSTargetTableV1",
+      "CoolSVisualRegistryV1"
+    ]
   },
   {
     "id": "line",
@@ -624,7 +642,11 @@ export const KEEL_APPS: readonly KeelModule[] = [
       "LINEThumbnail.sol",
       "LINEThumbnailRenderer.sol"
     ],
-    "deployable": []
+    "deployable": [
+      "LINE721",
+      "LINEThumbnail",
+      "LINEThumbnailRenderer"
+    ]
   },
   {
     "id": "vault-runner",
@@ -664,7 +686,20 @@ export const KEEL_APPS: readonly KeelModule[] = [
       "interfaces/IVaultRunSignatureAuthority.sol"
     ],
     "deployable": [
-      "VaultItem1155"
+      "VaultAchievementRegistry",
+      "VaultArcadeRegistry",
+      "VaultCharacter721",
+      "VaultCharacterMetadataRenderer",
+      "VaultCharacterPackV2",
+      "VaultCharacterRegistry",
+      "VaultCharacterStarterPack",
+      "VaultGameCard",
+      "VaultItem1155",
+      "VaultMapAuction",
+      "VaultRunLeaderboard",
+      "VaultRunLootExtraction",
+      "VaultRunSignatureAuthority",
+      "VaultSpriteAssetRegistry"
     ]
   }
 ] as const;

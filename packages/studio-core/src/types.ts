@@ -42,6 +42,12 @@ export interface StudioAssetInput {
   readonly entrypoint?: boolean;
   readonly stack?: StudioStackComponentInput;
   readonly additionalSources?: readonly ResourceSource[];
+  /**
+   * Generated composite resources have no creator-owned local file. They are
+   * reconstructed exclusively from the exact declared sources. Ordinary
+   * uploaded files keep the default local source plus any verified fallbacks.
+   */
+  readonly sourceMode?: "local-and-additional" | "additional-only";
 }
 
 export interface PrepareStudioArtifactOptions {
@@ -53,6 +59,11 @@ export interface PrepareStudioArtifactOptions {
   readonly createdAt?: string;
   readonly revision?: number;
   readonly parentRevision?: number;
+  /**
+   * Freeze the canonical 1/1 artifact. Omitted/false preserves the existing
+   * creator-editable revision behavior for compatibility.
+   */
+  readonly immutable?: boolean;
   readonly assets: readonly StudioAssetInput[];
   readonly libraries?: KeelLibraryBindings;
   readonly thumbnailCapture?: ArtifactThumbnail["capture"];
@@ -60,6 +71,12 @@ export interface PrepareStudioArtifactOptions {
   readonly stakeObject?: KeelStakeObject;
   /** Creator-authored role labels; these do not grant runtime or edit access. */
   readonly attributions?: readonly KeelAttribution[];
+  /**
+   * Optional manifest-driven Flash runtime. The project owns the SWF; the
+   * Ruffle scripts/WASM and deterministic trait modules are declared by path
+   * and become verified Keel resources in the prepared artifact.
+   */
+  readonly flashRuntime?: StudioFlashRuntime;
   /**
    * Protocol-owned, canonical manifest extensions. Callers must use a
    * namespaced key so a creation module can be recovered without changing the
@@ -70,6 +87,27 @@ export interface PrepareStudioArtifactOptions {
   readonly maxTotalBytes?: number;
   readonly maxResources?: number;
   readonly timeoutMs?: number;
+}
+
+/** Paths are resolved against the exact normalized Studio asset paths. */
+export interface StudioFlashRuntime {
+  readonly swfPath: string;
+  readonly loaderPath: string;
+  readonly seededRandomPath: string;
+  readonly editionPath: string;
+  readonly ruffleMainPath: string;
+  readonly ruffleModernCorePath: string;
+  readonly ruffleLegacyCorePath: string;
+  /** Optional MVP/vanilla WASM. Unsupported browsers may upload it locally. */
+  readonly ruffleModernWasmPath?: string;
+  readonly ruffleLegacyWasmPath: string;
+  /** SHA-256 commitment for the optional local MVP/vanilla upload. */
+  readonly ruffleModernWasmSha256?: string;
+  readonly ruffleModernWasmByteLength?: number;
+  readonly ruffleModernWasmFileName?: string;
+  readonly collectionSize: number;
+  /** Local preview fallback only; production token seeds come from Keel. */
+  readonly previewRootSeed?: string;
 }
 
 export interface PreparedStudioResource {
@@ -135,6 +173,7 @@ export interface NormalizedStudioAsset {
   readonly mode: EntrypointMode;
   readonly stack?: StudioStackComponentInput;
   readonly additionalSources?: readonly ResourceSource[];
+  readonly sourceMode: "local-and-additional" | "additional-only";
 }
 
 export interface PreparedVerificationResult {

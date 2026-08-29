@@ -1,0 +1,25 @@
+{
+  "schema": "keel-release-intent@1",
+  "chainId": 11155111,
+  "mode": "release",
+  "collection": {
+    "mode": "choose-in-studio"
+  },
+  "release": {
+    "type": "one-of-one",
+    "supply": "1",
+    "saleMechanism": "fixed-price",
+    "priceEth": "0.1",
+    "accessMode": "public",
+    "startsAt": null,
+    "endsAt": null
+  },
+  "presentation": {
+    "preferredMode": "inline"
+  },
+  "status": "editable-draft",
+  "wallet": {
+    "approvalRequiredNow": false,
+    "transactionSubmitted": false
+  }
+}

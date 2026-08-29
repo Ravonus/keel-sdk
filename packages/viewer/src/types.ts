@@ -43,6 +43,38 @@ export interface OnchainObjectRequest {
   readonly chunks?: readonly Hex[];
 }
 
+export interface WakeObjectRequest {
+  readonly chainId: number;
+  readonly coordinator: Hex;
+  readonly publicationId: bigint;
+  /** The expected decoded-byte digest supplied by the manifest or caller. */
+  readonly expectedIntegrity: Integrity;
+}
+
+export interface VerifiedWakeProvenance {
+  readonly protocol: "keel-wake@1";
+  readonly storageMode: "history-inscription-v1";
+  readonly chainId: number;
+  readonly coordinator: Hex;
+  readonly publicationId: bigint;
+  readonly storedDigest: Hex;
+  readonly decodedDigest: Hex;
+  readonly storedByteLength: number;
+  readonly decodedByteLength: number;
+  readonly compression: "none" | "gzip" | "deflate" | "brotli";
+  readonly batchCount: number;
+  readonly chunkCount: number;
+  readonly retrievalSource: "rpc-history" | "archive" | "cache";
+  readonly archivalStatus?: "replicated" | "unreplicated" | "unknown";
+  readonly verified: true;
+}
+
+/** A reader must verify chain evidence and decompression before returning bytes. */
+export interface WakeObjectReadResult {
+  readonly bytes: Uint8Array;
+  readonly provenance: VerifiedWakeProvenance;
+}
+
 export interface ContractCallRequest {
   readonly chainId: number;
   readonly to: Hex;
@@ -190,6 +222,8 @@ export interface ResolverAdapters {
    */
   readonly authorizeRemoteSource?: (url: string, signal: AbortSignal) => Promise<void> | void;
   readonly readOnchainObject?: (request: OnchainObjectRequest, signal: AbortSignal) => Promise<Uint8Array>;
+  /** Reads and fully verifies one history-inscribed KEEL Wake object. */
+  readonly readWakeObject?: (request: WakeObjectRequest, signal: AbortSignal) => Promise<WakeObjectReadResult>;
   readonly callContract?: (request: ContractCallRequest, signal: AbortSignal) => Promise<Uint8Array | string>;
   readonly readPresentationState?: (
     request: KeelPresentationStateRequest,
@@ -282,6 +316,8 @@ export interface StakeObjectReadResult {
 export interface ResolverLimits {
   readonly maxResourceBytes: number;
   readonly maxTotalBytes: number;
+  /** Aggregate encoded/stored-byte ceiling; defaults to maxTotalBytes. */
+  readonly maxStoredBytes?: number;
   readonly maxRecursionDepth: number;
   readonly maxResources: number;
   readonly timeoutMs: number;
@@ -309,6 +345,7 @@ export interface ResolutionAudit {
   readonly startedAt: string;
   readonly completedAt: string;
   readonly totalBytes: number;
+  readonly totalStoredBytes: number;
   readonly resolvedResources: number;
   readonly entries: readonly SourceAuditEntry[];
   readonly warnings: readonly string[];
@@ -345,6 +382,7 @@ export interface ManifestCommitment {
   readonly digestVerified: true;
   readonly sourceUrl?: string;
   readonly registry?: VerifiedRegistryAnchor;
+  readonly wake?: VerifiedWakeProvenance;
 }
 
 export interface ResolvedArtifact {

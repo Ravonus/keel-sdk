@@ -21,6 +21,8 @@ import {
   createCollectionAuthorizationTypedData,
   fetchStudioCapabilities,
   buildKeelModuleReviewRequest,
+  prepareKeelStudioProjectIntake,
+  resolveKeelEndpoints,
   type KeelWalletLinkInput,
   type KeelModuleReviewInput,
 } from "@keel/sdk";
@@ -500,17 +502,24 @@ async function keelLibrarySearchTool(_context: ToolContext, value: unknown): Pro
 
 async function studioCapabilitiesTool(_context: ToolContext, value: unknown): Promise<unknown> {
   const input = record(value, ["studioUrl"], "Studio capabilities arguments");
-  const configured = optionalString(input, "studioUrl") ?? process.env.KEEL_STUDIO_URL;
-  if (configured === undefined) {
-    return {
-      schema: "keel-studio-capabilities@1",
-      status: "unconfigured",
-      message: "Set KEEL_STUDIO_URL or pass studioUrl to inspect a Studio without uploading or opening a wallet.",
-    };
-  }
-  const url = new URL(configured);
-  if (url.protocol !== "https:") throw new TypeError("studioUrl must use HTTPS.");
-  return fetchStudioCapabilities(url);
+  const studioUrl = optionalString(input, "studioUrl");
+  const endpoints = resolveKeelEndpoints(
+    { ...(studioUrl === undefined ? {} : { studioUrl }) },
+    process.env,
+  );
+  return fetchStudioCapabilities(new URL(endpoints.studioUrl));
+}
+
+async function endpointConfigTool(_context: ToolContext, value: unknown): Promise<unknown> {
+  const input = record(value, ["studioUrl", "publicRpcUrl", "indexerUrl"], "KEEL endpoint arguments");
+  const studioUrl = optionalString(input, "studioUrl");
+  const publicRpcUrl = optionalString(input, "publicRpcUrl");
+  const indexerUrl = optionalString(input, "indexerUrl");
+  return resolveKeelEndpoints({
+    ...(studioUrl === undefined ? {} : { studioUrl }),
+    ...(publicRpcUrl === undefined ? {} : { publicRpcUrl }),
+    ...(indexerUrl === undefined ? {} : { indexerUrl }),
+  }, process.env);
 }
 
 async function moduleReviewPrepareTool(_context: ToolContext, value: unknown): Promise<unknown> {
@@ -521,6 +530,11 @@ async function moduleReviewPrepareTool(_context: ToolContext, value: unknown): P
     "module review",
   );
   return buildKeelModuleReviewRequest(review as unknown as KeelModuleReviewInput);
+}
+
+async function studioProjectIntakeTool(_context: ToolContext, value: unknown): Promise<unknown> {
+  const input = record(value, ["title", "description", "outcome", "chainId", "release"], "Studio project intake arguments");
+  return prepareKeelStudioProjectIntake(input as Parameters<typeof prepareKeelStudioProjectIntake>[0]);
 }
 
 function tool(name: string, description: string, inputSchema: JsonSchema, run: ToolDefinition["run"]): ToolDefinition {
@@ -545,7 +559,9 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
   tool("fray-stage-project", "Upload bounded source bytes to the configured Fray Studio temporary project store, prepare still/video previews, preflight the fee, and return a wallet-facing handoff; no signing or submission occurs.", TOOL_SCHEMAS.frayStageProject, frayStageProjectTool),
   tool("keel-chain-guide", "List supported testnets and human faucet links; the MCP server never claims faucet funds or moves wallet assets.", TOOL_SCHEMAS.chainGuide, chainGuideTool),
   tool("keel-library-search", "Search configured Keel Studio Keel indexes for exact reusable library/module candidates; metadata only, no carrier bytes are fetched.", TOOL_SCHEMAS.keelLibrarySearch, keelLibrarySearchTool),
+  tool("keel-endpoint-config", "Resolve the Studio, public RPC, and optional indexer URLs using explicit input, KEEL environment configuration, then canonical test defaults; no network request occurs.", TOOL_SCHEMAS.endpointConfig, endpointConfigTool),
   tool("keel-studio-capabilities", "Inspect a Studio's supported chains, zero-spend sandbox, staging, authorization, and MSP readiness before any upload or wallet action.", TOOL_SCHEMAS.studioCapabilities, studioCapabilitiesTool),
+  tool("keel-studio-project-intake", "Ask only for missing project decisions, then return either storage-only preparation or an editable release/listing intent. No upload, signature, wallet request, or transaction occurs.", TOOL_SCHEMAS.studioProjectIntake, studioProjectIntakeTool),
 ];
 
 export function toolByName(name: string): ToolDefinition | undefined {

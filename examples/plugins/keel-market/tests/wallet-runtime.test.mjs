@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import path from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 const ACCOUNT = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266";
 const OTHER_ACCOUNT = "0x70997970c51812dc3a010c7d01b50e0d17dc79c8";
@@ -11,8 +11,8 @@ const EXACT_TRANSACTION = {
   data: "0x1234",
   value: "0x0",
 };
-const sourcePath = path.resolve("examples/plugins/keel-market/wallet-runtime-v1.js");
-const servedPath = path.resolve("apps/studio/public/keel/plugins/keel-market/wallet-runtime-v1.js");
+const sourcePath = fileURLToPath(new URL("../wallet-runtime-v1.js", import.meta.url));
+const servedPath = fileURLToPath(new URL("../../../../apps/studio/public/keel/plugins/keel-market/wallet-runtime-v1.js", import.meta.url));
 
 async function loadRuntime() {
   const source = await readFile(sourcePath);

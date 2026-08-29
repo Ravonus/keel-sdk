@@ -15,7 +15,7 @@ export function uploadPlanMetrics(plan: RecursiveUploadPlan): UploadPlanMetrics 
       chunks += object.chunks.length;
       storedBytes += object.storedByteLength;
       compressions.add(object.compression);
-    } else {
+    } else if (object.kind === "composite") {
       compositeObjects += 1;
     }
   }

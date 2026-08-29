@@ -1,0 +1,8 @@
+{
+  "name": "@keel/example-keel-market",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/wallet-runtime.test.mjs"
+  }
+}

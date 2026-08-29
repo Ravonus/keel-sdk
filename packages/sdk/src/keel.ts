@@ -362,6 +362,10 @@ export const keelDirectReadPolicy = {
     "familyConfig",
   ],
   "keel-manager": ["governanceEpoch", "rpcHostList", "rpcHostCount", "computeRpcHostListDigest", "rpcHostListPreimage"],
+  // The Onchaininator ships from its own repository and vendors its own ABIs, so
+  // no module entry or generated ABI for it lives in this SDK. This kind stays
+  // because the relay is Keel's: Studio serves these reads, so Keel owns the
+  // allowlist that bounds them.
   "onchaininator-proof-ledger": [
     "viewerCarriage",
     "viewerOf",

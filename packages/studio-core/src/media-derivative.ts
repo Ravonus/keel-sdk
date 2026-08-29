@@ -8,7 +8,6 @@ import {
   type KeelMediaDerivative,
   type KeelWebpProfile,
 } from "@keel/protocol";
-import sharp from "sharp";
 
 interface DerivativeSharpImage {
   rotate(): DerivativeSharpImage;
@@ -30,7 +29,14 @@ interface DerivativeSharpFactory {
   readonly versions: { readonly sharp: string; readonly vips: string };
 }
 
-const derivativeSharp = sharp as unknown as DerivativeSharpFactory;
+let derivativeSharpPromise: Promise<DerivativeSharpFactory> | undefined;
+
+function loadDerivativeSharp(): Promise<DerivativeSharpFactory> {
+  derivativeSharpPromise ??= import("sharp").then(
+    (module) => module.default as unknown as DerivativeSharpFactory,
+  );
+  return derivativeSharpPromise;
+}
 
 export interface BuiltKeelMediaDerivative {
   readonly bytes: Uint8Array;
@@ -57,6 +63,7 @@ export async function buildKeelWebpDerivative(input: {
   if (!(input.sourceBytes instanceof Uint8Array) || input.sourceBytes.byteLength === 0) {
     throw new RangeError("A media derivative requires non-empty source bytes.");
   }
+  const derivativeSharp = await loadDerivativeSharp();
   const sourceIntegrity = input.sourceIntegrity ?? await createIntegrity(input.sourceBytes);
   const profile = PROFILES[input.profile];
   const implementation = {

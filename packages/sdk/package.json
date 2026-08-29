@@ -14,9 +14,53 @@
       "types": "./dist/abi.d.ts",
       "import": "./dist/abi.js"
     },
+    "./module": {
+      "types": "./dist/module/index.d.ts",
+      "import": "./dist/module/index.js"
+    },
+    "./managed-publication": {
+      "types": "./dist/managed-publication.d.ts",
+      "import": "./dist/managed-publication.js"
+    },
+    "./three-scene-publication": {
+      "types": "./dist/three-scene-publication.d.ts",
+      "import": "./dist/three-scene-publication.js"
+    },
+    "./studio-upload": {
+      "types": "./dist/studio-upload.d.ts",
+      "import": "./dist/studio-upload.js"
+    },
+    "./studio-publication": {
+      "types": "./dist/studio-publication.d.ts",
+      "import": "./dist/studio-publication.js"
+    },
+    "./wake-uri": {
+      "types": "./dist/wake-uri.d.ts",
+      "import": "./dist/wake-uri.js"
+    },
+    "./fray-auction-intent": {
+      "types": "./dist/fray-auction-intent.d.ts",
+      "import": "./dist/fray-auction-intent.js"
+    },
+    "./studio-capabilities": {
+      "types": "./dist/studio-capabilities.d.ts",
+      "import": "./dist/studio-capabilities.js"
+    },
+    "./studio-agent-drafts": {
+      "types": "./dist/studio-agent-drafts.d.ts",
+      "import": "./dist/studio-agent-drafts.js"
+    },
     "./verification-shell": {
       "types": "./dist/verification-shell.d.ts",
       "import": "./dist/verification-shell.js"
+    },
+    "./presentation": {
+      "types": "./dist/presentation.d.ts",
+      "import": "./dist/presentation.js"
+    },
+    "./inline-viewer-graph": {
+      "types": "./dist/inline-viewer-graph.d.ts",
+      "import": "./dist/inline-viewer-graph.js"
     }
   },
   "files": [
@@ -33,7 +77,8 @@
   "license": "MIT",
   "dependencies": {
     "@keel/protocol": "workspace:*",
-    "esbuild": "0.28.2"
+    "esbuild": "0.28.2",
+    "viem": "^2.38.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.0",

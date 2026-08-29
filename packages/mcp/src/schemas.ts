@@ -143,7 +143,7 @@ const previewCapture: JsonSchema = object({
   }, ["enabled", "mode", "durationMs", "fps"]),
 }, ["still", "video"]);
 const frayStageProject: JsonSchema = object({
-  studioUrl: string("Optional Fray Studio HTTPS URL; FRAY_STUDIO_URL is used otherwise.", 512),
+  studioUrl: string("Optional KEEL Studio HTTPS URL; KEEL_STUDIO_URL, then the deprecated FRAY_STUDIO_URL alias, is used otherwise.", 512),
   sourcePath: string("Workspace-relative source path.", 1024),
   title: string("Artwork title.", 120),
   description: string("Collector-facing description.", 2000),
@@ -167,7 +167,25 @@ const keelLibrarySearch: JsonSchema = object({
   limit: integer("Maximum candidates to return.", 1, 100),
 }, ["query"]);
 const studioCapabilities: JsonSchema = object({
-  studioUrl: string("Optional HTTPS Studio URL; KEEL_STUDIO_URL is used otherwise.", 512),
+  studioUrl: string("Optional HTTPS Studio URL; KEEL_STUDIO_URL, then the canonical KEEL test URL, is used otherwise.", 512),
+});
+const studioProjectIntake: JsonSchema = object({
+  title: string("Optional work title; the tool returns a question when omitted.", 160),
+  description: string("Optional collector-facing description; the tool returns a question when omitted.", 2000),
+  outcome: { type: "string", enum: ["storage-only", "release"] },
+  chainId: integer("Required only for a release.", 1),
+  release: object({
+    type: { type: "string", enum: ["one-of-one", "open-edition", "limited-edition"] },
+    saleMechanism: { type: "string", enum: ["fixed-price", "auction", "claim"] },
+    priceEth: string("Editable ETH price; required only for a release.", 80),
+    startsAt: string("Optional ISO timestamp. Omit for immediate availability.", 64),
+    endsAt: string("Optional ISO timestamp.", 64),
+  }),
+});
+const endpointConfig: JsonSchema = object({
+  studioUrl: string("Optional credential-free HTTPS Studio origin.", 512),
+  publicRpcUrl: string("Optional credential-free HTTPS public wallet/browser RPC origin.", 512),
+  indexerUrl: string("Optional credential-free HTTPS indexer origin.", 512),
 });
 
 export const TOOL_SCHEMAS = {
@@ -210,5 +228,7 @@ export const TOOL_SCHEMAS = {
   frayStageProject,
   chainGuide,
   keelLibrarySearch,
+  endpointConfig,
   studioCapabilities,
+  studioProjectIntake,
 } as const;

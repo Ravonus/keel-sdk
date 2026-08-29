@@ -21,15 +21,16 @@ import {
   type KeelWebpProfile,
 } from "@keel/protocol";
 import { chooseSmallestCompression } from "@keel/builder";
-import { normalizeAssets, sourceUriForFile, uniqueResourceId } from "./media.js";
+import { normalizeAssets, normalizeProjectPath, sourceUriForFile, uniqueResourceId } from "./media.js";
 import type {
   NormalizedStudioAsset,
   PreparedStudioArtifact,
   PreparedStudioResource,
   PrepareStudioArtifactOptions,
+  StudioFlashRuntime,
   StudioArtifactStats,
 } from "./types.js";
-import { createGeneratedWrapper } from "./wrapper.js";
+import { createGeneratedWrapper, type FlashWrapperResources } from "./wrapper.js";
 import { buildKeelWebpDerivative } from "./media-derivative.js";
 
 function positiveSafe(value: number | undefined, fallback: number, label: string): number {
@@ -57,22 +58,31 @@ function assertRemoteReference(uri: string): void {
   }
 }
 
-function resourceAliases(resourceId: string): readonly string[] {
-  return [`/content/${encodeURIComponent(resourceId)}`];
+function resourceAliases(resourceId: string, fileName: string): readonly string[] {
+  const filePath = fileName.split("/").map((part) => encodeURIComponent(part)).join("/");
+  return [...new Set([`/content/${encodeURIComponent(resourceId)}`, `/content/${filePath}`])];
 }
 
 async function prepareResource(asset: NormalizedStudioAsset): Promise<PreparedStudioResource> {
   const decodedIntegrity = await createIntegrity(asset.bytes);
-  const selected = await chooseSmallestCompression(asset.bytes);
+  // The inline presentation contract must be able to concatenate the exact
+  // HTML shell without running a browser codec. Entrypoints are deliberately
+  // tiny orchestration documents, so keep them contract-readable and let
+  // heavyweight scripts/assets use the ordinary compression policy.
+  const contractReadable = (asset.entrypoint && asset.mediaType === "text/html")
+    || asset.mediaType === "application/vnd.keel.token-uri-base64-fragment";
+  const selected = contractReadable
+    ? { compression: "none" as const, bytes: asset.bytes.slice() }
+    : await chooseSmallestCompression(asset.bytes);
   const storedIntegrity = await createIntegrity(selected.bytes);
-  const sources: ResourceSource[] = [
-    {
-      kind: "uri",
-      uri: sourceUriForFile(asset.fileName),
-      integrity: decodedIntegrity,
-      immutable: true,
-    },
-  ];
+  const sources: ResourceSource[] = asset.sourceMode === "additional-only"
+    ? []
+    : [{
+        kind: "uri",
+        uri: sourceUriForFile(asset.fileName),
+        integrity: decodedIntegrity,
+        immutable: true,
+      }];
   for (const source of asset.additionalSources ?? []) {
     if (
       source.integrity.algorithm !== decodedIntegrity.algorithm ||
@@ -87,6 +97,9 @@ async function prepareResource(asset: NormalizedStudioAsset): Promise<PreparedSt
     assertRemoteReference(asset.remoteUri);
     sources.push({ kind: "uri", uri: asset.remoteUri, integrity: decodedIntegrity, immutable: false });
   }
+  if (sources.length === 0) {
+    throw new TypeError(`Additional-only resource ${asset.id} needs at least one exact provided source.`);
+  }
   const resource: ArtifactResource = {
     id: asset.id,
     role: asset.role,
@@ -94,7 +107,7 @@ async function prepareResource(asset: NormalizedStudioAsset): Promise<PreparedSt
     executable: asset.executable,
     originalName: asset.fileName,
     ...(asset.description === undefined ? {} : { description: asset.description }),
-    aliases: resourceAliases(asset.id),
+    aliases: resourceAliases(asset.id, asset.fileName),
     sources,
     extensions: {
       studio: {
@@ -128,8 +141,100 @@ function choosePrimary(assets: readonly NormalizedStudioAsset[]): NormalizedStud
   return selected;
 }
 
-function ensureEntrypoint(assets: readonly NormalizedStudioAsset[], name: string, description: string | undefined): readonly NormalizedStudioAsset[] {
-  const selected = assets.find((asset) => asset.entrypoint && asset.mediaType === "text/html") ??
+interface ResolvedFlashRuntime {
+  readonly wrapper: FlashWrapperResources;
+  readonly extension: Readonly<Record<string, unknown>>;
+}
+
+function resolveFlashRuntime(runtime: StudioFlashRuntime, assets: readonly NormalizedStudioAsset[]): ResolvedFlashRuntime {
+  if (!Number.isSafeInteger(runtime.collectionSize) || runtime.collectionSize < 1 || runtime.collectionSize > 1_000_000) {
+    throw new RangeError("Flash collectionSize must be a positive safe integer no larger than 1,000,000.");
+  }
+  if (runtime.previewRootSeed !== undefined && !/^0x[0-9a-f]{64}$/iu.test(runtime.previewRootSeed)) {
+    throw new TypeError("Flash previewRootSeed must be a canonical bytes32 value.");
+  }
+  const byPath = new Map(assets.map((asset) => [asset.fileName, asset]));
+  const required = (path: string, label: string, mediaType: string): NormalizedStudioAsset => {
+    const normalizedPath = normalizeProjectPath(path);
+    const asset = byPath.get(normalizedPath);
+    if (asset === undefined) throw new Error(`Flash ${label} resource is not present: ${normalizedPath}.`);
+    const actual = asset.mediaType.toLowerCase().split(";", 1)[0] ?? asset.mediaType.toLowerCase();
+    if (actual !== mediaType) throw new TypeError(`Flash ${label} must use ${mediaType}; received ${actual}.`);
+    return asset;
+  };
+  const swf = required(runtime.swfPath, "SWF", "application/x-shockwave-flash");
+  const loader = required(runtime.loaderPath, "Ruffle loader", "text/javascript");
+  const seededRandom = required(runtime.seededRandomPath, "seeded-random module", "text/javascript");
+  const edition = required(runtime.editionPath, "Flash edition module", "text/javascript");
+  const ruffleMain = required(runtime.ruffleMainPath, "Ruffle main", "text/javascript");
+  const ruffleModernCore = required(runtime.ruffleModernCorePath, "Ruffle modern core", "text/javascript");
+  const ruffleLegacyCore = required(runtime.ruffleLegacyCorePath, "Ruffle legacy core", "text/javascript");
+  const ruffleModernWasm = runtime.ruffleModernWasmPath === undefined
+    ? undefined
+    : required(runtime.ruffleModernWasmPath, "Ruffle MVP WASM", "application/wasm");
+  const ruffleLegacyWasm = required(runtime.ruffleLegacyWasmPath, "Ruffle legacy WASM", "application/wasm");
+  const fallbackWasmSha256 = runtime.ruffleModernWasmSha256;
+  const fallbackWasmByteLength = runtime.ruffleModernWasmByteLength;
+  if (ruffleModernWasm === undefined &&
+      (!/^0x[0-9a-f]{64}$/iu.test(fallbackWasmSha256 ?? "") ||
+       typeof fallbackWasmByteLength !== "number" || !Number.isSafeInteger(fallbackWasmByteLength) || fallbackWasmByteLength <= 0)) {
+    throw new TypeError("Flash fallback WASM requires a canonical SHA-256 digest and byte length when the MVP resource is omitted.");
+  }
+  if (runtime.ruffleModernWasmFileName !== undefined &&
+      (runtime.ruffleModernWasmFileName.length === 0 || runtime.ruffleModernWasmFileName.includes("/") || /[\\\u0000-\u001f]/u.test(runtime.ruffleModernWasmFileName))) {
+    throw new TypeError("Flash fallback WASM file name must be a single safe file name.");
+  }
+  const wrapper: FlashWrapperResources = {
+    swf: swf.id,
+    loader: loader.id,
+    seededRandom: seededRandom.id,
+    edition: edition.id,
+    ruffleMain: ruffleMain.id,
+    ruffleModernCore: ruffleModernCore.id,
+    ruffleLegacyCore: ruffleLegacyCore.id,
+    ...(ruffleModernWasm === undefined ? {} : { ruffleModernWasm: ruffleModernWasm.id }),
+    ruffleLegacyWasm: ruffleLegacyWasm.id,
+    ...(runtime.ruffleModernWasmSha256 === undefined ? {} : { ruffleModernWasmSha256: runtime.ruffleModernWasmSha256.toLowerCase() }),
+    ...(runtime.ruffleModernWasmByteLength === undefined ? {} : { ruffleModernWasmByteLength: runtime.ruffleModernWasmByteLength }),
+    ...(runtime.ruffleModernWasmFileName === undefined ? {} : { ruffleModernWasmFileName: runtime.ruffleModernWasmFileName }),
+    collectionSize: runtime.collectionSize,
+    ...(runtime.previewRootSeed === undefined ? {} : { previewRootSeed: runtime.previewRootSeed.toLowerCase() }),
+  };
+  return {
+    wrapper,
+    extension: {
+      protocol: "keel-flash@1",
+      swfResource: swf.id,
+      modules: { loader: loader.id, seededRandom: seededRandom.id, edition: edition.id },
+      ruffle: {
+        main: ruffleMain.id,
+        modernCore: ruffleModernCore.id,
+        legacyCore: ruffleLegacyCore.id,
+        ...(ruffleModernWasm === undefined ? {} : { modernWasm: ruffleModernWasm.id }),
+        legacyWasm: ruffleLegacyWasm.id,
+      },
+      ...(ruffleModernWasm === undefined ? {
+        fallback: {
+          mode: "local-upload",
+          fileName: runtime.ruffleModernWasmFileName ?? "a71cef02d58dcec6f55f.wasm",
+          sha256: runtime.ruffleModernWasmSha256?.toLowerCase(),
+          byteLength: runtime.ruffleModernWasmByteLength,
+        },
+      } : {}),
+      collectionSize: runtime.collectionSize,
+      ...(runtime.previewRootSeed === undefined ? {} : { previewRootSeed: runtime.previewRootSeed.toLowerCase() }),
+    },
+  };
+}
+
+function ensureEntrypoint(
+  assets: readonly NormalizedStudioAsset[],
+  name: string,
+  description: string | undefined,
+  flashRuntime?: FlashWrapperResources,
+): readonly NormalizedStudioAsset[] {
+  const inlineGraphMediaType = "application/vnd.keel.token-uri-base64-fragment";
+  const selected = assets.find((asset) => asset.entrypoint && (asset.mediaType === "text/html" || asset.mediaType === inlineGraphMediaType)) ??
     assets.find((asset) => asset.mediaType === "text/html");
   if (selected !== undefined) {
     return assets.map((asset) => ({ ...asset, entrypoint: asset.id === selected.id }));
@@ -145,7 +250,8 @@ function ensureEntrypoint(assets: readonly NormalizedStudioAsset[], name: string
       resourceId: primary.id,
       mediaType: primary.mediaType,
       mode: primary.mode,
-      downloads: primary.role === "original" || primary.role === "image" || primary.role === "video" || primary.role === "audio" || primary.role === "model",
+      downloads: flashRuntime !== undefined || primary.role === "original" || primary.role === "image" || primary.role === "video" || primary.role === "audio" || primary.role === "model",
+      ...(flashRuntime === undefined ? {} : { flashRuntime }),
     }),
   );
   return [
@@ -158,6 +264,7 @@ function ensureEntrypoint(assets: readonly NormalizedStudioAsset[], name: string
       executable: true,
       entrypoint: true,
       mode: "html",
+      sourceMode: "local-and-additional",
     },
     ...assets.map((asset) => ({ ...asset, entrypoint: false })),
   ];
@@ -197,6 +304,7 @@ async function appendMediaDerivatives(
       description: `Verified marketplace derivative ${profile}.`,
       entrypoint: false,
       mode: "image",
+      sourceMode: "local-and-additional",
     });
     derivatives.push(built.receipt);
   }
@@ -345,7 +453,8 @@ function stats(resources: readonly PreparedStudioResource[]): StudioArtifactStat
 export async function prepareStudioArtifact(options: PrepareStudioArtifactOptions): Promise<PreparedStudioArtifact> {
   if (options.id.trim().length === 0 || options.name.trim().length === 0) throw new TypeError("Artifact ID and name are required.");
   const withDerivatives = await appendMediaDerivatives(normalizeAssets(options.assets), options.mediaDerivativeProfiles ?? []);
-  const normalized = ensureEntrypoint(withDerivatives.assets, options.name, options.description);
+  const flashRuntime = options.flashRuntime === undefined ? undefined : resolveFlashRuntime(options.flashRuntime, withDerivatives.assets);
+  const normalized = ensureEntrypoint(withDerivatives.assets, options.name, options.description, flashRuntime?.wrapper);
   const maxResources = positiveSafe(options.maxResources, 512, "maxResources");
   if (normalized.length > maxResources) throw new RangeError(`Artifact has ${normalized.length} resources; limit is ${maxResources}.`);
 
@@ -361,6 +470,13 @@ export async function prepareStudioArtifact(options: PrepareStudioArtifactOption
   if (total.decodedByteLength > maxTotalBytes) throw new RangeError(`Artifact exceeds the ${maxTotalBytes}-byte total limit.`);
 
   const revision = options.revision ?? 1;
+  const immutable = options.immutable === true;
+  if (immutable && revision !== 1) {
+    throw new RangeError("Immutable artifacts must use revision 1.");
+  }
+  if (immutable && options.parentRevision !== undefined) {
+    throw new TypeError("Immutable artifacts cannot declare a parent revision.");
+  }
   const artifactDownloads = downloads(resources);
   const artifactThumbnail = thumbnail(resources, options.thumbnailCapture);
   const manifest: ArtifactManifest = {
@@ -402,7 +518,8 @@ export async function prepareStudioArtifact(options: PrepareStudioArtifactOption
       number: revision,
       ...(options.parentRevision === undefined ? {} : { parent: options.parentRevision }),
       compatibility: { min: 1, max: revision },
-      policy: "creator",
+      policy: immutable ? "immutable" : "creator",
+      ...(immutable ? { frozen: true } : {}),
     },
     provenance: {
       ...(options.creator === undefined ? {} : { creator: options.creator }),
@@ -417,6 +534,7 @@ export async function prepareStudioArtifact(options: PrepareStudioArtifactOption
         stats: total,
       },
       ...(options.extensions ?? {}),
+      ...(flashRuntime === undefined ? {} : { "keel:flash": flashRuntime.extension }),
     },
   };
   assertValidManifest(manifest);

@@ -1,5 +1,6 @@
-import { decompress as decodeBrotli, initSync as initBrotli } from "brotli-dec-wasm/web";
-import brotliWasmBase64 from "keel:brotli-wasm-base64";
+import { decodeBrotli, initBrotli } from "keel:compression-runtime";
+import { replaceVerifiedAliases } from "./alias-resolution.js";
+import { browserSha256 } from "./sha256.js";
 
 /*__KEEL_VAULT_VERIFICATION_CHROME__*/
 
@@ -65,7 +66,7 @@ function verificationResult(state, error) {
 }
 
 const fromBase64 = (value) => Uint8Array.from(atob(value), (character) => character.charCodeAt(0));
-initBrotli({ module: fromBase64(brotliWasmBase64) });
+initBrotli();
 
 const hex = (bytes) => `0x${[...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("")}`;
 const bytesFromHex = (value) => Uint8Array.from(value.slice(2).match(/../gu) ?? [], (pair) => Number.parseInt(pair, 16));
@@ -75,7 +76,7 @@ const padWord = (value) => value.toString(16).padStart(64, "0");
 const equal = (left, right) => left.length === right.length && left.every((value, index) => value === right[index]);
 
 async function digest(bytes) {
-  return new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
+  return browserSha256(bytes);
 }
 
 async function verify(bytes, integrity, label) {
@@ -228,9 +229,7 @@ function installVerificationPresentation(resolved) {
 }
 
 function replaceAliases(text, aliases) {
-  let result = text;
-  for (const [alias, url] of aliases) result = result.replaceAll(alias, url);
-  return result;
+  return replaceVerifiedAliases(text, aliases);
 }
 
 function dataUrl(bytes, mediaType) {
@@ -287,20 +286,37 @@ async function verifiedRuntimeContext() {
   };
 }
 
-function instrumentEntrypoint(html, nonce, runtimeContext, contentUrls) {
+function instrumentEntrypoint(html, nonce, runtimeContext, contentUrls, childProof) {
   const context = runtimeContext === undefined
     ? ""
     : `<script>globalThis.__KEEL_CONTEXT__=Object.freeze(${scriptJson(runtimeContext)});globalThis.__KEEL_RUNTIME__=Object.freeze({context:globalThis.__KEEL_CONTEXT__})</script>`;
+  // The verification this runtime just performed, forwarded so a child that
+  // mounts its own proof chrome renders the host's real result rather than
+  // synthesising one. A child only exists because every item passed; this is
+  // that fact, with the per-item checks attached.
+  const proof = childProof === undefined
+    ? ""
+    : `<script>globalThis.__KEEL_VERIFICATION__=Object.freeze(${scriptJson(childProof)})</script>`;
   const content = `<script>(()=>{const u=Object.freeze(${scriptJson(contentUrls)}),bytes=id=>{const value=u[id];if(typeof value!=="string")throw new Error("Undeclared verified content "+id);const encoded=value.slice(value.indexOf(",")+1);return Uint8Array.from(atob(encoded),character=>character.charCodeAt(0))};globalThis.__KEEL_CONTENT__=Object.freeze({url:id=>u[id]??null,bytes})})()</script>`;
   const inputBridge = `<script>(()=>{addEventListener("message",event=>{const data=event.data;if(event.source!==parent||data?.protocol!=="keel-child-input@1"||!['keydown','keyup'].includes(data.type)||typeof data.code!=="string"||data.code.length>48||typeof data.key!=="string"||data.key.length>48)return;document.documentElement.dataset.keelLastInput=data.type+':'+data.code;dispatchEvent(new KeyboardEvent(data.type,{code:data.code,key:data.key,repeat:data.repeat===true,altKey:data.altKey===true,ctrlKey:data.ctrlKey===true,metaKey:data.metaKey===true,shiftKey:data.shiftKey===true,bubbles:true,cancelable:true}))})})()</script>`;
   const probe = `<script>(()=>{const n=${JSON.stringify(nonce)},send=(state,detail={})=>parent.postMessage({protocol:"keel-child-runtime@1",nonce:n,state,...detail},"*");addEventListener("error",event=>send("failed",{message:event.message||"Entrypoint runtime error."}));addEventListener("unhandledrejection",event=>send("failed",{message:String(event.reason?.message??event.reason??"Unhandled entrypoint rejection.")}));addEventListener("load",()=>setTimeout(()=>send("ready",{canvasCount:document.querySelectorAll("canvas").length,childCount:document.body?.childElementCount??0,loadError:document.body?.dataset?.loadError??null}),500),{once:true})})()</script>`;
   if (/<head(?:\s[^>]*)?>/iu.test(html)) {
-    return html.replace(/<head(?:\s[^>]*)?>/iu, (match) => `${match}${context}${content}${inputBridge}${probe}`);
+    return html.replace(/<head(?:\s[^>]*)?>/iu, (match) => `${match}${context}${proof}${content}${inputBridge}${probe}`);
   }
   // A verified entrypoint may be a fragment (canvas/script) rather than a
   // complete document. Wrap it before injecting Keel globals so the child
   // always executes inside a real top-level document with a <head>.
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${context}${content}${inputBridge}${probe}</head><body>${html}</body></html>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${context}${proof}${content}${inputBridge}${probe}</head><body>${html}</body></html>`;
+}
+
+/*
+ * Which document owns the idle seal. False until a verified child says it has
+ * mounted its own; `mountVerificationUI` claims the chrome for this document
+ * on every call, so this is re-applied after each one.
+ */
+let childOwnsChrome = false;
+function applyChromeOwnership() {
+  if (childOwnsChrome) document.documentElement.dataset.verificationChrome = "external";
 }
 
 async function launch() {
@@ -336,8 +352,11 @@ async function launch() {
   });
   const contentUrls = Object.fromEntries(envelope.items.map((item) => [item.id, dataUrl(resolved.get(item.id), item.mediaType)]));
   const nonce = hex(crypto.getRandomValues(new Uint8Array(16)));
+  // Every item passed - this frame would not exist otherwise - so the child is
+  // handed that result, per-item checks included, as __KEEL_VERIFICATION__.
   const html = instrumentEntrypoint(
     replaceAliases(new TextDecoder().decode(resolved.get(entry.id)), aliases), nonce, runtimeContext, contentUrls,
+    verificationResult("verified"),
   );
   const frame = document.createElement("iframe");
   frame.title = envelope.title;
@@ -345,6 +364,23 @@ async function launch() {
   frame.sandbox = "allow-scripts allow-pointer-lock";
   frame.referrerPolicy = "no-referrer";
   frame.srcdoc = html;
+  // A child that mounts its own Keel proof chrome says so; one seal is enough,
+  // and the child's tracks the artwork rather than the viewport. This document
+  // keeps rendering the alert states - only the idle corner defers.
+  //
+  // The claim is kept as state rather than written straight to the attribute,
+  // because `mountVerificationUI` sets `verificationChrome` to "embedded" every
+  // time it runs and this document mounts its own chrome *after* the child
+  // reports ready. Setting it once here was overwritten moments later and both
+  // seals appeared - seen, not reasoned about. So the claim is re-applied after
+  // any mount, and the two orderings converge on the same answer.
+  addEventListener("message", (event) => {
+    if (event.source !== frame.contentWindow || event.data?.protocol !== "keel-viewer-verification@1") return;
+    if (event.data.action === "ready") {
+      childOwnsChrome = true;
+      applyChromeOwnership();
+    }
+  });
   const forwardInput = (event) => {
     if (!frame.contentWindow || !["keydown", "keyup"].includes(event.type) || typeof event.code !== "string") return;
     frame.contentWindow.postMessage({ protocol: "keel-child-input@1", type: event.type, code: event.code, key: event.key, repeat: event.repeat, altKey: event.altKey, ctrlKey: event.ctrlKey, metaKey: event.metaKey, shiftKey: event.shiftKey }, "*");
@@ -392,6 +428,7 @@ async function launch() {
   status.textContent = "VERIFIED";
   status.hidden = true;
   verificationUI = mountVerificationUI(verificationResult("verified"), runtimeData, contextData);
+  applyChromeOwnership();
   verificationUI.ready();
 }
 
@@ -399,6 +436,10 @@ launch().catch((error) => {
   const message = error instanceof Error ? error.message : String(error);
   document.body.dataset.verification = "failed";
   status.hidden = true;
+  // A failed verification is this document's to report, whatever a child
+  // claimed before it died. Deferring the seal here would leave the refusal
+  // resting on a frame that may never have mounted.
+  childOwnsChrome = false;
   verificationUI = mountVerificationUI(verificationResult("failed", message), runtimeData, contextData);
   verificationUI.ready();
 });

@@ -15,6 +15,8 @@
     "test:conformance": "KEEL_REQUIRE_SIBLINGS=1 node scripts/test.mjs",
     "check": "node scripts/check.mjs",
     "verify": "node scripts/verify.mjs",
+    "verify:doom-managed-local": "node scripts/verify-doom-managed-publication.mjs",
+    "verify:three-one-of-one": "node examples/immutable-three-one-of-one/run.mjs",
     "mcp": "node packages/mcp/dist/cli.js",
     "mcp:self-test": "node packages/mcp/dist/cli.js --self-test",
     "contracts:static": "node scripts/solidity-static-check.mjs",

@@ -4,6 +4,7 @@ export * from "./sandbox.js";
 export * from "./mount.js";
 export * from "./chunk-store.js";
 export * from "./manifest.js";
+export * from "./wake-adapter.js";
 export * from "./gateway.js";
 export * from "./source-policy.js";
 export * from "./viewer-bundle.js";

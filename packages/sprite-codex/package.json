@@ -26,7 +26,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "tsc -p tsconfig.json",
-    "test": "pnpm build && node --test ../../tests/sprite-codex.test.mjs",
+    "test": "pnpm build && node --test tests/sprite-codex.test.mjs",
     "build:vault": "pnpm build && node dist/cli.js library vault/vault-library.sprite.json --out vault/generated/library --lock vault/vault-library.sprite.lock.json"
   },
   "engines": {

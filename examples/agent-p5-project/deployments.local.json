@@ -1,0 +1,16 @@
+{
+  "schema": "keel-agent-p5-deployments@1",
+  "chains": {
+    "31337": {
+      "chain": "eip155:31337",
+      "p5": {
+        "store": "0x7a9ec1d04904907de0ed7b6839ccdd59c3716ac9",
+        "objectId": "0xe76090527bbf4869fcfeafe7ed26307f81303216530b4d376fafcd4c43d8ee09"
+      },
+      "seededRandom": {
+        "store": "0x7a9ec1d04904907de0ed7b6839ccdd59c3716ac9",
+        "objectId": "0x77870ff0f15f2cc027a8cfbef31938978040327122df79751ea3c5e05bdb2ef6"
+      }
+    }
+  }
+}

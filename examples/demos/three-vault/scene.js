@@ -6,9 +6,12 @@
 // a full 3D library, committed on chain and verified byte-for-byte.
 
 import * as THREE from "/content/three.min.js";
+import { resolveSceneSeed } from "/content/scene-seed.mjs";
 
-const SEED = (globalThis.KEEL_SEED ?? 0x5f3a91c7) >>> 0;
-const TOKEN_ID = globalThis.__KEEL_CONTEXT__?.tokenId ?? "preview";
+const CONTEXT = globalThis.__KEEL_CONTEXT__ ?? globalThis.__OCA_CONTEXT__ ?? {};
+const SCENE_SEED = resolveSceneSeed(CONTEXT);
+const SEED = SCENE_SEED.word;
+const TOKEN_ID = CONTEXT.tokenId ?? "preview";
 
 function makeRandom(seed) {
   let state = (seed ^ 0x6d2b79f5) >>> 0;
@@ -131,10 +134,13 @@ scene.add(rim);
 let frame = 0;
 const plate = document.getElementById("plate");
 if (plate) {
-  plate.querySelector("small").textContent = `TOKEN #${TOKEN_ID} · SEED ${SEED.toString(16).padStart(8, "0")}`;
+  plate.querySelector("small").textContent = `TOKEN #${TOKEN_ID} · SEED ${SCENE_SEED.hex.slice(-8)} · ${SCENE_SEED.source}`;
   plate.querySelector("strong").textContent = ["Crystal Vault", "Grid Citadel", "Knot Cathedral", "Octa Shrine"][chamberShape];
-  plate.querySelector("span").textContent = `${pillarCount} seeded pillars · palette ${Math.round(hue * 360)}° · immutable Three.js viewer`;
+  const contract = SCENE_SEED.contract === undefined ? "" : ` · ${SCENE_SEED.contract}::${SCENE_SEED.view ?? "view"}`;
+  plate.querySelector("span").textContent = `${pillarCount} seeded pillars · palette ${Math.round(hue * 360)}° · immutable Three.js viewer${contract}`;
 }
+document.documentElement.dataset.sceneSeed = SCENE_SEED.hex;
+document.documentElement.dataset.sceneSeedSource = SCENE_SEED.source;
 renderer.setAnimationLoop(() => {
   frame += 1;
   const t = frame / 60;

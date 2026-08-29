@@ -1,0 +1,55 @@
+{
+  "schema": "keel-publication-harness@1",
+  "name": "Vault Of The Fallen 1/1",
+  "chain": {
+    "id": 11155111,
+    "name": "sepolia"
+  },
+  "publication": {
+    "storageMode": "native-carrier-v1",
+    "maxChunkBytes": 23000,
+    "maxChunksPerCarrierTransaction": 3,
+    "editionSize": 1,
+    "immutable": true,
+    "walletMethod": "wallet_sendCalls"
+  },
+  "modules": [
+    {
+      "id": "keel-hold",
+      "kind": "contract",
+      "required": true,
+      "address": "0x10a44bb5d9107ee2dd244a2fc0cea6cc8979c5a3"
+    },
+    {
+      "id": "keel-index",
+      "kind": "contract",
+      "required": true,
+      "address": "0x0146f7b087d64ad6351c99471ce1fdbcc024ccb6"
+    },
+    {
+      "id": "keel-factory",
+      "kind": "contract",
+      "required": true,
+      "address": "0x4254a9911d3ad371bb129b5ef9a2a75f85ba3219"
+    },
+    {
+      "id": "keel-viewer",
+      "kind": "package",
+      "required": true,
+      "package": "@keel/viewer"
+    },
+    {
+      "id": "keel-publication-job",
+      "kind": "contract",
+      "required": false,
+      "status": "not-deployed",
+      "route": "managed-executor"
+    }
+  ],
+  "fixture": {
+    "owner": "0x1111111111111111111111111111111111111111",
+    "predictedCollection": "0x6666666666666666666666666666666666666666",
+    "publicSubmissionReady": false,
+    "blocker": "owner nonce and predicted collection require a fresh read-only quote"
+  }
+}

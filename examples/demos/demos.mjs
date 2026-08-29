@@ -59,6 +59,13 @@ export const DEMOS = [
         executable: true,
       },
       {
+        id: "scene-seed.mjs",
+        role: "script",
+        mediaType: "text/javascript",
+        file: "scene-seed.mjs",
+        executable: true,
+      },
+      {
         id: "poster.webp",
         role: "preview",
         mediaType: "image/webp",
@@ -98,6 +105,69 @@ export const DEMOS = [
         role: "script",
         mediaType: "text/javascript",
         file: "sketch.js",
+        executable: true,
+      },
+      {
+        id: "seeded-random.js",
+        role: "library",
+        mediaType: "text/javascript",
+        file: "../../library/seeded-random.js",
+        executable: true,
+      },
+      {
+        id: "poster.webp",
+        role: "preview",
+        mediaType: "image/webp",
+        file: "poster.webp",
+      },
+    ],
+  },
+  {
+    id: "keel-p5-brush-watermarks",
+    slug: "p5-brush-watermarks",
+    name: "Watermarks",
+    tagline:
+      "A watercolor PFP series painted by two shared libraries and one seed.",
+    description:
+      "A seeded watercolor portrait series built on p5.brush. The trait roll, palette, and every imperfect stroke derive from the token seed; p5.js and p5.brush arrive as verified shared-library bytes. Each portrait animates on a hand-drawn boil, follows the pointer with its gaze, gusts on swipe, and keeps the paint you tap into it.",
+    accent: "#62b4c4",
+    license: "MIT AND LGPL-2.1-only",
+    directory: "p5-brush-watermarks",
+    entrypointResourceId: "index.html",
+    resources: [
+      {
+        id: "index.html",
+        role: "entrypoint",
+        mediaType: "text/html",
+        file: "index.html",
+        executable: true,
+      },
+      {
+        id: "p5.min.js",
+        role: "library",
+        mediaType: "text/javascript",
+        file: "../vendor/p5.min.js",
+        executable: true,
+      },
+      {
+        id: "p5.brush.min.js",
+        role: "library",
+        mediaType: "text/javascript",
+        file: "../vendor/p5.brush.min.js",
+        executable: true,
+      },
+      {
+        id: "traits.js",
+        role: "script",
+        mediaType: "text/javascript",
+        file: "traits.js",
+        executable: true,
+      },
+      {
+        id: "portrait.js",
+        role: "script",
+        mediaType: "text/javascript",
+        file: "portrait.js",
         executable: true,
       },
       {

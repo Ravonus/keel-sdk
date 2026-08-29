@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-const file = new URL("../examples/demos/vault-arcade/marketplace-metadata-preview.html", import.meta.url);
+const file = new URL("../marketplace-metadata-preview.html", import.meta.url);
 
 test("marketplace preview reads and renders canonical token metadata", async () => {
   const html = await readFile(file, "utf8");
