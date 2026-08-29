@@ -30,6 +30,7 @@ export * from "./studio-capabilities.js";
 export * from "./endpoints.js";
 export * from "./standard-chain-stack.js";
 export * from "./presentation.js";
+export * from "./shell-registry.js";
 export * from "./inline-viewer-graph.js";
 export * from "./frozen-dataset.js";
 export * from "./module-review.js";

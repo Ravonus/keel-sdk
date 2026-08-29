@@ -230,6 +230,25 @@ const creatorCollectionPrepare: JsonSchema = object({
   chainId: integer("Ethereum chain ID.", 1), creator: string("Creator wallet that will review the call."),
   instance: string("Optional exact recorded deployment instance.", 96), operation: creatorCollectionOperation,
 }, ["chainId", "creator", "operation"]);
+const shellPrepare: JsonSchema = object({
+  operation: { type: "string", enum: ["manifest", "register"] },
+  creator: string("Creator wallet used for namespacing and catalogue indexing."),
+  name: string("Human-readable shell name.", 96),
+  description: string("Human-readable shell description.", 512),
+  version: string("Creator shell version.", 32),
+  tags: { type: "array", items: string("Lowercase kebab-case discovery tag.", 32), minItems: 0, maxItems: 16 },
+  builderAddress: string("Required for register: exact KeelHarnessBuilder address."),
+  salt: string("Required for register: immutable bytes32 creator namespace salt."),
+  prefixObjectId: string("Required for register: committed shell top object ID."),
+  suffixObjectId: string("Required for register: committed shell bottom object ID."),
+  metadataObjectId: string("Required for register: committed JSON manifest object ID."),
+  payloadMode: { type: "string", enum: ["sandboxed-html", "gzip-base64", "pre-encoded-graph"] },
+}, ["operation", "creator", "name", "version"]);
+const shellSearch: JsonSchema = object({
+  studioUrl: string("Optional configured KEEL Studio origin.", 512),
+  query: string("Shell name, description, version, creator, or tag query.", 120),
+  creator: string("Optional exact creator wallet filter.", 42),
+}, ["query"]);
 const endpointConfig: JsonSchema = object({
   studioUrl: string("Optional credential-free HTTPS Studio origin.", 512),
   publicRpcUrl: string("Optional credential-free HTTPS public wallet/browser RPC origin.", 512),
@@ -287,4 +306,6 @@ export const TOOL_SCHEMAS = {
   studioDraft,
   studioStageProject,
   creatorCollectionPrepare,
+  shellSearch,
+  shellPrepare,
 } as const;

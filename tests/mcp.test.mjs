@@ -75,7 +75,7 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.equal(initialized?.result.serverInfo.name, "keel-mcp");
     assert.deepEqual(Object.keys(initialized?.result.capabilities), ["tools", "prompts", "resources"]);
     const listed = await server.handle({ jsonrpc: "2.0", id: 5, method: "tools/list", params: {} });
-    assert.deepEqual(listed?.result.tools.map((tool) => tool.name), ["analyze", "media-optimize", "build", "verify", "cost", "upload-plan", "chain-plan", "ethereum-encode", "publish-plan", "module-resolve", "module-lock", "wallet-request-prepare", "wallet-link", "module-review-prepare", "fray-auction-intake", "fray-stage-project", "keel-chain-guide", "keel-library-search", "keel-endpoint-config", "keel-studio-capabilities", "keel-studio-project-intake", "keel-studio-draft", "keel-studio-stage-project", "keel-creator-collection-prepare"]);
+    assert.deepEqual(listed?.result.tools.map((tool) => tool.name), ["analyze", "media-optimize", "build", "verify", "cost", "upload-plan", "chain-plan", "ethereum-encode", "publish-plan", "module-resolve", "module-lock", "wallet-request-prepare", "wallet-link", "module-review-prepare", "fray-auction-intake", "fray-stage-project", "keel-chain-guide", "keel-library-search", "keel-endpoint-config", "keel-studio-capabilities", "keel-studio-project-intake", "keel-studio-draft", "keel-studio-stage-project", "keel-creator-collection-prepare", "keel-shell-search", "keel-shell-prepare"]);
     const stageTool = listed?.result.tools.find((tool) => tool.name === "keel-studio-stage-project");
     assert.match(stageTool?.description, /creator resources\/modules/iu);
     assert.match(stageTool?.description, /canonical KEEL Inline graph/iu);
@@ -93,6 +93,25 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.equal(creatorPlan?.result.structuredContent.walletApproval, "not-requested");
     assert.equal(creatorPlan?.result.structuredContent.signing, "not-performed");
     assert.equal(creatorPlan?.result.structuredContent.submission, "not-performed");
+    const shellPlan = await call(server, 32, "keel-shell-prepare", {
+      operation: "register",
+      creator: "0x1111111111111111111111111111111111111111",
+      name: "Gallery grid",
+      description: "A reusable verified presentation.",
+      version: "1.0.0",
+      tags: ["gallery", "grid"],
+      builderAddress: "0x4f04bf6aac1183c26cadf05cf69d6148c9f6440b",
+      salt: `0x${"1".repeat(64)}`,
+      prefixObjectId: `0x${"2".repeat(64)}`,
+      suffixObjectId: `0x${"3".repeat(64)}`,
+      metadataObjectId: `0x${"4".repeat(64)}`,
+      payloadMode: "sandboxed-html",
+    });
+    assert.equal(shellPlan?.result.structuredContent.status, "review-only");
+    assert.equal(shellPlan?.result.structuredContent.metadata.protocol, "keel-shell-manifest@1");
+    assert.equal(shellPlan?.result.structuredContent.call.functionName, "registerShell");
+    assert.equal(shellPlan?.result.structuredContent.call.signing, "not-performed");
+    assert.equal(shellPlan?.result.structuredContent.call.submission, "not-performed");
     const malformed = await server.handle({ jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "cost", unexpected: true } });
     assert.equal(malformed?.error?.code, -32602);
     const malformedArguments = await server.handle({ jsonrpc: "2.0", id: 12, method: "tools/call", params: { name: "cost", arguments: null } });
@@ -407,7 +426,7 @@ test("MCP rejects symlink inputs and CLI emits protocol JSON only", async () => 
     const lines = output.trim().split("\n").map((line) => JSON.parse(line));
     assert.equal(lines.length, 4);
     assert.equal(lines[0].id, 1);
-    assert.equal(lines[1].result.tools.length, 24);
+    assert.equal(lines[1].result.tools.length, 26);
     assert.equal(lines[2].result.resources.length, 3);
     assert.equal(JSON.parse(lines[3].result.contents[0].text).kind, "offline-workflow");
   } finally {
@@ -533,6 +552,24 @@ test("Keel index search reads bounded metadata and locks an exact reuse candidat
       }] }));
       return;
     }
+    if (request.url?.startsWith("/api/shells?")) {
+      response.end(JSON.stringify({ shells: [{
+        chainId: 11155111,
+        builder: "0x4f04bf6aac1183c26cadf05cf69d6148c9f6440b",
+        shellId: `0x${"9".repeat(64)}`,
+        creator: "0x404a6bd65ef48ae85da7b0e9358715a34a401b05",
+        name: "KEEL Verification Shell",
+        description: "Protected proof chrome.",
+        version: "1.0.0",
+        tags: ["proof", "sandbox"],
+        payloadMode: "sandboxed-html",
+        topObjectId: `0x${"1".repeat(64)}`,
+        bottomObjectId: `0x${"2".repeat(64)}`,
+        metadataObjectId: `0x${"3".repeat(64)}`,
+        metadataDigest: `0x${"4".repeat(64)}`,
+      }] }));
+      return;
+    }
     response.statusCode = 404;
     response.end(JSON.stringify({ error: "not found" }));
   });
@@ -553,6 +590,10 @@ test("Keel index search reads bounded metadata and locks an exact reuse candidat
     assert.equal(content.modules[0].versions[0].identity.name, "three");
     assert.equal(content.reuse.status, "needs-selection");
     assert.match(content.carriers, /metadata-only/iu);
+    const shellResult = await call(server, 3, "keel-shell-search", { studioUrl: `http://127.0.0.1:${address.port}`, query: "proof" });
+    assert.equal(shellResult?.result.structuredContent.status, "ok");
+    assert.equal(shellResult?.result.structuredContent.shells[0].name, "KEEL Verification Shell");
+    assert.equal(shellResult?.result.structuredContent.carrierBytesFetched, false);
   } finally {
     await new Promise((resolve) => indexServer.close(resolve));
     await rm(directory, { recursive: true, force: true });
@@ -576,7 +617,7 @@ test("MCP CLI help, version, and self-test are explicit non-stdio modes", async 
     const health = JSON.parse(first);
     assert.equal(health.status, "ok");
     assert.equal(health.protocolVersion, "2024-11-05");
-    assert.equal(health.toolCount, 24);
+    assert.equal(health.toolCount, 26);
     assert.deepEqual(health.checks, ["initialize", "ping", "tools/list", "prompts/list", "prompts/get", "resources/list", "resources/read"]);
     assert.equal(health.jsonrpc, undefined);
   } finally {

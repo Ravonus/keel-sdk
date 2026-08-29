@@ -100,6 +100,22 @@ actual artwork named `index.html`; it runs inside the canonical KEEL shell and
 does not replace it. The server-issued handoff URL is the only project link the
 agent should show.
 
+The canonical shell is not an HTML file the agent authors. It is the registered
+KEEL top and bottom around the ordered project/module graph. Its protected
+lower-left K opens the proof, resources, collector context, and bounded
+data-only extension panels. Creator code runs in the shell's opaque child and
+cannot rewrite that K or its proof state. Only when the creator explicitly asks
+to publish a new reusable presentation should the agent use
+`keel-shell-prepare`: create the creator/tag manifest first, publish the exact
+top/bottom/metadata objects through the normal reviewed storage flow, then
+prepare the immutable creator-namespaced registration call. Never confuse that
+with staging an ordinary artwork.
+
+Use `keel-shell-search` to discover an existing verified shell by creator or
+tags. A zero-result search never authorizes manufacturing a wrapper: ordinary
+projects continue to omit `viewer` and use the canonical KEEL verification
+shell.
+
 ## Repair an existing draft
 
 When a creator opens a draft and asks the agent to rename it, change the sale,

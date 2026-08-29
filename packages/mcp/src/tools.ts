@@ -25,6 +25,10 @@ import {
   prepareKeelStudioProjectIntake,
   executeKeelStudioAgentDraftOperation,
   prepareKeelCreatorCollectionReview,
+  buildKeelCreatorShellRegistrationCall,
+  createKeelShellManifest,
+  keelCreatorShellId,
+  searchKeelShells,
   stageKeelStudioProject,
   resolveKeelEndpoints,
   type KeelWalletLinkInput,
@@ -654,6 +658,78 @@ async function creatorCollectionPrepareTool(_context: ToolContext, value: unknow
   });
 }
 
+async function shellPrepareTool(_context: ToolContext, value: unknown): Promise<unknown> {
+  const input = record(
+    value,
+    ["operation", "creator", "name", "description", "version", "tags", "builderAddress", "salt", "prefixObjectId", "suffixObjectId", "metadataObjectId", "payloadMode"],
+    "Shell prepare arguments",
+  );
+  const operation = requiredString(input, "operation");
+  if (operation !== "manifest" && operation !== "register") throw new TypeError("operation must be manifest or register.");
+  const creator = requiredString(input, "creator") as `0x${string}`;
+  const tags = input.tags === undefined ? [] : input.tags;
+  if (!Array.isArray(tags) || tags.some((tag) => typeof tag !== "string")) throw new TypeError("tags must be text values.");
+  const manifest = await createKeelShellManifest({
+    creator,
+    name: requiredString(input, "name"),
+    description: optionalString(input, "description") ?? "",
+    version: requiredString(input, "version"),
+    tags: tags as string[],
+  });
+  const metadata = Object.freeze({
+    protocol: manifest.value.protocol,
+    json: manifest.json,
+    integrity: manifest.integrity,
+    publication: "required-before-registration" as const,
+  });
+  if (operation === "manifest") {
+    return Object.freeze({
+      schema: "keel.creator-shell-prepare@1" as const,
+      status: "manifest-ready" as const,
+      metadata,
+      signing: "not-performed" as const,
+      submission: "not-performed" as const,
+    });
+  }
+  const salt = requiredString(input, "salt") as `0x${string}`;
+  const call = buildKeelCreatorShellRegistrationCall({
+    builderAddress: requiredString(input, "builderAddress") as `0x${string}`,
+    salt,
+    prefixObjectId: requiredString(input, "prefixObjectId") as `0x${string}`,
+    suffixObjectId: requiredString(input, "suffixObjectId") as `0x${string}`,
+    metadataObjectId: requiredString(input, "metadataObjectId") as `0x${string}`,
+    payloadMode: (optionalString(input, "payloadMode") ?? "pre-encoded-graph") as "sandboxed-html" | "gzip-base64" | "pre-encoded-graph",
+  });
+  return Object.freeze({
+    schema: "keel.creator-shell-prepare@1" as const,
+    status: "review-only" as const,
+    shellId: keelCreatorShellId(creator, salt),
+    metadata,
+    call,
+  });
+}
+
+async function shellSearchTool(_context: ToolContext, value: unknown): Promise<unknown> {
+  const input = record(value, ["studioUrl", "query", "creator"], "shell search arguments");
+  const configuredStudioUrl = optionalString(input, "studioUrl");
+  const creator = optionalString(input, "creator");
+  const resolvedStudioUrl = configuredStudioUrl ?? resolveKeelEndpoints({}, process.env).studioUrl;
+  const shells = await searchKeelShells({
+    studioUrl: resolvedStudioUrl,
+    query: requiredString(input, "query"),
+    ...(creator === undefined ? {} : { creator: creator as `0x${string}` }),
+  });
+  return Object.freeze({
+    schema: "keel.shell-search@1" as const,
+    status: "ok" as const,
+    source: resolvedStudioUrl,
+    shells,
+    carrierBytesFetched: false,
+    signing: "not-performed" as const,
+    submission: "not-performed" as const,
+  });
+}
+
 function tool(name: string, description: string, inputSchema: JsonSchema, run: ToolDefinition["run"]): ToolDefinition {
   return { descriptor: { name, description, inputSchema }, run };
 }
@@ -683,6 +759,8 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
   tool("keel-studio-draft", "List, read, create, or revision-safely edit a creator's private Studio release draft through a scoped key. It cannot prepare, sign, submit, cancel, or publish a chain action.", TOOL_SCHEMAS.studioDraft, studioDraftTool),
   tool("keel-studio-stage-project", "Stage bounded creator resources/modules and return the server-issued Studio handoff. Omitted viewer selects Studio's canonical KEEL Inline graph for later preparation; `none` is artifact/storage-only. Creator HTML is content, never a replacement shell, and agents must not upload a locally manufactured KEEL shell, protected-harness wrapper, or local wrapper when the catalog is incomplete. Studio must fail closed for an incomplete selected-chain catalog during preparation. The scoped agent key remains in the MCP environment; no wallet signature or chain action occurs.", TOOL_SCHEMAS.studioStageProject, studioStageProjectTool),
   tool("keel-creator-collection-prepare", "Prepare one exact recorded KeelCreatorFactory collection call for review. Missing or ambiguous factory/renderer deployments stop before any wallet approval, signing, RPC, or submission.", TOOL_SCHEMAS.creatorCollectionPrepare, creatorCollectionPrepareTool),
+  tool("keel-shell-search", "Search the read-back-verified shell catalogue by creator, name, version, or tags. Returns top/bottom object pointers and metadata only; it never fetches carrier bytes, signs, or submits.", TOOL_SCHEMAS.shellSearch, shellSearchTool),
+  tool("keel-shell-prepare", "Create canonical creator/tag shell metadata or prepare an immutable creator-namespaced shell registration call. A shell is one reusable top and bottom around the work graph; this tool never signs, submits, or invents a replacement default shell.", TOOL_SCHEMAS.shellPrepare, shellPrepareTool),
 ];
 
 export function toolByName(name: string): ToolDefinition | undefined {
