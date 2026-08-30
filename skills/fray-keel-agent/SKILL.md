@@ -89,16 +89,21 @@ chain's existing pre-encoded KEEL Inline shell graph. Studio does **not** ask
 the agent to create another shell. Use `viewer: "none"` only when the creator
 explicitly requests an artifact/storage-only project with no viewer.
 
-Declare only creator-owned project files. An image project normally stages the
-image alone with role `image`; p5 or Three work stages only its creator
-script/assets plus exact same-chain module declarations. Never manufacture or
-label a local `viewer.js`, `index.html`, protected-harness wrapper, or other
-file as the default KEEL verification shell. If the selected-chain shell or
-module catalog is missing, stale, or ambiguous, stop: do not substitute a local
-wrapper. Creator-authored HTML is still valid project content, including an
-actual artwork named `index.html`; it runs inside the canonical KEEL shell and
-does not replace it. The server-issued handoff URL is the only project link the
-agent should show.
+Declare only creator-owned project files. An image project normally uploads the
+image plus the `keel.module.json` control declaration; it does **not** mean a
+zero-module project. That declaration must select the registered KEEL
+verification shell and bind exactly one same-chain `keel.asset-display@1`
+module. The resulting collector graph is registered shell top, registered
+asset-display module, direct creator image/video/self-contained GLB, registered
+shell bottom. p5 or Three work likewise stages only its creator script/assets
+plus exact same-chain module declarations. Never manufacture or label a local
+`viewer.js`, `index.html`, protected-harness wrapper, or other file as the
+default KEEL verification shell. If the selected-chain shell or module catalog
+is missing, stale, or ambiguous, stop: do not substitute a local wrapper.
+Creator-authored HTML is still valid project content, including an actual
+artwork named `index.html`; it runs inside the canonical KEEL shell and does not
+replace it. The server-issued handoff URL is the only project link the agent
+should show.
 
 The canonical shell is not an HTML file the agent authors. It is the registered
 KEEL top and bottom around the ordered project/module graph. Its protected

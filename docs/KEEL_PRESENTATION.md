@@ -88,6 +88,27 @@ p5 and a creator copy of Brotli WASM. Use the Node-side
 - `buildKeelInlinePreEncodedTokenURIGraph` produces the one publishable ordered
   graph: shell top, project-selected middle, creator entry, shell bottom.
 
+### Normal image, video, and 3D works
+
+A standalone creator image, video, or self-contained binary GLB is not a
+zero-module Inline document. Its only valid default graph is:
+
+```text
+registered KEEL Inline shell prefix
+registered keel.asset-display@1 module
+direct creator image / video / model entrypoint
+registered KEEL Inline shell suffix
+```
+
+`buildKeelInlineNormalMediaDocument` produces those four parts and rejects a
+missing, additional, or byte-different display module. The creator entry is the
+original media object, not a generated `index.html`; the module receives only a
+frozen verified data-URL descriptor and supports images, videos, and
+self-contained `model/gltf-binary` WebGL display. A `.gltf` that depends on
+external files is not this compact path. `buildKeelRegisteredInlineNormalMediaTokenURIGraph`
+requires the exact three reusable catalogue objects before producing a
+publishable graph.
+
 Studio binds every reusable graph fragment to an exact same-chain object before
 wallet review. The local document is a deterministic preview result, not a
 second publication lane.

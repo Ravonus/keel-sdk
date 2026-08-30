@@ -54,6 +54,10 @@
       "types": "./dist/verification-shell.d.ts",
       "import": "./dist/verification-shell.js"
     },
+    "./asset-display": {
+      "types": "./dist/asset-display.d.ts",
+      "import": "./dist/asset-display.js"
+    },
     "./presentation": {
       "types": "./dist/presentation.d.ts",
       "import": "./dist/presentation.js"

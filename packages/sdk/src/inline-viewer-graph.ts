@@ -12,11 +12,30 @@ import { encodeAbiParameters, getAddress, keccak256 } from "viem";
 
 import { KEEL_INLINE_MAX_TOKEN_URI_BYTES } from "./presentation.js";
 import {
+  KEEL_ASSET_DISPLAY_MEDIA_TYPES,
+  KEEL_ASSET_DISPLAY_MODULE_ID,
+  KEEL_ASSET_DISPLAY_MODULE_VERSION,
+  keelAssetDisplayKind,
+  keelAssetDisplayModuleBytes,
+  type KeelAssetDisplayKind,
+  type KeelAssetDisplayMediaType,
+} from "./asset-display.js";
+import {
   buildCompactInlineKeelShell,
   buildEmbeddedKeelViewerSlot,
   type KeelStandaloneViewerItem,
 } from "./verification-shell.js";
 import { orderKeelModules, type KeelModulePhase } from "./data-layer.js";
+import { KEEL_INLINE_PROTECTION_SHELL_ID } from "./shell-registry.js";
+
+export {
+  KEEL_ASSET_DISPLAY_MEDIA_TYPES,
+  KEEL_ASSET_DISPLAY_MODULE_ID,
+  KEEL_ASSET_DISPLAY_MODULE_VERSION,
+  keelAssetDisplayKind,
+  keelAssetDisplayModuleBytes,
+};
+export type { KeelAssetDisplayKind, KeelAssetDisplayMediaType };
 
 const RFC_4648_BASE64 = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/u;
 
@@ -137,33 +156,65 @@ export interface KeelInlineModuleFragment extends KeelInlineFragmentBytes {
   readonly item: KeelStandaloneViewerItem;
 }
 
-export interface KeelInlineLocalDocument {
-  readonly schema: "keel-inline-local-document@1";
+export type KeelInlineAssetDisplayModuleFragment = KeelInlineModuleFragment & {
+  readonly moduleId: typeof KEEL_ASSET_DISPLAY_MODULE_ID;
+  readonly version: typeof KEEL_ASSET_DISPLAY_MODULE_VERSION;
+};
+
+export type KeelInlineDocumentPart = {
+  readonly kind: "existing";
+  readonly role: "shell-prefix" | "module" | "entrypoint" | "shell-suffix";
+  readonly moduleId?: string;
+  readonly moduleVersion?: string;
+  readonly execution?: "classic" | "module";
+  readonly phase?: KeelModulePhase;
+  readonly weight?: number;
+  readonly bytes: Uint8Array;
+  readonly byteLength: number;
+  readonly integrity: Integrity;
+} | {
+  readonly kind: "creator";
+  readonly role: "entrypoint" | "asset";
+  readonly bytes: Uint8Array;
+  readonly byteLength: number;
+  readonly integrity: Integrity;
+};
+
+export interface KeelInlineGraphDocument {
   readonly rootBytes: Uint8Array;
   readonly rootIntegrity: Integrity;
   readonly byteLength: number;
-  readonly parts: readonly ({
-    readonly kind: "existing";
-    readonly role: "shell-prefix" | "module" | "shell-suffix";
-    readonly moduleId?: string;
-    readonly moduleVersion?: string;
-    readonly execution?: "classic" | "module";
-    readonly phase?: KeelModulePhase;
-    readonly weight?: number;
-    readonly bytes: Uint8Array;
-    readonly byteLength: number;
-    readonly integrity: Integrity;
-  } | {
-    readonly kind: "creator";
-    readonly role: "entrypoint";
-    readonly bytes: Uint8Array;
-    readonly byteLength: number;
-    readonly integrity: Integrity;
-  })[];
+  readonly parts: readonly KeelInlineDocumentPart[];
+}
+
+export interface KeelInlineLocalDocument extends KeelInlineGraphDocument {
+  readonly schema: "keel-inline-local-document@1";
+}
+
+/**
+ * Canonical composition for one normal image, video, or GLB. The shell and
+ * asset-display module are reusable objects; the sole creator object is
+ * the artist's original media asset.
+ */
+export interface KeelInlineNormalMediaDocument extends KeelInlineGraphDocument {
+  readonly schema: "keel-inline-normal-media-document@1";
+  readonly declaration: {
+    readonly shellId: typeof KEEL_INLINE_PROTECTION_SHELL_ID;
+    readonly assetDisplay: {
+      readonly moduleId: typeof KEEL_ASSET_DISPLAY_MODULE_ID;
+      readonly version: typeof KEEL_ASSET_DISPLAY_MODULE_VERSION;
+      readonly integrity: Integrity;
+    };
+    readonly creatorAsset: {
+      readonly id: string;
+      readonly mediaType: KeelAssetDisplayMediaType;
+      readonly integrity: Integrity;
+    };
+  };
 }
 
 export interface KeelInlinePreEncodedTokenURIFragment extends KeelInlineFragmentBytes {
-  readonly role: "shell-prefix" | "module" | "entrypoint" | "shell-suffix";
+  readonly role: "shell-prefix" | "module" | "entrypoint" | "asset" | "shell-suffix";
   readonly sourceKind: "existing" | "creator";
   readonly sourceObjectId?: Hex;
   readonly sourceIntegrity: Integrity;
@@ -423,6 +474,39 @@ export async function buildKeelInlineModuleFragment(input: {
   };
 }
 
+/** Build the exact reusable normal-media renderer slot for one chain catalogue. */
+export async function buildKeelInlineAssetDisplayModuleFragment(): Promise<KeelInlineAssetDisplayModuleFragment> {
+  return await buildKeelInlineModuleFragment({
+    moduleId: KEEL_ASSET_DISPLAY_MODULE_ID,
+    version: KEEL_ASSET_DISPLAY_MODULE_VERSION,
+    mediaType: "text/javascript",
+    aliases: [KEEL_ASSET_DISPLAY_MODULE_ID],
+    decodedBytes: keelAssetDisplayModuleBytes(),
+    compression: "gzip",
+    execution: "classic",
+    phase: "render",
+  }) as KeelInlineAssetDisplayModuleFragment;
+}
+
+function isNormalMediaEntry(mediaType: string): mediaType is KeelAssetDisplayMediaType {
+  return (KEEL_ASSET_DISPLAY_MEDIA_TYPES as readonly string[]).includes(mediaType);
+}
+
+async function assertCanonicalAssetDisplayModule(module: KeelInlineModuleFragment): Promise<void> {
+  const expected = await buildKeelInlineAssetDisplayModuleFragment();
+  if (
+    module.moduleId !== expected.moduleId
+    || module.version !== expected.version
+    || module.execution !== expected.execution
+    || module.phase !== expected.phase
+    || module.item.role !== "module"
+    || !exactBytes(module.bytes, expected.bytes)
+    || module.integrity.digest.toLowerCase() !== expected.integrity.digest.toLowerCase()
+  ) {
+    throw new TypeError("Direct image, video, and GLB entries require the exact registered keel.asset-display module.");
+  }
+}
+
 /**
  * Build the exact local document used for sandboxing and deterministic
  * fragment generation. It deliberately has no carrier identities: the only
@@ -433,7 +517,8 @@ export async function buildKeelInlineLocalDocument(input: {
   readonly modules: readonly KeelInlineModuleFragment[];
   readonly entry: {
     readonly id: string;
-    readonly mediaType: "text/html" | "text/javascript";
+    /** Text artwork, or the direct creator media entry mounted by keel.asset-display. */
+    readonly mediaType: "text/html" | "text/javascript" | KeelAssetDisplayMediaType;
     readonly source: Uint8Array;
     readonly aliases?: readonly string[];
   };
@@ -444,34 +529,45 @@ export async function buildKeelInlineLocalDocument(input: {
       throw new TypeError(`Inline module ${module.moduleId} requires a declared Brotli decoder shell profile.`);
     }
   }
-  const source = new TextDecoder("utf-8", { fatal: true }).decode(input.entry.source);
-  if (input.entry.mediaType === "text/javascript" && /<\/script/iu.test(source)) {
+  const directMedia = isNormalMediaEntry(input.entry.mediaType);
+  if (directMedia) {
+    if (orderedModules.length !== 1) {
+      throw new TypeError("A direct image, video, or GLB entry requires exactly one registered keel.asset-display module.");
+    }
+    await assertCanonicalAssetDisplayModule(orderedModules[0]!);
+  }
+  const source = directMedia ? undefined : new TextDecoder("utf-8", { fatal: true }).decode(input.entry.source);
+  if (input.entry.mediaType === "text/javascript" && source !== undefined && /<\/script/iu.test(source)) {
     throw new TypeError("An Inline JavaScript entry cannot contain a closing script tag.");
   }
   const dataScripts = orderedModules
     .filter((module) => module.phase === "data")
     .map((module) => `<script src="${module.item.aliases[0] ?? module.moduleId}"></script>`);
-  const htmlEntry = dataScripts.length === 0 ? input.entry.source : new TextEncoder().encode(
-    /<head(?:\s[^>]*)?>/iu.test(source)
-      ? source.replace(/<head(?:\s[^>]*)?>/iu, (head) => `${head}${dataScripts.join("")}`)
-      : `<!doctype html><html><head>${dataScripts.join("")}</head><body>${source}</body></html>`,
-  );
-  const entrySource = input.entry.mediaType === "text/javascript"
-    ? new TextEncoder().encode([
-        '<div id="stage"></div>',
-        ...orderedModules
-          .filter((module) => module.execution === "classic")
-          .map((module) => {
-            const alias = module.item.aliases[0] ?? module.moduleId;
-            return `<script src="${alias}"></script>`;
-          }),
-        `<script type="module">${source}</script>`,
-      ].join(""))
-    : htmlEntry;
+  const htmlEntry = directMedia || source === undefined
+    ? undefined
+    : dataScripts.length === 0 ? input.entry.source : new TextEncoder().encode(
+      /<head(?:\s[^>]*)?>/iu.test(source)
+        ? source.replace(/<head(?:\s[^>]*)?>/iu, (head) => `${head}${dataScripts.join("")}`)
+        : `<!doctype html><html><head>${dataScripts.join("")}</head><body>${source}</body></html>`,
+    );
+  const entrySource = directMedia
+    ? input.entry.source
+    : input.entry.mediaType === "text/javascript" && source !== undefined
+      ? new TextEncoder().encode([
+          '<div id="stage"></div>',
+          ...orderedModules
+            .filter((module) => module.execution === "classic")
+            .map((module) => {
+              const alias = module.item.aliases[0] ?? module.moduleId;
+              return `<script src="${alias}"></script>`;
+            }),
+          `<script type="module">${source}</script>`,
+        ].join(""))
+      : htmlEntry!;
   const entry = await buildEmbeddedKeelViewerSlot({
     id: input.entry.id,
     role: "entrypoint",
-    mediaType: "text/html",
+    mediaType: directMedia ? input.entry.mediaType : "text/html",
     ...(input.entry.aliases === undefined ? {} : { aliases: input.entry.aliases }),
     bytes: entrySource,
     compression: "gzip",
@@ -503,6 +599,156 @@ export async function buildKeelInlineLocalDocument(input: {
   };
 }
 
+/**
+ * Compose a normal single-file image, video, or self-contained GLB without
+ * authoring a project wrapper. The registered KEEL shell and asset-display
+ * module are reusable graph objects; only `asset.source` is creator-specific.
+ */
+export async function buildKeelInlineNormalMediaDocument(input: {
+  readonly shell: KeelInlineShellFragments;
+  readonly asset: {
+    readonly id: string;
+    readonly mediaType: KeelAssetDisplayMediaType;
+    readonly source: Uint8Array;
+    readonly aliases?: readonly string[];
+  };
+}): Promise<KeelInlineNormalMediaDocument> {
+  keelAssetDisplayKind(input.asset.mediaType);
+  const [assetDisplay, canonicalShell] = await Promise.all([
+    buildKeelInlineAssetDisplayModuleFragment(),
+    buildKeelInlineShellFragments({ repositoryRoot: "" }),
+  ]);
+  if (
+    !exactBytes(input.shell.prefix.bytes, canonicalShell.prefix.bytes)
+    || !exactBytes(input.shell.suffix.bytes, canonicalShell.suffix.bytes)
+  ) {
+    throw new TypeError("Normal media must use the exact canonical registered KEEL Inline shell fragments.");
+  }
+  const local = await buildKeelInlineLocalDocument({
+    shell: input.shell,
+    modules: [assetDisplay],
+    entry: input.asset,
+  });
+  const entry = local.parts[2];
+  if (entry === undefined || entry.kind !== "creator" || entry.role !== "entrypoint") {
+    throw new Error("Canonical normal-media composition did not produce the creator entrypoint.");
+  }
+  const entryItem = JSON.parse(decoder.decode(entry.bytes).slice(1)) as KeelStandaloneViewerItem;
+  if (entryItem.mediaType !== input.asset.mediaType || entryItem.integrity === undefined) {
+    throw new Error("Canonical normal-media composition did not preserve the creator asset commitment.");
+  }
+  return {
+    schema: "keel-inline-normal-media-document@1",
+    rootBytes: local.rootBytes,
+    rootIntegrity: local.rootIntegrity,
+    byteLength: local.byteLength,
+    parts: local.parts,
+    declaration: {
+      shellId: KEEL_INLINE_PROTECTION_SHELL_ID,
+      assetDisplay: {
+        moduleId: KEEL_ASSET_DISPLAY_MODULE_ID,
+        version: KEEL_ASSET_DISPLAY_MODULE_VERSION,
+        integrity: assetDisplay.integrity,
+      },
+      creatorAsset: {
+        id: input.asset.id,
+        mediaType: input.asset.mediaType,
+        integrity: entryItem.integrity,
+      },
+    },
+  };
+}
+
+async function assertCanonicalNormalMediaDocument(root: KeelInlineNormalMediaDocument): Promise<void> {
+  if (
+    root.schema !== "keel-inline-normal-media-document@1"
+    || root.declaration.shellId !== KEEL_INLINE_PROTECTION_SHELL_ID
+    || root.declaration.assetDisplay.moduleId !== KEEL_ASSET_DISPLAY_MODULE_ID
+    || root.declaration.assetDisplay.version !== KEEL_ASSET_DISPLAY_MODULE_VERSION
+    || root.parts.length !== 4
+    || root.parts[0]?.kind !== "existing" || root.parts[0].role !== "shell-prefix"
+    || root.parts[1]?.kind !== "existing" || root.parts[1].role !== "module"
+    || root.parts[2]?.kind !== "creator" || root.parts[2].role !== "entrypoint"
+    || root.parts[3]?.kind !== "existing" || root.parts[3].role !== "shell-suffix"
+  ) {
+    throw new TypeError("Normal media must be exactly shell-prefix, keel.asset-display, creator entrypoint, shell-suffix.");
+  }
+  const [shell, assetDisplay] = await Promise.all([
+    buildKeelInlineShellFragments({ repositoryRoot: "" }),
+    buildKeelInlineAssetDisplayModuleFragment(),
+  ]);
+  const expectedRootBytes = concat(root.parts.map((part) => part.bytes));
+  const [expectedRootIntegrity, ...partIntegrities] = await Promise.all([
+    createIntegrity(expectedRootBytes),
+    ...root.parts.map((part) => createIntegrity(part.bytes)),
+  ]);
+  if (
+    !exactBytes(root.rootBytes, expectedRootBytes)
+    || root.rootIntegrity.digest.toLowerCase() !== expectedRootIntegrity.digest.toLowerCase()
+    || root.rootIntegrity.byteLength !== expectedRootIntegrity.byteLength
+    || root.parts.some((part, index) => part.byteLength !== part.bytes.byteLength
+      || part.integrity.digest.toLowerCase() !== partIntegrities[index]!.digest.toLowerCase()
+      || part.integrity.byteLength !== partIntegrities[index]!.byteLength)
+    || !exactBytes(root.parts[0].bytes, shell.prefix.bytes)
+    || !exactBytes(root.parts[3].bytes, shell.suffix.bytes)
+    || root.declaration.assetDisplay.integrity.digest.toLowerCase() !== assetDisplay.integrity.digest.toLowerCase()
+    || root.declaration.assetDisplay.integrity.byteLength !== assetDisplay.integrity.byteLength
+  ) {
+    throw new TypeError("Normal-media graph does not match the exact canonical KEEL shell and asset-display declarations.");
+  }
+  await assertCanonicalAssetDisplayModule({
+    schema: "keel-inline-module-fragment@1",
+    moduleId: root.declaration.assetDisplay.moduleId,
+    version: root.declaration.assetDisplay.version,
+    execution: root.parts[1].execution ?? "module",
+    phase: root.parts[1].phase ?? "runtime",
+    weight: root.parts[1].weight ?? 0,
+    item: assetDisplay.item,
+    bytes: root.parts[1].bytes,
+    integrity: root.parts[1].integrity,
+  });
+  const item = JSON.parse(decoder.decode(root.parts[2].bytes).slice(1)) as KeelStandaloneViewerItem;
+  if (
+    item.id !== root.declaration.creatorAsset.id
+    || item.role !== "entrypoint"
+    || item.mediaType !== root.declaration.creatorAsset.mediaType
+    || item.integrity.digest.toLowerCase() !== root.declaration.creatorAsset.integrity.digest.toLowerCase()
+    || item.integrity.byteLength !== root.declaration.creatorAsset.integrity.byteLength
+  ) {
+    throw new TypeError("Normal media creator entrypoint does not match its immutable declaration.");
+  }
+  keelAssetDisplayKind(item.mediaType);
+}
+
+/**
+ * Turn a normal-media document into a publishable graph only after all three
+ * reusable catalogue fragments are supplied. The check compares the complete
+ * decoded graph, so another object with the same label cannot substitute for
+ * the registered shell or asset-display module.
+ */
+export async function buildKeelRegisteredInlineNormalMediaTokenURIGraph(input: {
+  readonly document: KeelInlineNormalMediaDocument;
+  readonly shellId?: typeof KEEL_INLINE_PROTECTION_SHELL_ID;
+  readonly existingParts: readonly [KeelPublishedInlineFragment, KeelPublishedInlineFragment, KeelPublishedInlineFragment];
+}): Promise<KeelInlinePreEncodedTokenURIGraph> {
+  if ((input.shellId ?? KEEL_INLINE_PROTECTION_SHELL_ID) !== KEEL_INLINE_PROTECTION_SHELL_ID) {
+    throw new TypeError("Normal media must use the canonical registered KEEL Inline protection shell.");
+  }
+  await assertCanonicalNormalMediaDocument(input.document);
+  const expected = await buildKeelInlinePreEncodedTokenURIGraph(input.document);
+  const graph = await buildKeelInlinePreEncodedTokenURIGraph(input.document, { existingParts: input.existingParts });
+  const expectedExisting = expected.parts.filter((part) => part.sourceKind === "existing");
+  const actualExisting = graph.parts.filter((part) => part.sourceKind === "existing");
+  if (
+    expectedExisting.length !== 3
+    || actualExisting.length !== 3
+    || expectedExisting.some((part, index) => !exactBytes(part.decodedHtmlBytes, actualExisting[index]!.decodedHtmlBytes))
+  ) {
+    throw new TypeError("Normal-media graph does not match the registered KEEL shell and asset-display module.");
+  }
+  return graph;
+}
+
 
 /**
  * Build the reusable pre-encoded tokenURI lane from an already verified Inline
@@ -516,7 +762,7 @@ export async function buildKeelInlineLocalDocument(input: {
  * artwork-specific publication payload.
  */
 export async function buildKeelInlinePreEncodedTokenURIGraph(
-  root: KeelInlineLocalDocument,
+  root: KeelInlineGraphDocument,
   options: { readonly existingParts?: readonly KeelPublishedInlineFragment[] } = {},
 ): Promise<KeelInlinePreEncodedTokenURIGraph> {
   if (root.parts.length < 2 || root.parts.at(-1)?.role !== "shell-suffix") {

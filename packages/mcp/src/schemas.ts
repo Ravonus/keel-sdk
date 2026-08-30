@@ -206,7 +206,7 @@ const studioStageProject: JsonSchema = object({
   description: string("Collector-facing project description.", 2_000),
   storageStrategy: { type: "string", enum: ["local", "onchain", "hybrid"] },
   marketplaceExportMode: { type: "string", enum: ["recursive", "packed", "hybrid", "onchfs"] },
-  viewer: { type: "string", enum: ["keel-verification-shell", "none"], description: "Omit to select Studio's canonical KEEL Inline graph for later preparation. `none` is the explicit artifact/storage-only opt-out; creator HTML remains content, never a replacement shell or protected-harness/local wrapper." },
+  viewer: { type: "string", enum: ["keel-verification-shell", "none"], description: "Omit to select Studio's canonical KEEL Inline graph for later preparation. Standalone image, video, and self-contained GLB use the registered keel.asset-display module plus the direct creator asset, never zero modules or a generated index.html. `none` is the explicit artifact/storage-only opt-out; creator HTML remains content, never a replacement shell or protected-harness/local wrapper." },
   files: { type: "array", items: studioStageFile, minItems: 1, maxItems: 256 },
   releaseIntent: { type: "object", description: "Optional editable keel-release-intent@1 produced by keel-studio-project-intake." },
 }, ["title", "storageStrategy", "files"]);

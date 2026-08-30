@@ -241,6 +241,14 @@ function ensureEntrypoint(
   }
 
   const primary = choosePrimary(assets);
+  // Ordinary visual media is the creator payload, not a project-authored HTML
+  // document. The canonical KEEL verification shell and its reusable
+  // asset-display module mount these exact bytes later. Keeping the media as
+  // the direct entrypoint prevents Studio from storing a per-project
+  // `index.html` that merely duplicates platform renderer behavior.
+  if (flashRuntime === undefined && ["image", "video", "model"].includes(primary.mode)) {
+    return assets.map((asset) => ({ ...asset, entrypoint: asset.id === primary.id }));
+  }
   const used = new Set(assets.map((asset) => asset.id));
   const id = uniqueResourceId("index.html", "entrypoint", used);
   const wrapper = utf8ToBytes(
@@ -485,7 +493,7 @@ export async function prepareStudioArtifact(options: PrepareStudioArtifactOption
     id: options.id,
     name: options.name,
     ...(options.description === undefined ? {} : { description: options.description }),
-    entrypoint: { resource: entrypoint.id, mode: "html" },
+    entrypoint: { resource: entrypoint.id, mode: entrypoint.mode },
     resources: resources.map((item) => item.resource),
     stack: projectStack(normalized, resources),
     ...(options.libraries === undefined ? {} : { libraries: options.libraries }),

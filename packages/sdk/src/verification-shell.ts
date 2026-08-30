@@ -499,16 +499,26 @@ function compactInlineRuntime(): void {
     }
     return output;
   };
-  const childHTML = (html: string, context: unknown, verification: unknown, contentUrls: Record<string, string>) => {
+  const childHTML = (
+    html: string,
+    context: unknown,
+    verification: unknown,
+    contentUrls: Record<string, string>,
+    directEntry?: { readonly id: string; readonly name: string; readonly mediaType: string; readonly digest: string; readonly byteLength: number; readonly url: string; readonly moduleURL: string },
+  ) => {
     // Construct the child terminator at runtime so the parent HTML parser
     // never sees a literal closing script tag inside this shell script.
     const closeScript = String.fromCharCode(60, 47, 115, 99, 114, 105, 112, 116, 62);
     const policy = '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'unsafe-inline\' data: blob:; style-src \'unsafe-inline\' data:; img-src data: blob:; media-src data: blob:; font-src data:; connect-src \'none\'; object-src \'none\'; frame-src \'none\'; form-action \'none\'; base-uri \'none\'">';
     const injection = `<script>{const c=Object.freeze(${safeJSON(context ?? {})});globalThis.__KEEL_CONTEXT__=c;const s=c?.derivedTokenSeed??c?.tokenSeed??c?.seed;if(typeof s==="string"&&/^0x[0-9a-f]{64}$/i.test(s))Object.defineProperty(globalThis,"KEEL_SEED",{value:s.toLowerCase(),enumerable:true,writable:false,configurable:false});Object.defineProperty(globalThis,"__KEEL_VERIFICATION__",{value:Object.freeze(${safeJSON(verification)}),enumerable:true,writable:false,configurable:false})}${closeScript}`;
-    const content = `<script>(()=>{const u=Object.freeze(${safeJSON(contentUrls)}),bytes=id=>{const value=u[id];if(typeof value!=="string")throw new Error("Undeclared verified content "+id);const encoded=value.slice(value.indexOf(",")+1);return Uint8Array.from(atob(encoded),character=>character.charCodeAt(0))},resources=()=>Object.freeze(Object.entries(u).map(([id,url])=>Object.freeze({id,url})));Object.defineProperty(globalThis,"__KEEL_CONTENT__",{value:Object.freeze({url:id=>u[id]??null,bytes,resources}),enumerable:true,writable:false,configurable:false})})()${closeScript}`;
-    return /<head(?:\s[^>]*)?>/iu.test(html)
-      ? html.replace(/<head(?:\s[^>]*)?>/iu, (head) => `${head}${policy}${injection}${content}`)
-      : `<!doctype html><html><head><meta charset="utf-8">${policy}${injection}${content}</head><body>${html}</body></html>`;
+    const content = `<script>(()=>{const u=Object.freeze(${safeJSON(contentUrls)}),r=Object.freeze(${safeJSON((verification as { readonly checks?: unknown }).checks ?? [])}),bytes=id=>{const value=u[id];if(typeof value!=="string")throw new Error("Undeclared verified content "+id);const encoded=value.slice(value.indexOf(",")+1);return Uint8Array.from(atob(encoded),character=>character.charCodeAt(0))},resources=()=>r;Object.defineProperty(globalThis,"__KEEL_CONTENT__",{value:Object.freeze({url:id=>u[id]??null,bytes,resources}),enumerable:true,writable:false,configurable:false})})()${closeScript}`;
+    const direct = directEntry === undefined ? "" : `<script>{const e=Object.freeze(${safeJSON(directEntry)});Object.defineProperty(globalThis,"__KEEL_ENTRY__",{value:e,enumerable:true,writable:false,configurable:false})}${closeScript}`;
+    const document = directEntry === undefined
+      ? html
+      : `<!doctype html><html><head><meta charset="utf-8"><style>html,body,#keel-asset-display{width:100%;height:100%;margin:0;overflow:hidden;background:#05060b}</style></head><body><main id="keel-asset-display"></main><script src="${directEntry.moduleURL}">${closeScript}</body></html>`;
+    return /<head(?:\s[^>]*)?>/iu.test(document)
+      ? document.replace(/<head(?:\s[^>]*)?>/iu, (head) => `${head}${policy}${injection}${content}${direct}`)
+      : `<!doctype html><html><head><meta charset="utf-8">${policy}${injection}${content}${direct}</head><body>${document}</body></html>`;
   };
   const launch = async () => {
     if (items.length === 0) throw new Error("The KEEL Inline graph is empty.");
@@ -535,7 +545,14 @@ function compactInlineRuntime(): void {
     const verification = Object.freeze({
       protocol: "keel-inline-verification@1",
       state: "verified",
-      checks: Object.freeze(items.map((item) => Object.freeze({ id: item.id, digest: item.integrity.digest, byteLength: item.integrity.byteLength }))),
+      checks: Object.freeze(items.map((item) => Object.freeze({
+        id: item.id,
+        name: item.aliases[0] ?? item.id,
+        role: item.role ?? "asset",
+        mediaType: item.mediaType,
+        digest: item.integrity.digest,
+        byteLength: item.integrity.byteLength,
+      }))),
     });
     const contentUrls = Object.fromEntries(items.map((item) => {
       const bytes = resolved.get(item.id);
@@ -543,12 +560,8 @@ function compactInlineRuntime(): void {
       return [item.id, dataURL(bytes, item.mediaType)];
     }));
     globals.__KEEL_VERIFICATION__ = verification;
-    const resources = Object.freeze(items.map((item) => Object.freeze({
-      id: item.id,
-      digest: item.integrity.digest,
-      byteLength: item.integrity.byteLength,
-    })));
-    resourceList.textContent = resources.map((item) => `${item.id}\n${item.byteLength} bytes · ${item.digest}`).join("\n\n");
+    const resources = verification.checks;
+    resourceList.textContent = resources.map((item) => `${item.name}\n${item.role} · ${item.mediaType}\n${item.byteLength} bytes · ${item.digest}`).join("\n\n");
     const context = globals.__KEEL_CONTEXT__;
     contextPanel.textContent = JSON.stringify(context ?? {}, null, 2);
     const extensions = typeof context === "object" && context !== null && Array.isArray((context as { shellPlugins?: unknown }).shellPlugins)
@@ -579,7 +592,30 @@ function compactInlineRuntime(): void {
     frame.title = "Verified KEEL work";
     frame.sandbox.add("allow-scripts", "allow-pointer-lock");
     frame.referrerPolicy = "no-referrer";
-    frame.srcdoc = childHTML(replaceAliases(decoder.decode(entryBytes), aliases), globals.__KEEL_CONTEXT__, verification, contentUrls);
+    const directMedia = entry.mediaType.startsWith("image/") || entry.mediaType.startsWith("video/") || entry.mediaType === "model/gltf-binary";
+    const assetDisplay = directMedia
+      ? items.filter((item) => item.id === "keel.asset-display" && item.role === "module" && item.mediaType === "text/javascript")
+      : [];
+    if (directMedia && assetDisplay.length !== 1) {
+      throw new Error("A direct media entry requires exactly one verified keel.asset-display module.");
+    }
+    const entryURL = contentUrls[entry.id];
+    if (entryURL === undefined) throw new Error("Verified entrypoint descriptor is missing.");
+    frame.srcdoc = childHTML(
+      directMedia ? "" : replaceAliases(decoder.decode(entryBytes), aliases),
+      globals.__KEEL_CONTEXT__,
+      verification,
+      contentUrls,
+      directMedia ? {
+        id: entry.id,
+        name: entry.aliases[0] ?? entry.id,
+        mediaType: entry.mediaType,
+        digest: entry.integrity.digest,
+        byteLength: entry.integrity.byteLength,
+        url: entryURL,
+        moduleURL: contentUrls[assetDisplay[0]!.id]!,
+      } : undefined,
+    );
     stage.replaceChildren(frame);
     await new Promise<void>((resolveReady, reject) => {
       const timer = setTimeout(() => reject(new Error("Verified entrypoint timed out.")), 15_000);
@@ -628,7 +664,7 @@ export async function buildCompactInlineKeelShell(): Promise<{
   });
   const runtime = runtimeBuild.outputFiles[0]?.text;
   if (runtime === undefined) throw new Error("Compact KEEL Inline runtime produced no JavaScript.");
-  const prefix = utf8ToBytes('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}html,body,#keel-stage,iframe{width:100%;height:100%;margin:0;border:0;overflow:hidden;background:#05060b;color:#eafff8}#keel-status{position:fixed;inset:0;z-index:2;display:grid;place-items:center;white-space:pre-wrap;text-align:center;color:#d7ff63;background:#05060b;font:700 12px/1.7 monospace}[hidden]{display:none!important}#keel-verify-stamp{position:fixed;left:10px;bottom:10px;z-index:5;width:38px;height:38px;border:1px solid;background:#07120fea;color:#ffd166;opacity:.4;cursor:pointer;font:900 17px monospace}#keel-verify-stamp:hover,#keel-verify-stamp:focus-visible,#keel-verify-stamp[aria-expanded="true"]{opacity:1;box-shadow:0 0 20px}#keel-verify-stamp[data-state="verified"]{color:#67f6c5}#keel-verify-stamp[data-state="failed"]{color:#ff6573}#keel-verify-panel{position:fixed;z-index:6;left:10px;bottom:54px;width:min(520px,calc(100% - 20px));max-height:calc(100% - 64px);overflow:auto;border:1px solid #67f6c566;background:#07120ff5;padding:13px;font:11px/1.45 monospace;box-shadow:0 18px 60px #000c}#keel-verify-panel h2,#keel-verify-panel h3,#keel-verify-panel p{margin:0}#keel-verify-panel section,#keel-verify-plugin-panels{margin-top:10px;padding:9px;border:1px solid #ffffff14}#keel-verify-resources,#keel-verify-context,#keel-verify-plugin-panels{overflow-wrap:anywhere;white-space:pre-wrap}</style></head><body data-verification="pending"><div id="keel-stage"></div><div id="keel-status">VERIFYING KEEL GRAPH</div><button id="keel-verify-stamp" type="button" data-state="pending" aria-expanded="false" aria-controls="keel-verify-panel" aria-label="Open KEEL verification proof">K</button><aside id="keel-verify-panel" role="dialog" aria-labelledby="keel-verify-title" hidden><h2 id="keel-verify-title">Checking KEEL proof</h2><p id="keel-verify-summary">The work stays hidden until every commitment matches.</p><section><h3>Verified resources</h3><div id="keel-verify-resources"></div></section><section><h3>Collector context</h3><pre id="keel-verify-context"></pre></section><div id="keel-verify-plugin-panels"></div></aside><script>globalThis.__KEEL_ITEMS__=[null');
+  const prefix = utf8ToBytes('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}html,body,#keel-stage,iframe{width:100%;height:100%;margin:0;border:0;overflow:hidden;background:#05060b;color:#eafff8}#keel-status{position:fixed;inset:0;z-index:2;display:grid;place-items:center;white-space:pre-wrap;text-align:center;color:#d7ff63;background:#05060b;font:700 12px/1.7 monospace}[hidden]{display:none!important}#keel-verify-stamp{position:fixed;left:10px;bottom:10px;z-index:5;width:38px;height:38px;border:1px solid;background:#07120fea;color:#ffd166;opacity:.4;cursor:pointer;font:900 17px monospace}#keel-verify-stamp[data-state="verified"]{color:#67f6c5}#keel-verify-stamp[data-state="failed"]{color:#ff6573}#keel-verify-panel{position:fixed;z-index:6;left:10px;bottom:54px;width:min(520px,calc(100% - 20px));max-height:calc(100% - 64px);overflow:auto;border:1px solid #67f6c566;background:#07120ff5;padding:13px;font:11px/1.45 monospace;box-shadow:0 18px 60px #000c}#keel-verify-panel h2,#keel-verify-panel h3,#keel-verify-panel p{margin:0}#keel-verify-panel section,#keel-verify-plugin-panels{margin-top:10px;padding:9px;border:1px solid #ffffff14}#keel-verify-resources,#keel-verify-context,#keel-verify-plugin-panels{overflow-wrap:anywhere;white-space:pre-wrap}</style></head><body data-verification="pending"><div id="keel-stage"></div><div id="keel-status">VERIFYING KEEL GRAPH</div><button id="keel-verify-stamp" type="button" data-state="pending" aria-expanded="false" aria-controls="keel-verify-panel" aria-label="Open KEEL verification proof">K</button><aside id="keel-verify-panel" role="dialog" aria-labelledby="keel-verify-title" hidden><h2 id="keel-verify-title">Checking KEEL proof</h2><p id="keel-verify-summary">The work stays hidden until every commitment matches.</p><section><h3>Verified resources</h3><div id="keel-verify-resources"></div></section><section><h3>Collector context</h3><pre id="keel-verify-context"></pre></section><div id="keel-verify-plugin-panels"></div></aside><script>globalThis.__KEEL_ITEMS__=[null');
   const suffix = utf8ToBytes(`];${runtime}</script></body></html>`);
   const [prefixIntegrity, suffixIntegrity] = await Promise.all([sha256Integrity(prefix), sha256Integrity(suffix)]);
   return { prefix, suffix, prefixIntegrity, suffixIntegrity };

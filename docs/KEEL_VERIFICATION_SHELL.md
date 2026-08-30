@@ -127,6 +127,14 @@ mutation authority. Creator code runs in an iframe without `allow-same-origin`,
 and the child CSP denies network, forms, frames, and objects, so code placed
 after the shell cannot change the K, the proof result, or the outer panel.
 
+For a direct image, video, or self-contained GLB entrypoint, the same opaque
+child receives a frozen `__KEEL_ENTRY__` descriptor (`id`, name, media type,
+digest, byte length, verified data URL) plus the read-only `__KEEL_CONTENT__`
+resource descriptors. The registered `keel.asset-display@1` module self-mounts
+that direct entry. The short child document is synthesized only in memory by
+the verified shell; it is not a creator-uploaded `index.html`, custom shell, or
+wallet-capable runtime.
+
 ## The wrapper is a forced verifier
 
 This section applies to the protection shell, not arbitrary registry shells.

@@ -281,6 +281,35 @@ test("studio-core uses an image entrypoint as its own fallback", async () => {
   assert.equal(manifest.fallback.image, "image");
 });
 
+test("ordinary media remains the direct entrypoint for the reusable KEEL asset-display module", async () => {
+  const cases = [
+    { fileName: "still.webp", mediaType: "image/webp", role: "image", mode: "image" },
+    { fileName: "loop.webm", mediaType: "video/webm", role: "video", mode: "video" },
+    { fileName: "scene.glb", mediaType: "model/gltf-binary", role: "model", mode: "model" },
+  ];
+  for (const item of cases) {
+    const prepared = await prepareStudioArtifact({
+      id: `direct-${item.mode}`,
+      name: `Direct ${item.mode}`,
+      createdAt: "2026-08-29T00:00:00.000Z",
+      assets: [{
+        fileName: item.fileName,
+        mediaType: item.mediaType,
+        role: item.role,
+        bytes: new TextEncoder().encode(`exact-${item.mode}-bytes`),
+      }],
+    });
+
+    assert.equal(prepared.resources.length, 1);
+    assert.equal(prepared.resources[0].fileName, item.fileName);
+    assert.equal(prepared.resources[0].resource.role, item.role);
+    assert.equal(prepared.manifest.entrypoint.resource, item.fileName);
+    assert.equal(prepared.manifest.entrypoint.mode, item.mode);
+    assert.equal(prepared.resources.some((resource) => resource.fileName === "index.html"), false);
+    assert.equal((await verifyPreparedStudioArtifact(prepared)).valid, true);
+  }
+});
+
 test("studio-core detects parent-hash reorgs", () => {
   const hashA = `0x${"11".repeat(32)}`;
   const hashB = `0x${"22".repeat(32)}`;

@@ -45,6 +45,16 @@ declared as the default KEEL shell, a protected-harness wrapper, or a local
 replacement wrapper when catalog resolution fails. A creator-authored HTML file
 is ordinary project content, not a replacement shell.
 
+For one standalone image, video, or self-contained GLB, the canonical Inline
+composition is fixed: registered `keel-verification-shell`, registered
+`keel.asset-display@1`, then the direct creator media entrypoint. It is never a
+zero-module project and never writes a creator `index.html` wrapper. Use
+`buildKeelInlineNormalMediaDocument` to prepare that graph and
+`buildKeelRegisteredInlineNormalMediaTokenURIGraph` only after the selected
+chain supplies the exact shell-prefix, asset-display, and shell-suffix objects.
+The display module renders image and video data URLs and a self-contained GLB
+with WebGL; it has no network or wallet authority.
+
 ## Discover a Studio before uploading
 
 `fetchStudioCapabilities` reads the non-mutating

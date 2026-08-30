@@ -16,8 +16,13 @@ test("the default compact shell contains the protected K stamp, proof panel, and
   assert.match(prefix, /id="keel-verify-plugin-panels"/u);
   assert.match(suffix, /keel-shell-plugin@1/u);
   assert.match(suffix, /__KEEL_SHELL_API__/u);
+  assert.match(suffix, /mediaType/u);
+  assert.match(suffix, /byteLength/u);
+  assert.match(suffix, /__KEEL_CONTENT__/u);
+  assert.match(suffix, /__KEEL_ENTRY__/u);
   assert.match(suffix, /configurable:\s*!1|configurable:false/u);
   assert.match(suffix, /sandbox\.add\("allow-scripts",\s*"allow-pointer-lock"\)/u);
   assert.doesNotMatch(shell, /allow-same-origin/u);
+  assert.doesNotMatch(shell, /ethereum|wallet|XMLHttpRequest|fetch\(/iu);
   assert.doesNotMatch(prefix, />S<\/button>/u);
 });

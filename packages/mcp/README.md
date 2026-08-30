@@ -182,6 +182,15 @@ protected-harness wrapper, or a local replacement wrapper when catalog
 resolution fails. Creator-authored HTML (including `index.html`) is project
 content, not a replacement shell.
 
+For one standalone image, video, or self-contained GLB, later Inline
+preparation uses exactly the registered KEEL shell, registered
+`keel.asset-display@1`, and the direct creator media entry. This is not a
+zero-module project and agents must not generate or upload an `index.html`
+wrapper. The reusable module displays image/video data URLs or a self-contained
+GLB WebGL view from frozen verified descriptors; it has no network or wallet
+authority. A `.gltf` requiring external dependencies is not eligible for this
+compact normal-media path.
+
 `keel-creator-collection-prepare` prepares one exact creator collection call
 from the SDK's durable deployment registry. It supports a compact dedicated
 ERC-721, a compact dedicated ERC-1155, a logical collection in the shared

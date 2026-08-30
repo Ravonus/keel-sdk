@@ -3,16 +3,23 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import {
+  KEEL_ASSET_DISPLAY_MODULE_ID,
+  buildKeelInlineAssetDisplayModuleFragment,
   buildKeelInlineLocalDocument,
   buildKeelInlineModuleFragment,
+  buildKeelInlineNormalMediaDocument,
   buildKeelInlinePreEncodedTokenURIGraph,
+  buildKeelRegisteredInlineNormalMediaTokenURIGraph,
   buildKeelPreparedOneOfOneTokenURI,
   buildKeelInlineShellFragments,
   concatenateComposableBase64Fragments,
   createComposableBase64Fragment,
+  keelAssetDisplayModuleBytes,
+  keelAssetDisplayKind,
   serializeInlineScriptJSON,
   verifyKeelPublishedInlineModuleFragment,
 } from "../packages/sdk/dist/inline-viewer-graph.js";
+import { KEEL_INLINE_PROTECTION_SHELL_ID } from "../packages/sdk/dist/shell-registry.js";
 
 const repositoryRoot = fileURLToPath(new URL("..", import.meta.url));
 const chainId = 11155111;
@@ -211,6 +218,120 @@ test("creator HTML is one verified middle slot inside the canonical shell", asyn
   assert.equal(local.parts.filter((part) => part.role === "shell-suffix").length, 1);
   assert.equal(new TextDecoder().decode(local.rootBytes).includes("creator.html"), true);
   assert.equal(local.rootBytes.byteLength < source.byteLength + shell.prefix.bytes.byteLength + shell.suffix.bytes.byteLength + 1_000, true);
+});
+
+test("normal media uses the registered shell and asset-display module without a creator wrapper", async () => {
+  const shell = await buildKeelInlineShellFragments({ repositoryRoot });
+  const inputs = [
+    { id: "poster.webp", mediaType: "image/webp", source: new Uint8Array([0x52, 0x49, 0x46, 0x46]) },
+    { id: "loop.webm", mediaType: "video/webm", source: new Uint8Array([0x1a, 0x45, 0xdf, 0xa3]) },
+    { id: "scene.glb", mediaType: "model/gltf-binary", source: new Uint8Array([0x67, 0x6c, 0x54, 0x46]) },
+  ];
+  const documents = await Promise.all(inputs.map((asset) => buildKeelInlineNormalMediaDocument({ shell, asset })));
+
+  assert.deepEqual(documents.map((document) => document.parts.map((part) => part.role)), [
+    ["shell-prefix", "module", "entrypoint", "shell-suffix"],
+    ["shell-prefix", "module", "entrypoint", "shell-suffix"],
+    ["shell-prefix", "module", "entrypoint", "shell-suffix"],
+  ]);
+  for (const [index, document] of documents.entries()) {
+    const asset = inputs[index];
+    assert.equal(document.declaration.shellId, KEEL_INLINE_PROTECTION_SHELL_ID);
+    assert.equal(document.declaration.assetDisplay.moduleId, KEEL_ASSET_DISPLAY_MODULE_ID);
+    assert.deepEqual(document.parts.filter((part) => part.kind === "creator").map((part) => part.role), ["entrypoint"]);
+    assert.equal(document.declaration.creatorAsset.id, asset.id);
+    assert.equal(document.declaration.creatorAsset.mediaType, asset.mediaType);
+    assert.match(new TextDecoder().decode(document.rootBytes), new RegExp(`"id":"${asset.id}"`, "u"));
+    assert.doesNotMatch(new TextDecoder().decode(document.rootBytes), /index\.html|local-shell|viewer\.js/u);
+  }
+  assert.deepEqual(inputs.map((asset) => keelAssetDisplayKind(asset.mediaType)), ["image", "video", "model"]);
+  assert.throws(() => keelAssetDisplayKind("model/gltf+json"), /does not support/u);
+
+  const display = await buildKeelInlineAssetDisplayModuleFragment();
+  const firstDisplayBytes = keelAssetDisplayModuleBytes();
+  const expectedFirstByte = firstDisplayBytes[0];
+  firstDisplayBytes[0] ^= 0xff;
+  const secondDisplayBytes = keelAssetDisplayModuleBytes();
+  assert.equal(secondDisplayBytes[0], expectedFirstByte);
+  assert.notDeepEqual(firstDisplayBytes, secondDisplayBytes);
+  assert.equal(display.item.integrity.byteLength, secondDisplayBytes.byteLength);
+  const displaySource = new TextDecoder().decode(secondDisplayBytes);
+  assert.match(displaySource, /createElement\("img"\)/u);
+  assert.match(displaySource, /createElement\("video"\)/u);
+  assert.match(displaySource, /model\/gltf-binary/u);
+  assert.match(displaySource, /getContext\("webgl"/u);
+  assert.match(displaySource, /__KEEL_ENTRY__/u);
+  assert.doesNotMatch(displaySource, /fetch\(|ethereum|wallet|XMLHttpRequest/u);
+
+  await assert.rejects(
+    buildKeelInlineLocalDocument({ shell, modules: [], entry: inputs[0] }),
+    /exactly one registered keel\.asset-display/u,
+  );
+  const counterfeit = await buildKeelInlineModuleFragment({
+    moduleId: KEEL_ASSET_DISPLAY_MODULE_ID,
+    version: "1.0.0",
+    mediaType: "text/javascript",
+    decodedBytes: utf8("globalThis.notTheKeelAssetDisplay=true"),
+    compression: "gzip",
+    execution: "classic",
+    phase: "render",
+  });
+  await assert.rejects(
+    buildKeelInlineLocalDocument({ shell, modules: [counterfeit], entry: inputs[0] }),
+    /exact registered keel\.asset-display/u,
+  );
+});
+
+test("normal-media pre-encoded graphs accept only the registered shell and display module", async () => {
+  const shell = await buildKeelInlineShellFragments({ repositoryRoot });
+  const document = await buildKeelInlineNormalMediaDocument({
+    shell,
+    asset: { id: "poster.png", mediaType: "image/png", source: new Uint8Array([0x89, 0x50, 0x4e, 0x47]) },
+  });
+  const local = await buildKeelInlinePreEncodedTokenURIGraph(document);
+  const existingParts = local.parts.filter((part) => part.sourceKind === "existing").map((part, index) => ({
+    bytes: part.bytes,
+    integrity: part.integrity,
+    carrier: {
+      chainId,
+      store: `0x${"ab".repeat(20)}`,
+      objectId: `0x${String(index + 1).padStart(64, "0")}`,
+      mediaType: local.mediaType,
+      compression: "none",
+      storedByteLength: part.bytes.byteLength,
+    },
+  }));
+  const graph = await buildKeelRegisteredInlineNormalMediaTokenURIGraph({
+    document,
+    existingParts,
+  });
+  assert.deepEqual(graph.parts.map((part) => [part.sourceKind, part.role]), [
+    ["existing", "shell-prefix"],
+    ["existing", "module"],
+    ["creator", "entrypoint"],
+    ["existing", "shell-suffix"],
+  ]);
+  assert.equal(graph.creatorPublicationBytes, graph.parts[2].bytes.byteLength);
+  assert.equal(graph.parts[1].sourceObjectId, existingParts[1].carrier.objectId);
+  await assert.rejects(
+    buildKeelRegisteredInlineNormalMediaTokenURIGraph({
+      document,
+      shellId: `0x${"ff".repeat(32)}`,
+      existingParts,
+    }),
+    /canonical registered KEEL Inline protection shell/u,
+  );
+  const counterfeitShell = {
+    ...document,
+    parts: [
+      { ...document.parts[0], bytes: utf8("counterfeit shell"), byteLength: 17 },
+      ...document.parts.slice(1),
+    ],
+  };
+  await assert.rejects(
+    buildKeelRegisteredInlineNormalMediaTokenURIGraph({ document: counterfeitShell, existingParts }),
+    /exact canonical KEEL shell and asset-display declarations/u,
+  );
 });
 
 test("published canonical fragments survive platform-specific module recompression", async () => {
