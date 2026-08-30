@@ -1,4 +1,5 @@
 import {
+  applyMediaOptimization,
   analyzeCost,
   analyzeMedia,
   assertValidKeelModuleResolverSnapshot,
@@ -34,6 +35,7 @@ import {
   type KeelWalletLinkInput,
   type KeelModuleReviewInput,
   type KeelCreatorCollectionReviewInput,
+  type FrayAuctionPresetId,
 } from "@keel/sdk";
 import {
   createKeelFactoryConfigDigest,
@@ -126,13 +128,15 @@ async function analyzeTool(context: ToolContext, value: unknown): Promise<unknow
   return analyzeMedia({ input: file, maxInputBytes: MAX_MEDIA_BYTES, ...(mediaType === undefined ? {} : { mediaType }) });
 }
 
-/** Always dry-run: MCP can review optimizer settings but cannot replace artwork. */
+/** Always dry-run: the creator must review this result before a separate apply call. */
 async function mediaOptimizeTool(context: ToolContext, value: unknown): Promise<unknown> {
-  const input = record(value, ["input", "mediaType", "quality", "effort", "selectedStorageMode"], "media optimize arguments");
+  const input = record(value, ["input", "mediaType", "quality", "effort", "videoCrf", "videoCpuUsed", "selectedStorageMode"], "media optimize arguments");
   const file = await context.workspace.resolveExistingFile(requiredString(input, "input"), MAX_MEDIA_BYTES);
   const mediaType = optionalString(input, "mediaType");
   const quality = optionalNumber(input, "quality");
   const effort = optionalNumber(input, "effort");
+  const videoCrf = optionalNumber(input, "videoCrf");
+  const videoCpuUsed = optionalNumber(input, "videoCpuUsed");
   const selectedStorageMode = optionalString(input, "selectedStorageMode");
   return planMediaOptimization({
     input: file,
@@ -140,8 +144,49 @@ async function mediaOptimizeTool(context: ToolContext, value: unknown): Promise<
     ...(mediaType === undefined ? {} : { mediaType }),
     ...(quality === undefined ? {} : { quality }),
     ...(effort === undefined ? {} : { effort }),
+    ...(videoCrf === undefined ? {} : { videoCrf }),
+    ...(videoCpuUsed === undefined ? {} : { videoCpuUsed }),
     ...(selectedStorageMode === undefined ? {} : { selectedStorageMode }),
   });
+}
+
+async function mediaOptimizeApplyTool(context: ToolContext, value: unknown): Promise<unknown> {
+  const input = record(
+    value,
+    ["input", "output", "expectedOutputDigest", "expectedAfterBytes", "mediaType", "quality", "effort", "videoCrf", "videoCpuUsed", "selectedStorageMode"],
+    "media optimize apply arguments",
+  );
+  const file = await context.workspace.resolveExistingFile(requiredString(input, "input"), MAX_MEDIA_BYTES);
+  const outputValue = requiredString(input, "output");
+  const outputName = path.basename(outputValue);
+  if (outputName === "." || outputName === ".." || /[\\\u0000-\u001f\u007f]/u.test(outputName)) {
+    throw new TypeError("output must be a regular workspace-relative file path.");
+  }
+  const outputDirectory = await context.workspace.resolveExistingDirectory(path.dirname(outputValue));
+  const expectedOutputDigest = requiredString(input, "expectedOutputDigest");
+  if (!/^0x[0-9a-f]{64}$/u.test(expectedOutputDigest)) throw new TypeError("expectedOutputDigest must be a lowercase SHA-256 digest.");
+  const expectedAfterBytes = optionalNumber(input, "expectedAfterBytes");
+  if (expectedAfterBytes === undefined || expectedAfterBytes <= 0) throw new TypeError("expectedAfterBytes must be a positive safe integer.");
+  const mediaType = optionalString(input, "mediaType");
+  const quality = optionalNumber(input, "quality");
+  const effort = optionalNumber(input, "effort");
+  const videoCrf = optionalNumber(input, "videoCrf");
+  const videoCpuUsed = optionalNumber(input, "videoCpuUsed");
+  const selectedStorageMode = optionalString(input, "selectedStorageMode");
+  const plan = await planMediaOptimization({
+    input: file,
+    maxInputBytes: MAX_MEDIA_BYTES,
+    ...(mediaType === undefined ? {} : { mediaType }),
+    ...(quality === undefined ? {} : { quality }),
+    ...(effort === undefined ? {} : { effort }),
+    ...(videoCrf === undefined ? {} : { videoCrf }),
+    ...(videoCpuUsed === undefined ? {} : { videoCpuUsed }),
+    ...(selectedStorageMode === undefined ? {} : { selectedStorageMode }),
+  });
+  if (plan.output?.integrity.digest !== expectedOutputDigest || plan.measurements.afterBytes !== expectedAfterBytes) {
+    throw new Error("The current optimization candidate does not match the reviewed dry-run digest and byte length; review it again before applying.");
+  }
+  return applyMediaOptimization({ plan, output: path.join(outputDirectory, outputName) });
 }
 
 async function buildTool(context: ToolContext, value: unknown): Promise<unknown> {
@@ -416,7 +461,7 @@ async function frayStageProjectTool(context: ToolContext, value: unknown): Promi
   const releaseOutcome = rawOutcome ?? (Number(input.auctionPreset) === 1 ? "bidder" : "patrons");
   if (releaseOutcome !== "bidder" && releaseOutcome !== "patrons") throw new TypeError("releaseOutcome must be bidder or patrons.");
   const preset = input.auctionPreset;
-  if (typeof preset !== "number" || !Number.isSafeInteger(preset) || preset < 1 || preset > 3) throw new TypeError("auctionPreset must be 1, 2, or 3.");
+  if (typeof preset !== "number" || !Number.isSafeInteger(preset) || preset < 1 || preset > 4) throw new TypeError("auctionPreset must be 1, 2, 3, or 4.");
   const mediaType = optionalString(input, "mediaType") ?? inferMediaType(sourcePath);
   const title = requiredBoundedString(input, "title", 120);
   const description = requiredBoundedString(input, "description", 2_000);
@@ -437,7 +482,7 @@ async function frayStageProjectTool(context: ToolContext, value: unknown): Promi
     description,
     family,
     network,
-    auctionPreset: preset as 1 | 2 | 3,
+    auctionPreset: preset as FrayAuctionPresetId,
     metadataMode,
     releaseOutcome,
     previewExecution,
@@ -737,6 +782,7 @@ function tool(name: string, description: string, inputSchema: JsonSchema, run: T
 export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
   tool("analyze", "Analyze a workspace media file and report integrity and wrapper support.", TOOL_SCHEMAS.analyze, analyzeTool),
   tool("media-optimize", "Dry-run a reversible media optimization. It reports only repository-supported adapters and never writes, changes storage mode, uploads, or touches a chain.", TOOL_SCHEMAS.mediaOptimize, mediaOptimizeTool),
+  tool("media-optimize-apply", "Write one new optimized file only when its recomputed digest and byte length exactly match a reviewed media-optimize result. The source and selected storage mode are preserved; no upload, wallet, or chain action occurs.", TOOL_SCHEMAS.mediaOptimizeApply, mediaOptimizeApplyTool),
   tool("build", "Build and verify a deterministic local media artifact; no chain or wallet action occurs.", TOOL_SCHEMAS.build, buildTool),
   tool("verify", "Verify a local artifact manifest and its available relative resources.", TOOL_SCHEMAS.verify, verifyTool),
   tool("cost", "Estimate compression, chunks, recursive depth, transactions, and calldata using an offline model.", TOOL_SCHEMAS.cost, costTool),
@@ -749,7 +795,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
   tool("wallet-request-prepare", "Prepare a canonical user-reviewable wallet request or QR payload without signing or submitting.", TOOL_SCHEMAS.walletRequestPrepare, walletRequestPrepareTool),
   tool("wallet-link", "Prepare a review-only account-to-agent KeelFactory castDieFor authorization and JSON-safe EIP-712 typed data; no signing, RPC, or submission occurs.", TOOL_SCHEMAS.walletLink, walletLinkTool),
   tool("module-review-prepare", "Prepare a review-only KeelModuleReviewRegistry action (submit/sanction/deprecate/revoke a non-contract module's on-chain trust) as a canonical descriptor; no signing, encoding, or submission occurs.", TOOL_SCHEMAS.moduleReview, moduleReviewPrepareTool),
-  tool("fray-auction-intake", "Collect the title, description, chain, and one of exactly three Fray auction presets before emitting a user-approved API and wallet handoff; no signing or submission occurs.", TOOL_SCHEMAS.frayAuctionIntake, frayAuctionIntakeTool),
+  tool("fray-auction-intake", "Collect the title, description, chain, and one of exactly four Fray auction presets before emitting a user-approved API and wallet handoff; no signing or submission occurs.", TOOL_SCHEMAS.frayAuctionIntake, frayAuctionIntakeTool),
   tool("fray-stage-project", "Upload bounded source bytes to the configured Fray Studio temporary project store, prepare still/video previews, preflight the fee, and return a wallet-facing handoff; no signing or submission occurs.", TOOL_SCHEMAS.frayStageProject, frayStageProjectTool),
   tool("keel-chain-guide", "List supported testnets and human faucet links; the MCP server never claims faucet funds or moves wallet assets.", TOOL_SCHEMAS.chainGuide, chainGuideTool),
   tool("keel-library-search", "Search configured Keel Studio Keel indexes for exact reusable library/module candidates; metadata only, no carrier bytes are fetched.", TOOL_SCHEMAS.keelLibrarySearch, keelLibrarySearchTool),

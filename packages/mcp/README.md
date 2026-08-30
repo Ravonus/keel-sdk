@@ -230,10 +230,15 @@ must explicitly review and sign it in a separate connector.
 
 ## Static workflow prompt
 
-`prompts/list` advertises `keel-asset-review` and `fray-auction-review`.
+`prompts/list` advertises `keel-asset-review`, `keel-draft-repair`, and
+`fray-auction-review`.
 `keel-asset-review` accepts a workspace-relative `input` plus optional
 `objectName` and `mediaType`, then returns one deterministic review-only
-workflow message. `fray-auction-review` teaches the same intake rules as the
+workflow message. `keel-draft-repair` binds an exact release ID and saved
+revision to the dry-run → creator review → explicit optimization apply → Studio
+staging → creator preparation → revision-checked update sequence. It never
+grants an agent wallet, cancellation, review, or publication authority.
+`fray-auction-review` teaches the same intake rules as the
 companion skill: ask for title and description, offer exactly presets 1–3,
 search Keel before uploading a named reusable module, show faucet links only,
 and stop at the digest-bound API and wallet approval boundary. Prompts never

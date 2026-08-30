@@ -103,8 +103,10 @@ registered KEEL Inline shell suffix
 `buildKeelInlineNormalMediaDocument` produces those four parts and rejects a
 missing, additional, or byte-different display module. The creator entry is the
 original media object, not a generated `index.html`; the module receives only a
-frozen verified data-URL descriptor and supports images, videos, and
-self-contained `model/gltf-binary` WebGL display. A `.gltf` that depends on
+frozen verified data-URL descriptor. AVIF and WebP mount through an intrinsic-size
+canvas so right-click saving yields PNG without changing the committed creator
+bytes. Other images and videos mount directly, while self-contained
+`model/gltf-binary` uses the WebGL display. A `.gltf` that depends on
 external files is not this compact path. `buildKeelRegisteredInlineNormalMediaTokenURIGraph`
 requires the exact three reusable catalogue objects before producing a
 publishable graph.

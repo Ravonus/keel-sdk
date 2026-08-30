@@ -1,5 +1,5 @@
 import { createWorkspace } from "./paths.js";
-import { getFrayAuctionReviewPrompt, getKeelAssetReviewPrompt, PROMPT_DEFINITIONS } from "./prompts.js";
+import { getFrayAuctionReviewPrompt, getKeelAssetReviewPrompt, getKeelDraftRepairPrompt, PROMPT_DEFINITIONS } from "./prompts.js";
 import { getMcpResource, McpResourceNotFoundError, RESOURCE_DEFINITIONS } from "./resources.js";
 import { toolByName, TOOL_DEFINITIONS } from "./tools.js";
 import {
@@ -180,9 +180,12 @@ export async function createMcpServer(options: { readonly workspaceRoot?: string
           if (params.arguments !== undefined) object(params.arguments, "prompts/get params.arguments");
           if (params._meta !== undefined) object(params._meta, "prompts/get params._meta");
           if (typeof params.name !== "string" || params.name.length === 0 || params.name.length > 128) throw new TypeError("prompts/get params.name is invalid.");
-          return response(request.id, params.name === "fray-auction-review"
-            ? getFrayAuctionReviewPrompt(params.name, params.arguments)
-            : getKeelAssetReviewPrompt(params.name, params.arguments));
+          return response(request.id,
+            params.name === "fray-auction-review"
+              ? getFrayAuctionReviewPrompt(params.name, params.arguments)
+              : params.name === "keel-draft-repair"
+                ? getKeelDraftRepairPrompt(params.name, params.arguments)
+                : getKeelAssetReviewPrompt(params.name, params.arguments));
         } catch (error) {
           return rpcError(request.id, -32602, errorText(error));
         }

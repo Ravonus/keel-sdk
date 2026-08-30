@@ -1,6 +1,6 @@
 /** Browser-safe declarations and bytes for KEEL's reusable normal-media module. */
 export const KEEL_ASSET_DISPLAY_MODULE_ID = "keel.asset-display" as const;
-export const KEEL_ASSET_DISPLAY_MODULE_VERSION = "1.0.0" as const;
+export const KEEL_ASSET_DISPLAY_MODULE_VERSION = "1.1.0" as const;
 
 export const KEEL_ASSET_DISPLAY_MEDIA_TYPES = Object.freeze([
   "image/avif",
@@ -36,7 +36,7 @@ const KEEL_ASSET_DISPLAY_MODULE_SOURCE = `"use strict";(()=>{
 const fail=m=>{throw new Error("KEEL asset display: "+m)},entry=globalThis.__KEEL_ENTRY__,content=globalThis.__KEEL_CONTENT__,root=document.getElementById("keel-asset-display")||document.body;
 if(!entry||typeof entry.id!=="string"||typeof entry.mediaType!=="string"||typeof entry.url!=="string"||!content||typeof content.bytes!=="function")fail("missing verified entry descriptor");
 const style=e=>{Object.assign(e.style,{display:"block",width:"100%",height:"100%",maxWidth:"100%",maxHeight:"100%",objectFit:"contain",background:"#05060b"});return e},mount=e=>{root.replaceChildren(e);return e};
-if(entry.mediaType.startsWith("image/")){const e=style(document.createElement("img"));e.src=entry.url;e.alt=entry.name||"Verified KEEL image";mount(e);return}
+if(entry.mediaType.startsWith("image/")){const e=document.createElement("img");e.alt=entry.name||"Verified KEEL image";if(entry.mediaType==="image/avif"||entry.mediaType==="image/webp"){e.onload=()=>{const c=document.createElement("canvas"),x=c.getContext("2d");if(!x)fail("2D canvas is unavailable");c.width=e.naturalWidth;c.height=e.naturalHeight;c.title="Right-click to save this verified image as PNG";c.setAttribute("aria-label",e.alt);Object.assign(c.style,{display:"block",width:"auto",height:"auto",maxWidth:"100%",maxHeight:"100%",margin:"auto",background:"#05060b"});x.drawImage(e,0,0);mount(c)};e.onerror=()=>fail("image decode failed");e.src=entry.url;return}style(e);e.src=entry.url;mount(e);return}
 if(entry.mediaType.startsWith("video/")){const e=style(document.createElement("video"));e.src=entry.url;e.controls=true;e.autoplay=true;e.loop=true;e.muted=true;e.playsInline=true;mount(e);return}
 if(entry.mediaType!=="model/gltf-binary")fail("unsupported media type "+entry.mediaType);
 const b=content.bytes(entry.id),v=new DataView(b.buffer,b.byteOffset,b.byteLength);if(b.byteLength<20||v.getUint32(0,true)!==0x46546c67||v.getUint32(4,true)!==2||v.getUint32(8,true)!==b.byteLength)fail("invalid GLB header");

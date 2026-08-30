@@ -1,6 +1,7 @@
 import type { McpPrompt, McpPromptResult } from "./types.js";
 
 export const KEEL_ASSET_REVIEW_PROMPT = "keel-asset-review" as const;
+export const KEEL_DRAFT_REPAIR_PROMPT = "keel-draft-repair" as const;
 export const FRAY_AUCTION_REVIEW_PROMPT = "fray-auction-review" as const;
 
 const PROMPT_ARGUMENTS = [
@@ -14,6 +15,15 @@ export const PROMPT_DEFINITIONS: readonly McpPrompt[] = [{
   description: "Guide an agent through an offline Keel asset analysis and human-reviewed upload workflow.",
   arguments: PROMPT_ARGUMENTS,
 }, {
+  name: KEEL_DRAFT_REPAIR_PROMPT,
+  description: "Repair one exact Studio draft revision without gaining wallet or publication authority.",
+  arguments: [
+    { name: "releaseId", description: "Exact Studio release draft identifier.", required: true },
+    { name: "expectedRevision", description: "Exact saved draft revision to preserve.", required: true },
+    { name: "request", description: "Concrete creator-requested change.", required: true },
+    { name: "presentationMode", description: "Current presentation mode that must not change silently." },
+  ],
+}, {
   name: FRAY_AUCTION_REVIEW_PROMPT,
   description: "Guide an agent through a Fray auction intake, Keel reuse search, and user approval handoff.",
 }];
@@ -21,6 +31,11 @@ export const PROMPT_DEFINITIONS: readonly McpPrompt[] = [{
 function object(value: unknown, label: string): Record<string, unknown> {
   if (value === null || typeof value !== "object" || Array.isArray(value)) throw new TypeError(`${label} must be an object.`);
   return value as Record<string, unknown>;
+}
+
+function positiveRevision(value: unknown, label: string): number {
+  if (!Number.isSafeInteger(value) || (value as number) < 1) throw new TypeError(`${label} must be a positive integer.`);
+  return value as number;
 }
 
 function exact(value: Record<string, unknown>, allowed: readonly string[], label: string): void {
@@ -107,12 +122,44 @@ export function getFrayAuctionReviewPrompt(name: unknown, argumentsValue: unknow
         text: [
           "Prepare a Fray auction through Keel, but do not sign, submit, claim faucet funds, or report a mint/upload without receipts.",
           "Call fray-auction-intake first. If title or description is missing, ask for it; the creator may choose the short default description.",
-          "Offer exactly three auction setups and accept only 1, 2, or 3: Quick test, Standard, or Collector. Do not invent a fourth preset or silently choose one when the creator has not selected it.",
+          "Offer exactly four auction setups and accept only 1, 2, 3, or 4: Quick test, Standard, Collector, or Fray Auction showcase. Do not invent another preset or silently choose one when the creator has not selected it.",
           "If the chain is missing, call keel-chain-guide and ask for a supported testnet. Faucet entries are links for the creator to open and claim manually.",
           "If the request names Three.js or another reusable dependency, call keel-library-search against the configured Keel Studio URL before planning new bytes. Use only an exact, policy/license-compatible candidate; ambiguous matches require creator selection.",
           "When a source path is available, call fray-stage-project after intake. For scripts, WASM, HTML, or video, ask when to capture the still and when the video should begin: hook, timestamp, or settle; collect duration and fps for video. The default is a three-second, twelve-fps hook preview only when the creator chooses the default.",
           "Show the returned Studio handoff URL. Explain that the agent staged the project but the creator's Studio wallet sign-in attaches it to the correct account. Show the fee preflight and say the Studio refreshes it on open; the wallet is still the final fee authority.",
           "When intake is complete, show the digest-bound fray-approval-request envelope, API scope, module bindings, and wallet mode. Prefer EIP-5792 on EVM or a Beacon batch on Tezos when the connected wallet supports it. If EIP-5792 is unavailable and Studio has a verified Keel carrier batcher configured, use it for immutable carriers and content descriptors, then keep the creator-bound logical registry write as a direct wallet approval; otherwise show sequential approvals. Stop and wait for the creator's approval.",
+        ].join(" "),
+      },
+    }],
+  };
+}
+
+export function getKeelDraftRepairPrompt(name: unknown, argumentsValue: unknown): McpPromptResult {
+  if (name !== KEEL_DRAFT_REPAIR_PROMPT) throw new TypeError(`Unknown prompt: ${String(name)}.`);
+  const args = object(argumentsValue ?? {}, "prompt arguments");
+  exact(args, ["releaseId", "expectedRevision", "request", "presentationMode"], "prompt arguments");
+  const releaseId = promptText(args.releaseId, "prompt arguments.releaseId", 128);
+  const expectedRevision = positiveRevision(args.expectedRevision, "prompt arguments.expectedRevision");
+  const request = promptText(args.request, "prompt arguments.request", 2_000);
+  const presentationMode = args.presentationMode === undefined
+    ? undefined
+    : promptText(args.presentationMode, "prompt arguments.presentationMode", 128);
+  return {
+    description: "Revision-bound, wallet-neutral KEEL Studio draft repair.",
+    messages: [{
+      role: "user",
+      content: {
+        type: "text",
+        text: [
+          `Repair Studio release draft ${quote(releaseId)} at exact revision ${expectedRevision}.`,
+          `Requested change: ${request}`,
+          "Read the draft first with keel-studio-draft and preserve every field the creator did not ask to change.",
+          ...(presentationMode === undefined ? [] : [`Keep presentation mode ${quote(presentationMode)} unless the creator explicitly changes it.`]),
+          "For image, video, or self-contained GLB changes, call media-optimize first and show exact before bytes, after bytes, percentage saved, adapter, settings, output digest, and byte length.",
+          "Do not write until the creator approves that exact measured result. Then call media-optimize-apply with the reviewed digest and byte length; it must write one new file and preserve the source.",
+          "Stage corrected project bytes with keel-studio-stage-project. The creator still performs Studio's gas-free preparation and chooses the resulting project before the draft can reference it.",
+          `Update the draft only with expectedRevision ${expectedRevision}. Stop on a revision conflict or reviewed publish action instead of retrying against newer state.`,
+          "Never cancel, sign, submit, publish, request wallet approval, or change storage/presentation mode implicitly.",
         ].join(" "),
       },
     }],

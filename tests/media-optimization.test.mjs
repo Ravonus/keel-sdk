@@ -190,6 +190,18 @@ test("the supported image adapter measures bytes, keeps the source, and only wri
 test("the bundled FFmpeg adapter dry-runs, rechecks its pinned version, and writes only a new WebM path", async () => {
   const { directory } = await fixture();
   try {
+    const capability = (await detectMediaOptimizationCapabilities()).find((entry) => entry.kind === "video");
+    if (capability?.available !== true) {
+      const unavailableInput = path.join(directory, "source.mp4");
+      await writeFile(unavailableInput, Buffer.from([0, 0, 0, 0]));
+      const unavailable = await planMediaOptimization({ input: unavailableInput, selectedStorageMode: "native-carrier-v1" });
+      assert.equal(unavailable.status, "unavailable");
+      assert.equal(unavailable.capability.adapter, "ffmpeg-webm-vp9");
+      assert.equal(unavailable.capability.available, false);
+      assert.match(unavailable.capability.reason ?? "", /bundled binary|not installed/u);
+      assert.deepEqual(unavailable.storage, { selectedMode: "native-carrier-v1", changed: false });
+      return;
+    }
     const input = await writeVideoFixture(directory);
     const before = await readFile(input);
     const first = await planMediaOptimization({ input, selectedStorageMode: "native-carrier-v1", videoCrf: 32, videoCpuUsed: 4 });

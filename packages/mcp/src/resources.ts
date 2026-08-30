@@ -18,8 +18,15 @@ const RESOURCE_TEXT: Readonly<Record<string, string>> = {
   [KEEL_WORKFLOW_RESOURCE]: resourceJson({
     schema: "keel-mcp-resource@1",
     kind: "offline-workflow",
-    steps: ["studio-capabilities", "analyze", "cost", "upload-plan", "build", "verify", "module-resolve", "module-lock", "chain-plan", "ethereum-encode", "publish-plan", "wallet-request-prepare", "wallet-link"],
-    caveats: ["cost is a modeled estimate", "carriers are metadata-only until bytes are supplied", "ethereum-encode emits unsigned calldata only and does not produce QR payloads", "wallet-link requires and verifies the exact collectionConfig before emitting typed data; account signature, wallet approval, and chain submission are never performed by MCP"],
+    steps: ["studio-capabilities", "analyze", "media-optimize", "media-optimize-apply", "cost", "upload-plan", "build", "verify", "module-resolve", "module-lock", "studio-stage-project", "studio-draft", "chain-plan", "ethereum-encode", "publish-plan", "wallet-request-prepare", "wallet-link"],
+    repair: {
+      prompt: "keel-draft-repair",
+      order: ["studio-draft:read", "media-optimize", "creator-review", "media-optimize-apply", "studio-stage-project", "creator-prepare", "studio-draft:update"],
+      revisionBound: true,
+      sourcePreserved: true,
+      walletAuthority: "none",
+    },
+    caveats: ["cost is a modeled estimate", "media optimization never changes storage mode and requires exact creator-reviewed digest and byte length before writing a new file", "draft repair stops on a stale revision or reviewed publish action", "carriers are metadata-only until bytes are supplied", "ethereum-encode emits unsigned calldata only and does not produce QR payloads", "wallet-link requires and verifies the exact collectionConfig before emitting typed data; account signature, wallet approval, and chain submission are never performed by MCP"],
   }),
   [KEEL_LIMITS_RESOURCE]: resourceJson({
     schema: "keel-mcp-resource@1",
@@ -77,7 +84,7 @@ const RESOURCE_TEXT: Readonly<Record<string, string>> = {
         portableP5Default: "Once-per-chain Gzip p5 fragment plus the browser Gzip/Deflate shell profile.",
         portableThreeDefault: "Once-per-chain exact Three.js r180 ESM main/core graph. Bind both verified current-chain objects; never embed Three.js in each creator project.",
         normalMediaDefault: "A standalone image, video, or self-contained GLB is exactly registered KEEL shell prefix, registered keel.asset-display@1 module, direct creator media entrypoint, registered shell suffix. It is never a zero-module project or a creator-uploaded index.html wrapper.",
-        assetDisplay: "keel.asset-display@1 self-mounts the frozen verified direct entry descriptor: image and video data URLs, or a self-contained model/gltf-binary WebGL view. It has no network or wallet authority; external-dependency .gltf is rejected from this compact path.",
+        assetDisplay: "keel.asset-display@1 self-mounts the frozen verified direct entry descriptor: AVIF/WebP use an intrinsic-size canvas with a PNG save surface; other images and videos use direct data URLs; self-contained model/gltf-binary uses WebGL. It has no network or wallet authority; external-dependency .gltf is rejected from this compact path.",
       },
     },
     staging: {
