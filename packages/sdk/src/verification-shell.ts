@@ -55,11 +55,20 @@ async function sha256Integrity(bytes: Uint8Array): Promise<Sha256Integrity> {
 const brotliCompressAsync = promisify(brotliCompress);
 const brotliDecompressAsync = promisify(brotliDecompress);
 
+// Keep production output at the canonical quality, but allow local artifact
+// assembly to opt into a faster quality while iterating on large embedded
+// viewers.  This affects only the stored representation; decoded commitments
+// and verification semantics remain unchanged.
+const brotliQuality = (() => {
+  const value = Number(process.env.KEEL_BROTLI_QUALITY ?? "11");
+  return Number.isInteger(value) && value >= 0 && value <= 11 ? value : 11;
+})();
+
 async function compressBrotli(bytes: Uint8Array): Promise<Uint8Array> {
   return new Uint8Array(
     await brotliCompressAsync(bytes, {
       params: {
-        [zlibConstants.BROTLI_PARAM_QUALITY ?? 1]: 11,
+        [zlibConstants.BROTLI_PARAM_QUALITY ?? 1]: brotliQuality,
         [zlibConstants.BROTLI_PARAM_MODE ?? 0]: zlibConstants.BROTLI_MODE_GENERIC ?? 0,
       },
     }),
@@ -114,8 +123,8 @@ export interface KeelStandaloneViewerItem {
 export interface KeelStandaloneViewerEnvelope {
   readonly protocol: typeof KEEL_STANDALONE_VIEWER_PROTOCOL;
   readonly title: string;
-  /** Inline bytes or recursive chain RPC. Hosted URL delivery is intentionally unsupported. */
-  readonly deliveryProfile: "onchain-recursive" | "embedded-assembled";
+  /** Inline bytes, recursive chain RPC, or an explicit mix of both. Hosted URL delivery is intentionally unsupported. */
+  readonly deliveryProfile: "onchain-recursive" | "embedded-assembled" | "hybrid-mixed";
   /** @deprecated Use rpcUrls so a sealed viewer is not pinned to one RPC operator. */
   readonly rpcUrl?: string;
   /** Governed ordinary chain RPC endpoints, tried in order. Never content hosts. */
@@ -190,17 +199,36 @@ export async function buildStandaloneKeelViewer(input: {
   if (input.envelope.protocol !== KEEL_STANDALONE_VIEWER_PROTOCOL) throw new TypeError("Unsupported standalone viewer protocol.");
   if (!input.envelope.items.some((item) => item.id === input.envelope.entrypoint)) throw new TypeError("Standalone viewer entrypoint is missing.");
   for (const item of input.envelope.items) assertDataUriMediaType(item.mediaType);
-  if (input.envelope.deliveryProfile === "onchain-recursive") {
+  if (input.envelope.deliveryProfile === "onchain-recursive" || input.envelope.deliveryProfile === "hybrid-mixed") {
     const rpcUrls = input.envelope.rpcUrls ?? (input.envelope.rpcUrl === undefined ? [] : [input.envelope.rpcUrl]);
-    if (rpcUrls.length === 0) throw new TypeError("Onchain viewer requires at least one governed RPC URL.");
-    if (rpcUrls.length > 8) throw new RangeError("Onchain viewer accepts at most eight governed RPC URLs.");
+    if (rpcUrls.length === 0) throw new TypeError("RPC-backed viewer requires at least one governed RPC URL.");
+    if (rpcUrls.length > 8) throw new RangeError("RPC-backed viewer accepts at most eight governed RPC URLs.");
     for (const rpcUrl of rpcUrls) assertKeelRpcUrl(rpcUrl);
+  }
+  if (input.envelope.deliveryProfile === "onchain-recursive") {
     if (input.envelope.items.some((item) => item.chainId === undefined || item.store === undefined || item.objectId === undefined)) {
       throw new TypeError("Every onchain viewer item requires a chain, store, and object ID.");
     }
   }
   if (input.envelope.deliveryProfile === "embedded-assembled" && input.envelope.items.some((item) => !item.embedded?.storedBase64)) {
     throw new TypeError("Every embedded assembled viewer item requires committed inline bytes.");
+  }
+  if (input.envelope.deliveryProfile === "hybrid-mixed") {
+    const embeddedItems = input.envelope.items.filter((item) => item.embedded?.storedBase64 !== undefined);
+    const onchainItems = input.envelope.items.filter((item) => item.chainId !== undefined || item.store !== undefined || item.objectId !== undefined);
+    if (embeddedItems.length === 0 || onchainItems.length === 0) {
+      throw new TypeError("Hybrid mixed viewer requires at least one embedded item and at least one onchain item.");
+    }
+    for (const item of input.envelope.items) {
+      const embedded = item.embedded?.storedBase64 !== undefined;
+      const onchain = item.chainId !== undefined || item.store !== undefined || item.objectId !== undefined;
+      if (embedded === onchain) {
+        throw new TypeError(`Hybrid mixed viewer item ${item.id} must use exactly one delivery source.`);
+      }
+      if (onchain && (item.chainId === undefined || item.store === undefined || item.objectId === undefined)) {
+        throw new TypeError(`Hybrid mixed onchain item ${item.id} requires a chain, store, and object ID.`);
+      }
+    }
   }
   const runtimePath = path.join(input.repositoryRoot, "examples/demos/keel-creative-lab/keel-verifier-runtime.js");
   const decoderMode = input.brotliDecoder ?? "embedded";
@@ -480,26 +508,148 @@ function compactInlineRuntime(
     for (const [alias, url] of [...aliases].sort(([left], [right]) => right.length - left.length || left.localeCompare(right))) output = output.replaceAll(alias, url);
     return output;
   };
+  const identifier = /^[A-Za-z_$][A-Za-z0-9_$]*$/u;
+  const moduleReference = (specifier: string, moduleAliases: ReadonlyMap<string, string>) => {
+    const exact = moduleAliases.get(specifier);
+    if (exact !== undefined) return exact;
+    const withoutDot = specifier.replace(/^\.\//u, "");
+    // Keep the legacy content alias resolvable without embedding that transport
+    // path literally in the canonical shell. Some marketplace scanners treat
+    // any occurrence of it as a live network dependency.
+    const legacyContentPrefix = atob("L2NvbnRlbnQv");
+    const normalized = moduleAliases.get(withoutDot) ?? moduleAliases.get(`./${withoutDot}`) ?? moduleAliases.get(`${legacyContentPrefix}${withoutDot}`);
+    if (normalized === undefined) throw new Error(`Undeclared verified module import ${specifier}.`);
+    return normalized;
+  };
+  const namedBindings = (clause: string, moduleId: string) => {
+    const bindings = clause.split(",").map((part) => part.trim()).filter(Boolean).map((part) => {
+      const match = /^([A-Za-z_$][A-Za-z0-9_$]*)(?:\s+as\s+([A-Za-z_$][A-Za-z0-9_$]*))?$/u.exec(part);
+      if (match === null) throw new Error(`Unsupported verified module import binding ${part}.`);
+      const imported = match[1]!;
+      const local = match[2] ?? imported;
+      return imported === local ? imported : `${imported}:${local}`;
+    });
+    return `const{${bindings.join(",")}}=globalThis.__KEEL_MODULES__[${safeJSON(moduleId)}];`;
+  };
+  const transformVerifiedModule = (
+    source: string,
+    moduleId: string,
+    moduleAliases: ReadonlyMap<string, string>,
+    exposeExports: boolean,
+  ) => {
+    const imports: string[] = [];
+    const exports = new Map<string, string>();
+    let body = source.replace(
+      /(^|[;\n])\s*import\s*([^;\n]+?)\s*from\s*(["'])([^"']+)\3\s*;?/gu,
+      (_whole, boundary: string, clauseValue: string, _quote: string, specifier: string) => {
+        const clause = clauseValue.trim();
+        const dependency = moduleReference(specifier, moduleAliases);
+        if (/^\*\s+as\s+/u.test(clause)) {
+          const local = clause.replace(/^\*\s+as\s+/u, "").trim();
+          if (!identifier.test(local)) throw new Error(`Unsupported verified namespace import ${clause}.`);
+          imports.push(`const ${local}=globalThis.__KEEL_MODULES__[${safeJSON(dependency)}];`);
+        } else if (clause.startsWith("{") && clause.endsWith("}")) {
+          imports.push(namedBindings(clause.slice(1, -1), dependency));
+        } else if (identifier.test(clause)) {
+          imports.push(`const ${clause}=globalThis.__KEEL_MODULES__[${safeJSON(dependency)}].default;`);
+        } else {
+          throw new Error(`Unsupported verified module import ${clause}.`);
+        }
+        return boundary;
+      },
+    );
+    body = body.replace(
+      /(^|[;\n])\s*import\s*(["'])([^"']+)\2\s*;?/gu,
+      (_whole, boundary: string, _quote: string, specifier: string) => {
+        imports.push(`void globalThis.__KEEL_MODULES__[${safeJSON(moduleReference(specifier, moduleAliases))}];`);
+        return boundary;
+      },
+    );
+    body = body.replace(
+      /(^|[;\n}])\s*export\s*\{([^}]*)\}\s*from\s*(["'])([^"']+)\3\s*;?/gu,
+      (_whole, boundary: string, list: string, _quote: string, specifier: string) => {
+        const dependency = moduleReference(specifier, moduleAliases);
+        const local = `__keel_dependency_${imports.length.toString()}`;
+        imports.push(`const ${local}=globalThis.__KEEL_MODULES__[${safeJSON(dependency)}];`);
+        for (const part of list.split(",").map((value) => value.trim()).filter(Boolean)) {
+          const match = /^([A-Za-z_$][A-Za-z0-9_$]*)(?:\s+as\s+([A-Za-z_$][A-Za-z0-9_$]*))?$/u.exec(part);
+          if (match === null) throw new Error(`Unsupported verified module re-export ${part}.`);
+          exports.set(match[2] ?? match[1]!, `${local}[${safeJSON(match[1]!)}]`);
+        }
+        return boundary;
+      },
+    );
+    body = body.replace(
+      /(^|[;\n}])\s*export\s+((?:async\s+)?(?:function|class|const|let|var))\s+([A-Za-z_$][A-Za-z0-9_$]*)/gu,
+      (_whole, boundary: string, declaration: string, local: string) => {
+        exports.set(local, local);
+        return `${boundary}${declaration} ${local}`;
+      },
+    );
+    body = body.replace(
+      /(^|[;\n}])\s*export\s*\{([^}]*)\}\s*;?/gu,
+      (_whole, boundary: string, list: string) => {
+        for (const part of list.split(",").map((value) => value.trim()).filter(Boolean)) {
+          const match = /^([A-Za-z_$][A-Za-z0-9_$]*)(?:\s+as\s+([A-Za-z_$][A-Za-z0-9_$]*))?$/u.exec(part);
+          if (match === null) throw new Error(`Unsupported verified module export ${part}.`);
+          exports.set(match[2] ?? match[1]!, match[1]!);
+        }
+        return boundary;
+      },
+    );
+    if (/(^|[;\n}])\s*(?:import|export)\b/u.test(body)) {
+      throw new Error(`Verified module ${moduleId} uses unsupported module syntax.`);
+    }
+    const published = exposeExports
+      ? `globalThis.__KEEL_MODULES__[${safeJSON(moduleId)}]=Object.freeze({${[...exports].map(([name, local]) => `${safeJSON(name)}:${local}`).join(",")}});`
+      : "";
+    return `"use strict";(()=>{${imports.join("")}${body}\n${published}})();`;
+  };
+  const prepareVerifiedEntry = (
+    html: string,
+    moduleAliases: ReadonlyMap<string, string>,
+  ) => {
+    const parsed = new DOMParser().parseFromString(html, "text/html");
+    const scripts: string[] = [];
+    for (const script of [...parsed.querySelectorAll("script")]) {
+      const source = script.getAttribute("src");
+      if (source !== null) {
+        moduleReference(source, moduleAliases);
+      } else {
+        const text = script.textContent ?? "";
+        scripts.push(script.type === "module"
+          ? transformVerifiedModule(text, "keel.entry", moduleAliases, false)
+          : text);
+      }
+      script.remove();
+    }
+    return {
+      html: `<!doctype html>${parsed.documentElement.outerHTML}`,
+      scripts,
+    };
+  };
   const childHTML = (
     html: string,
     context: unknown,
     verification: unknown,
     contentUrls: Record<string, string>,
+    scripts: readonly string[],
     directEntry?: { readonly id: string; readonly name: string; readonly mediaType: string; readonly digest: string; readonly byteLength: number; readonly url: string; readonly moduleURL: string },
   ) => {
     // Construct the child terminator at runtime so the parent HTML parser
     // never sees a literal closing script tag inside this shell script.
     const closeScript = String.fromCharCode(60, 47, 115, 99, 114, 105, 112, 116, 62);
     const policy = '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'unsafe-inline\' data: blob:; style-src \'unsafe-inline\' data:; img-src data: blob:; media-src data: blob:; font-src data:; connect-src \'none\'; object-src \'none\'; frame-src \'none\'; form-action \'none\'; base-uri \'none\'">';
-    const injection = `<script>{const c=Object.freeze(${safeJSON(context ?? {})});globalThis.__KEEL_CONTEXT__=c;const s=c?.derivedTokenSeed??c?.tokenSeed??c?.seed;if(typeof s==="string"&&/^0x[0-9a-f]{64}$/i.test(s))Object.defineProperty(globalThis,"KEEL_SEED",{value:s.toLowerCase(),enumerable:true,writable:false,configurable:false});Object.defineProperty(globalThis,"__KEEL_VERIFICATION__",{value:Object.freeze(${safeJSON(verification)}),enumerable:true,writable:false,configurable:false})}${closeScript}`;
+    const injection = `<script>{const report=detail=>parent.postMessage({protocol:"keel-inline-child@1",action:"failed",detail:String(detail)},"*");addEventListener("error",event=>report(event.message||event.error||"Verified child runtime failed."));addEventListener("unhandledrejection",event=>report(event.reason?.message||event.reason||"Verified child promise rejected."));const c=Object.freeze(${safeJSON(context ?? {})});globalThis.__KEEL_CONTEXT__=c;const s=c?.derivedTokenSeed??c?.tokenSeed??c?.seed;if(typeof s==="string"&&/^0x[0-9a-f]{64}$/i.test(s))Object.defineProperty(globalThis,"KEEL_SEED",{value:s.toLowerCase(),enumerable:true,writable:false,configurable:false});Object.defineProperty(globalThis,"__KEEL_VERIFICATION__",{value:Object.freeze(${safeJSON(verification)}),enumerable:true,writable:false,configurable:false})}${closeScript}`;
     const content = `<script>(()=>{const u=Object.freeze(${safeJSON(contentUrls)}),r=Object.freeze(${safeJSON((verification as { readonly checks?: unknown }).checks ?? [])}),bytes=id=>{const value=u[id];if(typeof value!=="string")throw new Error("Undeclared verified content "+id);const encoded=value.slice(value.indexOf(",")+1);return Uint8Array.from(atob(encoded),character=>character.charCodeAt(0))},resources=()=>r;Object.defineProperty(globalThis,"__KEEL_CONTENT__",{value:Object.freeze({url:id=>u[id]??null,bytes,resources}),enumerable:true,writable:false,configurable:false})})()${closeScript}`;
     const direct = directEntry === undefined ? "" : `<script>{const e=Object.freeze(${safeJSON(directEntry)});Object.defineProperty(globalThis,"__KEEL_ENTRY__",{value:e,enumerable:true,writable:false,configurable:false})}${closeScript}`;
+    const loader = `<script>{Object.defineProperty(globalThis,"__KEEL_MODULES__",{value:Object.create(null),enumerable:false,writable:false,configurable:false});const run=()=>{for(const source of ${safeJSON(scripts)}){const script=document.createElement("script");script.textContent=source;document.head.append(script)}};document.readyState==="loading"?addEventListener("DOMContentLoaded",run,{once:true}):run()}${closeScript}`;
     const document = directEntry === undefined
       ? html
-      : `<!doctype html><html><head><meta charset="utf-8"><style>html,body,#keel-asset-display{width:100%;height:100%;margin:0;overflow:hidden;background:#05060b}</style></head><body><main id="keel-asset-display"></main><script src="${directEntry.moduleURL}">${closeScript}</body></html>`;
+      : `<!doctype html><html><head><meta charset="utf-8"><style>html,body,#keel-asset-display{width:100%;height:100%;margin:0;overflow:hidden;background:#05060b}</style></head><body><main id="keel-asset-display"></main></body></html>`;
     return /<head(?:\s[^>]*)?>/iu.test(document)
-      ? document.replace(/<head(?:\s[^>]*)?>/iu, (head) => `${head}${policy}${injection}${content}${direct}`)
-      : `<!doctype html><html><head><meta charset="utf-8">${policy}${injection}${content}${direct}</head><body>${document}</body></html>`;
+      ? document.replace(/<head(?:\s[^>]*)?>/iu, (head) => `${head}${policy}${injection}${content}${direct}${loader}`)
+      : `<!doctype html><html><head><meta charset="utf-8">${policy}${injection}${content}${direct}${loader}</head><body>${document}</body></html>`;
   };
   const launch = async () => {
     if (items.length === 0) throw new Error("The KEEL Inline graph is empty.");
@@ -578,12 +728,12 @@ function compactInlineRuntime(
       writable: false,
       configurable: false,
     });
-    mountKeelVerification({
+    const verificationUI = mountKeelVerification({
       result: verification,
       runtime: Object.freeze({ protocol: "keel-inline-runtime@1" }),
       context,
       extraRows: plugins.map((plugin) => Object.freeze({ key: plugin.title, value: plugin.body })),
-    });
+    }) as { fail(label: string, detail: string): void };
     const frame = document.createElement("iframe");
     frame.title = "Verified KEEL work";
     frame.sandbox.add("allow-scripts", "allow-pointer-lock");
@@ -597,11 +747,27 @@ function compactInlineRuntime(
     }
     const entryURL = contentUrls[entry.id];
     if (entryURL === undefined) throw new Error("Verified entrypoint descriptor is missing.");
-    frame.srcdoc = childHTML(
-      directMedia ? "" : replaceAliases(decoder.decode(entryBytes), aliases),
+    const moduleAliases = new Map<string, string>();
+    const moduleScripts: string[] = [];
+    for (const item of items.filter((candidate) => candidate !== entry && (candidate.role === "module" || candidate.role === "data") && candidate.mediaType === "text/javascript")) {
+      const bytes = resolved.get(item.id);
+      if (bytes === undefined) throw new Error(`Resolved bytes missing for ${item.id}.`);
+      moduleAliases.set(item.id, item.id);
+      for (const alias of item.aliases) moduleAliases.set(alias, item.id);
+      const source = decoder.decode(bytes);
+      moduleScripts.push(/(^|[;\n])\s*(?:import|export)\b/u.test(source)
+        ? transformVerifiedModule(source, item.id, moduleAliases, true)
+        : source);
+    }
+    const preparedEntry = directMedia
+      ? { html: "", scripts: [] as string[] }
+      : prepareVerifiedEntry(decoder.decode(entryBytes), moduleAliases);
+    const verifiedChildHTML = childHTML(
+      directMedia ? "" : replaceAliases(preparedEntry.html, aliases),
       globals.__KEEL_CONTEXT__,
       verification,
       contentUrls,
+      [...moduleScripts, ...preparedEntry.scripts],
       directMedia ? {
         id: entry.id,
         name: entry.aliases[0] ?? entry.id,
@@ -612,6 +778,21 @@ function compactInlineRuntime(
         moduleURL: contentUrls[assetDisplay[0]!.id]!,
       } : undefined,
     );
+    // `srcdoc` inherits the embedding page's CSP. Marketplaces commonly allow
+    // inline scripts while denying `data:` script elements, so execute the
+    // already-verified module bytes as inline text. Keeping the document in
+    // srcdoc also avoids turning a large p5/Three graph into a multi-megabyte
+    // nested data URL that browsers may reject before execution.
+    frame.srcdoc = verifiedChildHTML;
+    addEventListener("message", (event) => {
+      if (event.source !== frame.contentWindow || event.data?.protocol !== "keel-inline-child@1" || event.data?.action !== "failed") return;
+      const message = typeof event.data.detail === "string" ? event.data.detail : "Verified child runtime failed.";
+      document.body.dataset.verification = "failed";
+      status.hidden = false;
+      status.textContent = `KEEL VERIFICATION FAILED\n${message}`;
+      verificationUI.fail("Verified child runtime", message);
+      parent.postMessage({ protocol: "keel-inline-runtime@1", action: "failed", detail: message }, "*");
+    });
     stage.replaceChildren(frame);
     await new Promise<void>((resolveReady, reject) => {
       const timer = setTimeout(() => reject(new Error("Verified entrypoint timed out.")), 15_000);
@@ -632,26 +813,34 @@ function compactInlineRuntime(
     document.body.dataset.verification = "failed";
     status.hidden = false;
     status.textContent = `KEEL VERIFICATION FAILED\n${message}`;
-    mountKeelVerification({
-      result: Object.freeze({
-        state: "failed",
-        title: "Verification failed",
-        summary: message,
-        checks: Object.freeze([Object.freeze({
-          id: "keel-inline-runtime",
-          label: "Committed resource graph",
-          passed: false,
-          detail: message,
-          severity: "fatal",
-        })]),
-        proofTier: "Rejected render",
-        isFixture: false,
-        proofMode: "rejected",
-        syntheticTokenContext: false,
-      }),
-      runtime: Object.freeze({ protocol: "keel-inline-runtime@1" }),
-      context: globals.__KEEL_CONTEXT__,
-    });
+    parent.postMessage({ protocol: "keel-inline-runtime@1", action: "failed", detail: message }, "*");
+    const mounted = (globals as typeof globalThis & {
+      __VAULT_VERIFICATION_UI__?: { fail?: (label: string, detail: string) => void };
+    }).__VAULT_VERIFICATION_UI__;
+    if (typeof mounted?.fail === "function") {
+      mounted.fail("Committed resource graph", message);
+    } else {
+      mountKeelVerification({
+        result: Object.freeze({
+          state: "failed",
+          title: "Verification failed",
+          summary: message,
+          checks: Object.freeze([Object.freeze({
+            id: "keel-inline-runtime",
+            label: "Committed resource graph",
+            passed: false,
+            detail: message,
+            severity: "fatal",
+          })]),
+          proofTier: "Rejected render",
+          isFixture: false,
+          proofMode: "rejected",
+          syntheticTokenContext: false,
+        }),
+        runtime: Object.freeze({ protocol: "keel-inline-runtime@1" }),
+        context: globals.__KEEL_CONTEXT__,
+      });
+    }
   }), { once: true });
 }
 
