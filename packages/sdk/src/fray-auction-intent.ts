@@ -9,8 +9,8 @@ const NETWORK = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
 const MAX_UINT256 = (1n << 256n) - 1n;
 
 export type FrayAuctionFamily = "ethereum" | "tezos";
-export type FrayAuctionPresetId = 1 | 2 | 3;
-export type FrayAuctionPresetKey = "quick-test" | "standard" | "collector";
+export type FrayAuctionPresetId = 1 | 2 | 3 | 4;
+export type FrayAuctionPresetKey = "quick-test" | "standard" | "collector" | "showcase";
 export type FrayAuctionReleaseOutcome = "bidder" | "patrons";
 export type FrayPatronPricingMode = "economic" | "demand";
 
@@ -129,6 +129,21 @@ const collectorEthereum = Object.freeze({
   maximumExtensionSeconds: 7_200,
 } satisfies FrayAuctionTerms);
 
+const showcaseEthereum = Object.freeze({
+  releaseOutcome: "patrons",
+  startDelaySeconds: 300,
+  durationSeconds: 1_800,
+  reserveAtomic: "10000000000000000",
+  bidIncrementAtomic: "5000000000000000",
+  royaltyBps: 500,
+  minimumPatronCapAtomic: "1000000000000000",
+  maximumEditionSize: 10,
+  maximumPatronPriceAtomic: "0",
+  patronPricingMode: "economic",
+  extensionSeconds: 0,
+  maximumExtensionSeconds: 0,
+} satisfies FrayAuctionTerms);
+
 const quickTezos = Object.freeze({
   releaseOutcome: "bidder",
   startDelaySeconds: 300,
@@ -174,6 +189,21 @@ const collectorTezos = Object.freeze({
   maximumExtensionSeconds: 7_200,
 } satisfies FrayAuctionTerms);
 
+const showcaseTezos = Object.freeze({
+  releaseOutcome: "patrons",
+  startDelaySeconds: 300,
+  durationSeconds: 1_800,
+  reserveAtomic: "100000",
+  bidIncrementAtomic: "20000",
+  royaltyBps: 500,
+  minimumPatronCapAtomic: "10000",
+  maximumEditionSize: 10,
+  maximumPatronPriceAtomic: "0",
+  patronPricingMode: "economic",
+  extensionSeconds: 0,
+  maximumExtensionSeconds: 0,
+} satisfies FrayAuctionTerms);
+
 const ethereumCurrency = Object.freeze({ symbol: "ETH", unit: "wei", decimals: 18 } satisfies FrayAuctionCurrency);
 const tezosCurrency = Object.freeze({ symbol: "ꜩ", unit: "mutez", decimals: 6 } satisfies FrayAuctionCurrency);
 
@@ -186,9 +216,11 @@ export const FRAY_AUCTION_POLICY_PROFILES: readonly FrayAuctionPolicyProfile[] =
   Object.freeze({ family: "ethereum", presetId: 1, presetKey: "quick-test", label: "Quick test", summary: "One-hour bidder-only test auction.", nativeCurrency: ethereumCurrency, terms: quickEthereum }),
   Object.freeze({ family: "ethereum", presetId: 2, presetKey: "standard", label: "Standard", summary: "Twenty-four-hour auction with the ordinary Fray patron round.", nativeCurrency: ethereumCurrency, terms: standardEthereum }),
   Object.freeze({ family: "ethereum", presetId: 3, presetKey: "collector", label: "Collector", summary: "Three-day auction with a larger patron edition for a centerpiece work.", nativeCurrency: ethereumCurrency, terms: collectorEthereum }),
+  Object.freeze({ family: "ethereum", presetId: 4, presetKey: "showcase", label: "Fray Auction showcase", summary: "Thirty-minute patron-versus-whale showcase with no time extension.", nativeCurrency: ethereumCurrency, terms: showcaseEthereum }),
   Object.freeze({ family: "tezos", presetId: 1, presetKey: "quick-test", label: "Quick test", summary: "One-hour bidder-only test auction.", nativeCurrency: tezosCurrency, terms: quickTezos }),
   Object.freeze({ family: "tezos", presetId: 2, presetKey: "standard", label: "Standard", summary: "Twenty-four-hour auction with the ordinary Fray patron round.", nativeCurrency: tezosCurrency, terms: standardTezos }),
   Object.freeze({ family: "tezos", presetId: 3, presetKey: "collector", label: "Collector", summary: "Three-day auction with a larger patron edition for a centerpiece work.", nativeCurrency: tezosCurrency, terms: collectorTezos }),
+  Object.freeze({ family: "tezos", presetId: 4, presetKey: "showcase", label: "Fray Auction showcase", summary: "Thirty-minute patron-versus-whale showcase with no time extension.", nativeCurrency: tezosCurrency, terms: showcaseTezos }),
 ]);
 
 function object(value: unknown, label: string): Record<string, unknown> {
@@ -250,8 +282,8 @@ function policy(value: unknown): FrayAuctionPolicyReference {
   const input = object(value, "Fray auction policy");
   exactKeys(input, ["protocol", "presetId", "presetKey"], "Fray auction policy");
   if (input.protocol !== FRAY_AUCTION_POLICY_PROTOCOL) throw new TypeError("Unsupported Fray auction policy protocol.");
-  const presetId = integer(input.presetId, "Fray auction policy.presetId", 1, 3) as FrayAuctionPresetId;
-  const expectedKey: FrayAuctionPresetKey = presetId === 1 ? "quick-test" : presetId === 2 ? "standard" : "collector";
+  const presetId = integer(input.presetId, "Fray auction policy.presetId", 1, 4) as FrayAuctionPresetId;
+  const expectedKey: FrayAuctionPresetKey = presetId === 1 ? "quick-test" : presetId === 2 ? "standard" : presetId === 3 ? "collector" : "showcase";
   if (input.presetKey !== expectedKey) throw new TypeError("Fray auction policy presetId and presetKey disagree.");
   return { protocol: FRAY_AUCTION_POLICY_PROTOCOL, presetId, presetKey: expectedKey };
 }
@@ -316,7 +348,7 @@ export function materializeFrayAuctionIntent(value: unknown): FrayAuctionIntent 
   const input = object(value, "Fray auction materializer input");
   exactKeys(input, ["source", "family", "network", "chainId", "presetId"], "Fray auction materializer input");
   if (input.family !== "ethereum" && input.family !== "tezos") throw new TypeError("Fray auction materializer input.family must be ethereum or tezos.");
-  const presetId = integer(input.presetId, "Fray auction materializer input.presetId", 1, 3) as FrayAuctionPresetId;
+  const presetId = integer(input.presetId, "Fray auction materializer input.presetId", 1, 4) as FrayAuctionPresetId;
   if (input.family === "tezos" && input.chainId !== undefined) throw new TypeError("Tezos Fray intents must not include chainId.");
   const profile = resolveFrayAuctionPolicy(input.family, presetId);
   return parseFrayAuctionIntent({

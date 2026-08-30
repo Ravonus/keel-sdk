@@ -7,6 +7,8 @@ import {
   resolveFrayAuctionPolicy,
   type FrayAuctionFamily,
   type FrayAuctionPolicyProfile,
+  type FrayAuctionPresetId,
+  type FrayAuctionPresetKey,
 } from "@keel/sdk";
 import { createHash } from "node:crypto";
 
@@ -16,8 +18,8 @@ export const FRAY_APPROVAL_REQUEST_PROTOCOL = "fray-approval-request@1" as const
 export type FrayFamily = FrayAuctionFamily;
 
 export interface FrayAuctionPreset {
-  readonly id: 1 | 2 | 3;
-  readonly key: "quick-test" | "standard" | "collector";
+  readonly id: FrayAuctionPresetId;
+  readonly key: FrayAuctionPresetKey;
   readonly label: string;
   readonly summary: string;
 }
@@ -42,6 +44,12 @@ export const FRAY_AUCTION_PRESETS: readonly FrayAuctionPreset[] = [
     key: "collector",
     label: "Collector",
     summary: "Three-day auction with a larger patron edition for a centerpiece work.",
+  },
+  {
+    id: 4,
+    key: "showcase",
+    label: "Fray Auction showcase",
+    summary: "Thirty-minute patron-versus-whale showcase with no time extension.",
   },
 ] as const;
 
@@ -203,7 +211,7 @@ export interface FrayStageProjectInput {
   readonly description: string;
   readonly family: FrayFamily;
   readonly network: string;
-  readonly auctionPreset: 1 | 2 | 3;
+  readonly auctionPreset: FrayAuctionPresetId;
   readonly metadataMode: "IPFS" | "Onchain";
   readonly releaseOutcome: "bidder" | "patrons";
   readonly previewExecution: "none" | "doom-wasm-sandbox" | "html-sandbox";
@@ -251,8 +259,8 @@ export function parseFrayAuctionIntakeInput(value: unknown): FrayAuctionIntakeIn
     ? undefined
     : typeof rawAuctionPreset === "number"
       ? rawAuctionPreset
-      : (() => { throw new TypeError("auctionPreset must be 1, 2, or 3."); })();
-  if (auctionPreset !== undefined && (!Number.isSafeInteger(auctionPreset) || auctionPreset < 1 || auctionPreset > 3)) throw new TypeError("auctionPreset must be 1, 2, or 3.");
+      : (() => { throw new TypeError("auctionPreset must be 1, 2, 3, or 4."); })();
+  if (auctionPreset !== undefined && (!Number.isSafeInteger(auctionPreset) || auctionPreset < 1 || auctionPreset > 4)) throw new TypeError("auctionPreset must be 1, 2, 3, or 4.");
   const rawFamily = input.family;
   const family = rawFamily === undefined
     ? undefined
@@ -309,7 +317,7 @@ function missingQuestions(input: FrayAuctionIntakeInput): readonly IntakeQuestio
   if (input.description === undefined && input.useDefaultDescription !== true) {
     questions.push({ field: "description", question: "What description should I use? Reply with your text, or say `default` and I’ll use a short Keel/Fray description." });
   }
-  if (input.auctionPreset === undefined) questions.push({ field: "auctionPreset", question: "Which auction setup should I use? Pick 1, 2, or 3.", options: presetOptions(input.family) });
+  if (input.auctionPreset === undefined) questions.push({ field: "auctionPreset", question: "Which Fray Auction setup should I use? Pick 1, 2, 3, or 4.", options: presetOptions(input.family) });
   if (findChainProfile(input.family, input.network) === undefined) questions.push({ field: "chain", question: "Which supported testnet should receive it?", options: FRAY_CHAIN_PROFILES.map((profile) => `${profile.family} · ${profile.network} · ${profile.displayName}`) });
   return questions;
 }

@@ -41,6 +41,20 @@ test("MCP intake carries exact family-specific policy instead of preset-ID econo
   });
   assert.equal(base.status, "ready-for-approval");
   assert.equal(base.chain.chainId, 84_532);
+
+  const showcase = await prepareFrayAuctionIntake({
+    title: "Fray Auction showcase",
+    useDefaultDescription: true,
+    auctionPreset: 4,
+    family: "ethereum",
+    network: "sepolia",
+  });
+  assert.equal(showcase.status, "ready-for-approval");
+  assert.equal(showcase.auction.policy.presetKey, "showcase");
+  assert.equal(showcase.auction.terms.durationSeconds, 1_800);
+  assert.equal(showcase.auction.terms.releaseOutcome, "patrons");
+  assert.equal(showcase.auction.terms.maximumEditionSize, 10);
+  assert.equal(showcase.auction.terms.maximumExtensionSeconds, 0);
 });
 
 test("MCP intake requires an explicit family and network before approval", async () => {

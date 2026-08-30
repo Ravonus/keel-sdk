@@ -16,15 +16,21 @@ import {
 const fixture = JSON.parse(await readFile(new URL("./fixtures/fray-auction-intent-v1.json", import.meta.url), "utf8"));
 
 test("Fray policy profiles preserve Studio economics for both chain families", () => {
-  assert.equal(FRAY_AUCTION_POLICY_PROFILES.length, 6);
+  assert.equal(FRAY_AUCTION_POLICY_PROFILES.length, 8);
   const evmQuick = resolveFrayAuctionPolicy("ethereum", 1);
   const evmStandard = resolveFrayAuctionPolicy("ethereum", 2);
   const evmCollector = resolveFrayAuctionPolicy("ethereum", 3);
+  const evmShowcase = resolveFrayAuctionPolicy("ethereum", 4);
   const tezosQuick = resolveFrayAuctionPolicy("tezos", 1);
   assert.equal(formatFrayAtomicAmount(evmQuick.terms.reserveAtomic, 18), "0.01");
   assert.equal(formatFrayAtomicAmount(evmQuick.terms.bidIncrementAtomic, 18), "0.005");
   assert.equal(evmStandard.terms.maximumEditionSize, 10);
   assert.equal(evmCollector.terms.maximumEditionSize, 25);
+  assert.equal(evmShowcase.presetKey, "showcase");
+  assert.equal(evmShowcase.terms.durationSeconds, 1_800);
+  assert.equal(evmShowcase.terms.releaseOutcome, "patrons");
+  assert.equal(evmShowcase.terms.extensionSeconds, 0);
+  assert.equal(evmShowcase.terms.maximumExtensionSeconds, 0);
   assert.equal(formatFrayAtomicAmount(tezosQuick.terms.reserveAtomic, 6), "0.1");
   assert.equal(formatFrayAtomicAmount(tezosQuick.terms.bidIncrementAtomic, 6), "0.02");
 });
