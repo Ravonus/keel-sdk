@@ -205,7 +205,11 @@ async function resolveItem(item) {
 }
 
 function installVerificationPresentation(resolved) {
-  const presentation = embeddedVerificationPresentation;
+  const presentationElement = document.querySelector("#keel-verification-presentation");
+  if (!(presentationElement instanceof HTMLScriptElement)) {
+    throw new Error("Missing Keel verification presentation manifest.");
+  }
+  const presentation = JSON.parse(presentationElement.textContent ?? "null");
   const cssResource = presentation.theme?.cssResource;
   if (cssResource !== undefined) {
     const item = envelope.items.find((candidate) => candidate.id === cssResource.id);

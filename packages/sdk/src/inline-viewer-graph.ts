@@ -5,7 +5,14 @@
  * references those immutable objects and publishes only its small entry slot.
  * This file prepares and verifies bytes; it never signs or submits.
  */
-import { assertDataUriMediaType, createIntegrity, serializeScriptJSON, type Hex, type Integrity } from "@keel/protocol";
+import {
+  assertDataUriMediaType,
+  createIntegrity,
+  isDataUriLiteralByte,
+  serializeScriptJSON,
+  type Hex,
+  type Integrity,
+} from "@keel/protocol";
 import { promisify } from "node:util";
 import { gunzip, inflate } from "node:zlib";
 import { encodeAbiParameters, getAddress, keccak256, stringToHex } from "viem";
@@ -226,6 +233,26 @@ export interface KeelInlinePreEncodedTokenURIGraph {
   readonly mediaType: "application/vnd.keel.token-uri-base64-fragment";
   readonly contextParameter: "keel-context";
   readonly contextDelivery: "base64-html-tail";
+  readonly fragmentBytes: Uint8Array;
+  readonly fragmentIntegrity: Integrity;
+  readonly htmlBytes: Uint8Array;
+  readonly htmlIntegrity: Integrity;
+  readonly creatorPublicationBytes: number;
+  readonly parts: readonly KeelInlinePreEncodedTokenURIFragment[];
+}
+
+/**
+ * Immutable work/module body stored without a shell boundary. The active
+ * KeelHarnessBuilder wraps these bytes with the current canonical shell during
+ * `preparedTokenURI`, so already-minted default viewers follow reviewed shell
+ * updates. Creators that need a frozen presentation should publish the full
+ * `KeelInlinePreEncodedTokenURIGraph` instead.
+ */
+export interface KeelInlinePreEncodedTokenURIBodyGraph {
+  readonly schema: "keel-inline-preencoded-token-uri-body@1";
+  readonly mediaType: "application/vnd.keel.token-uri-base64-body-fragment";
+  readonly shellSelection: "follow-latest";
+  readonly shellId: typeof KEEL_INLINE_PROTECTION_SHELL_ID;
   readonly fragmentBytes: Uint8Array;
   readonly fragmentIntegrity: Integrity;
   readonly htmlBytes: Uint8Array;
@@ -510,10 +537,13 @@ function assertMarketplaceSafeDataURI(value: string, label: string): void {
     exactBase64Bytes(payload, `${label} Base64 payload`);
     return;
   }
-  // Keep only RFC 3986 unreserved bytes literal. Reserved punctuation is
-  // valid in some data-URI readers but can still be reinterpreted by JSON,
-  // HTML, marketplace, or opaque-origin parsers downstream.
-  if (!/^(?:[A-Za-z0-9._~-]|%[0-9a-f]{2})*$/iu.test(payload)) {
+  for (let at = 0; at < payload.length; at += 1) {
+    const character = payload.charCodeAt(at);
+    if (isDataUriLiteralByte(character)) continue;
+    if (character === 0x25 && /^[0-9a-f]{2}$/iu.test(payload.slice(at + 1, at + 3))) {
+      at += 2;
+      continue;
+    }
     throw new TypeError(`${label} contains raw text that must be percent-escaped.`);
   }
 }
@@ -959,13 +989,71 @@ export async function buildKeelInlinePreEncodedTokenURIGraph(
 }
 
 /**
+ * Build KEEL's recommended default viewer payload: immutable modules/work only,
+ * with no copied shell top or bottom. The canonical shell is resolved by its
+ * stable registry ID at contract-read time and therefore follows the latest
+ * registered revision until that shell is frozen.
+ *
+ * This is deliberately separate from `buildKeelInlinePreEncodedTokenURIGraph`:
+ * the older full-graph helper remains the explicit pinned/frozen-shell lane.
+ */
+export async function buildKeelInlineFollowLatestTokenURIBodyGraph(
+  root: KeelInlineGraphDocument,
+  options: { readonly existingParts?: readonly KeelPublishedInlineFragment[] } = {},
+): Promise<KeelInlinePreEncodedTokenURIBodyGraph> {
+  const full = await buildKeelInlinePreEncodedTokenURIGraph(root, options);
+  const first = full.parts[0];
+  const last = full.parts.at(-1);
+  if (first?.role !== "shell-prefix" || last?.role !== "shell-suffix") {
+    throw new TypeError("A follow-latest Inline body requires one canonical shell prefix and suffix.");
+  }
+  const parts = full.parts.slice(1, -1);
+  if (parts.length === 0 || parts.some((part) => part.role === "shell-prefix" || part.role === "shell-suffix")) {
+    throw new TypeError("A follow-latest Inline body must contain immutable work or module parts between the shell boundaries.");
+  }
+  const fragmentBytes = concat(parts.map((part) => part.bytes));
+  const htmlBytes = concat(parts.map((part) => part.decodedHtmlBytes));
+  if (fragmentBytes.byteLength > KEEL_INLINE_MAX_TOKEN_URI_BYTES) {
+    throw new RangeError(`The prepared Inline body stream is ${fragmentBytes.byteLength.toLocaleString()} bytes, above KEEL's ${KEEL_INLINE_MAX_TOKEN_URI_BYTES.toLocaleString()}-byte public-read limit.`);
+  }
+  const decodedMiddle = Buffer.from(decoder.decode(fragmentBytes), "base64").toString("utf8");
+  const decodedBody = exactBase64Bytes(decodedMiddle, "Pre-encoded Inline body stream");
+  if (!exactBytes(decodedBody, htmlBytes)) {
+    throw new Error("Pre-encoded Inline body fragments do not reconstruct the exact aligned body HTML.");
+  }
+  return {
+    schema: "keel-inline-preencoded-token-uri-body@1",
+    mediaType: "application/vnd.keel.token-uri-base64-body-fragment",
+    shellSelection: "follow-latest",
+    shellId: KEEL_INLINE_PROTECTION_SHELL_ID,
+    fragmentBytes,
+    fragmentIntegrity: await createIntegrity(fragmentBytes),
+    htmlBytes,
+    htmlIntegrity: await createIntegrity(htmlBytes),
+    creatorPublicationBytes: parts
+      .filter((part) => part.sourceKind === "creator")
+      .reduce((total, part) => total + part.bytes.byteLength, 0),
+    parts,
+  };
+}
+
+/**
  * Finish an immutable 1/1 ERC-721 tokenURI entirely at release-build time.
  * The collection address must already be deterministically predicted. The
  * contract stores these two small outer-Base64 slices and directly copies the
  * reusable middle graph between them.
  */
 export async function buildKeelPreparedOneOfOneTokenURI(input: {
-  readonly graph: Pick<KeelInlinePreEncodedTokenURIGraph, "fragmentBytes">;
+  readonly graph: Pick<KeelInlinePreEncodedTokenURIGraph | KeelInlinePreEncodedTokenURIBodyGraph, "fragmentBytes">;
+  /**
+   * Exact registered shell fragments that the onchain builder will wrap around
+   * a follow-latest body. Omit this only for a legacy graph that already
+   * contains its pinned shell boundaries.
+   */
+  readonly shellFragments?: {
+    readonly prefix: Uint8Array;
+    readonly suffix: Uint8Array;
+  };
   readonly chainId: number;
   readonly collection: Hex;
   readonly collectionName: string;
@@ -1091,7 +1179,10 @@ export async function buildKeelPreparedOneOfOneTokenURI(input: {
     paddingStrategy: "json-whitespace",
   });
   if (prefix.paddingBytes !== 0) throw new Error("Prepared token JSON prefix failed its pre-animation alignment.");
-  const middleBase64 = decoder.decode(input.graph.fragmentBytes);
+  const presentationFragmentBytes = input.shellFragments === undefined
+    ? input.graph.fragmentBytes
+    : concat([input.shellFragments.prefix, input.graph.fragmentBytes, input.shellFragments.suffix]);
+  const middleBase64 = decoder.decode(presentationFragmentBytes);
   const middleRaw = new Uint8Array(Buffer.from(middleBase64, "base64"));
   const suffix = createComposableBase64Fragment(suffixRaw, { mustAllowFollowingFragment: false });
   const tokenURIBase64 = concatenateComposableBase64Fragments([

@@ -9,25 +9,26 @@
  * One rule is absolute and it was learned by breaking it on a live deployment:
  * the document is served inside a data URI and a raw delimiter/control byte can
  * change how a reader parses the URI. The encoder therefore treats the payload
- * as UTF-8 bytes and leaves only RFC 3986 unreserved bytes literal. Everything
- * else is `%HH`, including spaces, markup delimiters, quotes, backslashes,
- * hashes, and controls. Nothing should embed this document without the helper.
+ * as UTF-8 bytes, preserves URI-safe punctuation (including Base64's `+/=`),
+ * and writes unsafe bytes as `%HH`. Nothing should embed this document without
+ * the helper.
  */
 
 /**
  * Wrap the document as the `data:` URI that carries it.
  *
- * Every payload byte outside the RFC 3986 unreserved set is percent-escaped.
- * This is intentionally stricter than the historical contract helper: it is
- * safe for browsers, marketplace URI validators, JSON strings, and opaque
- * origins alike. Large on-chain documents should use a Base64 data URI so the
- * payload is compact as well as unambiguous.
+ * URI-safe punctuation stays literal so compressed/Base64-shaped content is
+ * not expanded again. Bytes that can change URL, JSON, or quoted-HTML parsing
+ * are percent-escaped.
  */
-const UNRESERVED = (byte) =>
+const DATA_URI_LITERAL = (byte) =>
   (byte >= 0x41 && byte <= 0x5a)
   || (byte >= 0x61 && byte <= 0x7a)
   || (byte >= 0x30 && byte <= 0x39)
-  || byte === 0x2d || byte === 0x2e || byte === 0x5f || byte === 0x7e;
+  || byte === 0x21 || byte === 0x24
+  || (byte >= 0x28 && byte <= 0x2f)
+  || byte === 0x3a || byte === 0x3b || byte === 0x3d || byte === 0x40
+  || byte === 0x5f || byte === 0x7e;
 
 const HTML_TEXT_ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 const escapeHtmlText = (value) => String(value).replace(/[&<>"']/gu, (character) => HTML_TEXT_ESCAPES[character]);
@@ -58,7 +59,7 @@ export const encodeKeelPercentDataUri = (mediaType, value) => {
   if (!(bytes instanceof Uint8Array)) throw new TypeError("A data URI payload must be text or Uint8Array bytes.");
   let payload = "";
   for (const byte of bytes) {
-    payload += UNRESERVED(byte)
+    payload += DATA_URI_LITERAL(byte)
       ? String.fromCharCode(byte)
       : `%${byte.toString(16).toUpperCase().padStart(2, "0")}`;
   }

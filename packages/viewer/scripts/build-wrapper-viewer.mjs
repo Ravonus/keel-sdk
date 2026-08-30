@@ -76,7 +76,7 @@ await writeFile(
     `export declare const KEEL_WRAPPER_VIEWER_CSS: string;\n` +
     `export declare const KEEL_WRAPPER_VIEWER_MARKUP: string;\n` +
     `export declare const KEEL_WRAPPER_VIEWER_APP: string;\n` +
-    `/** Percent-encode every UTF-8 payload byte outside RFC 3986 unreserved. */\n` +
+    `/** Percent-encode only UTF-8 bytes that cannot safely remain literal in a data URI. */\n` +
     `export declare function keelWrapperViewerUri(document: string): string;\n` +
     `export declare function encodeKeelPercentDataUri(mediaType: string, value: string | Uint8Array): string;\n` +
     `export declare function encodeKeelBase64DataUri(mediaType: string, value: string | Uint8Array): string;\n` +

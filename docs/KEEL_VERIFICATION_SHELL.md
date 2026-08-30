@@ -42,7 +42,9 @@ one system, and this page is the map that was previously missing.
 The canonical default is the collector-friendly Stratus prototype promoted to
 one reusable KEEL module, not a simplified replacement:
 
-- the protected K stamp rests at the lower left and reveals on pointer intent;
+- the protected K stamp remains faintly visible at the lower left, then
+  brightens on pointer intent so the proof control is discoverable without
+  covering the work;
 - desktop opens a full-height panel on the right and resizes the verified art
   stage so the work remains completely visible rather than being covered or
   clipped;

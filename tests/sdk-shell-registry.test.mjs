@@ -4,7 +4,9 @@ import test from "node:test";
 import {
   KEEL_INLINE_PROTECTION_SHELL_ID,
   KEEL_PROTECTION_SHELL_ID,
+  buildKeelCreatorShellFreezeCall,
   buildKeelCreatorShellRegistrationCall,
+  buildKeelCreatorShellUpdateCall,
   buildKeelRegisteredPreEncodedTokenURICall,
   buildKeelShellDataURICall,
   buildKeelShellRegistrationCall,
@@ -51,11 +53,17 @@ test("shell discovery accepts only bounded read-back-verified catalogue records"
         bottomObjectId: SUFFIX,
         metadataObjectId: ARTIFACT,
         metadataDigest: DIGEST,
+        revisionMode: "follow-latest",
+        latestRevision: 3,
+        frozen: false,
       }] }), { headers: { "content-type": "application/json" } });
     },
   });
   assert.equal(rows[0].shellId, shellId);
   assert.deepEqual(rows[0].tags, ["proof", "sandbox"]);
+  assert.equal(rows[0].revisionMode, "follow-latest");
+  assert.equal(rows[0].latestRevision, 3);
+  assert.equal(rows[0].frozen, false);
 });
 
 test("the generated harness ABI exposes the registry and overloaded shell reads", async () => {
@@ -65,6 +73,10 @@ test("the generated harness ABI exposes the registry and overloaded shell reads"
   assert.ok(functions.some((item) => item.name === "setShell" && item.inputs.length === 4));
   assert.ok(functions.some((item) => item.name === "setShell" && item.inputs.length === 5));
   assert.ok(functions.some((item) => item.name === "registerShell" && item.inputs.length === 5));
+  assert.ok(functions.some((item) => item.name === "updateShell" && item.inputs.length === 5));
+  assert.ok(functions.some((item) => item.name === "freezeShell" && item.inputs.length === 1));
+  assert.ok(functions.some((item) => item.name === "shellLatestRevision"));
+  assert.ok(functions.some((item) => item.name === "shellRevision"));
   assert.ok(functions.some((item) => item.name === "predictShellId"));
   assert.ok(functions.some((item) => item.name === "shellCreator"));
   assert.ok(functions.some((item) => item.name === "shellMetadataObjectId"));
@@ -151,6 +163,23 @@ test("creator shells are namespaced, metadata-backed, and prepared without signi
   assert.equal(call.submission, "not-performed");
   assert.equal(call.payloadMode, "pre-encoded-graph");
   assert.equal(call.arguments[3], 2);
+
+  const update = buildKeelCreatorShellUpdateCall({
+    builderAddress: BUILDER,
+    shellId,
+    prefixObjectId: PREFIX,
+    suffixObjectId: SUFFIX,
+    metadataObjectId: ARTIFACT,
+  });
+  assert.equal(update.functionSignature, "updateShell(bytes32,bytes32,bytes32,uint8,bytes32)");
+  assert.deepEqual(update.arguments, [shellId, PREFIX, SUFFIX, 2, ARTIFACT]);
+  assert.equal(update.signing, "not-performed");
+
+  const freeze = buildKeelCreatorShellFreezeCall({ builderAddress: BUILDER, shellId });
+  assert.equal(freeze.functionSignature, "freezeShell(bytes32)");
+  assert.equal(freeze.irreversible, true);
+  assert.deepEqual(freeze.arguments, [shellId]);
+  assert.equal(freeze.submission, "not-performed");
 });
 
 test("the canonical inline read selects the registered graph shell without manufacturing HTML", () => {

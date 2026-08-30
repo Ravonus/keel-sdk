@@ -59,6 +59,10 @@ test("data URI and script encoders escape parser delimiters at the shared protoc
   assert.doesNotMatch(payload, /[|&<>#?\\\u0000\u2028\u2029]/u);
   assert.equal(decodeURIComponent(payload), source);
 
+  const packed = "H4sIAAAAAAAA/8tIzcnJBwCGphA2BQAAAA==";
+  const packedPercent = toPercentDataUrl("application/octet-stream", packed);
+  assert.equal(packedPercent, `data:application/octet-stream,${packed}`);
+
   const base64 = toDataUrl("text/html", new TextEncoder().encode(source));
   assert.match(base64, /^data:text\/html;base64,[A-Za-z0-9+/]+=*$/u);
   assert.equal(Buffer.from(base64.slice(base64.indexOf(",") + 1), "base64").toString("utf8"), source);

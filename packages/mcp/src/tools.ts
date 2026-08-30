@@ -26,7 +26,9 @@ import {
   prepareKeelStudioProjectIntake,
   executeKeelStudioAgentDraftOperation,
   prepareKeelCreatorCollectionWalletReview,
+  buildKeelCreatorShellFreezeCall,
   buildKeelCreatorShellRegistrationCall,
+  buildKeelCreatorShellUpdateCall,
   createKeelShellManifest,
   keelCreatorShellId,
   searchKeelShells,
@@ -724,12 +726,25 @@ async function creatorCollectionPrepareTool(_context: ToolContext, value: unknow
 async function shellPrepareTool(_context: ToolContext, value: unknown): Promise<unknown> {
   const input = record(
     value,
-    ["operation", "creator", "name", "description", "version", "tags", "builderAddress", "salt", "prefixObjectId", "suffixObjectId", "metadataObjectId", "payloadMode"],
+    ["operation", "creator", "name", "description", "version", "tags", "builderAddress", "shellId", "salt", "prefixObjectId", "suffixObjectId", "metadataObjectId", "payloadMode"],
     "Shell prepare arguments",
   );
   const operation = requiredString(input, "operation");
-  if (operation !== "manifest" && operation !== "register") throw new TypeError("operation must be manifest or register.");
+  if (operation !== "manifest" && operation !== "register" && operation !== "update" && operation !== "freeze") {
+    throw new TypeError("operation must be manifest, register, update, or freeze.");
+  }
   const creator = requiredString(input, "creator") as `0x${string}`;
+  if (operation === "freeze") {
+    return Object.freeze({
+      schema: "keel.creator-shell-prepare@1" as const,
+      status: "review-only" as const,
+      creator,
+      call: buildKeelCreatorShellFreezeCall({
+        builderAddress: requiredString(input, "builderAddress") as `0x${string}`,
+        shellId: requiredString(input, "shellId") as `0x${string}`,
+      }),
+    });
+  }
   const tags = input.tags === undefined ? [] : input.tags;
   if (!Array.isArray(tags) || tags.some((tag) => typeof tag !== "string")) throw new TypeError("tags must be text values.");
   const manifest = await createKeelShellManifest({
@@ -754,15 +769,29 @@ async function shellPrepareTool(_context: ToolContext, value: unknown): Promise<
       submission: "not-performed" as const,
     });
   }
+  const builderAddress = requiredString(input, "builderAddress") as `0x${string}`;
+  const prefixObjectId = requiredString(input, "prefixObjectId") as `0x${string}`;
+  const suffixObjectId = requiredString(input, "suffixObjectId") as `0x${string}`;
+  const metadataObjectId = requiredString(input, "metadataObjectId") as `0x${string}`;
+  const payloadMode = (optionalString(input, "payloadMode") ?? "pre-encoded-graph") as "sandboxed-html" | "gzip-base64" | "pre-encoded-graph";
+  if (operation === "update") {
+    return Object.freeze({
+      schema: "keel.creator-shell-prepare@1" as const,
+      status: "review-only" as const,
+      shellId: requiredString(input, "shellId") as `0x${string}`,
+      metadata,
+      call: buildKeelCreatorShellUpdateCall({
+        builderAddress,
+        shellId: requiredString(input, "shellId") as `0x${string}`,
+        prefixObjectId,
+        suffixObjectId,
+        metadataObjectId,
+        payloadMode,
+      }),
+    });
+  }
   const salt = requiredString(input, "salt") as `0x${string}`;
-  const call = buildKeelCreatorShellRegistrationCall({
-    builderAddress: requiredString(input, "builderAddress") as `0x${string}`,
-    salt,
-    prefixObjectId: requiredString(input, "prefixObjectId") as `0x${string}`,
-    suffixObjectId: requiredString(input, "suffixObjectId") as `0x${string}`,
-    metadataObjectId: requiredString(input, "metadataObjectId") as `0x${string}`,
-    payloadMode: (optionalString(input, "payloadMode") ?? "pre-encoded-graph") as "sandboxed-html" | "gzip-base64" | "pre-encoded-graph",
-  });
+  const call = buildKeelCreatorShellRegistrationCall({ builderAddress, salt, prefixObjectId, suffixObjectId, metadataObjectId, payloadMode });
   return Object.freeze({
     schema: "keel.creator-shell-prepare@1" as const,
     status: "review-only" as const,
@@ -824,7 +853,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
   tool("keel-studio-stage-project", "Stage bounded creator resources/modules and return the server-issued Studio handoff. Omitted viewer selects Studio's canonical KEEL Inline graph for later preparation; `none` is the explicit raw-artifact route with no viewer and does not prevent a later release or mint. A direct image, video, or self-contained GLB resolves to registered shell plus registered keel.asset-display@1 plus the creator media entry, never zero modules or a generated index.html. Resolve the active builder from the selected-chain Studio Inline catalog and verify its registered pre-encoded shell record; legacy protector getters and NoProtector do not determine default Inline readiness. Creator HTML is content, never a replacement shell, and agents must not upload a locally manufactured KEEL shell, protected-harness wrapper, or local wrapper when the catalog is incomplete. Studio must fail closed for an incomplete selected-chain catalog during preparation. The scoped agent key remains in the MCP environment; no wallet signature or chain action occurs.", TOOL_SCHEMAS.studioStageProject, studioStageProjectTool),
   tool("keel-creator-collection-prepare", "Prepare one exact EIP-5792 KeelCreatorFactory batch plus its durable recovery envelope. This never signs or submits. Missing or ambiguous factory/renderer deployments stop before any wallet approval.", TOOL_SCHEMAS.creatorCollectionPrepare, creatorCollectionPrepareTool),
   tool("keel-shell-search", "Search the read-back-verified shell catalogue by creator, name, version, or tags. Returns top/bottom object pointers and metadata only; it never fetches carrier bytes, signs, or submits.", TOOL_SCHEMAS.shellSearch, shellSearchTool),
-  tool("keel-shell-prepare", "Create canonical creator/tag shell metadata or prepare an immutable creator-namespaced shell registration call. A shell is one reusable top and bottom around the work graph; this tool never signs, submits, or invents a replacement default shell.", TOOL_SCHEMAS.shellPrepare, shellPrepareTool),
+  tool("keel-shell-prepare", "Create canonical creator/tag shell metadata or prepare creator registration, update, or irreversible freeze calls. One stable shell ID can publish revisions until its creator freezes it. The recommended viewer follows the current revision; pinning one revision is explicit. A shell is one reusable top and bottom around the work graph; this tool never signs, submits, or invents a replacement default shell.", TOOL_SCHEMAS.shellPrepare, shellPrepareTool),
 ];
 
 export function toolByName(name: string): ToolDefinition | undefined {

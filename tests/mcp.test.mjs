@@ -125,6 +125,33 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.equal(shellPlan?.result.structuredContent.call.functionName, "registerShell");
     assert.equal(shellPlan?.result.structuredContent.call.signing, "not-performed");
     assert.equal(shellPlan?.result.structuredContent.call.submission, "not-performed");
+    const shellId = shellPlan?.result.structuredContent.shellId;
+    const shellUpdate = await call(server, 33, "keel-shell-prepare", {
+      operation: "update",
+      creator: "0x1111111111111111111111111111111111111111",
+      name: "Gallery grid",
+      description: "The reviewed second revision.",
+      version: "2.0.0",
+      tags: ["gallery", "grid"],
+      builderAddress: "0x4f04bf6aac1183c26cadf05cf69d6148c9f6440b",
+      shellId,
+      prefixObjectId: `0x${"5".repeat(64)}`,
+      suffixObjectId: `0x${"6".repeat(64)}`,
+      metadataObjectId: `0x${"7".repeat(64)}`,
+      payloadMode: "pre-encoded-graph",
+    });
+    assert.equal(shellUpdate?.result.structuredContent.call.functionName, "updateShell");
+    assert.equal(shellUpdate?.result.structuredContent.shellId, shellId);
+    assert.equal(shellUpdate?.result.structuredContent.call.submission, "not-performed");
+    const shellFreeze = await call(server, 34, "keel-shell-prepare", {
+      operation: "freeze",
+      creator: "0x1111111111111111111111111111111111111111",
+      builderAddress: "0x4f04bf6aac1183c26cadf05cf69d6148c9f6440b",
+      shellId,
+    });
+    assert.equal(shellFreeze?.result.structuredContent.call.functionName, "freezeShell");
+    assert.equal(shellFreeze?.result.structuredContent.call.irreversible, true);
+    assert.equal(shellFreeze?.result.structuredContent.call.signing, "not-performed");
     const malformed = await server.handle({ jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "cost", unexpected: true } });
     assert.equal(malformed?.error?.code, -32602);
     const malformedArguments = await server.handle({ jsonrpc: "2.0", id: 12, method: "tools/call", params: { name: "cost", arguments: null } });
@@ -732,6 +759,9 @@ test("Keel index search reads bounded metadata and locks an exact reuse candidat
         bottomObjectId: `0x${"2".repeat(64)}`,
         metadataObjectId: `0x${"3".repeat(64)}`,
         metadataDigest: `0x${"4".repeat(64)}`,
+        revisionMode: "follow-latest",
+        latestRevision: 2,
+        frozen: false,
       }] }));
       return;
     }

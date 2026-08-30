@@ -232,20 +232,30 @@ const creatorCollectionPrepare: JsonSchema = object({
   creatorNonce: string("Exact creator nonce read before preparation, encoded as canonical unsigned decimal text.", 78),
   operation: creatorCollectionOperation,
 }, ["chainId", "creator", "creatorNonce", "operation"]);
-const shellPrepare: JsonSchema = object({
-  operation: { type: "string", enum: ["manifest", "register"] },
+const shellManifestFields: Readonly<Record<string, JsonSchema>> = {
   creator: string("Creator wallet used for namespacing and catalogue indexing."),
   name: string("Human-readable shell name.", 96),
   description: string("Human-readable shell description.", 512),
   version: string("Creator shell version.", 32),
   tags: { type: "array", items: string("Lowercase kebab-case discovery tag.", 32), minItems: 0, maxItems: 16 },
-  builderAddress: string("Required for register: exact KeelHarnessBuilder address."),
+};
+const shellMutationFields: Readonly<Record<string, JsonSchema>> = {
+  builderAddress: string("Exact KeelHarnessBuilder address."),
+  shellId: string("Stable creator shell ID required for update or freeze."),
   salt: string("Required for register: immutable bytes32 creator namespace salt."),
-  prefixObjectId: string("Required for register: committed shell top object ID."),
-  suffixObjectId: string("Required for register: committed shell bottom object ID."),
-  metadataObjectId: string("Required for register: committed JSON manifest object ID."),
+  prefixObjectId: string("Committed shell top object ID."),
+  suffixObjectId: string("Committed shell bottom object ID."),
+  metadataObjectId: string("Committed JSON manifest object ID."),
   payloadMode: { type: "string", enum: ["sandboxed-html", "gzip-base64", "pre-encoded-graph"] },
-}, ["operation", "creator", "name", "version"]);
+};
+const shellPrepare: JsonSchema = {
+  oneOf: [
+    object({ operation: { type: "string", enum: ["manifest"] }, ...shellManifestFields }, ["operation", "creator", "name", "version"]),
+    object({ operation: { type: "string", enum: ["register"] }, ...shellManifestFields, ...shellMutationFields }, ["operation", "creator", "name", "version", "builderAddress", "salt", "prefixObjectId", "suffixObjectId", "metadataObjectId"]),
+    object({ operation: { type: "string", enum: ["update"] }, ...shellManifestFields, ...shellMutationFields }, ["operation", "creator", "name", "version", "builderAddress", "shellId", "prefixObjectId", "suffixObjectId", "metadataObjectId"]),
+    object({ operation: { type: "string", enum: ["freeze"] }, creator: shellManifestFields.creator!, builderAddress: shellMutationFields.builderAddress!, shellId: shellMutationFields.shellId! }, ["operation", "creator", "builderAddress", "shellId"]),
+  ],
+};
 const shellSearch: JsonSchema = object({
   studioUrl: string("Optional configured KEEL Studio origin.", 512),
   query: string("Shell name, description, version, creator, or tag query.", 120),

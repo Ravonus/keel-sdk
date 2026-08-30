@@ -69,6 +69,20 @@ export interface KeelCreatorShellRegistrationInput {
   readonly payloadMode?: KeelShellPayloadMode;
 }
 
+export interface KeelCreatorShellUpdateInput {
+  readonly builderAddress: Address;
+  readonly shellId: Hex;
+  readonly prefixObjectId: Hex;
+  readonly suffixObjectId: Hex;
+  readonly metadataObjectId: Hex;
+  readonly payloadMode?: KeelShellPayloadMode;
+}
+
+export interface KeelCreatorShellFreezeInput {
+  readonly builderAddress: Address;
+  readonly shellId: Hex;
+}
+
 export interface KeelIndexedShell {
   readonly chainId: number;
   readonly builder: Address;
@@ -83,6 +97,12 @@ export interface KeelIndexedShell {
   readonly bottomObjectId: Hex;
   readonly metadataObjectId: Hex;
   readonly metadataDigest: Hex;
+  /** Revisioned builders follow the current registry entry; legacy builders predate revision history. */
+  readonly revisionMode: "follow-latest" | "legacy";
+  /** Current registry revision observed by Studio, or null for a legacy builder. */
+  readonly latestRevision: number | null;
+  /** Creator freeze state, or null when the legacy builder cannot prove it. */
+  readonly frozen: boolean | null;
 }
 
 /** Stable registry ID shared by contracts, SDKs, and publication records. */
@@ -95,7 +115,7 @@ export function keelShellId(name: string): Hex {
   return keccak256(stringToHex(normalized));
 }
 
-/** Creator-scoped immutable ID matching KeelHarnessBuilder.predictShellId. */
+/** Stable creator-scoped ID matching KeelHarnessBuilder.predictShellId. */
 export function keelCreatorShellId(creator: Address, salt: Hex): Hex {
   const normalizedCreator = normalizedAddress(creator, ZERO_ADDRESS, "creator");
   const normalizedSalt = normalizedBytes32(salt, ZERO_BYTES32, "salt");
@@ -188,6 +208,11 @@ export async function searchKeelShells(input: {
       || (value.payloadMode !== "sandboxed-html" && value.payloadMode !== "gzip-base64" && value.payloadMode !== "pre-encoded-graph")
       || typeof value.topObjectId !== "string" || typeof value.bottomObjectId !== "string"
       || typeof value.metadataObjectId !== "string" || typeof value.metadataDigest !== "string"
+      || (value.revisionMode !== "follow-latest" && value.revisionMode !== "legacy")
+      || (value.latestRevision !== null && (typeof value.latestRevision !== "number" || !Number.isSafeInteger(value.latestRevision) || value.latestRevision < 1))
+      || (value.frozen !== null && typeof value.frozen !== "boolean")
+      || (value.revisionMode === "follow-latest" && (value.latestRevision === null || value.frozen === null))
+      || (value.revisionMode === "legacy" && (value.latestRevision !== null || value.frozen !== null))
     ) throw new TypeError("KEEL shell search returned an invalid record.");
     return Object.freeze({
       chainId: value.chainId,
@@ -203,6 +228,9 @@ export async function searchKeelShells(input: {
       bottomObjectId: normalizedBytes32(value.bottomObjectId as Hex, ZERO_BYTES32, "bottomObjectId"),
       metadataObjectId: normalizedBytes32(value.metadataObjectId as Hex, ZERO_BYTES32, "metadataObjectId"),
       metadataDigest: normalizedBytes32(value.metadataDigest as Hex, ZERO_BYTES32, "metadataDigest"),
+      revisionMode: value.revisionMode,
+      latestRevision: value.latestRevision as number | null,
+      frozen: value.frozen as boolean | null,
     });
   }));
 }
@@ -238,7 +266,10 @@ function shellPayloadModeCode(payloadMode: KeelShellPayloadMode): 0 | 1 | 2 {
   throw new TypeError("payloadMode must be sandboxed-html, gzip-base64, or pre-encoded-graph.");
 }
 
-/** Review-only creator registration; the connected creator remains msg.sender. */
+/**
+ * Review-only creator registration; the connected creator remains msg.sender.
+ * The stable ID follows creator-published revisions until the creator freezes it.
+ */
 export function buildKeelCreatorShellRegistrationCall(input: KeelCreatorShellRegistrationInput) {
   const builderAddress = normalizedAddress(input.builderAddress, ZERO_ADDRESS, "builderAddress");
   const salt = normalizedBytes32(input.salt, ZERO_BYTES32, "salt");
@@ -260,6 +291,55 @@ export function buildKeelCreatorShellRegistrationCall(input: KeelCreatorShellReg
     functionSignature: "registerShell(bytes32,bytes32,bytes32,uint8,bytes32)" as const,
     arguments: [salt, prefixObjectId, suffixObjectId, payloadModeCode, metadataObjectId] as const,
     payloadMode,
+    walletApproval: "required" as const,
+    signing: "not-performed" as const,
+    submission: "not-performed" as const,
+  });
+}
+
+/** Review-only creator update for a registered shell that is not frozen. */
+export function buildKeelCreatorShellUpdateCall(input: KeelCreatorShellUpdateInput) {
+  const builderAddress = normalizedAddress(input.builderAddress, ZERO_ADDRESS, "builderAddress");
+  const shellId = normalizedBytes32(input.shellId, ZERO_BYTES32, "shellId");
+  const prefixObjectId = normalizedBytes32(input.prefixObjectId, ZERO_BYTES32, "prefixObjectId");
+  const suffixObjectId = normalizedBytes32(input.suffixObjectId, ZERO_BYTES32, "suffixObjectId");
+  const metadataObjectId = normalizedBytes32(input.metadataObjectId, ZERO_BYTES32, "metadataObjectId");
+  const payloadMode = input.payloadMode ?? "pre-encoded-graph";
+  if (builderAddress === ZERO_ADDRESS) throw new TypeError("builderAddress cannot be zero.");
+  if ([shellId, prefixObjectId, suffixObjectId, metadataObjectId].some((value) => value === ZERO_BYTES32)) {
+    throw new TypeError("shellId, prefixObjectId, suffixObjectId, and metadataObjectId cannot be zero.");
+  }
+  const payloadModeCode = shellPayloadModeCode(payloadMode);
+  return Object.freeze({
+    schema: "keel.creator-shell-update-call@1" as const,
+    status: "review-only" as const,
+    to: builderAddress,
+    valueWei: "0" as const,
+    functionName: "updateShell" as const,
+    functionSignature: "updateShell(bytes32,bytes32,bytes32,uint8,bytes32)" as const,
+    arguments: [shellId, prefixObjectId, suffixObjectId, payloadModeCode, metadataObjectId] as const,
+    payloadMode,
+    walletApproval: "required" as const,
+    signing: "not-performed" as const,
+    submission: "not-performed" as const,
+  });
+}
+
+/** Review-only irreversible freeze for a creator-managed shell. */
+export function buildKeelCreatorShellFreezeCall(input: KeelCreatorShellFreezeInput) {
+  const builderAddress = normalizedAddress(input.builderAddress, ZERO_ADDRESS, "builderAddress");
+  const shellId = normalizedBytes32(input.shellId, ZERO_BYTES32, "shellId");
+  if (builderAddress === ZERO_ADDRESS) throw new TypeError("builderAddress cannot be zero.");
+  if (shellId === ZERO_BYTES32) throw new TypeError("shellId cannot be zero.");
+  return Object.freeze({
+    schema: "keel.creator-shell-freeze-call@1" as const,
+    status: "review-only" as const,
+    irreversible: true as const,
+    to: builderAddress,
+    valueWei: "0" as const,
+    functionName: "freezeShell" as const,
+    functionSignature: "freezeShell(bytes32)" as const,
+    arguments: [shellId] as const,
     walletApproval: "required" as const,
     signing: "not-performed" as const,
     submission: "not-performed" as const,
@@ -302,7 +382,9 @@ export function buildKeelShellRegistrationCall(input: KeelShellRegistrationInput
 /**
  * Prepare the exact read that assembles a registered top + graph + bottom.
  * The canonical default is the KEEL Inline protection shell; no HTML wrapper
- * is manufactured by the caller.
+ * is manufactured by the caller. This explicit-shell read resolves the current
+ * registry revision; a pinned viewer instead stores a full graph assembled from
+ * the chosen historical shell revision.
  */
 export function buildKeelRegisteredPreEncodedTokenURICall(input: KeelRegisteredPreEncodedTokenURIInput) {
   const builderAddress = normalizedAddress(input.builderAddress, ZERO_ADDRESS, "builderAddress");

@@ -18,6 +18,8 @@ test("the registered default shell bundles the one canonical protected K chrome 
   assert.match(suffix, /keel-shell-plugin@1/u);
   assert.match(suffix, /__KEEL_SHELL_API__/u);
   assert.match(suffix, /data-keel-panel-placement/u);
+  assert.match(suffix, /opacity:\.24!important;visibility:visible!important;pointer-events:auto!important/u);
+  assert.match(suffix, /transform:translateX\(0\) rotate\(-4deg\) scale\(\.94\)!important/u);
   assert.match(suffix, /translateY\(102%\)/u);
   assert.match(suffix, /body\.verify-open\[data-keel-panel-placement=.{0,8}right/u);
   assert.match(suffix, /#keel-stage\{position:absolute/u);

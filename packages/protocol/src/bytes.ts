@@ -112,20 +112,31 @@ export function assertDataUriMediaType(mediaType: string): string {
   return mediaType;
 }
 
-const RFC3986_UNRESERVED = (byte: number): boolean =>
+/**
+ * Bytes that can remain literal in a textual data-URI payload.
+ *
+ * This keeps the useful RFC 2396 `uric` punctuation, especially the Base64
+ * alphabet's `+`, `/`, and `=`, while excluding bytes that can change URL,
+ * JSON, or quoted-HTML parsing. The excluded set includes whitespace,
+ * controls, `%`, `#`, `?`, quotes, `&`, markup delimiters, and non-ASCII.
+ */
+export const isDataUriLiteralByte = (byte: number): boolean =>
   (byte >= 0x41 && byte <= 0x5a)
   || (byte >= 0x61 && byte <= 0x7a)
   || (byte >= 0x30 && byte <= 0x39)
-  || byte === 0x2d || byte === 0x2e || byte === 0x5f || byte === 0x7e;
+  || byte === 0x21 || byte === 0x24
+  || (byte >= 0x28 && byte <= 0x2f)
+  || byte === 0x3a || byte === 0x3b || byte === 0x3d || byte === 0x40
+  || byte === 0x5f || byte === 0x7e;
 
-/** Percent-escape every non-RFC3986-unreserved UTF-8 payload byte. */
+/** Percent-escape only bytes that cannot safely remain literal in a data URI. */
 export function toPercentDataUrl(mediaType: string, value: Uint8Array | string): string {
   assertDataUriMediaType(mediaType);
   const bytes = typeof value === "string" ? utf8ToBytes(value) : value;
   if (!(bytes instanceof Uint8Array)) throw new TypeError("A data URI payload must be text or Uint8Array bytes.");
   let payload = "";
   for (const byte of bytes) {
-    payload += RFC3986_UNRESERVED(byte)
+    payload += isDataUriLiteralByte(byte)
       ? String.fromCharCode(byte)
       : `%${byte.toString(16).toUpperCase().padStart(2, "0")}`;
   }

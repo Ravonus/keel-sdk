@@ -1,7 +1,7 @@
 /**
  * Keel verification chrome — the standard on-chain proof surface.
  *
- * An invisible bar on the left edge that shows on hover; click it and a panel
+ * A quiet K stamp on the left edge that brightens on hover; click it and a panel
  * slides out with everything Keel knows about what is being rendered: the
  * proof summary, the checks, storage sources, verified resources, token
  * identity, version commitments, the object trail, staking, contract facets.
@@ -34,6 +34,8 @@ export const KEEL_VERIFICATION_CSS = '\n      :root{color-scheme:dark;font:14px 
  */
 export const KEEL_VERIFICATION_RESPONSIVE_DOCK_CSS = `
 #keel-stage{position:absolute;inset:0;transition:right .38s cubic-bezier(.18,.86,.24,1)}
+.verify-corner .verify-seal{opacity:.24!important;visibility:visible!important;pointer-events:auto!important;transform:translateX(0) rotate(-4deg) scale(.94)!important}
+.verify-corner:hover .verify-seal,.verify-corner[data-verify-corner-active=true] .verify-seal,.verify-seal[aria-expanded=true]{opacity:1!important;transform:translateX(0) rotate(0deg) scale(1)!important}
 @media(min-width:701px){
   body[data-keel-panel-placement="right"] .verify-backdrop{display:none}
   body[data-keel-panel-placement="right"] .verify-panel{top:0!important;right:0!important;bottom:0!important;left:auto!important;width:var(--keel-panel-width,min(560px,44vw))!important;max-height:none!important;border-radius:0!important;transform:translateX(100%)!important}

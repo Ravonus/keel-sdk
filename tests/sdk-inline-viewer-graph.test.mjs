@@ -8,6 +8,7 @@ import {
   buildKeelInlineLocalDocument,
   buildKeelInlineModuleFragment,
   buildKeelInlineNormalMediaDocument,
+  buildKeelInlineFollowLatestTokenURIBodyGraph,
   buildKeelInlinePreEncodedTokenURIGraph,
   buildKeelRegisteredInlineNormalMediaTokenURIGraph,
   buildKeelPreparedOneOfOneTokenURI,
@@ -155,6 +156,20 @@ test("Gzip Inline graph reuses shell and p5 fragments and publishes only creator
   assert.match(decodedMiddle, /^[A-Za-z0-9+/]+$/u);
   assert.deepEqual(Buffer.from(decodedMiddle, "base64"), Buffer.from(tokenGraph.htmlBytes));
 
+  const followLatest = await buildKeelInlineFollowLatestTokenURIBodyGraph(root);
+  assert.equal(followLatest.schema, "keel-inline-preencoded-token-uri-body@1");
+  assert.equal(followLatest.mediaType, "application/vnd.keel.token-uri-base64-body-fragment");
+  assert.equal(followLatest.shellSelection, "follow-latest");
+  assert.equal(followLatest.shellId, KEEL_INLINE_PROTECTION_SHELL_ID);
+  assert.deepEqual(followLatest.parts.map((part) => part.role), ["module", "entrypoint"]);
+  assert.equal(followLatest.parts.some((part) => part.role === "shell-prefix" || part.role === "shell-suffix"), false);
+  assert.deepEqual(
+    Buffer.from(followLatest.fragmentBytes),
+    Buffer.concat(tokenGraph.parts.slice(1, -1).map((part) => Buffer.from(part.bytes))),
+  );
+  assert.ok(followLatest.fragmentBytes.byteLength < tokenGraph.fragmentBytes.byteLength);
+  assert.equal(followLatest.creatorPublicationBytes, tokenGraph.creatorPublicationBytes);
+
   const prepared = await buildKeelPreparedOneOfOneTokenURI({
     graph: tokenGraph,
     chainId,
@@ -196,6 +211,43 @@ test("Gzip Inline graph reuses shell and p5 fragments and publishes only creator
   assert.match(animationHTML, new RegExp(prepared.contextDigest, "u"));
   assert.equal(JSON.parse(prepared.contextJSON).derivedTokenSeed, prepared.derivedTokenSeed);
   assert.doesNotMatch(new TextDecoder().decode(prepared.encodedPrefix), /=/u);
+
+  const followLatestPrepared = await buildKeelPreparedOneOfOneTokenURI({
+    graph: followLatest,
+    shellFragments: {
+      prefix: tokenGraph.parts[0].bytes,
+      suffix: tokenGraph.parts.at(-1).bytes,
+    },
+    chainId,
+    collection: `0x${"ab".repeat(20)}`,
+    collectionName: "Seed Current",
+    description: "A deterministic p5 flow field </script> 雪",
+    imageURI: "data:image/webp;base64,UklGRg==",
+    manifestURI: `web3://0x${"cd".repeat(20)}:${chainId}/object/0x${"ef".repeat(32)}`,
+    manifestDigest: `0x${"12".repeat(32)}`,
+    artifact: {
+      store: `0x${"cd".repeat(20)}`,
+      objectId: `0x${"34".repeat(32)}`,
+      digest: `0x${"56".repeat(32)}`,
+      byteLength: 3_300,
+      mediaType: "text/javascript",
+    },
+  });
+  assert.equal(followLatestPrepared.tokenURI, prepared.tokenURI);
+  assert.equal(followLatestPrepared.tokenJSON, prepared.tokenJSON);
+
+  const compactImageURI = "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3C/svg%3E";
+  const compactImagePrepared = await buildKeelPreparedOneOfOneTokenURI({
+    graph: tokenGraph,
+    chainId,
+    collection: `0x${"ab".repeat(20)}`,
+    collectionName: "Compact escaped image",
+    description: "URI-safe punctuation remains literal",
+    imageURI: compactImageURI,
+    manifestURI: `web3://0x${"cd".repeat(20)}:${chainId}/object/0x${"ef".repeat(32)}`,
+    manifestDigest: `0x${"12".repeat(32)}`,
+  });
+  assert.equal(JSON.parse(compactImagePrepared.tokenJSON).image, compactImageURI);
 
   await assert.rejects(
     buildKeelPreparedOneOfOneTokenURI({

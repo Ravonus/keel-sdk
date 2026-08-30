@@ -144,6 +144,8 @@ test("the existing Vault shell fails closed and refuses unsupported verifier rec
 test("the standalone verifier wraps headless entrypoints before injection", async () => {
   const runtime = await readFile(path.join(repositoryRoot, "examples/demos/keel-creative-lab/keel-verifier-runtime.js"), "utf8");
   assert.match(runtime, /browserSha256/u);
+  assert.match(runtime, /Missing Keel verification presentation manifest/u);
+  assert.doesNotMatch(runtime, /const presentation = embeddedVerificationPresentation/u);
   assert.match(runtime, /A verified entrypoint may be a fragment/u);
   assert.match(runtime, /<!doctype html><html><head><meta charset="utf-8"><meta name="viewport"/u);
   assert.match(runtime, /<body>\$\{html\}<\/body><\/html>/u);

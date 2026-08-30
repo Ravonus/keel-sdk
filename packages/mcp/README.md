@@ -236,12 +236,15 @@ timed-out wallet batch instead of preparing a duplicate approval.
 
 `keel-shell-prepare` creates the canonical `keel-shell-manifest@1` JSON used to
 index a reusable shell by creator, name, version, and tags, or prepares the
-review-only `registerShell` call after its top, bottom, and metadata objects
-exist on the selected chain. It never uploads those objects, signs, submits, or
-lets an agent replace the platform default. Ordinary project agents should
-still omit `viewer` and use the registered KEEL verification shell. The
-default registration mode is `pre-encoded-graph`: one top, ordered shared
-modules/work, and one bottom. `sandboxed-html` and `gzip-base64` are explicit
+review-only `registerShell`, `updateShell`, and irreversible `freezeShell`
+calls after the referenced top, bottom, and metadata objects exist on the
+selected chain. One stable creator shell ID follows its latest registered
+revision until its creator freezes it. It never uploads those objects, signs,
+submits, or lets an agent replace the platform default. Ordinary project agents
+should still omit `viewer` and use the registered KEEL verification shell. The
+recommended payload stores only the immutable module/work body and resolves the
+current registered shell at tokenURI read time; publishing the complete graph is
+the explicit pinned-revision lane. `sandboxed-html` and `gzip-base64` are
 advanced modes, not reasons to manufacture another `index.html`.
 
 `keel-shell-search` queries Studio's independently read-back-verified shell
