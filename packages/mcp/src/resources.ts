@@ -90,6 +90,8 @@ const RESOURCE_TEXT: Readonly<Record<string, string>> = {
     staging: {
       defaultViewer: "keel-verification-shell",
       defaultPresentation: "During later Studio preparation, the selected chain resolves to its catalog-backed, pre-encoded canonical KEEL Inline graph.",
+      activeBuilderResolution: "Resolve the builder from the selected-chain Studio Inline catalog, require it to be the active keel-harness-builder, then verify INLINE_PROTECTION_SHELL_ID and the exact shells(shellId) prefix, suffix, metadata, exists=true, and PreEncodedGraph mode. Do not infer readiness from an old deployment journal or another builder address.",
+      legacyProtectorLane: "protectorPrefix, protectorSuffix, protectedHarnessDataURI, and NoProtector belong to the older complete-document protector lane. They are not the readiness check for the default registered Inline shell and must not trigger a locally manufactured fallback.",
       normalMedia: "Normal standalone image/video/GLB preparation resolves the registered keel.asset-display@1 module as part of that catalog graph; agents provide only the direct creator asset and never manufacture an index.html wrapper.",
       viewerNone: "Explicit artifact/storage-only opt-out.",
       agentScope: "Agents supply only creator resources/modules and never manufacture or upload Studio's default KEEL shell, protected-harness wrapper, or local replacement wrapper.",

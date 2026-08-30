@@ -75,11 +75,16 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.equal(initialized?.result.serverInfo.name, "keel-mcp");
     assert.deepEqual(Object.keys(initialized?.result.capabilities), ["tools", "prompts", "resources"]);
     const listed = await server.handle({ jsonrpc: "2.0", id: 5, method: "tools/list", params: {} });
-    assert.deepEqual(listed?.result.tools.map((tool) => tool.name), ["analyze", "media-optimize", "build", "verify", "cost", "upload-plan", "chain-plan", "ethereum-encode", "publish-plan", "module-resolve", "module-lock", "wallet-request-prepare", "wallet-link", "module-review-prepare", "fray-auction-intake", "fray-stage-project", "keel-chain-guide", "keel-library-search", "keel-endpoint-config", "keel-studio-capabilities", "keel-studio-project-intake", "keel-studio-draft", "keel-studio-stage-project", "keel-creator-collection-prepare", "keel-shell-search", "keel-shell-prepare"]);
+    assert.deepEqual(listed?.result.tools.map((tool) => tool.name), ["analyze", "media-optimize", "media-optimize-apply", "build", "verify", "cost", "upload-plan", "chain-plan", "ethereum-encode", "publish-plan", "module-resolve", "module-lock", "wallet-request-prepare", "wallet-link", "module-review-prepare", "fray-auction-intake", "fray-stage-project", "keel-chain-guide", "keel-library-search", "keel-endpoint-config", "keel-studio-capabilities", "keel-studio-project-intake", "keel-studio-draft", "keel-studio-stage-project", "keel-creator-collection-prepare", "keel-shell-search", "keel-shell-prepare"]);
     const stageTool = listed?.result.tools.find((tool) => tool.name === "keel-studio-stage-project");
     assert.match(stageTool?.description, /creator resources\/modules/iu);
     assert.match(stageTool?.description, /canonical KEEL Inline graph/iu);
+    assert.match(stageTool?.description, /keel\.asset-display@1/iu);
+    assert.match(stageTool?.description, /never zero modules or a generated index\.html/iu);
+    assert.match(stageTool?.description, /active builder from the selected-chain Studio Inline catalog/iu);
+    assert.match(stageTool?.description, /legacy protector getters and NoProtector do not determine default Inline readiness/iu);
     assert.match(stageTool?.inputSchema.properties.viewer.description, /artifact\/storage-only/iu);
+    assert.match(stageTool?.inputSchema.properties.viewer.description, /direct creator asset/iu);
     const creatorPlan = await call(server, 31, "keel-creator-collection-prepare", {
       chainId: 11155111,
       creator: "0x1111111111111111111111111111111111111111",
@@ -133,13 +138,19 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     const noIdResource = await server.handle({ jsonrpc: "2.0", method: "resources/list", params: {} });
     assert.equal(noIdResource?.error?.code, -32600);
     const promptList = await server.handle({ jsonrpc: "2.0", id: 9, method: "prompts/list", params: {} });
-    assert.deepEqual(promptList?.result.prompts.map((prompt) => prompt.name), ["keel-asset-review", "fray-auction-review"]);
+    assert.deepEqual(promptList?.result.prompts.map((prompt) => prompt.name), ["keel-asset-review", "keel-draft-repair", "fray-auction-review"]);
     const frayPrompt = await server.handle({ jsonrpc: "2.0", id: 11, method: "prompts/get", params: { name: "fray-auction-review" } });
-    assert.match(frayPrompt?.result.messages[0].content.text, /exactly three auction setups/iu);
+    assert.match(frayPrompt?.result.messages[0].content.text, /exactly four auction setups/iu);
     assert.match(frayPrompt?.result.messages[0].content.text, /stop and wait/iu);
     const keelPrompt = await server.handle({ jsonrpc: "2.0", id: 12, method: "prompts/get", params: { name: "keel-asset-review", arguments: { input: "asset.js" } } });
     assert.match(keelPrompt?.result.messages[0].content.text, /canonical KEEL Inline graph/iu);
     assert.match(keelPrompt?.result.messages[0].content.text, /protected-harness wrapper/iu);
+    assert.match(keelPrompt?.result.messages[0].content.text, /Never use protectorPrefix, protectorSuffix, protectedHarnessDataURI, or a NoProtector result/iu);
+    const repairPrompt = await server.handle({ jsonrpc: "2.0", id: 32, method: "prompts/get", params: { name: "keel-draft-repair", arguments: { releaseId: "release-1", expectedRevision: 7, request: "Optimize the poster without changing Inline mode.", presentationMode: "inline" } } });
+    assert.equal(repairPrompt?.result.description, "Revision-bound, wallet-neutral KEEL Studio draft repair.");
+    assert.match(repairPrompt?.result.messages[0].content.text, /media-optimize-apply/u);
+    assert.match(repairPrompt?.result.messages[0].content.text, /expectedRevision 7/u);
+    assert.match(repairPrompt?.result.messages[0].content.text, /Never cancel, sign, submit, publish, request wallet approval/u);
     const malformedPromptList = await server.handle({ jsonrpc: "2.0", id: 10, method: "prompts/list", params: { unexpected: true } });
     assert.equal(malformedPromptList?.error?.code, -32602);
     const malformedResourceList = await server.handle({ jsonrpc: "2.0", id: 22, method: "resources/list", params: null });
@@ -155,13 +166,25 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.ok(workflow.steps.includes("module-lock"));
     assert.ok(workflow.steps.includes("ethereum-encode"));
     assert.ok(workflow.steps.includes("publish-plan"));
+    assert.ok(workflow.steps.includes("media-optimize"));
+    assert.ok(workflow.steps.includes("media-optimize-apply"));
+    assert.ok(workflow.steps.includes("studio-draft"));
+    assert.deepEqual(workflow.repair.order, ["studio-draft:read", "media-optimize", "creator-review", "media-optimize-apply", "studio-stage-project", "creator-prepare", "studio-draft:update"]);
+    assert.equal(workflow.repair.walletAuthority, "none");
     const publicationModesRead = await server.handle({ jsonrpc: "2.0", id: 29, method: "resources/read", params: { uri: "keel://mcp/publication-modes" } });
     const publicationModes = JSON.parse(publicationModesRead?.result.contents[0].text);
     assert.equal(publicationModes.defaultMode, "native-carrier-v1");
     assert.equal(publicationModes.modes.find((mode) => mode.id === "history-inscription-v1").contractReadable, false);
     assert.match(publicationModes.presentation.sdkPlanner.portableThreeDefault, /Three\.js r180/u);
+    assert.match(publicationModes.presentation.sdkPlanner.normalMediaDefault, /keel\.asset-display@1/u);
+    assert.match(publicationModes.presentation.sdkPlanner.assetDisplay, /no network or wallet authority/iu);
     assert.equal(publicationModes.staging.defaultViewer, "keel-verification-shell");
+    assert.match(publicationModes.staging.normalMedia, /never manufacture an index\.html wrapper/iu);
     assert.match(publicationModes.staging.catalogFailure, /fail closed/iu);
+    assert.match(publicationModes.staging.activeBuilderResolution, /selected-chain Studio Inline catalog/iu);
+    assert.match(publicationModes.staging.activeBuilderResolution, /PreEncodedGraph mode/iu);
+    assert.match(publicationModes.staging.legacyProtectorLane, /older complete-document protector lane/iu);
+    assert.match(publicationModes.staging.legacyProtectorLane, /not the readiness check/iu);
     assert.deepEqual(await readdir(directory), resourceFiles);
     const unknownResource = await server.handle({ jsonrpc: "2.0", id: 25, method: "resources/read", params: { uri: "keel://mcp/unknown" } });
     assert.equal(unknownResource?.error?.code, -32002);
@@ -426,7 +449,7 @@ test("MCP rejects symlink inputs and CLI emits protocol JSON only", async () => 
     const lines = output.trim().split("\n").map((line) => JSON.parse(line));
     assert.equal(lines.length, 4);
     assert.equal(lines[0].id, 1);
-    assert.equal(lines[1].result.tools.length, 26);
+    assert.equal(lines[1].result.tools.length, 27);
     assert.equal(lines[2].result.resources.length, 3);
     assert.equal(JSON.parse(lines[3].result.contents[0].text).kind, "offline-workflow");
   } finally {
@@ -443,9 +466,9 @@ test("Fray intake asks for creator choices and emits a digest-bound approval han
     const missing = await call(server, 2, "fray-auction-intake", { family: "ethereum", network: "sepolia" });
     assert.equal(missing?.result.structuredContent.status, "needs-input");
     assert.deepEqual(missing?.result.structuredContent.questions.map((question) => question.field), ["title", "description", "auctionPreset"]);
-    assert.equal(missing?.result.structuredContent.auctionPresets.length, 3);
+    assert.equal(missing?.result.structuredContent.auctionPresets.length, 4);
     assert.equal(missing?.result.structuredContent.auctionPresets[0].id, 1);
-    assert.equal(missing?.result.structuredContent.auctionPresets[2].id, 3);
+    assert.equal(missing?.result.structuredContent.auctionPresets[3].id, 4);
 
     const ready = await call(server, 3, "fray-auction-intake", {
       sourcePath: "doom.wasm",
@@ -617,7 +640,7 @@ test("MCP CLI help, version, and self-test are explicit non-stdio modes", async 
     const health = JSON.parse(first);
     assert.equal(health.status, "ok");
     assert.equal(health.protocolVersion, "2024-11-05");
-    assert.equal(health.toolCount, 26);
+    assert.equal(health.toolCount, 27);
     assert.deepEqual(health.checks, ["initialize", "ping", "tools/list", "prompts/list", "prompts/get", "resources/list", "resources/read"]);
     assert.equal(health.jsonrpc, undefined);
   } finally {

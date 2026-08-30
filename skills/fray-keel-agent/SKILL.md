@@ -116,6 +116,15 @@ top/bottom/metadata objects through the normal reviewed storage flow, then
 prepare the immutable creator-namespaced registration call. Never confuse that
 with staging an ordinary artwork.
 
+Resolve that default shell only through the selected-chain Studio Inline
+catalog. The catalog builder must match Studio's active `keel-harness-builder`;
+verify `INLINE_PROTECTION_SHELL_ID()` and the exact `shells(shellId)` prefix,
+suffix, metadata, `exists=true`, and `PreEncodedGraph` mode. Never infer the
+active builder from an older deployment journal. `protectorPrefix()`,
+`protectorSuffix()`, `protectedHarnessDataURI(...)`, and `NoProtector` belong
+to the older complete-document protector lane and say nothing about whether the
+default registered Inline shell is ready. Do not manufacture a fallback shell.
+
 Use `keel-shell-search` to discover an existing verified shell by creator or
 tags. A zero-result search never authorizes manufacturing a wrapper: ordinary
 projects continue to omit `viewer` and use the canonical KEEL verification
@@ -132,9 +141,11 @@ chat, logs, or a handoff URL.
 2. Preserve its returned `revision` and every field the creator did not ask to
    change.
 3. For media changes, run `media-optimize` as a dry-run and show the measured
-   before/after bytes and percentage. Do not change storage mode. A local CLI
-   user may explicitly apply a smaller candidate to a new file; the source is
-   retained.
+   before/after bytes, percentage, exact output digest, adapter, and settings.
+   Do not change storage mode. Only after the creator approves that exact
+   result, call `media-optimize-apply` with its digest and byte length, or use
+   the JSON/YAML `keel media-optimize` CLI with `operation: apply-reviewed`.
+   Both paths remeasure before writing one new file; the source is retained.
 4. Stage corrected project bytes as a new project handoff. The creator still
    signs in and prepares those bytes in Studio; an agent grant does not bypass
    project verification.

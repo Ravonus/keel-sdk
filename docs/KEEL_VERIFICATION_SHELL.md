@@ -83,9 +83,17 @@ uploaded `index.html`, and ordinary project agents do not author one:
   creator work, then registered bottom. `registeredPreEncodedTokenURI(...)`
   checks those exact graph boundaries and copies the already encoded graph.
   It does not rebuild or Base64-encode the p5 runtime, shell, or creator work.
+  Resolve its builder from the selected-chain Studio Inline catalog, require
+  that address to be Studio's active `keel-harness-builder`, and verify the
+  exact `shells(shellId)` record. An old deployment journal is a receipt, not
+  active configuration.
 - `PROTECTION_SHELL_ID()` keeps the older complete-document protection wrapper
   separate. Its three-argument `shellDataURI` overload remains compatible for
   advanced callers, but it is not the canonical Inline graph assembler.
+  Likewise, `protectorPrefix()`, `protectorSuffix()`,
+  `protectedHarnessDataURI(...)`, and `NoProtector` describe only this legacy
+  lane. They must never disable Inline or cause an agent to create a local
+  replacement shell.
 - `setShell(shellId, prefixObjectId, suffixObjectId, payloadMode,
   metadataObjectId)` registers or replaces a platform shell plus the committed
   catalogue manifest needed for creator/tag search. `SandboxedHTML` carries a
