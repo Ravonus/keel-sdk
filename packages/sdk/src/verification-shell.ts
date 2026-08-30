@@ -24,10 +24,13 @@ import { brotliCompress, brotliDecompress, constants as zlibConstants, deflate, 
 import { build } from "esbuild";
 
 import {
+  assertKeelRpcUrl,
+  assertDataUriMediaType,
   canonicalJson,
   chunkBytes,
   createIntegrity,
   createKeelVerificationPresentationManifest,
+  escapeJsonForScript,
   utf8ToBytes,
   verifySourceBuild,
   type Hex,
@@ -89,23 +92,33 @@ export interface KeelStandaloneViewerItem {
   readonly chainId?: number;
   readonly store?: string;
   readonly objectId?: Hex;
+  /**
+   * Optional packing applied around an onchain object's exact decoded bytes.
+   * This lets a large HTML document live as a raw composite Brotli stream:
+   * the object record authenticates the packed stream, then the viewer
+   * decompresses it and authenticates `integrity` before mounting anything.
+   */
+  readonly onchain?: {
+    readonly storeKind?: "keel-hold" | "stratus-chunk-store";
+    readonly compression: "none" | "gzip" | "deflate" | "brotli";
+    readonly storedIntegrity?: { readonly algorithm: "sha256"; readonly digest: Hex; readonly byteLength: number };
+  };
   readonly embedded?: {
     readonly storedBase64: string;
     readonly compression: "none" | "gzip" | "deflate" | "brotli";
     readonly storedIntegrity?: { readonly algorithm: "sha256"; readonly digest: Hex; readonly byteLength: number };
   };
-  readonly sources?: readonly {
-    readonly uri: string;
-    readonly compression: "none" | "gzip" | "deflate" | "brotli";
-    readonly storedIntegrity?: { readonly algorithm: "sha256"; readonly digest: Hex; readonly byteLength: number };
-  }[];
 }
 
 export interface KeelStandaloneViewerEnvelope {
   readonly protocol: typeof KEEL_STANDALONE_VIEWER_PROTOCOL;
   readonly title: string;
-  readonly deliveryProfile: "onchain-recursive" | "ordered-url" | "embedded-assembled";
+  /** Inline bytes or recursive chain RPC. Hosted URL delivery is intentionally unsupported. */
+  readonly deliveryProfile: "onchain-recursive" | "embedded-assembled";
+  /** @deprecated Use rpcUrls so a sealed viewer is not pinned to one RPC operator. */
   readonly rpcUrl?: string;
+  /** Governed ordinary chain RPC endpoints, tried in order. Never content hosts. */
+  readonly rpcUrls?: readonly string[];
   readonly blockTag?: string;
   readonly entrypoint: string;
   readonly runtimeExpectations?: { readonly minimumCanvasCount?: number };
@@ -125,7 +138,7 @@ export interface KeelStandaloneViewerBuild {
 }
 
 function escapeScriptJson(value: unknown): string {
-  return canonicalJson(value).replaceAll("<", "\\u003c").replaceAll("\u2028", "\\u2028").replaceAll("\u2029", "\\u2029");
+  return escapeJsonForScript(canonicalJson(value));
 }
 
 async function loadVaultVerificationChrome(
@@ -202,9 +215,15 @@ export async function buildStandaloneKeelViewer(input: {
 }): Promise<KeelStandaloneViewerBuild> {
   if (input.envelope.protocol !== KEEL_STANDALONE_VIEWER_PROTOCOL) throw new TypeError("Unsupported standalone viewer protocol.");
   if (!input.envelope.items.some((item) => item.id === input.envelope.entrypoint)) throw new TypeError("Standalone viewer entrypoint is missing.");
-  if (input.envelope.deliveryProfile === "onchain-recursive" && !input.envelope.rpcUrl) throw new TypeError("Onchain viewer requires an RPC URL.");
-  if (input.envelope.deliveryProfile === "ordered-url" && input.envelope.items.some((item) => !item.sources?.length)) {
-    throw new TypeError("Every ordered URL viewer item requires at least one committed source.");
+  for (const item of input.envelope.items) assertDataUriMediaType(item.mediaType);
+  if (input.envelope.deliveryProfile === "onchain-recursive") {
+    const rpcUrls = input.envelope.rpcUrls ?? (input.envelope.rpcUrl === undefined ? [] : [input.envelope.rpcUrl]);
+    if (rpcUrls.length === 0) throw new TypeError("Onchain viewer requires at least one governed RPC URL.");
+    if (rpcUrls.length > 8) throw new RangeError("Onchain viewer accepts at most eight governed RPC URLs.");
+    for (const rpcUrl of rpcUrls) assertKeelRpcUrl(rpcUrl);
+    if (input.envelope.items.some((item) => item.chainId === undefined || item.store === undefined || item.objectId === undefined)) {
+      throw new TypeError("Every onchain viewer item requires a chain, store, and object ID.");
+    }
   }
   if (input.envelope.deliveryProfile === "embedded-assembled" && input.envelope.items.some((item) => !item.embedded?.storedBase64)) {
     throw new TypeError("Every embedded assembled viewer item requires committed inline bytes.");
@@ -358,7 +377,14 @@ export async function buildEmbeddedKeelViewerShell(input: {
  * halves; this code verifies stored and decoded commitments, uses the
  * browser's native Gzip/Deflate decoder, and mounts the verified entrypoint.
  */
-function compactInlineRuntime(): void {
+function compactInlineRuntime(
+  mountKeelVerification: (input: {
+    readonly result: unknown;
+    readonly runtime?: unknown;
+    readonly context?: unknown;
+    readonly extraRows?: readonly { readonly key: string; readonly value: string }[];
+  }) => unknown,
+): void {
   const globals = globalThis as typeof globalThis & {
     __KEEL_ITEMS__?: unknown;
     __KEEL_CONTEXT__?: unknown;
@@ -368,17 +394,7 @@ function compactInlineRuntime(): void {
   const source = Array.isArray(globals.__KEEL_ITEMS__) ? globals.__KEEL_ITEMS__.filter(Boolean) : [];
   const stage = document.querySelector("#keel-stage");
   const status = document.querySelector("#keel-status");
-  const stamp = document.querySelector("#keel-verify-stamp");
-  const panel = document.querySelector("#keel-verify-panel");
-  const title = document.querySelector("#keel-verify-title");
-  const summary = document.querySelector("#keel-verify-summary");
-  const resourceList = document.querySelector("#keel-verify-resources");
-  const contextPanel = document.querySelector("#keel-verify-context");
-  const pluginPanels = document.querySelector("#keel-verify-plugin-panels");
-  if (!(stage instanceof HTMLElement) || !(status instanceof HTMLElement) || !(stamp instanceof HTMLButtonElement)
-    || !(panel instanceof HTMLElement) || !(title instanceof HTMLElement) || !(summary instanceof HTMLElement)
-    || !(resourceList instanceof HTMLElement)
-    || !(contextPanel instanceof HTMLElement) || !(pluginPanels instanceof HTMLElement)) {
+  if (!(stage instanceof HTMLElement) || !(status instanceof HTMLElement) || typeof mountKeelVerification !== "function") {
     throw new Error("Invalid KEEL Inline shell.");
   }
   const items = source as KeelStandaloneViewerItem[];
@@ -455,14 +471,7 @@ function compactInlineRuntime(): void {
       : sha256Fallback(bytes);
   };
   const safeJSON = (value: unknown) => JSON.stringify(value)
-    .replaceAll("<", "\\u003c")
-    .replaceAll("\u2028", "\\u2028")
-    .replaceAll("\u2029", "\\u2029");
-  const togglePanel = (open: boolean) => {
-    panel.hidden = !open;
-    stamp.setAttribute("aria-expanded", String(open));
-  };
-  stamp.addEventListener("click", () => togglePanel(panel.hidden));
+    .replace(/[&<>\u2028\u2029]/gu, (character) => "\\u" + character.charCodeAt(0).toString(16).padStart(4, "0"));
   const verify = async (bytes: Uint8Array, integrity: Sha256Integrity, label: string) => {
     if (bytes.byteLength !== integrity.byteLength) throw new Error(`${label} length mismatch.`);
     const seen = await sha256(bytes);
@@ -494,9 +503,7 @@ function compactInlineRuntime(): void {
   };
   const replaceAliases = (text: string, aliases: ReadonlyMap<string, string>) => {
     let output = text;
-    for (const [alias, url] of [...aliases].sort(([left], [right]) => right.length - left.length || left.localeCompare(right))) {
-      output = output.replaceAll(alias, url);
-    }
+    for (const [alias, url] of [...aliases].sort(([left], [right]) => right.length - left.length || left.localeCompare(right))) output = output.replaceAll(alias, url);
     return output;
   };
   const childHTML = (
@@ -538,21 +545,33 @@ function compactInlineRuntime(): void {
         ? new TextEncoder().encode(replaceAliases(decoder.decode(bytes), aliases))
         : bytes;
       const url = dataURL(output, item.mediaType);
+      aliases.set(item.id, url);
       for (const alias of item.aliases) aliases.set(alias, url);
     }
     const entryBytes = resolved.get(entry.id);
     if (entryBytes === undefined) throw new Error("Resolved entrypoint bytes are missing.");
+    const verificationChecks = Object.freeze(items.map((item) => Object.freeze({
+      id: item.id,
+      name: item.aliases[0] ?? item.id,
+      label: item.aliases[0] ?? item.id,
+      role: item.role ?? "asset",
+      mediaType: item.mediaType,
+      digest: item.integrity.digest,
+      byteLength: item.integrity.byteLength,
+      passed: true,
+      detail: `${item.integrity.byteLength} bytes matched ${item.integrity.digest}`,
+      severity: "fatal",
+    })));
     const verification = Object.freeze({
       protocol: "keel-inline-verification@1",
       state: "verified",
-      checks: Object.freeze(items.map((item) => Object.freeze({
-        id: item.id,
-        name: item.aliases[0] ?? item.id,
-        role: item.role ?? "asset",
-        mediaType: item.mediaType,
-        digest: item.integrity.digest,
-        byteLength: item.integrity.byteLength,
-      }))),
+      title: "KEEL verified",
+      summary: `${items.length} committed resources matched before the work was mounted.`,
+      checks: verificationChecks,
+      proofTier: "Committed resource graph",
+      isFixture: false,
+      proofMode: "keel-inline-verification@1",
+      syntheticTokenContext: false,
     });
     const contentUrls = Object.fromEntries(items.map((item) => {
       const bytes = resolved.get(item.id);
@@ -560,10 +579,8 @@ function compactInlineRuntime(): void {
       return [item.id, dataURL(bytes, item.mediaType)];
     }));
     globals.__KEEL_VERIFICATION__ = verification;
-    const resources = verification.checks;
-    resourceList.textContent = resources.map((item) => `${item.name}\n${item.role} · ${item.mediaType}\n${item.byteLength} bytes · ${item.digest}`).join("\n\n");
+    const resources = verificationChecks;
     const context = globals.__KEEL_CONTEXT__;
-    contextPanel.textContent = JSON.stringify(context ?? {}, null, 2);
     const extensions = typeof context === "object" && context !== null && Array.isArray((context as { shellPlugins?: unknown }).shellPlugins)
       ? (context as { shellPlugins: unknown[] }).shellPlugins.slice(0, 8).flatMap((value) => {
         if (typeof value !== "object" || value === null) return [];
@@ -576,7 +593,6 @@ function compactInlineRuntime(): void {
       })
       : [];
     const plugins = Object.freeze(extensions);
-    pluginPanels.textContent = plugins.map((plugin) => `${plugin.title}\n${plugin.body}`).join("\n\n");
     Object.defineProperty(globals, "__KEEL_SHELL_API__", {
       value: Object.freeze({
         protocol: "keel-shell-plugin@1",
@@ -587,6 +603,12 @@ function compactInlineRuntime(): void {
       enumerable: true,
       writable: false,
       configurable: false,
+    });
+    mountKeelVerification({
+      result: verification,
+      runtime: Object.freeze({ protocol: "keel-inline-runtime@1" }),
+      context,
+      extraRows: plugins.map((plugin) => Object.freeze({ key: plugin.title, value: plugin.body })),
     });
     const frame = document.createElement("iframe");
     frame.title = "Verified KEEL work";
@@ -630,41 +652,67 @@ function compactInlineRuntime(): void {
     });
     document.body.dataset.verification = "verified";
     status.hidden = true;
-    stamp.dataset.state = "verified";
-    title.textContent = "KEEL verified";
-    summary.textContent = `${items.length} committed resources matched before the work was mounted.`;
   };
-  void launch().catch((error: unknown) => {
+  document.addEventListener("DOMContentLoaded", () => void launch().catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
     document.body.dataset.verification = "failed";
     status.hidden = false;
     status.textContent = `KEEL VERIFICATION FAILED\n${message}`;
-    stamp.dataset.state = "failed";
-    title.textContent = "Verification failed";
-    summary.textContent = message;
-    togglePanel(true);
-  });
+    mountKeelVerification({
+      result: Object.freeze({
+        state: "failed",
+        title: "Verification failed",
+        summary: message,
+        checks: Object.freeze([Object.freeze({
+          id: "keel-inline-runtime",
+          label: "Committed resource graph",
+          passed: false,
+          detail: message,
+          severity: "fatal",
+        })]),
+        proofTier: "Rejected render",
+        isFixture: false,
+        proofMode: "rejected",
+        syntheticTokenContext: false,
+      }),
+      runtime: Object.freeze({ protocol: "keel-inline-runtime@1" }),
+      context: globals.__KEEL_CONTEXT__,
+    });
+  }), { once: true });
 }
 
 /** Build the two small reusable halves for the composable Inline lane. */
-export async function buildCompactInlineKeelShell(): Promise<{
+export async function buildCompactInlineKeelShell(input: {
+  /** Checkout containing the one canonical KEEL verification chrome module. */
+  readonly repositoryRoot?: string;
+} = {}): Promise<{
   readonly prefix: Uint8Array;
   readonly suffix: Uint8Array;
   readonly prefixIntegrity: Sha256Integrity;
   readonly suffixIntegrity: Sha256Integrity;
 }> {
+  const repositoryRoot = path.resolve(input.repositoryRoot ?? ".");
+  const verificationChromePath = path.join(repositoryRoot, "packages/viewer/src/keel-verification-chrome.js");
+  await readFile(verificationChromePath);
   const runtimeBuild = await build({
-    bundle: false,
+    absWorkingDir: repositoryRoot,
+    bundle: true,
     minify: true,
+    treeShaking: true,
     platform: "browser",
     format: "iife",
     target: ["es2022"],
     write: false,
-    stdin: { contents: `(${compactInlineRuntime.toString()})()`, sourcefile: "keel-inline-runtime.js", loader: "js" },
+    stdin: {
+      contents: `import { mountKeelVerification } from ${JSON.stringify(verificationChromePath)};(${compactInlineRuntime.toString()})(mountKeelVerification)`,
+      resolveDir: repositoryRoot,
+      sourcefile: "keel-inline-runtime.js",
+      loader: "js",
+    },
   });
   const runtime = runtimeBuild.outputFiles[0]?.text;
   if (runtime === undefined) throw new Error("Compact KEEL Inline runtime produced no JavaScript.");
-  const prefix = utf8ToBytes('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}html,body,#keel-stage,iframe{width:100%;height:100%;margin:0;border:0;overflow:hidden;background:#05060b;color:#eafff8}#keel-status{position:fixed;inset:0;z-index:2;display:grid;place-items:center;white-space:pre-wrap;text-align:center;color:#d7ff63;background:#05060b;font:700 12px/1.7 monospace}[hidden]{display:none!important}#keel-verify-stamp{position:fixed;left:10px;bottom:10px;z-index:5;width:38px;height:38px;border:1px solid;background:#07120fea;color:#ffd166;opacity:.4;cursor:pointer;font:900 17px monospace}#keel-verify-stamp[data-state="verified"]{color:#67f6c5}#keel-verify-stamp[data-state="failed"]{color:#ff6573}#keel-verify-panel{position:fixed;z-index:6;left:10px;bottom:54px;width:min(520px,calc(100% - 20px));max-height:calc(100% - 64px);overflow:auto;border:1px solid #67f6c566;background:#07120ff5;padding:13px;font:11px/1.45 monospace;box-shadow:0 18px 60px #000c}#keel-verify-panel h2,#keel-verify-panel h3,#keel-verify-panel p{margin:0}#keel-verify-panel section,#keel-verify-plugin-panels{margin-top:10px;padding:9px;border:1px solid #ffffff14}#keel-verify-resources,#keel-verify-context,#keel-verify-plugin-panels{overflow-wrap:anywhere;white-space:pre-wrap}</style></head><body data-verification="pending"><div id="keel-stage"></div><div id="keel-status">VERIFYING KEEL GRAPH</div><button id="keel-verify-stamp" type="button" data-state="pending" aria-expanded="false" aria-controls="keel-verify-panel" aria-label="Open KEEL verification proof">K</button><aside id="keel-verify-panel" role="dialog" aria-labelledby="keel-verify-title" hidden><h2 id="keel-verify-title">Checking KEEL proof</h2><p id="keel-verify-summary">The work stays hidden until every commitment matches.</p><section><h3>Verified resources</h3><div id="keel-verify-resources"></div></section><section><h3>Collector context</h3><pre id="keel-verify-context"></pre></section><div id="keel-verify-plugin-panels"></div></aside><script>globalThis.__KEEL_ITEMS__=[null');
+  const prefix = utf8ToBytes('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}html,body,#keel-stage,iframe{width:100%;height:100%;margin:0;border:0;overflow:hidden;background:#05060b;color:#eafff8}body{position:relative}#keel-status{position:fixed;inset:0;z-index:2;display:grid;place-items:center;white-space:pre-wrap;text-align:center;color:#d7ff63;background:#05060b;font:700 12px/1.7 monospace}[hidden]{display:none!important}</style></head><body data-verification="pending"><div id="keel-stage"></div><div id="keel-status">VERIFYING KEEL GRAPH</div><script>globalThis.__KEEL_ITEMS__=[null');
   const suffix = utf8ToBytes(`];${runtime}</script></body></html>`);
   const [prefixIntegrity, suffixIntegrity] = await Promise.all([sha256Integrity(prefix), sha256Integrity(suffix)]);
   return { prefix, suffix, prefixIntegrity, suffixIntegrity };
@@ -683,6 +731,7 @@ export async function buildEmbeddedKeelViewerSlot(input: {
   readonly fragmentIntegrity: { readonly algorithm: "sha256"; readonly digest: Hex; readonly byteLength: number };
 }> {
   if (!input.id || !input.mediaType || input.bytes.byteLength === 0) throw new TypeError("Embedded Keel viewer slots require an id, media type, and bytes.");
+  assertDataUriMediaType(input.mediaType);
   const compression = input.compression ?? "none";
   const stored = await compressStored(compression, input.bytes);
   const [integrity, storedIntegrity] = await Promise.all([sha256Integrity(input.bytes), sha256Integrity(stored)]);

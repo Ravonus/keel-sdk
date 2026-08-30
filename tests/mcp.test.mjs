@@ -50,8 +50,9 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
   try {
     const agentSkill = await readFile(new URL("../skills/fray-keel-agent/SKILL.md", import.meta.url), "utf8");
     assert.match(agentSkill, /omit `viewer` for the normal path/iu);
-    assert.match(agentSkill, /does \*\*not\*\* ask\s+the agent to create another shell/iu);
-    assert.match(agentSkill, /Creator-authored HTML is still valid project content/iu);
+    assert.match(agentSkill, /does \*\*not\*\* ask\s+the\s+agent\s+to create another shell/iu);
+    assert.match(agentSkill, /Creator-authored HTML\s+is\s+still\s+valid project content/iu);
+    assert.match(agentSkill, /exactly four/iu);
     const server = await createMcpServer({ workspaceRoot: directory });
     const before = await server.handle({ jsonrpc: "2.0", id: 1, method: "tools/list", params: {} });
     assert.equal(before?.error?.code, -32002);
@@ -74,6 +75,8 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     const initialized = await server.handle({ jsonrpc: "2.0", id: 4, method: "initialize", params: initializeParams });
     assert.equal(initialized?.result.serverInfo.name, "keel-mcp");
     assert.deepEqual(Object.keys(initialized?.result.capabilities), ["tools", "prompts", "resources"]);
+    assert.match(initialized?.result.instructions, /begin with keel-project-plan/iu);
+    assert.match(initialized?.result.instructions, /registered canonical KEEL verification shell/iu);
     const listed = await server.handle({ jsonrpc: "2.0", id: 5, method: "tools/list", params: {} });
     assert.deepEqual(listed?.result.tools.map((tool) => tool.name), ["analyze", "media-optimize", "media-optimize-apply", "build", "verify", "cost", "upload-plan", "chain-plan", "ethereum-encode", "publish-plan", "module-resolve", "module-lock", "wallet-request-prepare", "wallet-link", "module-review-prepare", "fray-auction-intake", "fray-stage-project", "keel-chain-guide", "keel-library-search", "keel-endpoint-config", "keel-studio-capabilities", "keel-studio-project-intake", "keel-studio-draft", "keel-studio-stage-project", "keel-creator-collection-prepare", "keel-shell-search", "keel-shell-prepare"]);
     const stageTool = listed?.result.tools.find((tool) => tool.name === "keel-studio-stage-project");
@@ -83,7 +86,8 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.match(stageTool?.description, /never zero modules or a generated index\.html/iu);
     assert.match(stageTool?.description, /active builder from the selected-chain Studio Inline catalog/iu);
     assert.match(stageTool?.description, /legacy protector getters and NoProtector do not determine default Inline readiness/iu);
-    assert.match(stageTool?.inputSchema.properties.viewer.description, /artifact\/storage-only/iu);
+    assert.match(stageTool?.inputSchema.properties.viewer.description, /opts out of the shell only/iu);
+    assert.match(stageTool?.inputSchema.properties.viewer.description, /released, minted, and retrieved through its contract read/iu);
     assert.match(stageTool?.inputSchema.properties.viewer.description, /direct creator asset/iu);
     const creatorPlan = await call(server, 31, "keel-creator-collection-prepare", {
       chainId: 11155111,
@@ -142,7 +146,19 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     const noIdResource = await server.handle({ jsonrpc: "2.0", method: "resources/list", params: {} });
     assert.equal(noIdResource?.error?.code, -32600);
     const promptList = await server.handle({ jsonrpc: "2.0", id: 9, method: "prompts/list", params: {} });
-    assert.deepEqual(promptList?.result.prompts.map((prompt) => prompt.name), ["keel-asset-review", "keel-draft-repair", "fray-auction-review"]);
+    assert.deepEqual(promptList?.result.prompts.map((prompt) => prompt.name), ["keel-project-plan", "keel-asset-review", "keel-draft-repair", "fray-auction-review"]);
+    const projectPlanPrompt = await server.handle({ jsonrpc: "2.0", id: 33, method: "prompts/get", params: { name: "keel-project-plan", arguments: { request: "Make a deterministic p5 collection with a claim", scope: "collection", runtime: "p5", outcome: "claim", chain: "sepolia" } } });
+    assert.equal(projectPlanPrompt?.result.description, "Intent-first, review-only KEEL project plan.");
+    assert.match(projectPlanPrompt?.result.messages[0].content.text, /scope=collection/iu);
+    assert.match(projectPlanPrompt?.result.messages[0].content.text, /runtime=p5/iu);
+    assert.match(projectPlanPrompt?.result.messages[0].content.text, /outcome="release"/iu);
+    assert.match(projectPlanPrompt?.result.messages[0].content.text, /release\.saleMechanism="claim"/iu);
+    assert.match(projectPlanPrompt?.result.messages[0].content.text, /never pass scope/iu);
+    assert.match(projectPlanPrompt?.result.messages[0].content.text, /numeric chainId/iu);
+    assert.match(projectPlanPrompt?.result.messages[0].content.text, /keel:\/\/mcp\/project-routes/iu);
+    assert.match(projectPlanPrompt?.result.messages[0].content.text, /Stop at a reviewable plan/iu);
+    const invalidProjectPlanPrompt = await server.handle({ jsonrpc: "2.0", id: 34, method: "prompts/get", params: { name: "keel-project-plan", arguments: { request: "Make art", runtime: "unknown-runtime" } } });
+    assert.equal(invalidProjectPlanPrompt?.error?.code, -32602);
     const frayPrompt = await server.handle({ jsonrpc: "2.0", id: 11, method: "prompts/get", params: { name: "fray-auction-review" } });
     assert.match(frayPrompt?.result.messages[0].content.text, /exactly four auction setups/iu);
     assert.match(frayPrompt?.result.messages[0].content.text, /stop and wait/iu);
@@ -161,7 +177,7 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.equal(malformedResourceList?.error?.code, -32602);
     const resourceFiles = await readdir(directory);
     const resourceList = await server.handle({ jsonrpc: "2.0", id: 23, method: "resources/list", params: {} });
-    assert.deepEqual(resourceList?.result.resources.map((resource) => resource.uri), ["keel://mcp/workflow", "keel://mcp/limits", "keel://mcp/publication-modes"]);
+    assert.deepEqual(resourceList?.result.resources.map((resource) => resource.uri), ["keel://mcp/workflow", "keel://mcp/limits", "keel://mcp/project-routes", "keel://mcp/publication-modes"]);
     const resourceRead = await server.handle({ jsonrpc: "2.0", id: 24, method: "resources/read", params: { uri: "keel://mcp/limits" } });
     assert.equal(JSON.parse(resourceRead?.result.contents[0].text).kind, "offline-limits");
     const workflowRead = await server.handle({ jsonrpc: "2.0", id: 27, method: "resources/read", params: { uri: "keel://mcp/workflow" } });
@@ -175,6 +191,18 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.ok(workflow.steps.includes("studio-draft"));
     assert.deepEqual(workflow.repair.order, ["studio-draft:read", "media-optimize", "creator-review", "media-optimize-apply", "studio-stage-project", "creator-prepare", "studio-draft:update"]);
     assert.equal(workflow.repair.walletAuthority, "none");
+    const projectRoutesRead = await server.handle({ jsonrpc: "2.0", id: 35, method: "resources/read", params: { uri: "keel://mcp/project-routes" } });
+    const projectRoutes = JSON.parse(projectRoutesRead?.result.contents[0].text);
+    assert.equal(projectRoutes.planningPrompt, "keel-project-plan");
+    assert.equal(projectRoutes.intakeMapping.ordinary.outcomes.claim.outcome, "release");
+    assert.equal(projectRoutes.intakeMapping.ordinary.outcomes.claim.saleMechanism, "claim");
+    assert.equal(projectRoutes.intakeMapping.frayAuction.tool, "fray-auction-intake");
+    assert.equal(projectRoutes.intakeMapping.frayAuction.forbiddenTool, "keel-studio-project-intake");
+    assert.equal(projectRoutes.shell.default, "keel-verification-shell");
+    assert.match(projectRoutes.shell.selection, /Omit viewer/iu);
+    assert.deepEqual(projectRoutes.creationRoutes.find((route) => route.id === "fray-auction").presets, [1, 2, 3, 4]);
+    assert.deepEqual(projectRoutes.runtimeRoutes.map((route) => route.id), ["static-media", "p5", "three", "doom-wasm", "flash-as3"]);
+    assert.deepEqual(projectRoutes.proofLayers, ["sdk-unit", "forge-contract", "module-catalog", "browser-runtime", "live-chain-receipt-and-readback"]);
     const publicationModesRead = await server.handle({ jsonrpc: "2.0", id: 29, method: "resources/read", params: { uri: "keel://mcp/publication-modes" } });
     const publicationModes = JSON.parse(publicationModesRead?.result.contents[0].text);
     assert.equal(publicationModes.defaultMode, "native-carrier-v1");
@@ -196,6 +224,112 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.equal(malformedResourceRead?.error?.code, -32602);
     const unknownPrompt = await server.handle({ jsonrpc: "2.0", id: 11, method: "prompts/get", params: { name: "missing" } });
     assert.equal(unknownPrompt?.error?.code, -32602);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("project-plan aliases compose into exact intake routes and invalid values never collapse to fixed-price", async () => {
+  const directory = await mkdtemp(path.join("/tmp", "keel-mcp-route-"));
+  try {
+    const server = await createMcpServer({ workspaceRoot: directory });
+    await server.handle({ jsonrpc: "2.0", id: 1, method: "initialize", params: initializeParams });
+
+    const fixedPrompt = await server.handle({
+      jsonrpc: "2.0",
+      id: 2,
+      method: "prompts/get",
+      params: { name: "keel-project-plan", arguments: { request: "Sell one work", scope: "one-of-one", runtime: "static", outcome: "fixed-price", chain: "sepolia" } },
+    });
+    const fixedText = fixedPrompt?.result.messages[0].content.text;
+    assert.match(fixedText, /outcome="release"/iu);
+    assert.match(fixedText, /release\.saleMechanism="fixed-price"/iu);
+    assert.match(fixedText, /release\.type="one-of-one"/iu);
+    assert.match(fixedText, /runtime is not a keel-studio-project-intake argument/iu);
+
+    const frayPrompt = await server.handle({
+      jsonrpc: "2.0",
+      id: 3,
+      method: "prompts/get",
+      params: { name: "keel-project-plan", arguments: { request: "Auction this work", scope: "one-of-one", runtime: "three", outcome: "fray-auction", chain: "base-sepolia" } },
+    });
+    const frayText = frayPrompt?.result.messages[0].content.text;
+    assert.match(frayText, /do not call keel-studio-project-intake/iu);
+    assert.match(frayText, /Call fray-auction-intake/iu);
+    assert.match(frayText, /family plus network/iu);
+
+    for (const outcome of ["fixed-price", "claim", "fray-auction", "bogus"]) {
+      const rejected = await call(server, 4, "keel-studio-project-intake", {
+        title: "Must not collapse",
+        description: "An invalid direct intake alias.",
+        outcome,
+        chainId: 11_155_111,
+        release: { type: "one-of-one", saleMechanism: "fixed-price", priceEth: "0.1" },
+      });
+      assert.equal(rejected?.result.isError, true, outcome);
+      assert.match(rejected?.result.content[0].text, /outcome must be storage-only or release/iu, outcome);
+    }
+
+    for (const saleMechanism of ["fixed-price", "claim"]) {
+      const routed = await call(server, 5, "keel-studio-project-intake", {
+        title: "Exact route",
+        description: "A schema-valid release route.",
+        outcome: "release",
+        chainId: 11_155_111,
+        release: { type: "one-of-one", saleMechanism, priceEth: saleMechanism === "claim" ? "0" : "0.1" },
+      });
+      assert.equal(routed?.result.isError, undefined, saleMechanism);
+      assert.equal(routed?.result.structuredContent.releaseIntent.release.saleMechanism, saleMechanism);
+    }
+
+    const invalidMechanism = await call(server, 6, "keel-studio-project-intake", {
+      title: "Must reject",
+      description: "An invalid nested release mechanism.",
+      outcome: "release",
+      chainId: 11_155_111,
+      release: { type: "one-of-one", saleMechanism: "fray-auction", priceEth: "0.1" },
+    });
+    assert.equal(invalidMechanism?.result.isError, true);
+    assert.match(invalidMechanism?.result.content[0].text, /release\.saleMechanism must be fixed-price, auction, or claim/iu);
+
+    const invalidType = await call(server, 8, "keel-studio-project-intake", {
+      title: "Must reject",
+      description: "An invalid release type.",
+      outcome: "release",
+      chainId: 11_155_111,
+      release: { type: "collection", saleMechanism: "fixed-price", priceEth: "0.1" },
+    });
+    assert.equal(invalidType?.result.isError, true);
+    assert.match(invalidType?.result.content[0].text, /release\.type must be one-of-one, open-edition, or limited-edition/iu);
+
+    const missingReleaseChoices = await call(server, 9, "keel-studio-project-intake", {
+      title: "Must ask",
+      description: "Do not invent sale choices.",
+      outcome: "release",
+      chainId: 11_155_111,
+      release: { priceEth: "0.1" },
+    });
+    assert.deepEqual(
+      missingReleaseChoices?.result.structuredContent.questions.map(({ field }) => field),
+      ["releaseType", "saleMechanism"],
+    );
+
+    const contradictoryStorage = await call(server, 10, "keel-studio-project-intake", {
+      title: "Must reject",
+      description: "Storage-only cannot smuggle a sale.",
+      outcome: "storage-only",
+      release: { type: "one-of-one", saleMechanism: "fixed-price", priceEth: "0.1" },
+    });
+    assert.equal(contradictoryStorage?.result.isError, true);
+    assert.match(contradictoryStorage?.result.content[0].text, /release must be omitted for a storage-only project/iu);
+
+    const invalidPrompt = await server.handle({
+      jsonrpc: "2.0",
+      id: 7,
+      method: "prompts/get",
+      params: { name: "keel-project-plan", arguments: { request: "Bad route", outcome: "bogus" } },
+    });
+    assert.equal(invalidPrompt?.error?.code, -32602);
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
@@ -454,7 +588,7 @@ test("MCP rejects symlink inputs and CLI emits protocol JSON only", async () => 
     assert.equal(lines.length, 4);
     assert.equal(lines[0].id, 1);
     assert.equal(lines[1].result.tools.length, 27);
-    assert.equal(lines[2].result.resources.length, 3);
+    assert.equal(lines[2].result.resources.length, 4);
     assert.equal(JSON.parse(lines[3].result.contents[0].text).kind, "offline-workflow");
   } finally {
     await rm(directory, { recursive: true, force: true });

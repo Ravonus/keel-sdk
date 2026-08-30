@@ -160,16 +160,31 @@ test("agent staging preserves standard image, video, and model roles without man
   assert.equal(metadata.components.some(({ path }) => path === "viewer.js" || path === "index.html"), false);
 });
 
-test("agent staging requires an explicit viewerless storage-only choice", async () => {
+test("agent staging keeps an artifact release independent from the explicit no-shell choice", async () => {
   const { stageKeelStudioProject } = await import(MODULE);
   const { defaultKeelStudioPublicationIntent } = await import("../packages/sdk/dist/studio-publication.js");
   let metadata;
   const input = {
     studioUrl: "https://studio.example",
     agentToken: "k".repeat(48),
-    title: "Storage only",
+    title: "Artifact only",
     storageStrategy: "onchain",
     viewer: "none",
+    releaseIntent: {
+      schema: "keel-release-intent@1",
+      chainId: 11_155_111,
+      mode: "release",
+      collection: { mode: "choose-in-studio" },
+      release: {
+        type: "one-of-one",
+        supply: "1",
+        saleMechanism: "fixed-price",
+        priceEth: "0.1",
+        accessMode: "public",
+        startsAt: null,
+        endsAt: null,
+      },
+    },
     files: [{ path: "artifact.bin", bytes: new Uint8Array([1]), mediaType: "application/octet-stream", role: "other", format: "asset" }],
     fetchImplementation: async (_url, init) => {
       metadata = JSON.parse(init.body.get("metadata"));
@@ -187,9 +202,10 @@ test("agent staging requires an explicit viewerless storage-only choice", async 
   await stageKeelStudioProject(input);
   assert.equal("viewer" in metadata, false);
   assert.equal("publicationIntent" in metadata, false);
+  assert.equal(metadata.releaseIntent.release.type, "one-of-one");
   await assert.rejects(
     stageKeelStudioProject({ ...input, publicationIntent: defaultKeelStudioPublicationIntent() }),
-    /storage-only project cannot also require/u,
+    /artifact-only project cannot also require/u,
   );
 });
 

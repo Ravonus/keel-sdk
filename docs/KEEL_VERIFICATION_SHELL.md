@@ -23,13 +23,16 @@ one system, and this page is the map that was previously missing.
   `storage`, `resources`, `identity`, `commitments`, `object-trail`,
   `staking`, `contract-facets`. Presentation can rearrange proof data but can
   never add proof claims or change check results.
-- **Canonical default shell** (markup, rendering, verification logic):
-  `packages/sdk/src/verification-shell.ts`, specifically
-  `buildCompactInlineKeelShell`. Its stable landmarks are
-  `id="keel-verify-stamp"`, `id="keel-verify-panel"`, and the frozen
-  `__KEEL_SHELL_API__`. The K control belongs to the outer shell; creator code
-  runs in an opaque child frame and cannot replace it. Vault Arcade is a demo
-  presentation and regression fixture, not a source agents copy into projects.
+- **Canonical default shell chrome** (the one K stamp, tabbed panel, rendering,
+  and verification UI): `packages/viewer/src/keel-verification-chrome.js`.
+  Its stable landmarks are `id="verify-seal"`, `id="verify-panel"`, and
+  `.verify-page-nav`. `buildCompactInlineKeelShell` is only the chain-registry
+  bootstrap builder that bundles this exact module with the graph verifier; it
+  is not a second shell and agents never copy its output into a project. The
+  frozen `__KEEL_SHELL_API__` belongs to the outer shell; creator code runs in
+  an opaque child frame and cannot replace it. Vault Arcade and Ghost Flash are
+  regression presentations of this canonical module, not sources agents copy
+  into projects.
 - **Builders** (bundle the shell byte-identically for every carrier):
   `packages/sdk/src/verification-shell.ts` (`buildStandaloneKeelViewer`,
   `buildEmbeddedKeelViewerShell`, and the one-call
@@ -93,11 +96,13 @@ uploaded `index.html`, and ordinary project agents do not author one:
   active configuration.
 - `PROTECTION_SHELL_ID()` keeps the older complete-document protection wrapper
   separate. Its three-argument `shellDataURI` overload remains compatible for
-  advanced callers, but it is not the canonical Inline graph assembler.
-  Likewise, `protectorPrefix()`, `protectorSuffix()`,
-  `protectedHarnessDataURI(...)`, and `NoProtector` describe only this legacy
-  lane. They must never disable Inline or cause an agent to create a local
-  replacement shell.
+  advanced callers, but it is not the canonical Inline graph assembler. Current
+  builders store this route only in `shells(PROTECTION_SHELL_ID)`: duplicate
+  `protectorPrefix()` / `protectorSuffix()` state and `NoProtector` were removed.
+  Historic deployments may still expose those getters and the old
+  `protectedHarnessDataURI(...)` alias. Current builders use the registered
+  shell entrypoints only. Historic state must never disable Inline or cause an
+  agent to create a local replacement shell.
 - `setShell(shellId, prefixObjectId, suffixObjectId, payloadMode,
   metadataObjectId)` registers or replaces a platform shell plus the committed
   catalogue manifest needed for creator/tag search. `SandboxedHTML` carries a
@@ -107,8 +112,9 @@ uploaded `index.html`, and ordinary project agents do not author one:
 - `shellDataURI(shellId, artifactObjectId, artifactDigest, contextJSON)` selects
   an explicit shell. A non-protection shell is presentation only and must not
   display the Keel seal or imply verification.
-- `setProtector(prefix, suffix)` remains compatible and updates the registry
-  entry identified by `PROTECTION_SHELL_ID`.
+- Update the older complete-document route through
+  `setShell(PROTECTION_SHELL_ID, prefix, suffix)`; current builders do not keep
+  a second `setProtector` mutation path.
 - `registerShell(salt, prefix, suffix, payloadMode, metadataObjectId)` lets any
   creator register an immutable, creator-namespaced shell version. The JSON
   metadata object carries its name, description, version, creator, and tags;
@@ -124,6 +130,24 @@ The SDK exports `keelShellId`, `keelCreatorShellId`,
 `buildKeelRegisteredPreEncodedTokenURICall`. The MCP
 equivalent is `keel-shell-prepare`. Registration builders remain review-only:
 they do not sign or submit a transaction.
+
+## Shell choice never replaces the artifact
+
+Presentation and storage are separate axes. The SDK, MCP, skill, and Studio
+handoff use the registered default KEEL shell for every collector-facing
+viewer. They never substitute a creator-authored or third-party shell. The
+underlying protocol registry can describe other compatible shells for explicit
+low-level integrations, but that capability is not the default creator route
+and cannot overwrite or impersonate the default shell. The supported raw
+artifact choice is no shell at all. None of these presentation choices changes
+the immutable artifact object.
+
+Every released work keeps a direct artifact descriptor: store, object ID,
+digest, byte length, media type, and its `web3://.../haulObject/<objectId>`
+URI. A KEEL-aware reader can call `haulObject(bytes32)` and recover the exact
+raw image, video, model, script, or other artifact even while the standard
+`tokenURI` presents that same work through a shell. Artifact-only therefore
+means **no shell**, not “cannot be minted” and not “no contract-readable art.”
 
 ## Protected K and extension API
 

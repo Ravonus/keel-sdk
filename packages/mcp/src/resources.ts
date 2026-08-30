@@ -3,6 +3,7 @@ import type { McpResource, McpResourceReadResult } from "./types.js";
 export const KEEL_WORKFLOW_RESOURCE = "keel://mcp/workflow" as const;
 export const KEEL_LIMITS_RESOURCE = "keel://mcp/limits" as const;
 export const KEEL_PUBLICATION_MODES_RESOURCE = "keel://mcp/publication-modes" as const;
+export const KEEL_PROJECT_ROUTES_RESOURCE = "keel://mcp/project-routes" as const;
 const MAX_RESOURCE_BYTES = 64 * 1024;
 
 export class McpResourceNotFoundError extends Error {
@@ -49,6 +50,87 @@ const RESOURCE_TEXT: Readonly<Record<string, string>> = {
     walletSigning: "disabled",
     chainSubmission: "disabled",
   }),
+  [KEEL_PROJECT_ROUTES_RESOURCE]: resourceJson({
+    schema: "keel-project-routes@1",
+    planningPrompt: "keel-project-plan",
+    intakeTool: "keel-studio-project-intake",
+    intent: ["scope", "outcome", "runtime", "chain", "storage", "presentation", "module reuse", "test evidence", "approval boundary"],
+    intakeMapping: {
+      ordinary: {
+        tool: "keel-studio-project-intake",
+        scope: "Map one-of-one/open-edition/limited-edition to release.type; never forward scope.",
+        runtime: "Keep runtime in the plan and staging/module route; never forward runtime.",
+        chain: "Resolve network text to numeric chainId; never forward textual chain.",
+        outcomes: {
+          "storage-only": { outcome: "storage-only" },
+          release: { outcome: "release", nestedFields: ["release.type", "release.saleMechanism", "release.priceEth"] },
+          "fixed-price": { outcome: "release", saleMechanism: "fixed-price" },
+          claim: { outcome: "release", saleMechanism: "claim" },
+        },
+      },
+      frayAuction: {
+        tool: "fray-auction-intake",
+        chain: "Resolve to family plus network.",
+        presets: [1, 2, 3, 4],
+        forbiddenTool: "keel-studio-project-intake",
+      },
+    },
+    shell: {
+      default: "keel-verification-shell",
+      selection: "Omit viewer for every collector-facing viewer so Studio resolves the registered selected-chain shell graph.",
+      forbidden: ["creator-authored replacement shell", "copied shell", "shrunk shell", "local fallback shell", "shell bytes uploaded as project content"],
+      noViewer: "viewer=none is an explicit raw-artifact route without a viewer, not permission to use a custom shell.",
+    },
+    creationRoutes: [{
+      id: "one-of-one",
+      intake: { outcome: "release", releaseType: "one-of-one" },
+      next: ["keel-studio-stage-project", "keel-creator-collection-prepare"],
+      note: "Collection preparation is review-only and does not mint the token or create a sale.",
+    }, {
+      id: "collection",
+      intake: { outcome: "release", releaseTypes: ["limited-edition", "open-edition"] },
+      next: ["keel-studio-stage-project", "keel-creator-collection-prepare"],
+      note: "Choose dedicated ERC-721, dedicated ERC-1155, shared ERC-1155, or external explicitly; never substitute a lane.",
+    }, {
+      id: "fixed-price-or-claim",
+      intake: { outcome: "release", saleMechanisms: ["fixed-price", "claim"] },
+      next: ["keel-studio-stage-project", "keel-studio-draft"],
+      note: "The release intent stays editable in Studio; no sale is created by MCP.",
+    }, {
+      id: "fray-auction",
+      prompt: "fray-auction-review",
+      next: ["fray-auction-intake", "keel-library-search", "fray-stage-project"],
+      presets: [1, 2, 3, 4],
+      note: "Preset numbers are conversation shorthand. Exact terms come from the digest-bound SDK policy returned by intake.",
+    }],
+    runtimeRoutes: [{
+      id: "static-media",
+      projectBytes: "Direct creator media only; registered keel.asset-display@1 is resolved as a same-chain module.",
+      example: "examples/image-wrapper",
+    }, {
+      id: "p5",
+      projectBytes: "Creator script and assets only.",
+      requiredReuse: ["p5", "keel.seeded-random"],
+      example: "examples/agent-p5-project",
+    }, {
+      id: "three",
+      projectBytes: "Creator scene/model/assets only.",
+      requiredReuse: ["exact selected-chain Three.js module graph"],
+      examples: ["examples/starters/three-model", "examples/immutable-three-one-of-one"],
+    }, {
+      id: "doom-wasm",
+      projectBytes: "Creator WASM/WAD-derived artifact descriptors; large bytes use recursive native objects.",
+      previewExecution: "doom-wasm-sandbox",
+      example: "examples/demos/doom-wasm",
+    }, {
+      id: "flash-as3",
+      projectBytes: "Compiled SWF plus project declaration only.",
+      requiredReuse: ["Ruffle loader/runtime/core/WASM", "Brotli decoder when declared", "keel.seeded-random"],
+      verificationCommand: "npm run verify",
+      note: "Every module binding needs object and registry receipt/read-back proof; a planned module ID is not a published module.",
+    }],
+    proofLayers: ["sdk-unit", "forge-contract", "module-catalog", "browser-runtime", "live-chain-receipt-and-readback"],
+  }),
   [KEEL_PUBLICATION_MODES_RESOURCE]: resourceJson({
     schema: "keel-publication-modes@1",
     defaultMode: "native-carrier-v1",
@@ -93,7 +175,7 @@ const RESOURCE_TEXT: Readonly<Record<string, string>> = {
       activeBuilderResolution: "Resolve the builder from the selected-chain Studio Inline catalog, require it to be the active keel-harness-builder, then verify INLINE_PROTECTION_SHELL_ID and the exact shells(shellId) prefix, suffix, metadata, exists=true, and PreEncodedGraph mode. Do not infer readiness from an old deployment journal or another builder address.",
       legacyProtectorLane: "protectorPrefix, protectorSuffix, protectedHarnessDataURI, and NoProtector belong to the older complete-document protector lane. They are not the readiness check for the default registered Inline shell and must not trigger a locally manufactured fallback.",
       normalMedia: "Normal standalone image/video/GLB preparation resolves the registered keel.asset-display@1 module as part of that catalog graph; agents provide only the direct creator asset and never manufacture an index.html wrapper.",
-      viewerNone: "Explicit artifact/storage-only opt-out.",
+      viewerNone: "Explicit shell opt-out. The immutable artifact remains independently releasable and contract-readable; selecting a shell never replaces that raw artifact route.",
       agentScope: "Agents supply only creator resources/modules and never manufacture or upload Studio's default KEEL shell, protected-harness wrapper, or local replacement wrapper.",
       creatorHtml: "Creator-authored HTML is project content, not a replacement verification shell.",
       catalogFailure: "Studio must fail closed when the selected chain's canonical Inline graph catalog is incomplete; agents must not substitute a protected-harness or local wrapper.",
@@ -130,6 +212,7 @@ const RESOURCE_TEXT: Readonly<Record<string, string>> = {
 export const RESOURCE_DEFINITIONS: readonly McpResource[] = [
   { uri: KEEL_WORKFLOW_RESOURCE, name: "keel-workflow", description: "Machine-readable offline analyze-to-review workflow.", mimeType: "application/json" },
   { uri: KEEL_LIMITS_RESOURCE, name: "keel-limits", description: "Machine-readable MCP and planner safety limits.", mimeType: "application/json" },
+  { uri: KEEL_PROJECT_ROUTES_RESOURCE, name: "keel-project-routes", description: "Machine-readable intent, artifact/runtime, token, sale, and auction routing without duplicated contract logic.", mimeType: "application/json" },
   { uri: KEEL_PUBLICATION_MODES_RESOURCE, name: "keel-publication-modes", description: "Machine-readable KEEL storage modes, readiness, and accounting boundaries.", mimeType: "application/json" },
 ];
 

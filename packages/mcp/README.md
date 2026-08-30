@@ -1,6 +1,6 @@
 # `@keel/mcp`
 
-An stdio MCP server for the headless Keel/Keel builder and Fray agent
+A stdio MCP server for the headless Keel/Keel builder and Fray agent
 workflow. It exposes strict local planning tools, conversational Fray auction
 intake, supported-testnet/faucet guidance, and an optional bounded search of an
 explicit Keel Studio Keel index. It never signs, submits, claims faucet funds,
@@ -8,14 +8,42 @@ or mutates a wallet or chain; wallet output is a canonical request envelope for
 a separate user-approved wallet UI.
 
 ```bash
-keel-mcp --workspace /path/to/project
+pnpm install
+pnpm --filter @keel/mcp build
+node packages/mcp/dist/cli.js --workspace /path/to/project
 ```
 
+When `@keel/mcp` is installed as a package, the equivalent launcher is
+`keel-mcp --workspace /path/to/project`.
+
+For a new work, start with the `keel-project-plan` prompt. It discovers whether
+the creator is making a 1/1 or collection, storage-only work, fixed sale, claim,
+or Fray auction; routes p5, Three.js, Doom WASM, and Flash AS3; and returns an
+explicit review-only plan before staging. It reads the machine-readable
+`keel://mcp/project-routes` and `keel://mcp/publication-modes` resources instead
+of reproducing contract policy in prompt text. Every collector-facing viewer
+uses the registered canonical KEEL verification shell. The MCP never authors,
+copies, shrinks, replaces, or uploads that shell.
+
 Use `--help` or `--version` for portable launcher discovery. For a deterministic
-local health check, run `keel-mcp --self-test --workspace /path/to/project`;
+repository-local health check, run
+`node packages/mcp/dist/cli.js --self-test --workspace /path/to/project`;
 it performs `initialize`, `ping`, `tools/list`, `prompts/list`, `prompts/get`, and static resource checks in-process and emits one
 non-RPC JSON summary. It reads the workspace root but does not start stdio,
 write files, fetch a carrier, sign, or submit.
+
+For Codex, add the built stdio server and confirm discovery:
+
+```bash
+codex mcp add keel -- node /absolute/path/to/keel-sdk/packages/mcp/dist/cli.js \
+  --workspace /absolute/path/to/project
+codex mcp list
+```
+
+Use the equivalent `[mcp_servers.keel]` table in a project's
+`.codex/config.toml` when the connection should be repository-scoped. Skill
+discovery and MCP configuration are separate; installing the skill does not
+install or start this server.
 
 For a local agent configuration, point the MCP client at the built CLI:
 
@@ -31,15 +59,15 @@ For a local agent configuration, point the MCP client at the built CLI:
 ```
 
 Messages are newline-delimited JSON-RPC. Initialize first, then use
-`tools/list` and `tools/call`. The twenty-six tools are `analyze`,
+`tools/list` and `tools/call`. The twenty-seven tools are `analyze`,
 `media-optimize`, `media-optimize-apply`, `build`, `verify`, `cost`,
 `upload-plan`, `chain-plan`, `ethereum-encode`, `publish-plan`,
 `module-resolve`, `module-lock`, `wallet-request-prepare`, `wallet-link`,
 `module-review-prepare`, `fray-auction-intake`, `fray-stage-project`,
 `keel-chain-guide`, `keel-library-search`, `keel-endpoint-config`,
 `keel-studio-capabilities`, `keel-studio-project-intake`, `keel-studio-draft`,
-`keel-studio-stage-project`, `keel-creator-collection-prepare`, and
-`keel-shell-prepare`.
+`keel-studio-stage-project`, `keel-creator-collection-prepare`,
+`keel-shell-search`, and `keel-shell-prepare`.
 File arguments must resolve inside the selected workspace; regular-file reads
 reject final symlinks, traversal, unstable content, and oversized frames/files.
 Builds and lock sidecars are local writes only. Wallet preparation returns a
@@ -112,8 +140,9 @@ must not be presented as content verification.
 
 `fray-auction-intake` is the cross-agent conversation boundary. When the title,
 description choice, chain, or auction preset is missing it returns `needs-input`
-with the exact question to ask. It exposes exactly three presets and accepts
-only preset `1`, `2`, or `3`; it does not silently invent an auction policy.
+with the exact question to ask. It exposes exactly four presets and accepts
+only preset `1`, `2`, `3`, or `4`: Quick test, Standard, Collector, or Fray
+Auction showcase. It does not silently invent an auction policy.
 Once complete it resolves the family-specific `fray-auction-policy@1` profile
 from `@keel/sdk` and includes every economic term in the digest-bound
 `fray-approval-request@1` envelope. Preset IDs are conversation shorthand, not
@@ -173,8 +202,9 @@ preserves their declared roles, and uploads them to Studio's temporary staging
 store. The creator's scoped key stays in `KEEL_STUDIO_AGENT_TOKEN`; the tool
 returns the server-issued handoff and reports wallet signing/submission as
 `not-performed`. Omit `viewer` to select the canonical KEEL Inline graph
-(`keel-verification-shell`) for later Studio preparation; `viewer: "none"` is
-the explicit artifact/storage-only opt-out. During preparation, Studio resolves
+(`keel-verification-shell`) for later Studio preparation; `viewer: "none"`
+opts out of the shell only. The immutable artifact can still be released,
+minted, and retrieved through its exact contract read. During preparation, Studio resolves
 the selected chain's catalog-backed, pre-encoded graph and must fail closed for
 an incomplete catalog. Agents supply only creator resources/modules and must
 never manufacture or upload a file declared as the default KEEL shell, a
@@ -234,8 +264,11 @@ must explicitly review and sign it in a separate connector.
 
 ## Static workflow prompt
 
-`prompts/list` advertises `keel-asset-review`, `keel-draft-repair`, and
-`fray-auction-review`.
+`prompts/list` advertises `keel-project-plan`, `keel-asset-review`,
+`keel-draft-repair`, and `fray-auction-review`.
+`keel-project-plan` accepts a creator request plus optional `scope`, `runtime`,
+`outcome`, and `chain`; it returns an intent-first plan and stops before all
+staging, wallet, and chain actions.
 `keel-asset-review` accepts a workspace-relative `input` plus optional
 `objectName` and `mediaType`, then returns one deterministic review-only
 workflow message. `keel-draft-repair` binds an exact release ID and saved
@@ -243,15 +276,18 @@ revision to the dry-run → creator review → explicit optimization apply → S
 staging → creator preparation → revision-checked update sequence. It never
 grants an agent wallet, cancellation, review, or publication authority.
 `fray-auction-review` teaches the same intake rules as the
-companion skill: ask for title and description, offer exactly presets 1–3,
+companion skill: ask for title and description, offer exactly four presets,
 search Keel before uploading a named reusable module, show faucet links only,
 and stop at the digest-bound API and wallet approval boundary. Prompts never
 read files, execute the tools, fetch carriers, sign, or submit.
 
 ## Static resources
 
-`resources/list` advertises two fixed machine-readable resources:
+`resources/list` advertises four fixed machine-readable resources:
 `keel://mcp/workflow` describes the offline analyze-to-review sequence and
 `keel://mcp/limits` records the bounded frame, file, planner, and no-network
-limits. `resources/read` serves those constant JSON documents only; unknown URIs
-and extra parameters fail closed, and no workspace or network access occurs.
+limits. `keel://mcp/project-routes` maps creation scope, sale/auction outcome,
+and p5/Three/Doom/Flash runtimes to existing tools and examples.
+`keel://mcp/publication-modes` defines storage, compression, recovery, and proof
+boundaries. `resources/read` serves those constant JSON documents only; unknown
+URIs and extra parameters fail closed, and no workspace or network access occurs.

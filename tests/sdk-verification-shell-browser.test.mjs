@@ -8,7 +8,9 @@ import { join } from "node:path";
 import test from "node:test";
 
 import {
+  buildKeelInlinePreEncodedTokenURIGraph,
   buildKeelInlineLocalDocument,
+  buildKeelPreparedOneOfOneTokenURI,
   buildKeelInlineShellFragments,
 } from "../packages/sdk/dist/index.js";
 
@@ -40,7 +42,7 @@ function dumpDOM(binary, url) {
 async function fixtureServer() {
   const shell = await buildKeelInlineShellFragments({ repositoryRoot: process.cwd() });
   const entry = new TextEncoder().encode(`<!doctype html><html><head></head><body><div id="art">art</div><script>
-    try { parent.document.querySelector('#keel-verify-stamp').textContent = 'PWNED' } catch {}
+    try { parent.document.querySelector('#verify-seal').textContent = 'PWNED' } catch {}
   </script></body></html>`);
   const valid = await buildKeelInlineLocalDocument({
     shell,
@@ -65,17 +67,68 @@ test("the protected K shell mounts only verified art inside an opaque network-de
   const [chrome, fixture] = await Promise.all([headlessChrome(), fixtureServer()]);
   try {
     const valid = await dumpDOM(chrome, fixture.origin);
-    assert.match(valid.stdout, /id="keel-verify-stamp"[^>]*data-state="verified"/u);
-    assert.match(valid.stdout, />K<\/button>/u);
-    assert.match(valid.stdout, /id="keel-verify-title">KEEL verified/u);
+    assert.match(valid.stdout, /data-vault-verification="verified"/u);
+    assert.match(valid.stdout, /id="verify-seal"/u);
+    assert.match(valid.stdout, /id="verify-title">KEEL verified/u);
+    assert.match(valid.stdout, /class="verify-page-nav"/u);
     assert.match(valid.stdout, /sandbox="allow-scripts allow-pointer-lock"/u);
     assert.doesNotMatch(valid.stdout, /allow-same-origin|>PWNED<|https?:\/\//u);
     assert.doesNotMatch(valid.stderr, /Uncaught|net::ERR|Failed to load resource/iu);
 
     const invalid = await dumpDOM(chrome, `${fixture.origin}/invalid`);
-    assert.match(invalid.stdout, /id="keel-verify-stamp"[^>]*data-state="failed"/u);
-    assert.match(invalid.stdout, /id="keel-verify-title">Verification failed/u);
+    assert.match(invalid.stdout, /data-vault-verification="failed"/u);
+    assert.match(invalid.stdout, /id="verify-seal"/u);
+    assert.match(invalid.stdout, /id="verify-title">Verification failed/u);
     assert.doesNotMatch(invalid.stdout, /<iframe/u);
+  } finally {
+    await fixture.close();
+  }
+});
+
+test("the marketplace-safe prepared animation URI installs token context before the K shell launches", { timeout: 30_000 }, async () => {
+  const shell = await buildKeelInlineShellFragments({ repositoryRoot: process.cwd() });
+  const local = await buildKeelInlineLocalDocument({
+    shell,
+    modules: [],
+    entry: {
+      id: "context.html",
+      mediaType: "text/html",
+      source: new TextEncoder().encode('<!doctype html><html><body><div id="art">context ready</div></body></html>'),
+    },
+  });
+  const graph = await buildKeelInlinePreEncodedTokenURIGraph(local);
+  const prepared = await buildKeelPreparedOneOfOneTokenURI({
+    graph,
+    chainId: 11_155_111,
+    collection: `0x${"ab".repeat(20)}`,
+    collectionName: "Context proof",
+    description: "Pure Base64 browser proof",
+    imageURI: "data:image/svg+xml;base64,PHN2Zy8+",
+    manifestURI: `web3://0x${"cd".repeat(20)}:11155111/object/0x${"ef".repeat(32)}`,
+    manifestDigest: `0x${"12".repeat(32)}`,
+  });
+  const metadata = JSON.parse(Buffer.from(prepared.tokenURI.split(",", 2)[1], "base64").toString("utf8"));
+  const animationPayload = metadata.animation_url.split(",", 2)[1];
+  assert.match(animationPayload, /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/u);
+  assert.doesNotMatch(animationPayload, /[#?&_-]/u);
+
+  const [chrome, fixture] = await Promise.all([headlessChrome(), new Promise((resolve) => {
+    const server = createServer((_request, response) => {
+      response.setHeader("content-type", "text/html; charset=utf-8");
+      response.end(Buffer.from(animationPayload, "base64"));
+    });
+    server.listen(0, "127.0.0.1", () => resolve({
+      origin: `http://127.0.0.1:${server.address().port}`,
+      close: () => new Promise((resolveClose, reject) => server.close((error) => error ? reject(error) : resolveClose())),
+    }));
+  })]);
+  try {
+    const rendered = await dumpDOM(chrome, fixture.origin);
+    assert.match(rendered.stdout, /data-vault-verification="verified"/u);
+    assert.match(rendered.stdout, /id="verify-seal"/u);
+    assert.match(rendered.stdout, /id="verify-title">KEEL verified/u);
+    assert.match(rendered.stdout, /0xabababababababababababababababababababab/u);
+    assert.doesNotMatch(rendered.stderr, /Uncaught|net::ERR|Failed to load resource/iu);
   } finally {
     await fixture.close();
   }

@@ -66,7 +66,7 @@ test("hundreds of reordered composable JSON fragments remain one deterministic B
 test("inline JSON escaping closes script parser hazards before byte alignment", () => {
   const serialized = serializeInlineScriptJSON({ html: "</script><b>snow 雪</b>", lines: "a\u2028b\u2029c" });
   assert.doesNotMatch(serialized, /</u);
-  assert.match(serialized, /\\u003c\/script>/u);
+  assert.match(serialized, /\\u003c\/script\\u003e/u);
   assert.match(serialized, /\\u2028/u);
   assert.deepEqual(JSON.parse(serialized), { html: "</script><b>snow 雪</b>", lines: "a\u2028b\u2029c" });
 });
@@ -90,7 +90,7 @@ test("composable Base64 rejects malformed Unicode and padded non-terminal fragme
 test("Gzip Inline graph reuses shell and p5 fragments and publishes only creator bytes", async () => {
   const shell = await buildKeelInlineShellFragments({ repositoryRoot });
   assert.equal(shell.codecProfile, "browser-gzip-deflate");
-  assert.ok(shell.prefix.bytes.byteLength + shell.suffix.bytes.byteLength < 12_000);
+  assert.ok(shell.prefix.bytes.byteLength + shell.suffix.bytes.byteLength < 100_000);
   const shellText = new TextDecoder().decode(new Uint8Array([
     ...shell.prefix.bytes,
     ...shell.suffix.bytes,
@@ -99,7 +99,9 @@ test("Gzip Inline graph reuses shell and p5 fragments and publishes only creator
   assert.match(shellText, /globalThis\.crypto\?\.subtle/u);
   assert.match(shellText, /Uint32Array\.from/u);
   assert.match(shellText, /__KEEL_ITEMS__/u);
-  assert.match(shellText, /id="keel-verify-stamp"/u);
+  assert.match(shellText, /id=["']verify-seal["']/u);
+  assert.match(shellText, /id=["']verify-panel["']/u);
+  assert.match(shellText, /verify-page-nav/u);
   assert.doesNotMatch(shellText, /brotli-dec-wasm|keel-verification-envelope|eth_call|fetch\(/iu);
 
   const p5 = await buildKeelInlineModuleFragment({
@@ -137,6 +139,7 @@ test("Gzip Inline graph reuses shell and p5 fragments and publishes only creator
   const tokenGraph = await buildKeelInlinePreEncodedTokenURIGraph(root);
   assert.equal(tokenGraph.schema, "keel-inline-preencoded-token-uri@1");
   assert.equal(tokenGraph.mediaType, "application/vnd.keel.token-uri-base64-fragment");
+  assert.equal(tokenGraph.contextDelivery, "base64-html-tail");
   assert.equal(tokenGraph.parts.filter((part) => part.sourceKind === "existing").length, 3);
   assert.equal(tokenGraph.parts.filter((part) => part.sourceKind === "creator").length, 1);
   assert.equal(
@@ -145,14 +148,12 @@ test("Gzip Inline graph reuses shell and p5 fragments and publishes only creator
   );
   assert.ok(tokenGraph.creatorPublicationBytes < tokenGraph.fragmentBytes.byteLength / 2);
   assert.doesNotMatch(new TextDecoder().decode(tokenGraph.fragmentBytes), /=/u);
-  assert.match(new TextDecoder().decode(tokenGraph.htmlBytes), /keel-context-digest/u);
   assert.match(new TextDecoder().decode(tokenGraph.htmlBytes), /"compression":"gzip"/u);
   assert.doesNotMatch(new TextDecoder().decode(tokenGraph.htmlBytes), /\/content\/|\/api\/onchain\/|https?:\/\//u);
 
   const decodedMiddle = Buffer.from(new TextDecoder().decode(tokenGraph.fragmentBytes), "base64").toString("utf8");
-  assert.match(decodedMiddle, /#(?:_x{1,2}=&)?keel-context=$/u);
-  const htmlBase64 = decodedMiddle.slice(0, decodedMiddle.lastIndexOf("#"));
-  assert.deepEqual(Buffer.from(htmlBase64, "base64"), Buffer.from(tokenGraph.htmlBytes));
+  assert.match(decodedMiddle, /^[A-Za-z0-9+/]+$/u);
+  assert.deepEqual(Buffer.from(decodedMiddle, "base64"), Buffer.from(tokenGraph.htmlBytes));
 
   const prepared = await buildKeelPreparedOneOfOneTokenURI({
     graph: tokenGraph,
@@ -163,17 +164,52 @@ test("Gzip Inline graph reuses shell and p5 fragments and publishes only creator
     imageURI: "data:image/webp;base64,UklGRg==",
     manifestURI: `web3://0x${"cd".repeat(20)}:${chainId}/object/0x${"ef".repeat(32)}`,
     manifestDigest: `0x${"12".repeat(32)}`,
+    artifact: {
+      store: `0x${"cd".repeat(20)}`,
+      objectId: `0x${"34".repeat(32)}`,
+      digest: `0x${"56".repeat(32)}`,
+      byteLength: 3_300,
+      mediaType: "text/javascript",
+    },
   });
   assert.equal(prepared.schema, "keel-prepared-one-of-one-token-uri@1");
   assert.equal(prepared.tokenURI, `data:application/json;base64,${new TextDecoder().decode(prepared.encodedPrefix)}${new TextDecoder().decode(tokenGraph.fragmentBytes)}${new TextDecoder().decode(prepared.encodedSuffix)}`);
   const metadata = JSON.parse(prepared.tokenJSON);
   assert.equal(metadata.name, "Seed Current #1");
   assert.equal(metadata.description, "A deterministic p5 flow field </script> 雪");
+  assert.deepEqual(metadata.keel_artifact, {
+    store: `0x${"cd".repeat(20)}`,
+    object_id: `0x${"34".repeat(32)}`,
+    digest: `0x${"56".repeat(32)}`,
+    byte_length: 3_300,
+    media_type: "text/javascript",
+    uri: `web3://0x${"cd".repeat(20)}:${chainId}/haulObject/0x${"34".repeat(32)}?mime.type=text%2Fjavascript`,
+  });
   assert.match(metadata.animation_url, /^data:text\/html;base64,/u);
-  assert.match(metadata.animation_url, /#(?:_x{1,2}=&)?keel-context=/u);
-  assert.match(metadata.animation_url, /&keel-context-digest=0x[0-9a-f]{64}/u);
+  assert.match(metadata.animation_url, /^data:text\/html;base64,/u);
+  const animationPayload = metadata.animation_url.slice(metadata.animation_url.indexOf(",") + 1);
+  assert.match(animationPayload, /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/u);
+  assert.doesNotMatch(animationPayload, /[#?&_-]/u);
+  const animationHTML = Buffer.from(animationPayload, "base64").toString("utf8");
+  assert.match(animationHTML, /__KEEL_CONTEXT__/u);
+  assert.match(animationHTML, /__KEEL_ONCHAIN_CONTEXT__/u);
+  assert.match(animationHTML, new RegExp(prepared.contextDigest, "u"));
   assert.equal(JSON.parse(prepared.contextJSON).derivedTokenSeed, prepared.derivedTokenSeed);
   assert.doesNotMatch(new TextDecoder().decode(prepared.encodedPrefix), /=/u);
+
+  await assert.rejects(
+    buildKeelPreparedOneOfOneTokenURI({
+      graph: tokenGraph,
+      chainId,
+      collection: `0x${"ab".repeat(20)}`,
+      collectionName: "Unsafe image",
+      description: "raw SVG data URI",
+      imageURI: "data:image/svg+xml,<svg></svg>",
+      manifestURI: `web3://0x${"cd".repeat(20)}:${chainId}/object/0x${"ef".repeat(32)}`,
+      manifestDigest: `0x${"12".repeat(32)}`,
+    }),
+    /must be percent-escaped/u,
+  );
 });
 
 test("canonical Inline publication has one shell top, ordered middle, and one shell bottom", async () => {

@@ -5,10 +5,10 @@
  * references those immutable objects and publishes only its small entry slot.
  * This file prepares and verifies bytes; it never signs or submits.
  */
-import { createIntegrity, type Hex, type Integrity } from "@keel/protocol";
+import { assertDataUriMediaType, createIntegrity, serializeScriptJSON, type Hex, type Integrity } from "@keel/protocol";
 import { promisify } from "node:util";
 import { gunzip, inflate } from "node:zlib";
-import { encodeAbiParameters, getAddress, keccak256 } from "viem";
+import { encodeAbiParameters, getAddress, keccak256, stringToHex } from "viem";
 
 import { KEEL_INLINE_MAX_TOKEN_URI_BYTES } from "./presentation.js";
 import {
@@ -96,12 +96,7 @@ export function createComposableBase64Fragment(
 
 /** Escape JSON for a raw script-text slot before UTF-8 sizing/alignment. */
 export function serializeInlineScriptJSON(value: unknown): string {
-  const serialized = JSON.stringify(value);
-  if (serialized === undefined) throw new TypeError("Inline script data is not JSON serializable.");
-  return serialized
-    .replaceAll("<", "\\u003c")
-    .replaceAll("\u2028", "\\u2028")
-    .replaceAll("\u2029", "\\u2029");
+  return serializeScriptJSON(value);
 }
 
 /** Validate and join fragments without decoding or re-encoding any payload. */
@@ -230,12 +225,30 @@ export interface KeelInlinePreEncodedTokenURIGraph {
   readonly schema: "keel-inline-preencoded-token-uri@1";
   readonly mediaType: "application/vnd.keel.token-uri-base64-fragment";
   readonly contextParameter: "keel-context";
+  readonly contextDelivery: "base64-html-tail";
   readonly fragmentBytes: Uint8Array;
   readonly fragmentIntegrity: Integrity;
   readonly htmlBytes: Uint8Array;
   readonly htmlIntegrity: Integrity;
   readonly creatorPublicationBytes: number;
   readonly parts: readonly KeelInlinePreEncodedTokenURIFragment[];
+}
+
+/**
+ * Build-time carrier for an immutable prepared tokenURI. The chain stores the
+ * `fragmentBytes` as an uncompressed Keel object and copies those bytes between
+ * the small outer Base64 prefix/suffix. The decoded HTML is padded only with
+ * legal trailing spaces so both Base64 layers remain exactly aligned.
+ */
+export interface KeelPreparedTokenURIFragment {
+  readonly schema: "keel-prepared-token-uri-fragment@1";
+  readonly mediaType: "application/vnd.keel.token-uri-base64-fragment";
+  readonly sourceByteLength: number;
+  readonly sourceIntegrity: Integrity;
+  readonly htmlBytes: Uint8Array;
+  readonly htmlIntegrity: Integrity;
+  readonly fragmentBytes: Uint8Array;
+  readonly fragmentIntegrity: Integrity;
 }
 
 export interface KeelPreparedOneOfOneTokenURI {
@@ -247,6 +260,28 @@ export interface KeelPreparedOneOfOneTokenURI {
   readonly contextJSON: string;
   readonly contextDigest: Hex;
   readonly derivedTokenSeed: Hex;
+}
+
+export interface KeelOnchainShellLoaderInput {
+  /** Public, CORS-enabled JSON-RPC endpoint used only to read the committed shell. */
+  readonly rpcUrl: string;
+  /** The deployed KeelHarnessBuilder that owns the committed shell object. */
+  readonly builder: Hex;
+  /** The existing uncompressed shell object root. */
+  readonly objectId: Hex;
+  /** SHA-256 digest committed for the shell object. */
+  readonly digest: Hex;
+  /**
+   * Optional immutable token context. Supplying it makes the loader
+   * independent of a contract-side context injector, which is useful with
+   * the legacy `setOnchainHarness` route. The object is serialized through
+   * the same script-safe JSON boundary as every other inline value.
+   */
+  readonly context?: {
+    readonly json: string;
+    readonly digest: Hex;
+    readonly byteLength: number;
+  };
 }
 
 function concat(parts: readonly Uint8Array[]): Uint8Array {
@@ -267,6 +302,7 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8", { fatal: true });
 const gunzipAsync = promisify(gunzip);
 const inflateAsync = promisify(inflate);
+const SAFE_INLINE_MODULE_ID = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$/u;
 
 function base64Bytes(bytes: Uint8Array): Uint8Array {
   return encoder.encode(Buffer.from(bytes).toString("base64"));
@@ -279,23 +315,10 @@ function exactBase64Bytes(value: string, label: string): Uint8Array {
   return bytes;
 }
 
-function decodePublishedGraphPart(fragment: KeelPublishedInlineFragment): {
-  readonly decodedHtmlBytes: Uint8Array;
-  readonly terminalContext: boolean;
-} {
+function decodePublishedGraphPart(fragment: KeelPublishedInlineFragment): Uint8Array {
   const outerBase64 = decoder.decode(fragment.bytes);
   const outerBytes = exactBase64Bytes(outerBase64, "Published Inline fragment");
-  const innerWithContext = decoder.decode(outerBytes);
-  const marker = innerWithContext.indexOf("#");
-  const terminalContext = marker >= 0;
-  const innerBase64 = terminalContext ? innerWithContext.slice(0, marker) : innerWithContext;
-  if (terminalContext && !/^#(?:_x{1,2}=&)?keel-context=$/u.test(innerWithContext.slice(marker))) {
-    throw new TypeError("Published Inline terminal fragment has an invalid token-context lane.");
-  }
-  return {
-    decodedHtmlBytes: exactBase64Bytes(innerBase64, "Published Inline decoded HTML fragment"),
-    terminalContext,
-  };
+  return exactBase64Bytes(decoder.decode(outerBytes), "Published Inline decoded HTML fragment");
 }
 
 async function assertPublishedFragmentIntegrity(fragment: KeelPublishedInlineFragment, label: string): Promise<void> {
@@ -335,8 +358,7 @@ export async function verifyKeelPublishedInlineModuleFragment(input: {
   readonly decodedBytes: Uint8Array;
 }): Promise<void> {
   await assertPublishedFragmentIntegrity(input.fragment, `Inline module ${input.moduleId}`);
-  const { decodedHtmlBytes, terminalContext } = decodePublishedGraphPart(input.fragment);
-  if (terminalContext) throw new TypeError(`Inline module ${input.moduleId} cannot contain a terminal token-context lane.`);
+  const decodedHtmlBytes = decodePublishedGraphPart(input.fragment);
   const text = decoder.decode(decodedHtmlBytes);
   const trailing = text.length - text.trimEnd().length;
   const trailingText = trailing === 0 ? "" : text.slice(text.length - trailing);
@@ -389,24 +411,111 @@ function appendSpacesToMultiple(bytes: Uint8Array, multiple: number): Uint8Array
   return missing === 0 ? bytes.slice() : concat([bytes, encoder.encode(" ".repeat(missing))]);
 }
 
-const HASH_CONTEXT_BOOTSTRAP = '<script>(()=>{try{const p=new URLSearchParams(location.hash.slice(1)),v=p.get("keel-context");if(!v)return;const b=v.replace(/-/g,"+").replace(/_/g,"/")+"=".repeat((4-v.length%4)%4),j=atob(b),c=Object.freeze(JSON.parse(j));globalThis.__OCA_CONTEXT__=c;globalThis.__KEEL_CONTEXT__=c;globalThis.__KEEL_ONCHAIN_CONTEXT__=Object.freeze({json:j,digest:p.get("keel-context-digest")||"",byteLength:new TextEncoder().encode(j).length})}catch(e){document.documentElement.dataset.keelContext="failed";throw e}})()</script>';
-
-function withHashContextBootstrap(bytes: Uint8Array): Uint8Array {
-  const html = decoder.decode(bytes);
-  const head = /<head(?:\s[^>]*)?>/iu.exec(html);
-  if (head?.index === undefined) throw new TypeError("Inline shell prefix has no HTML head for the token context bootstrap.");
-  const insertAt = head.index + head[0].length;
-  return encoder.encode(`${html.slice(0, insertAt)}${HASH_CONTEXT_BOOTSTRAP}${html.slice(insertAt)}`);
+/**
+ * Build a small self-contained bridge to an already committed Keel shell.
+ *
+ * The bridge is useful when a tokenURI must stay small: it contains no project
+ * host, IPFS gateway, or mutable asset URL. It performs one public JSON-RPC
+ * read of `harnessHTML`, carries the prepared token context into the returned
+ * document, and replaces itself with the canonical verification shell. The
+ * outer tokenURI is still Base64 encoded by `buildKeelPreparedOneOfOneTokenURI`.
+ */
+export function buildKeelOnchainShellLoader(input: KeelOnchainShellLoaderInput): string {
+  if (typeof input.rpcUrl !== "string" || input.rpcUrl.trim() === "") {
+    throw new TypeError("An onchain shell loader needs a public RPC URL.");
+  }
+  let rpc: URL;
+  try {
+    rpc = new URL(input.rpcUrl);
+  } catch {
+    throw new TypeError("The onchain shell loader RPC URL is malformed.");
+  }
+  if (rpc.protocol !== "https:" || rpc.username !== "" || rpc.password !== "" || rpc.hash !== "") {
+    throw new TypeError("The onchain shell loader RPC URL must be a credential-free HTTPS endpoint.");
+  }
+  const builder = getAddress(input.builder);
+  if (!/^0x[0-9a-f]{64}$/iu.test(input.objectId) || !/^0x[0-9a-f]{64}$/iu.test(input.digest)) {
+    throw new TypeError("The onchain shell loader needs canonical object and digest bytes32 values.");
+  }
+  const selector = keccak256(stringToHex("harnessHTML(bytes32,bytes32)")).slice(0, 10);
+  const callData = `${selector}${input.objectId.slice(2)}${input.digest.slice(2)}`;
+  let contextLiteral = "null";
+  if (input.context !== undefined) {
+    if (typeof input.context.json !== "string" || !/^0x[0-9a-f]{64}$/iu.test(input.context.digest)
+        || !Number.isSafeInteger(input.context.byteLength) || input.context.byteLength < 0
+        || input.context.byteLength !== encoder.encode(input.context.json).byteLength) {
+      throw new TypeError("The onchain shell loader context must contain canonical JSON bytes, digest, and length.");
+    }
+    contextLiteral = serializeInlineScriptJSON(input.context);
+  }
+  const rpcLiteral = serializeInlineScriptJSON(rpc.toString());
+  const builderLiteral = serializeInlineScriptJSON(builder);
+  const callLiteral = serializeInlineScriptJSON(callData);
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Keel shell loader</title></head><body><p id="keel-loader-status">Loading committed Keel shell…</p><script>(()=>{const R=${rpcLiteral},T=${builderLiteral},D=${callLiteral},C=${contextLiteral},E=50000000;const fail=e=>{document.body.textContent="Keel shell load failed: "+(e?.message??e);document.documentElement.dataset.keelLoader="failed"};const hexBytes=h=>{if(typeof h!=="string"||!/^0x[0-9a-f]*$/i.test(h)||h.length%2!==0)throw new Error("RPC returned malformed bytes.");const a=new Uint8Array((h.length-2)/2);for(let i=0;i<a.length;i++)a[i]=Number.parseInt(h.slice(2+i*2,4+i*2),16);return a};const resultBytes=h=>{const o=Number(BigInt("0x"+h.slice(2,66))),p=2+o*2,l=Number(BigInt("0x"+h.slice(p,p+64)));return hexBytes("0x"+h.slice(p+64,p+64+l*2))};const safe=v=>{const s=String.fromCharCode(92),j=JSON.stringify(v);if(j===undefined)throw new Error("Prepared context is not JSON serializable.");return j.replaceAll("&",s+"u0026").replaceAll("<",s+"u003c").replaceAll(">",s+"u003e").replaceAll(String.fromCharCode(8232),s+"u2028").replaceAll(String.fromCharCode(8233),s+"u2029")};(async()=>{await new Promise(r=>setTimeout(r,0));const response=await fetch(R,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_call",params:[{to:T,data:D,gas:"0x"+E.toString(16)},"latest"]})});const body=await response.json();if(!response.ok||body.error||typeof body.result!=="string")throw new Error(body.error?.message??"RPC shell read failed.");const html=new TextDecoder("utf-8",{fatal:true}).decode(resultBytes(body.result));if(!html.includes("verify-corner"))throw new Error("Committed shell failed its canonical check.");const c=C??globalThis.__KEEL_ONCHAIN_CONTEXT__;if(!c||typeof c.json!=="string"||typeof c.digest!=="string"||!Number.isSafeInteger(c.byteLength))throw new Error("Prepared Keel context was not available.");const injection="<scr"+"ipt>globalThis.__KEEL_ONCHAIN_CONTEXT__=Object.freeze({json:"+safe(c.json)+",digest:"+safe(c.digest)+",byteLength:"+c.byteLength+"})</scr"+"ipt>";const head=/<head(?:\\s[^>]*)?>/i;const next=head.test(html)?html.replace(head,m=>m+injection):injection+html;document.open();document.write(next);document.close()})().catch(fail)})()</script></body></html>`;
 }
 
-function terminalContextPrefix(innerSuffixBase64Length: number): string {
-  for (let padding = 0; padding < 3; padding += 1) {
-    const candidate = padding === 0
-      ? "#keel-context="
-      : `#_${"x".repeat(padding)}=&keel-context=`;
-    if ((innerSuffixBase64Length + candidate.length) % 3 === 0) return candidate;
+/**
+ * Encode one complete HTML document for KEEL's prepared tokenURI lane.
+ *
+ * The result is deliberately two Base64 layers: the inner layer is the HTML
+ * payload and the outer layer is the exact ASCII stream copied by the
+ * contract. No HTML, JSON, whitespace, delimiter, or control byte survives in
+ * the published fragment, so URI readers cannot reinterpret content as syntax.
+ */
+export async function buildKeelPreparedTokenURIFragment(
+  source: Uint8Array | string,
+): Promise<KeelPreparedTokenURIFragment> {
+  if (typeof source === "string") assertWellFormedUnicode(source);
+  if (!(typeof source === "string" || source instanceof Uint8Array)) {
+    throw new TypeError("A prepared tokenURI fragment must be UTF-8 text or Uint8Array bytes.");
   }
-  throw new Error("Unable to align the Inline token context fragment.");
+  const sourceBytes = typeof source === "string" ? encoder.encode(source) : source.slice();
+  if (sourceBytes.byteLength === 0) throw new TypeError("A prepared tokenURI fragment cannot be empty.");
+  const htmlBytes = appendSpacesToMultiple(sourceBytes, 9);
+  const inner = base64Bytes(htmlBytes);
+  if (inner.byteLength % 3 !== 0) {
+    throw new Error("Prepared tokenURI HTML did not align at the outer Base64 boundary.");
+  }
+  const fragmentBytes = base64Bytes(inner);
+  const fragmentText = decoder.decode(fragmentBytes);
+  if (fragmentBytes.byteLength % 4 !== 0 || /=/u.test(fragmentText)) {
+    throw new Error("Prepared tokenURI fragment must be unpadded RFC 4648 Base64.");
+  }
+  return {
+    schema: "keel-prepared-token-uri-fragment@1",
+    mediaType: "application/vnd.keel.token-uri-base64-fragment",
+    sourceByteLength: sourceBytes.byteLength,
+    sourceIntegrity: await createIntegrity(sourceBytes),
+    htmlBytes,
+    htmlIntegrity: await createIntegrity(htmlBytes),
+    fragmentBytes,
+    fragmentIntegrity: await createIntegrity(fragmentBytes),
+  };
+}
+
+function tokenContextHTMLTail(contextJSON: string, contextDigest: Hex, contextByteLength: number): string {
+  const contextBase64URL = Buffer.from(contextJSON, "utf8").toString("base64url");
+  return `<script>(()=>{try{const v="${contextBase64URL}",b=v.replace(/-/g,"+").replace(/_/g,"/")+"=".repeat((4-v.length%4)%4),j=atob(b),c=Object.freeze(JSON.parse(j)),o=Object.freeze({json:j,digest:"${contextDigest}",byteLength:${contextByteLength}});Object.defineProperty(globalThis,"__OCA_CONTEXT__",{value:c,enumerable:true,writable:false,configurable:false});Object.defineProperty(globalThis,"__KEEL_CONTEXT__",{value:c,enumerable:true,writable:false,configurable:false});Object.defineProperty(globalThis,"__KEEL_ONCHAIN_CONTEXT__",{value:o,enumerable:true,writable:false,configurable:false})}catch(e){document.documentElement.dataset.keelContext="failed";throw e}})()</script>`;
+}
+
+function assertMarketplaceSafeDataURI(value: string, label: string): void {
+  if (!value.startsWith("data:")) return;
+  const comma = value.indexOf(",");
+  if (comma < 5) throw new TypeError(`${label} is not a complete data URI.`);
+  const header = value.slice(5, comma);
+  const payload = value.slice(comma + 1);
+  const mediaType = header.replace(/;base64$/iu, "");
+  assertDataUriMediaType(mediaType);
+  if (mediaType !== header) {
+    exactBase64Bytes(payload, `${label} Base64 payload`);
+    return;
+  }
+  // Keep only RFC 3986 unreserved bytes literal. Reserved punctuation is
+  // valid in some data-URI readers but can still be reinterpreted by JSON,
+  // HTML, marketplace, or opaque-origin parsers downstream.
+  if (!/^(?:[A-Za-z0-9._~-]|%[0-9a-f]{2})*$/iu.test(payload)) {
+    throw new TypeError(`${label} contains raw text that must be percent-escaped.`);
+  }
 }
 
 async function exactFragment(bytes: Uint8Array): Promise<KeelInlineFragmentBytes> {
@@ -418,8 +527,7 @@ async function exactFragment(bytes: Uint8Array): Promise<KeelInlineFragmentBytes
 export async function buildKeelInlineShellFragments(input: {
   readonly repositoryRoot: string;
 }): Promise<KeelInlineShellFragments> {
-  void input.repositoryRoot;
-  const shell = await buildCompactInlineKeelShell();
+  const shell = await buildCompactInlineKeelShell({ repositoryRoot: input.repositoryRoot });
   return {
     schema: "keel-inline-shell-fragments@1",
     codecProfile: "browser-gzip-deflate",
@@ -445,6 +553,9 @@ export async function buildKeelInlineModuleFragment(input: {
 }): Promise<KeelInlineModuleFragment> {
   if (input.moduleId.trim() === "" || input.version.trim() === "") {
     throw new TypeError("An Inline module fragment needs an exact module ID and version.");
+  }
+  if (!SAFE_INLINE_MODULE_ID.test(input.moduleId)) {
+    throw new TypeError("An Inline module fragment ID must be safe in an HTML source attribute.");
   }
   const phase = input.phase ?? "runtime";
   const execution = input.execution ?? "module";
@@ -525,6 +636,9 @@ export async function buildKeelInlineLocalDocument(input: {
 }): Promise<KeelInlineLocalDocument> {
   const orderedModules = orderKeelModules(input.modules);
   for (const module of orderedModules) {
+    if (!SAFE_INLINE_MODULE_ID.test(module.moduleId) || module.item.id !== module.moduleId) {
+      throw new TypeError(`Inline module ${module.moduleId} has an unsafe or mismatched resource ID.`);
+    }
     if (module.item.embedded?.compression === "brotli") {
       throw new TypeError(`Inline module ${module.moduleId} requires a declared Brotli decoder shell profile.`);
     }
@@ -542,7 +656,7 @@ export async function buildKeelInlineLocalDocument(input: {
   }
   const dataScripts = orderedModules
     .filter((module) => module.phase === "data")
-    .map((module) => `<script src="${module.item.aliases[0] ?? module.moduleId}"></script>`);
+    .map((module) => `<script src="${module.moduleId}"></script>`);
   const htmlEntry = directMedia || source === undefined
     ? undefined
     : dataScripts.length === 0 ? input.entry.source : new TextEncoder().encode(
@@ -558,8 +672,7 @@ export async function buildKeelInlineLocalDocument(input: {
           ...orderedModules
             .filter((module) => module.execution === "classic")
             .map((module) => {
-              const alias = module.item.aliases[0] ?? module.moduleId;
-              return `<script src="${alias}"></script>`;
+              return `<script src="${module.moduleId}"></script>`;
             }),
           `<script type="module">${source}</script>`,
         ].join(""))
@@ -774,39 +887,31 @@ export async function buildKeelInlinePreEncodedTokenURIGraph(
   let existingIndex = 0;
   for (let index = 0; index < root.parts.length; index += 1) {
     const part = root.parts[index]!;
-    const terminal = index === root.parts.length - 1;
     const published = part.kind === "existing" ? options.existingParts?.[existingIndex++] : undefined;
     if (options.existingParts !== undefined && part.kind === "existing" && published === undefined) {
       throw new TypeError(`Inline ${part.role} has no canonical published fragment.`);
     }
     if (published !== undefined) {
       await assertPublishedFragmentIntegrity(published, `Inline ${part.role}`);
-      const decoded = decodePublishedGraphPart(published);
-      if (decoded.terminalContext !== terminal) {
-        throw new TypeError(`Inline ${part.role} has the wrong terminal token-context shape.`);
-      }
+      const decodedHtmlBytes = decodePublishedGraphPart(published);
       fragments.push({
         bytes: published.bytes.slice(),
         integrity: published.integrity,
         role: part.role,
         sourceKind: part.kind,
         sourceObjectId: published.carrier.objectId,
-        sourceIntegrity: await createIntegrity(decoded.decodedHtmlBytes),
-        decodedHtmlBytes: decoded.decodedHtmlBytes,
+        sourceIntegrity: await createIntegrity(decodedHtmlBytes),
+        decodedHtmlBytes,
       });
-      htmlParts.push(decoded.decodedHtmlBytes);
+      htmlParts.push(decodedHtmlBytes);
       continue;
     }
-    const bootstrapped = index === 0 ? withHashContextBootstrap(part.bytes) : part.bytes.slice();
-    const decodedHtmlBytes = terminal ? bootstrapped : appendSpacesToMultiple(bootstrapped, 9);
+    const decodedHtmlBytes = appendSpacesToMultiple(part.bytes, 9);
     const inner = base64Bytes(decodedHtmlBytes);
-    const outerInput = terminal
-      ? concat([inner, encoder.encode(terminalContextPrefix(inner.byteLength))])
-      : inner;
-    if (outerInput.byteLength % 3 !== 0) {
+    if (inner.byteLength % 3 !== 0) {
       throw new Error(`Inline ${part.role} fragment did not align at the outer Base64 boundary.`);
     }
-    const bytes = base64Bytes(outerInput);
+    const bytes = base64Bytes(inner);
     const sourceIntegrity = await createIntegrity(part.bytes);
     fragments.push({
       bytes,
@@ -831,11 +936,7 @@ export async function buildKeelInlinePreEncodedTokenURIGraph(
     throw new Error("Reusable Inline tokenURI fragments must be unpadded Base64 for exact concatenation.");
   }
   const decodedStatic = Buffer.from(decoder.decode(fragmentBytes), "base64").toString("utf8");
-  const marker = decodedStatic.lastIndexOf("#");
-  if (marker < 0 || !decodedStatic.slice(marker).includes("keel-context=")) {
-    throw new Error("Pre-encoded Inline tokenURI fragment has no terminal context lane.");
-  }
-  const htmlBytes = new Uint8Array(Buffer.from(decodedStatic.slice(0, marker), "base64"));
+  const htmlBytes = exactBase64Bytes(decodedStatic, "Pre-encoded Inline HTML stream");
   const expectedHtml = concat(htmlParts);
   if (!exactBytes(htmlBytes, expectedHtml)) {
     throw new Error("Pre-encoded Inline tokenURI fragments do not reconstruct the exact aligned HTML.");
@@ -845,6 +946,7 @@ export async function buildKeelInlinePreEncodedTokenURIGraph(
     schema: "keel-inline-preencoded-token-uri@1",
     mediaType: "application/vnd.keel.token-uri-base64-fragment",
     contextParameter: "keel-context",
+    contextDelivery: "base64-html-tail",
     fragmentBytes,
     fragmentIntegrity: await createIntegrity(fragmentBytes),
     htmlBytes,
@@ -871,8 +973,31 @@ export async function buildKeelPreparedOneOfOneTokenURI(input: {
   readonly imageURI: string;
   readonly manifestURI: string;
   readonly manifestDigest: Hex;
+  /**
+   * The creator's immutable artifact, independent of the selected shell.
+   * KEEL-aware readers can call `haulObject(bytes32)` directly even when the
+   * normal `animation_url` presents the work through a registered shell.
+   */
+  readonly artifact?: {
+    readonly store: Hex;
+    readonly objectId: Hex;
+    readonly digest: Hex;
+    readonly byteLength: number;
+    readonly mediaType: string;
+  };
+  /** Optional ERC-4804 resolver URI. When supplied it is emitted exactly like
+   * KEEL721's on-chain prepared envelope. */
+  readonly erc4804MetadataURI?: string;
   readonly tokenId?: 1;
   readonly attributes?: readonly unknown[];
+  /**
+   * Optional chain-derived replay seed. When omitted the historical
+   * collection/manifest fallback is retained for callers that do not have a
+   * SeedRegistry binding. Immutable seeded releases should pass the value
+   * returned by KeelSeedRegistry.deriveTokenSeed so the embedded context and
+   * the contract's seed system are byte-for-byte aligned.
+   */
+  readonly derivedTokenSeed?: Hex;
 }): Promise<KeelPreparedOneOfOneTokenURI> {
   if (!Number.isSafeInteger(input.chainId) || input.chainId <= 0) {
     throw new TypeError("A prepared tokenURI needs a positive safe chain ID.");
@@ -881,18 +1006,47 @@ export async function buildKeelPreparedOneOfOneTokenURI(input: {
     throw new TypeError("A prepared tokenURI needs a canonical manifest digest.");
   }
   const collection = getAddress(input.collection);
+  const artifact = input.artifact === undefined ? undefined : (() => {
+    const store = getAddress(input.artifact.store);
+    if (!/^0x[0-9a-f]{64}$/iu.test(input.artifact.objectId)) {
+      throw new TypeError("A prepared artifact needs a canonical object ID.");
+    }
+    if (!/^0x[0-9a-f]{64}$/iu.test(input.artifact.digest)) {
+      throw new TypeError("A prepared artifact needs a canonical digest.");
+    }
+    if (!Number.isSafeInteger(input.artifact.byteLength) || input.artifact.byteLength <= 0) {
+      throw new TypeError("A prepared artifact needs a positive safe byte length.");
+    }
+    const mediaType = input.artifact.mediaType.trim().toLowerCase();
+    assertDataUriMediaType(mediaType);
+    const objectId = input.artifact.objectId.toLowerCase() as Hex;
+    const digest = input.artifact.digest.toLowerCase() as Hex;
+    return Object.freeze({
+      store: store.toLowerCase(),
+      object_id: objectId,
+      digest,
+      byte_length: input.artifact.byteLength,
+      media_type: mediaType,
+      uri: `web3://${store.toLowerCase()}:${input.chainId}/haulObject/${objectId}?mime.type=${encodeURIComponent(mediaType)}`,
+    });
+  })();
   const tokenId = input.tokenId ?? 1;
   if (tokenId !== 1) throw new RangeError("The prepared immutable route currently supports token 1 of 1 only.");
-  const derivedTokenSeed = keccak256(encodeAbiParameters(
-    [
-      { type: "string" },
-      { type: "uint256" },
-      { type: "address" },
-      { type: "uint256" },
-      { type: "bytes32" },
-    ],
-    ["keel.inline-token-seed@1", BigInt(input.chainId), collection, 1n, input.manifestDigest],
-  ));
+  const derivedTokenSeed = input.derivedTokenSeed === undefined
+    ? keccak256(encodeAbiParameters(
+      [
+        { type: "string" },
+        { type: "uint256" },
+        { type: "address" },
+        { type: "uint256" },
+        { type: "bytes32" },
+      ],
+      ["keel.inline-token-seed@1", BigInt(input.chainId), collection, 1n, input.manifestDigest],
+    ))
+    : input.derivedTokenSeed.toLowerCase() as Hex;
+  if (!/^0x[0-9a-f]{64}$/iu.test(derivedTokenSeed)) {
+    throw new TypeError("A prepared tokenURI derived token seed must be canonical bytes32.");
+  }
   const contextJSON = JSON.stringify({
     protocol: "keel-context@1",
     chainId: String(input.chainId),
@@ -903,20 +1057,24 @@ export async function buildKeelPreparedOneOfOneTokenURI(input: {
   });
   const contextBytes = encoder.encode(contextJSON);
   const contextDigest = (await createIntegrity(contextBytes)).digest as Hex;
-  const contextBase64URL = Buffer.from(contextBytes).toString("base64url");
-  const prefixRaw = [
+  assertMarketplaceSafeDataURI(input.imageURI, "Prepared token image");
+  const prefixHead = [
     `{"name":${JSON.stringify(`${input.collectionName} #1`)}`,
     `,"description":${JSON.stringify(input.description)}`,
     `,"image":${JSON.stringify(input.imageURI)}`,
-    ',"animation_url":"data:text/html;base64,',
   ].join("");
+  const animationKey = ',"animation_url":"data:text/html;base64,';
+  const prefixPadding = (3 - ((encoder.encode(prefixHead).byteLength + encoder.encode(animationKey).byteLength) % 3)) % 3;
+  const prefixRaw = `${prefixHead}${" ".repeat(prefixPadding)}${animationKey}`;
   const suffixRaw = [
-    contextBase64URL,
-    `&keel-context-digest=${contextDigest}`,
-    `&keel-context-length=${contextBytes.byteLength}`,
+    Buffer.from(tokenContextHTMLTail(contextJSON, contextDigest, contextBytes.byteLength), "utf8").toString("base64"),
     '","keel_schema":"keel-manifest@2"',
     `,"keel_manifest":${JSON.stringify(input.manifestURI)}`,
     `,"keel_manifest_digest":${JSON.stringify(input.manifestDigest.toLowerCase())}`,
+    ...(artifact === undefined ? [] : [`,"keel_artifact":${serializeInlineScriptJSON(artifact)}`]),
+    ...(input.erc4804MetadataURI === undefined ? [] : [
+      `,"keel_erc4804_metadata":${JSON.stringify(input.erc4804MetadataURI)}`,
+    ]),
     ...(input.attributes === undefined ? [] : [`,"attributes":${serializeInlineScriptJSON(input.attributes)}`]),
     "}",
   ].join("");
@@ -924,6 +1082,7 @@ export async function buildKeelPreparedOneOfOneTokenURI(input: {
     mustAllowFollowingFragment: true,
     paddingStrategy: "json-whitespace",
   });
+  if (prefix.paddingBytes !== 0) throw new Error("Prepared token JSON prefix failed its pre-animation alignment.");
   const middleBase64 = decoder.decode(input.graph.fragmentBytes);
   const middleRaw = new Uint8Array(Buffer.from(middleBase64, "base64"));
   const suffix = createComposableBase64Fragment(suffixRaw, { mustAllowFollowingFragment: false });
@@ -935,7 +1094,9 @@ export async function buildKeelPreparedOneOfOneTokenURI(input: {
   const tokenJSON = Buffer.from(tokenURIBase64, "base64").toString("utf8");
   const expectedJSON = `${prefixRaw}${" ".repeat(prefix.paddingBytes)}${decoder.decode(middleRaw)}${suffixRaw}`;
   if (tokenJSON !== expectedJSON) throw new Error("Prepared tokenURI fragments changed the exact token JSON bytes.");
-  JSON.parse(tokenJSON);
+  const metadata = JSON.parse(tokenJSON) as { readonly animation_url?: unknown };
+  if (typeof metadata.animation_url !== "string") throw new Error("Prepared token metadata has no animation_url.");
+  assertMarketplaceSafeDataURI(metadata.animation_url, "Prepared token animation_url");
   return {
     schema: "keel-prepared-one-of-one-token-uri@1",
     encodedPrefix: encoder.encode(prefix.base64),
