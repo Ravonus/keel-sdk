@@ -28,7 +28,10 @@ function functionHeaders(code) {
   ].map((match) => match[0]);
 }
 
-const sourceRoot = path.join(contractsRoot, "src");
+// The SDK gate owns reusable KEEL modules. Standalone creator examples keep
+// their gas and behavior tests in their owning project instead of becoming
+// hidden SDK prerequisites.
+const sourceRoot = path.join(contractsRoot, "src", "modules");
 const foundryPath = path.join(contractsRoot, "foundry.toml");
 const foundryConfig = await readFile(foundryPath, "utf8");
 

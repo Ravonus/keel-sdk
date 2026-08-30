@@ -78,7 +78,11 @@ A shell is exactly one immutable top object plus one immutable bottom object;
 the ordered work/module graph is inserted between them. The shell is not an
 uploaded `index.html`, and ordinary project agents do not author one:
 
-- `INLINE_PROTECTION_SHELL_ID()` is the stable canonical composable shell ID.
+- `KEEL_INLINE_PROTECTION_SHELL_ID` is the stable canonical composable shell ID
+  derived by the SDK from `keel.shell.inline-protection@1`. Current builders may
+  expose the same value through `INLINE_PROTECTION_SHELL_ID()`, but that
+  convenience getter is not a readiness gate. The selected-chain Studio catalog
+  and the exact `shells(shellId)` registration are authoritative.
   It uses `PreEncodedGraph`: registered top, any ordered shared modules and
   creator work, then registered bottom. `registeredPreEncodedTokenURI(...)`
   checks those exact graph boundaries and copies the already encoded graph.

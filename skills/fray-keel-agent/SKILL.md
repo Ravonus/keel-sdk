@@ -118,9 +118,12 @@ with staging an ordinary artwork.
 
 Resolve that default shell only through the selected-chain Studio Inline
 catalog. The catalog builder must match Studio's active `keel-harness-builder`;
-verify `INLINE_PROTECTION_SHELL_ID()` and the exact `shells(shellId)` prefix,
-suffix, metadata, `exists=true`, and `PreEncodedGraph` mode. Never infer the
-active builder from an older deployment journal. `protectorPrefix()`,
+derive the stable `KEEL_INLINE_PROTECTION_SHELL_ID` with the SDK, require the
+catalog's `shellId` to equal it, and verify the exact `shells(shellId)` prefix,
+suffix, metadata, `exists=true`, and `PreEncodedGraph` mode. The convenience
+contract getter `INLINE_PROTECTION_SHELL_ID()` is not a readiness requirement;
+compatible registered-shell builders may omit it. Never infer the active
+builder from an older deployment journal. `protectorPrefix()`,
 `protectorSuffix()`, `protectedHarnessDataURI(...)`, and `NoProtector` belong
 to the older complete-document protector lane and say nothing about whether the
 default registered Inline shell is ready. Do not manufacture a fallback shell.
