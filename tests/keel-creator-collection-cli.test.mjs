@@ -28,6 +28,7 @@ test("creator-collection CLI accepts JSON and YAML and stops before wallet appro
     chainId: 11155111,
     creator: "0x1111111111111111111111111111111111111111",
     instance: "creator-v1",
+    creatorNonce: "0",
     operation: {
       kind: "dedicated-erc721",
       config: { name: "One of One", symbol: "ONE", maxSupply: 1, metadataDigest: `0x${"a".repeat(64)}` },
@@ -42,7 +43,7 @@ test("creator-collection CLI accepts JSON and YAML and stops before wallet appro
     assert.equal(JSON.parse(json.stdout).walletApproval, "not-requested");
 
     const yamlPath = path.join(directory, "creator.yaml");
-    await writeFile(yamlPath, `chainId: 11155111\ncreator: "${base.creator}"\ninstance: creator-v1\noperation:\n  kind: shared-erc1155\n  name: Ten Thousand\n  metadataDigest: "0x${"b".repeat(64)}"\n`);
+    await writeFile(yamlPath, `chainId: 11155111\ncreator: "${base.creator}"\ninstance: creator-v1\ncreatorNonce: "0"\noperation:\n  kind: shared-erc1155\n  name: Ten Thousand\n  metadataDigest: "0x${"b".repeat(64)}"\n`);
     const yaml = await runCli(["creator-collection", "--config", yamlPath]);
     assert.equal(yaml.status, 0, yaml.stderr);
     const parsed = JSON.parse(yaml.stdout);

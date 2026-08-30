@@ -53,7 +53,9 @@ zero-module project and never writes a creator `index.html` wrapper. Use
 `buildKeelRegisteredInlineNormalMediaTokenURIGraph` only after the selected
 chain supplies the exact shell-prefix, asset-display, and shell-suffix objects.
 The display module renders image and video data URLs and a self-contained GLB
-with WebGL; it has no network or wallet authority.
+with WebGL; it has no network or wallet authority. AVIF and WebP entries are
+decoded onto their intrinsic-size canvas so a collector can right-click and
+save a PNG without adding a project-specific viewer.
 
 ## Discover a Studio before uploading
 
@@ -323,6 +325,15 @@ const tokenId = keelSharedTokenId(logicalCollectionId, itemIndex);
 keelSharedCollectionIdOf(tokenId); // high 128 bits
 keelSharedItemIndexOf(tokenId);    // low 128 bits
 ```
+
+For an agent-assisted collection, use
+`prepareKeelCreatorCollectionWalletReview`. It resolves one exact factory and
+renderer pair from the generated chain registry, returns one review-only
+EIP-5792 `wallet_sendCalls` request, and returns the durable operation envelope
+that Studio must save before submission. The envelope explicitly tracks the
+plan digest, cursor, receipts, completed and failed indexes, and read-back; a
+timeout must be reconciled before another approval is allowed. Missing or
+ambiguous deployments return `blocked` and no wallet request.
 
 The creator token contract is only the ownership/supply shell. `tokenURI`,
 ERC-1155 `uri`, and `contractURI` delegate to the shared KEEL renderer. The

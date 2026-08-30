@@ -191,14 +191,18 @@ GLB WebGL view from frozen verified descriptors; it has no network or wallet
 authority. A `.gltf` requiring external dependencies is not eligible for this
 compact normal-media path.
 
-`keel-creator-collection-prepare` prepares one exact creator collection call
-from the SDK's durable deployment registry. It supports a compact dedicated
-ERC-721, a compact dedicated ERC-1155, a logical collection in the shared
-ERC-1155, or authority-checked bring-your-own registration. A missing or
+`keel-creator-collection-prepare` prepares one exact EIP-5792
+`wallet_sendCalls` review and the JSON-safe durable recovery envelope that must
+be saved before submission. It supports the default ERC-721A clone, standard
+ERC-721 compatibility, a compact dedicated ERC-1155, a logical collection in
+the shared ERC-1155, or authority-checked bring-your-own registration. The
+agent supplies the exact creator nonce it already read; the resulting plan is
+bound to owner, executor, factory, renderer, nonce, digest, operation count,
+chunk count, and cursor. The tool never signs or submits. A missing or
 ambiguous `KeelCreatorFactory` + `KeelArtifactTokenRenderer` pair stops safely
-without requesting wallet approval. A configured result is still review-only:
-the caller must re-read the factory's immutable `metadataRenderer` before a
-wallet request may be emitted.
+without requesting wallet approval. Before submission, Studio must re-read the
+factory's immutable `metadataRenderer`, persist the envelope, and reconcile a
+timed-out wallet batch instead of preparing a duplicate approval.
 
 `keel-shell-prepare` creates the canonical `keel-shell-manifest@1` JSON used to
 index a reusable shell by creator, name, version, and tags, or prepares the

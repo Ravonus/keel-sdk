@@ -23,7 +23,11 @@
  *   keel studio-stage --config <file> [--format json|yaml]
  *                                 stage a bounded project and return its Studio handoff
  *   keel creator-collection --config <file> [--format json|yaml]
- *                                 prepare one exact review-only creator collection call
+ *                                 prepare one exact EIP-5792 creator collection review and recovery envelope
+ *   keel media-optimize --config <file> [--format json|yaml]
+ *                                 measure by default; explicitly apply a reviewed smaller file
+ *   keel data-pack --input <file> --output <file.kdp> [--no-gzip]
+ *                                 convert JSON/YAML to deterministic gzip-CBOR
  */
 import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync, statSync } from "node:fs";
 import { execFileSync, spawnSync } from "node:child_process";
@@ -222,6 +226,8 @@ switch (cmd) {
   case "studio-drafts": process.exit(runNodeScript(join(import.meta.dirname, "studio-drafts.mjs"), rest)); break;
   case "studio-stage": process.exit(runNodeScript(join(import.meta.dirname, "studio-stage.mjs"), rest)); break;
   case "creator-collection": process.exit(runNodeScript(join(import.meta.dirname, "creator-collection.mjs"), rest)); break;
+  case "media-optimize": process.exit(runNodeScript(join(import.meta.dirname, "media-optimize.mjs"), rest)); break;
+  case "data-pack": process.exit(runNodeScript(join(import.meta.dirname, "data-pack.mjs"), rest)); break;
   default:
     console.log(readFileSync(import.meta.filename, "utf8").split("\n").slice(2, 12).map((l) => l.replace(/^ \* ?/, "")).join("\n"));
 }

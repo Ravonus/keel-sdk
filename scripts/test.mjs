@@ -32,6 +32,7 @@ run("node", [
   "tests/keel-studio-agent-drafts-cli.test.mjs",
   "tests/keel-studio-stage-cli.test.mjs",
   "tests/keel-creator-collection-cli.test.mjs",
+  "tests/creator-collection-wallet.test.mjs",
   "tests/sdk-studio-project-handoff.test.mjs",
   "tests/sdk-three-scene-publication.test.mjs",
   "tests/sdk-three-module.test.mjs",

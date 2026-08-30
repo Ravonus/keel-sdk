@@ -50,6 +50,10 @@
       "types": "./dist/studio-agent-drafts.d.ts",
       "import": "./dist/studio-agent-drafts.js"
     },
+    "./creator-collection-wallet": {
+      "types": "./dist/creator-collection-wallet.d.ts",
+      "import": "./dist/creator-collection-wallet.js"
+    },
     "./verification-shell": {
       "types": "./dist/verification-shell.d.ts",
       "import": "./dist/verification-shell.js"

@@ -220,7 +220,7 @@ const creator1155Config: JsonSchema = object({
 }, ["name", "symbol", "metadataDigest"]);
 const creatorCollectionOperation: JsonSchema = {
   oneOf: [
-    object({ kind: { type: "string", enum: ["dedicated-erc721"] }, config: creator721Config }, ["kind", "config"]),
+    object({ kind: { type: "string", enum: ["dedicated-erc721"] }, implementation: { type: "string", enum: ["erc721a", "erc721"] }, config: creator721Config }, ["kind", "config"]),
     object({ kind: { type: "string", enum: ["dedicated-erc1155"] }, config: creator1155Config }, ["kind", "config"]),
     object({ kind: { type: "string", enum: ["shared-erc1155"] }, name: string(undefined, 128), metadataDigest: string() }, ["kind", "name", "metadataDigest"]),
     object({ kind: { type: "string", enum: ["external"] }, tokenContract: string(), name: string(undefined, 128), metadataDigest: string() }, ["kind", "tokenContract", "name", "metadataDigest"]),
@@ -228,8 +228,10 @@ const creatorCollectionOperation: JsonSchema = {
 };
 const creatorCollectionPrepare: JsonSchema = object({
   chainId: integer("Ethereum chain ID.", 1), creator: string("Creator wallet that will review the call."),
-  instance: string("Optional exact recorded deployment instance.", 96), operation: creatorCollectionOperation,
-}, ["chainId", "creator", "operation"]);
+  instance: string("Optional exact recorded deployment instance.", 96),
+  creatorNonce: string("Exact creator nonce read before preparation, encoded as canonical unsigned decimal text.", 78),
+  operation: creatorCollectionOperation,
+}, ["chainId", "creator", "creatorNonce", "operation"]);
 const shellPrepare: JsonSchema = object({
   operation: { type: "string", enum: ["manifest", "register"] },
   creator: string("Creator wallet used for namespacing and catalogue indexing."),
@@ -260,8 +262,19 @@ export const TOOL_SCHEMAS = {
   mediaOptimize: object({
     input: string("Workspace-relative image, video, or 3D source path."), mediaType: string("Optional explicit source media type."),
     quality: integer("WebP quality for a supported image plan.", 1, 100), effort: integer("WebP encoder effort for a supported image plan.", 0, 6),
+    videoCrf: integer("VP9 constant-quality value for a supported video plan.", 0, 63), videoCpuUsed: integer("VP9 speed setting for a supported video plan.", 0, 8),
     selectedStorageMode: string("Informational current storage selection. The optimizer never changes it.", 128),
   }, ["input"]),
+  mediaOptimizeApply: object({
+    input: string("Workspace-relative source path used for the reviewed dry-run."),
+    output: string("New workspace-relative output path. Existing files are never overwritten."),
+    expectedOutputDigest: string("Exact SHA-256 digest returned by media-optimize."),
+    expectedAfterBytes: integer("Exact output byte length returned by media-optimize.", 1),
+    mediaType: string("Optional explicit source media type."),
+    quality: integer("WebP quality; must match the reviewed plan.", 1, 100), effort: integer("WebP effort; must match the reviewed plan.", 0, 6),
+    videoCrf: integer("VP9 constant-quality value; must match the reviewed plan.", 0, 63), videoCpuUsed: integer("VP9 speed setting; must match the reviewed plan.", 0, 8),
+    selectedStorageMode: string("Informational current storage selection. The optimizer never changes it.", 128),
+  }, ["input", "output", "expectedOutputDigest", "expectedAfterBytes"]),
   build: object({
     input: string(), outputDirectory: string(), createdAt: string(), name: string(), description: string(), id: string(),
     creator: string(), sourceRepository: string(), viewerBaseUrl: string(), webpQuality: integer(), preserveOriginal: boolean(),

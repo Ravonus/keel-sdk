@@ -89,6 +89,7 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
       chainId: 11155111,
       creator: "0x1111111111111111111111111111111111111111",
       instance: "creator-v1",
+      creatorNonce: "0",
       operation: {
         kind: "dedicated-erc721",
         config: { name: "One of One", symbol: "ONE", maxSupply: 1, metadataDigest: `0x${"a".repeat(64)}` },
@@ -98,6 +99,9 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.equal(creatorPlan?.result.structuredContent.walletApproval, "not-requested");
     assert.equal(creatorPlan?.result.structuredContent.signing, "not-performed");
     assert.equal(creatorPlan?.result.structuredContent.submission, "not-performed");
+    const creatorTool = listed?.result.tools.find((tool) => tool.name === "keel-creator-collection-prepare");
+    assert.ok(creatorTool?.inputSchema.required.includes("creatorNonce"));
+    assert.deepEqual(creatorTool?.inputSchema.properties.operation.oneOf[0].properties.implementation.enum, ["erc721a", "erc721"]);
     const shellPlan = await call(server, 32, "keel-shell-prepare", {
       operation: "register",
       creator: "0x1111111111111111111111111111111111111111",

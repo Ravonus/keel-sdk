@@ -25,7 +25,7 @@ import {
   buildKeelModuleReviewRequest,
   prepareKeelStudioProjectIntake,
   executeKeelStudioAgentDraftOperation,
-  prepareKeelCreatorCollectionReview,
+  prepareKeelCreatorCollectionWalletReview,
   buildKeelCreatorShellRegistrationCall,
   createKeelShellManifest,
   keelCreatorShellId,
@@ -34,7 +34,7 @@ import {
   resolveKeelEndpoints,
   type KeelWalletLinkInput,
   type KeelModuleReviewInput,
-  type KeelCreatorCollectionReviewInput,
+  type KeelCreatorCollectionWalletReviewInput,
   type FrayAuctionPresetId,
 } from "@keel/sdk";
 import {
@@ -690,16 +690,19 @@ async function studioStageProjectTool(context: ToolContext, value: unknown): Pro
 }
 
 async function creatorCollectionPrepareTool(_context: ToolContext, value: unknown): Promise<unknown> {
-  const input = record(value, ["chainId", "creator", "instance", "operation"], "Creator collection prepare arguments");
+  const input = record(value, ["chainId", "creator", "instance", "creatorNonce", "operation"], "Creator collection prepare arguments");
   if (typeof input.chainId !== "number" || !Number.isSafeInteger(input.chainId) || input.chainId <= 0) throw new TypeError("chainId must be a positive safe integer.");
   const creator = requiredString(input, "creator");
   const instance = optionalString(input, "instance");
-  const operation = record(input.operation, ["kind", "config", "name", "metadataDigest", "tokenContract"], "Creator collection operation");
-  return prepareKeelCreatorCollectionReview({
+  const creatorNonce = requiredString(input, "creatorNonce");
+  if (!/^(?:0|[1-9][0-9]*)$/u.test(creatorNonce)) throw new TypeError("creatorNonce must be canonical unsigned decimal text.");
+  const operation = record(input.operation, ["kind", "implementation", "config", "name", "metadataDigest", "tokenContract"], "Creator collection operation");
+  return prepareKeelCreatorCollectionWalletReview({
     chainId: input.chainId,
     creator: creator as `0x${string}`,
     ...(instance === undefined ? {} : { instance }),
-    operation: operation as unknown as KeelCreatorCollectionReviewInput["operation"],
+    creatorNonce,
+    operation: operation as unknown as KeelCreatorCollectionWalletReviewInput["operation"],
   });
 }
 
@@ -804,7 +807,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
   tool("keel-studio-project-intake", "Ask only for missing project decisions, then return either storage-only preparation or an editable release/listing intent. No upload, signature, wallet request, or transaction occurs.", TOOL_SCHEMAS.studioProjectIntake, studioProjectIntakeTool),
   tool("keel-studio-draft", "List, read, create, or revision-safely edit a creator's private Studio release draft through a scoped key. It cannot prepare, sign, submit, cancel, or publish a chain action.", TOOL_SCHEMAS.studioDraft, studioDraftTool),
   tool("keel-studio-stage-project", "Stage bounded creator resources/modules and return the server-issued Studio handoff. Omitted viewer selects Studio's canonical KEEL Inline graph for later preparation; `none` is artifact/storage-only. A direct image, video, or self-contained GLB resolves to registered shell plus registered keel.asset-display@1 plus the creator media entry, never zero modules or a generated index.html. Resolve the active builder from the selected-chain Studio Inline catalog and verify its registered pre-encoded shell record; legacy protector getters and NoProtector do not determine default Inline readiness. Creator HTML is content, never a replacement shell, and agents must not upload a locally manufactured KEEL shell, protected-harness wrapper, or local wrapper when the catalog is incomplete. Studio must fail closed for an incomplete selected-chain catalog during preparation. The scoped agent key remains in the MCP environment; no wallet signature or chain action occurs.", TOOL_SCHEMAS.studioStageProject, studioStageProjectTool),
-  tool("keel-creator-collection-prepare", "Prepare one exact recorded KeelCreatorFactory collection call for review. Missing or ambiguous factory/renderer deployments stop before any wallet approval, signing, RPC, or submission.", TOOL_SCHEMAS.creatorCollectionPrepare, creatorCollectionPrepareTool),
+  tool("keel-creator-collection-prepare", "Prepare one exact EIP-5792 KeelCreatorFactory batch plus its durable recovery envelope. This never signs or submits. Missing or ambiguous factory/renderer deployments stop before any wallet approval.", TOOL_SCHEMAS.creatorCollectionPrepare, creatorCollectionPrepareTool),
   tool("keel-shell-search", "Search the read-back-verified shell catalogue by creator, name, version, or tags. Returns top/bottom object pointers and metadata only; it never fetches carrier bytes, signs, or submits.", TOOL_SCHEMAS.shellSearch, shellSearchTool),
   tool("keel-shell-prepare", "Create canonical creator/tag shell metadata or prepare an immutable creator-namespaced shell registration call. A shell is one reusable top and bottom around the work graph; this tool never signs, submits, or invents a replacement default shell.", TOOL_SCHEMAS.shellPrepare, shellPrepareTool),
 ];

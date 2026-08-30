@@ -52,7 +52,11 @@ export interface NormalizedKeelCreator721Config {
 export type NormalizedKeelCreator1155Config = Omit<NormalizedKeelCreator721Config, "maxSupply">;
 
 export type KeelCreatorCollectionOperation =
-  | { readonly kind: "dedicated-erc721"; readonly config: KeelCreator721ConfigInput }
+  | {
+      readonly kind: "dedicated-erc721";
+      readonly implementation?: "erc721a" | "erc721";
+      readonly config: KeelCreator721ConfigInput;
+    }
   | { readonly kind: "dedicated-erc1155"; readonly config: KeelCreator1155ConfigInput }
   | { readonly kind: "shared-erc1155"; readonly name: string; readonly metadataDigest: Hex }
   | { readonly kind: "external"; readonly tokenContract: Address; readonly name: string; readonly metadataDigest: Hex };
@@ -155,11 +159,11 @@ export function buildKeelCreatorCollectionCall(input: KeelCreatorCollectionCallI
   if (creator === ZERO_ADDRESS) throw new TypeError("creator cannot be zero.");
   if (factoryAddress === ZERO_ADDRESS) throw new TypeError("factoryAddress cannot be zero.");
 
-  let functionName: "createERC721" | "createERC1155" | "createSharedERC1155" | "registerExternalCollection";
+  let functionName: "createERC721" | "createStandardERC721" | "createERC1155" | "createSharedERC1155" | "registerExternalCollection";
   let args: readonly unknown[];
   switch (input.operation.kind) {
     case "dedicated-erc721":
-      functionName = "createERC721";
+      functionName = input.operation.implementation === "erc721" ? "createStandardERC721" : "createERC721";
       args = [canonical721(buildKeelCreator721Config(input.operation.config))];
       break;
     case "dedicated-erc1155":

@@ -90,6 +90,16 @@ test("creator collection calls cover one-of-one, editions, shared collections, a
       factoryAddress,
       operation: {
         kind: "dedicated-erc721",
+        implementation: "erc721",
+        config: { name: "Compatibility", symbol: "COMP", maxSupply: 10, metadataDigest: digest("e") },
+      },
+    }),
+    buildKeelCreatorCollectionCall({
+      chainId: 11155111,
+      creator,
+      factoryAddress,
+      operation: {
+        kind: "dedicated-erc721",
         config: { name: "One of One", symbol: "ONE", maxSupply: 1, metadataDigest: digest("1") },
       },
     }),
@@ -115,10 +125,10 @@ test("creator collection calls cover one-of-one, editions, shared collections, a
       operation: { kind: "external", tokenContract: target, name: "Brought From Home", metadataDigest: digest("4") },
     }),
   ];
-  assert.deepEqual(cases.map((entry) => entry.functionName), ["createERC721", "createERC1155", "createSharedERC1155", "registerExternalCollection"]);
-  assert.deepEqual(cases.map((entry) => entry.signing), ["not-performed", "not-performed", "not-performed", "not-performed"]);
-  assert.deepEqual(cases.map((entry) => entry.submission), ["not-performed", "not-performed", "not-performed", "not-performed"]);
-  assert.equal(cases[0].arguments[0].maxSupply, "1");
+  assert.deepEqual(cases.map((entry) => entry.functionName), ["createStandardERC721", "createERC721", "createERC1155", "createSharedERC1155", "registerExternalCollection"]);
+  assert.deepEqual(cases.map((entry) => entry.signing), ["not-performed", "not-performed", "not-performed", "not-performed", "not-performed"]);
+  assert.deepEqual(cases.map((entry) => entry.submission), ["not-performed", "not-performed", "not-performed", "not-performed", "not-performed"]);
+  assert.equal(cases[1].arguments[0].maxSupply, "1");
   assert.equal(JSON.stringify(cases).includes("1n"), false);
 });
 
