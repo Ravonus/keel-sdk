@@ -47,9 +47,9 @@ export async function runMcpSelfTest(workspaceRoot = "."): Promise<McpSelfTestRe
   resultObject(await server.handle({ jsonrpc: "2.0", id: 2, method: "ping", params: {} }), "ping");
   const listed = resultObject(await server.handle({ jsonrpc: "2.0", id: 3, method: "tools/list", params: {} }), "tools/list");
   resultObject(await server.handle({ jsonrpc: "2.0", id: 4, method: "prompts/list", params: {} }), "prompts/list");
-  resultObject(await server.handle({ jsonrpc: "2.0", id: 5, method: "prompts/get", params: { name: "keel-asset-review", arguments: { input: "asset.js" } } }), "prompts/get");
+  resultObject(await server.handle({ jsonrpc: "2.0", id: 5, method: "prompts/get", params: { name: "keel-project-plan", arguments: { request: "Plan a one-of-one p5 work", scope: "one-of-one", runtime: "p5", outcome: "release" } } }), "prompts/get");
   resultObject(await server.handle({ jsonrpc: "2.0", id: 6, method: "resources/list", params: {} }), "resources/list");
-  resultObject(await server.handle({ jsonrpc: "2.0", id: 7, method: "resources/read", params: { uri: "keel://mcp/limits" } }), "resources/read");
+  resultObject(await server.handle({ jsonrpc: "2.0", id: 7, method: "resources/read", params: { uri: "keel://mcp/project-routes" } }), "resources/read");
   const names = toolNames(listed.tools);
   return {
     status: "ok",

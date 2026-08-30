@@ -7,26 +7,93 @@
  * which is the only reason previewing one locally is worth anything.
  *
  * One rule is absolute and it was learned by breaking it on a live deployment:
- * the document is served inside a data URI, a data URI ends at its first `#`,
- * and the truncation is silent — the JSON still parses and the picture is
- * simply gone. The fix is not to ban `#`, which would cost every hex colour in
- * the stylesheet; it is to escape it on the way in. `keelWrapperViewerUri`
- * does that, and nothing should ever embed this document without it.
+ * the document is served inside a data URI and a raw delimiter/control byte can
+ * change how a reader parses the URI. The encoder therefore treats the payload
+ * as UTF-8 bytes and leaves only RFC 3986 unreserved bytes literal. Everything
+ * else is `%HH`, including spaces, markup delimiters, quotes, backslashes,
+ * hashes, and controls. Nothing should embed this document without the helper.
  */
 
 /**
  * Wrap the document as the `data:` URI that carries it.
  *
- * Exactly three characters are escaped, which is exactly what the contract
- * escapes when it builds the same URI on chain: `%` first so the escapes
- * themselves are not re-escaped, then `"` because the URI sits inside a JSON
- * string, then `#` because a URI ends there. `<` and `>` are legal in the
- * payload and escaping them would cost real gas on every read for nothing.
+ * Every payload byte outside the RFC 3986 unreserved set is percent-escaped.
+ * This is intentionally stricter than the historical contract helper: it is
+ * safe for browsers, marketplace URI validators, JSON strings, and opaque
+ * origins alike. Large on-chain documents should use a Base64 data URI so the
+ * payload is compact as well as unambiguous.
  */
-export const keelWrapperViewerUri = (document_) =>
-  `data:text/html;charset=utf-8,${document_.replace(/%/g, "%25").replace(/"/g, "%22").replace(/#/g, "%23")}`;
+const UNRESERVED = (byte) =>
+  (byte >= 0x41 && byte <= 0x5a)
+  || (byte >= 0x61 && byte <= 0x7a)
+  || (byte >= 0x30 && byte <= 0x39)
+  || byte === 0x2d || byte === 0x2e || byte === 0x5f || byte === 0x7e;
 
-const escapeJson = (value) => JSON.stringify(value).replace(/</g, "\\u003c");
+const HTML_TEXT_ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+const escapeHtmlText = (value) => String(value).replace(/[&<>"']/gu, (character) => HTML_TEXT_ESCAPES[character]);
+const MEDIA_TYPE_TOKEN = /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/u;
+
+const assertDataUriMediaType = (mediaType) => {
+  if (typeof mediaType !== "string" || mediaType.length === 0 || mediaType.length > 255) {
+    throw new TypeError("A data URI media type must be a non-empty value of at most 255 characters.");
+  }
+  const parts = mediaType.split(";");
+  const type = parts.shift() ?? "";
+  const slash = type.indexOf("/");
+  if (slash <= 0 || slash !== type.lastIndexOf("/") || !MEDIA_TYPE_TOKEN.test(type.slice(0, slash)) || !MEDIA_TYPE_TOKEN.test(type.slice(slash + 1))) {
+    throw new TypeError(`Invalid data URI media type: ${mediaType}`);
+  }
+  for (const parameter of parts) {
+    const equals = parameter.indexOf("=");
+    if (equals <= 0 || equals === parameter.length - 1 || !MEDIA_TYPE_TOKEN.test(parameter.slice(0, equals)) || !MEDIA_TYPE_TOKEN.test(parameter.slice(equals + 1))) {
+      throw new TypeError(`Invalid data URI media type parameter: ${mediaType}`);
+    }
+  }
+  return mediaType;
+};
+
+export const encodeKeelPercentDataUri = (mediaType, value) => {
+  assertDataUriMediaType(mediaType);
+  const bytes = typeof value === "string" ? new TextEncoder().encode(value) : value;
+  if (!(bytes instanceof Uint8Array)) throw new TypeError("A data URI payload must be text or Uint8Array bytes.");
+  let payload = "";
+  for (const byte of bytes) {
+    payload += UNRESERVED(byte)
+      ? String.fromCharCode(byte)
+      : `%${byte.toString(16).toUpperCase().padStart(2, "0")}`;
+  }
+  return `data:${mediaType},${payload}`;
+};
+
+export const keelWrapperViewerUri = (document_) =>
+  encodeKeelPercentDataUri("text/html;charset=utf-8", document_);
+
+/**
+ * Base64 is the preferred carriage for large viewer documents. It keeps the
+ * complete payload inside the RFC 4648 alphabet, so no parser can mistake
+ * content bytes for URI or HTML syntax.
+ */
+export const encodeKeelBase64DataUri = (mediaType, value) => {
+  assertDataUriMediaType(mediaType);
+  const bytes = typeof value === "string" ? new TextEncoder().encode(value) : value;
+  if (!(bytes instanceof Uint8Array)) throw new TypeError("A data URI payload must be text or Uint8Array bytes.");
+  let binary = "";
+  for (let offset = 0; offset < bytes.byteLength; offset += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + 0x8000, bytes.byteLength)));
+  }
+  return `data:${mediaType};base64,${btoa(binary)}`;
+};
+
+const escapeJson = (value) => {
+  const serialized = JSON.stringify(value);
+  if (serialized === undefined) throw new TypeError("Wrapper script data is not JSON serializable.");
+  return serialized
+    .replaceAll("&", "\\u0026")
+    .replaceAll("<", "\\u003c")
+    .replaceAll(">", "\\u003e")
+    .replaceAll("\u2028", "\\u2028")
+    .replaceAll("\u2029", "\\u2029");
+};
 
 /**
  * Bind the parts once, hand back the builder.
@@ -43,13 +110,16 @@ export function makeKeelWrapperViewerDocument({ css, markup, app }) {
    * @param context What the chain says about this token. Read by the app as
    *   `__KEEL_ONCHAIN_CONTEXT__`; it can never change what a check decides,
    *   only what the panel has to describe.
-   */
+  */
   return function keelWrapperViewerDocument({ artworkBase64, context = {}, title = "Keel verified" } = {}) {
     const json = JSON.stringify(context);
+    if (artworkBase64 !== undefined && !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/u.test(artworkBase64)) {
+      throw new TypeError("Wrapper artworkBase64 must be canonical RFC 4648 Base64.");
+    }
     const document_ = [
       '<!doctype html><html lang="en"><head><meta charset="utf-8">',
       '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">',
-      `<title>${title}</title>`,
+      `<title>${escapeHtmlText(title)}</title>`,
       `<style>${css}</style>`,
       // The marker is where the contract splices a live context in when this
       // document is assembled on chain. Left in place so the local build and

@@ -101,7 +101,7 @@ export const DEFAULT_KEEL_VERIFICATION_PRESENTATION: KeelVerificationPresentatio
     fadeOutMs: 900,
   }),
   overlay: Object.freeze({
-    placement: "left",
+    placement: "right",
     width: "wide",
     navigation: "tabs",
     initialPage: "overview",

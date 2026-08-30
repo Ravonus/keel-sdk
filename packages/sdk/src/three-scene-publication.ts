@@ -7,8 +7,8 @@ import {
   assertValidManifest,
   canonicalJson,
   createIntegrity,
-  encodeBase64,
   manifestIntegrity,
+  toDataUrl,
   utf8ToBytes,
   type ArtifactManifest,
   type Compression,
@@ -168,7 +168,7 @@ export function bundleKeelThreeScene(input: {
     const module = modules.get(id) ?? [...modules.values()].find((candidate) => candidate.id.endsWith(`/${id}`));
     if (module === undefined) throw new Error(`Three.js bundle import is not declared: ${specifier}`);
     const mediaType = module.mediaType ?? "text/javascript";
-    return `data:${mediaType};base64,${encodeBase64(module.bytes)}`;
+    return toDataUrl(mediaType, module.bytes);
   };
   const entrypoint = input.entrypointSource.replace(
     /^\s*import\s+(\*\s+as\s+[A-Za-z_$][\w$]*|\{[^}]+\}|[A-Za-z_$][\w$]*)\s+from\s+(["'])([^"']+)\2\s*;?\s*$/gmu,

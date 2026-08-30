@@ -73,6 +73,10 @@
     "./shell-registry": {
       "types": "./dist/shell-registry.d.ts",
       "import": "./dist/shell-registry.js"
+    },
+    "./creative-runtime-catalog": {
+      "types": "./dist/creative-runtime-catalog.d.ts",
+      "import": "./dist/creative-runtime-catalog.js"
     }
   },
   "files": [

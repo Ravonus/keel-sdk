@@ -104,11 +104,10 @@ async function manifest() {
 }
 
 test("viewer decodes the one canonical Inline graph as its HTML entrypoint", async () => {
-  const html = '<!doctype html><html><body><main data-inline="ready">Inline</main></body></html>';
+  const source = '<!doctype html><html><body><main data-inline="ready">Inline</main></body></html>';
+  const html = `${source}${" ".repeat((9 - Buffer.byteLength(source) % 9) % 9)}`;
   const inner = Buffer.from(html).toString("base64");
-  let outerRaw = `${inner}#keel-context=`;
-  while (Buffer.byteLength(outerRaw) % 3 !== 0) outerRaw += "x";
-  const graph = Buffer.from(outerRaw).toString("base64");
+  const graph = Buffer.from(inner).toString("base64");
   assert.doesNotMatch(graph, /=/u);
   const entry = await inline(
     "keel-inline-token-uri-fragment",

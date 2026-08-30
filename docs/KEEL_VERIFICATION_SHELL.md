@@ -1,8 +1,11 @@
 # The Keel verification shell (the "stamp")
 
-Every published Keel build is wrapped in one canonical on-chain HTML
-verification shell: the seal button in the bottom-left corner (green or red by
-verification state) that opens a tabbed overlay of proof data. People call it
+Every default collector-facing Keel viewer is wrapped in one canonical on-chain
+HTML verification shell: the seal button in the bottom-left corner (green or
+red by verification state) that opens a tabbed proof surface. A creator can
+explicitly select another compatible registered shell or publish an artifact
+without a viewer, but an agent must never silently manufacture a replacement.
+People call it
 "the stamp", "the Keel button", "the wrapper", or "the verifier" — it is
 one system, and this page is the map that was previously missing.
 
@@ -33,6 +36,26 @@ one system, and this page is the map that was previously missing.
   an opaque child frame and cannot replace it. Vault Arcade and Ghost Flash are
   regression presentations of this canonical module, not sources agents copy
   into projects.
+
+## Collector interaction
+
+The canonical default is the collector-friendly Stratus prototype promoted to
+one reusable KEEL module, not a simplified replacement:
+
+- the protected K stamp rests at the lower left and reveals on pointer intent;
+- desktop opens a full-height panel on the right and resizes the verified art
+  stage so the work remains completely visible rather than being covered or
+  clipped;
+- narrow/mobile viewports open the same proof surface as a bottom sheet with a
+  visible drag handle;
+- Proof, Files, and Trail are views over the same immutable verification result,
+  not independent sources of truth;
+- creator work remains in the opaque inner sandbox while the K, proof result,
+  data tables, and extension boundary remain in the protected outer shell.
+
+`packages/viewer/src/keel-verification-chrome.js` is the only source for these
+behaviors. Compact Inline and standalone viewer builders both import it. Demo
+projects may exercise the module but never define or fork the default.
 - **Builders** (bundle the shell byte-identically for every carrier):
   `packages/sdk/src/verification-shell.ts` (`buildStandaloneKeelViewer`,
   `buildEmbeddedKeelViewerShell`, and the one-call
@@ -134,13 +157,12 @@ they do not sign or submit a transaction.
 ## Shell choice never replaces the artifact
 
 Presentation and storage are separate axes. The SDK, MCP, skill, and Studio
-handoff use the registered default KEEL shell for every collector-facing
-viewer. They never substitute a creator-authored or third-party shell. The
-underlying protocol registry can describe other compatible shells for explicit
-low-level integrations, but that capability is not the default creator route
-and cannot overwrite or impersonate the default shell. The supported raw
-artifact choice is no shell at all. None of these presentation choices changes
-the immutable artifact object.
+handoff use the registered default KEEL shell when a collector-facing viewer is
+requested and no shell was explicitly selected. A creator may explicitly
+select any compatible registered shell from the indexed catalogue; ownership
+of the shell is not required. No selected shell can overwrite or impersonate
+the platform default. The supported raw artifact choice is no shell at all.
+None of these presentation choices changes the immutable artifact object.
 
 Every released work keeps a direct artifact descriptor: store, object ID,
 digest, byte length, media type, and its `web3://.../haulObject/<objectId>`

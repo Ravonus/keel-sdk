@@ -1,4 +1,4 @@
-import { bytesToUtf8, decodeBase64, encodeBase64, toDataUrl, type ResourceSource } from "@keel/protocol";
+import { assertDataUriMediaType, bytesToUtf8, decodeBase64, encodeBase64, serializeScriptJSON, toDataUrl, type ResourceSource } from "@keel/protocol";
 import { createVerifiedContentGateway, resourceGatewayAliases } from "./gateway.js";
 import { evaluateCollectionVerification } from "./collection-verification.js";
 import type { RuntimeCapabilities } from "@keel/protocol";
@@ -16,10 +16,7 @@ function escapeAttribute(value: string): string {
 }
 
 function scriptSafeJson(value: unknown): string {
-  return JSON.stringify(value)
-    .replaceAll("<", "\\u003c")
-    .replaceAll("\u2028", "\\u2028")
-    .replaceAll("\u2029", "\\u2029");
+  return serializeScriptJSON(value);
 }
 
 function inlineModule(code: string): string {
@@ -92,10 +89,10 @@ function entrypointText(materializer: Materializer): string {
   if (entrypoint.mediaType === "application/vnd.keel.token-uri-base64-fragment") {
     const outer = bytesToUtf8(decodeBase64(bytesToUtf8(entrypoint.bytes)));
     const context = outer.lastIndexOf("#");
-    if (context < 0 || !outer.slice(context).includes("keel-context=")) {
-      throw new TypeError("Canonical KEEL Inline graph has no terminal context lane.");
+    if (context >= 0 && !outer.slice(context).includes("keel-context=")) {
+      throw new TypeError("Legacy KEEL Inline graph has an invalid terminal context lane.");
     }
-    text = bytesToUtf8(decodeBase64(outer.slice(0, context)));
+    text = bytesToUtf8(decodeBase64(context < 0 ? outer : outer.slice(0, context)));
   } else {
     text = bytesToUtf8(entrypoint.bytes);
   }
@@ -373,6 +370,10 @@ function gatewayPayload(artifact: ResolvedArtifact): GatewayPayload {
   for (const route of gateway.routes) {
     const resource = artifact.resources.get(route.resourceId);
     if (resource === undefined) throw new Error(`Resolved resource ${route.resourceId} disappeared during gateway creation.`);
+    // The runtime turns this value into a data URI header. Validate it at the
+    // build boundary so a malformed manifest can never inject a second header
+    // or delimiter into the generated content gateway.
+    assertDataUriMediaType(resource.mediaType);
     resources[route.resourceId] = {
       body: encodeBase64(resource.bytes),
       mediaType: resource.mediaType,
@@ -401,9 +402,9 @@ function gatewayPayload(artifact: ResolvedArtifact): GatewayPayload {
     }
     const runtimeFiles = [
       ["main", "ruffle.js", "text/javascript"],
-      ["modernCore", "core.ruffle.5e30dc5777a75720eae2.js", "text/javascript"],
-      ["legacyCore", "core.ruffle.15317142e75ce021ac04.js", "text/javascript"],
-      ["legacyWasm", "6ce4f603a1fe7cc88438.wasm", "application/wasm"],
+      ["modernCore", "core.ruffle.15317142e75ce021ac04.js", "text/javascript"],
+      ["legacyCore", "core.ruffle.5e30dc5777a75720eae2.js", "text/javascript"],
+      ["legacyWasm", "a71cef02d58dcec6f55f.wasm", "application/wasm"],
     ] as const;
     for (const [key, fileName, mediaType] of runtimeFiles) {
       const resourceId = (ruffle as Record<string, unknown>)[key];
@@ -433,7 +434,7 @@ function gatewayPayload(artifact: ResolvedArtifact): GatewayPayload {
       if (resource.mediaType.toLowerCase().split(";", 1)[0] !== "application/wasm") {
         throw new TypeError(`keel:flash Ruffle resource ${modernWasm} must use application/wasm.`);
       }
-      const alias = "keel://ruffle/a71cef02d58dcec6f55f.wasm";
+      const alias = "keel://ruffle/6ce4f603a1fe7cc88438.wasm";
       const existing = aliases[alias];
       if (existing !== undefined && existing !== modernWasm) throw new TypeError(`keel:flash alias collision at ${alias}.`);
       aliases[alias] = modernWasm;
@@ -444,7 +445,10 @@ function gatewayPayload(artifact: ResolvedArtifact): GatewayPayload {
 
 function contentGatewayBootstrap(artifact: ResolvedArtifact): string {
   const payload = scriptSafeJson(gatewayPayload(artifact));
-  const ruffleSupportUrl = "https://github.com/ruffle-rs/ruffle/wiki/Frequently-Asked-Questions-For-Users#chrome-hardware-acceleration";
+  const ruffleSupportUrls = [
+    "https://github.com/ruffle-rs/ruffle/wiki/Frequently-Asked-Questions-For-Users#chrome-hardware-acceleration",
+    "https://github.com/ruffle-rs/ruffle/wiki/Using-Ruffle#configuration-options",
+  ];
   const ruffleSupportAllowed = artifact.manifest.extensions?.["keel:flash"] !== undefined;
   return `(() => {
   "use strict";
@@ -516,7 +520,7 @@ function contentGatewayBootstrap(artifact: ResolvedArtifact): string {
     // Ruffle renders a non-networking hardware-acceleration help link in its
     // shadow UI. A Flash manifest may keep that inert informational href; the
     // click guard below still prevents navigation from the opaque sandbox.
-    if (${ruffleSupportAllowed ? "true" : "false"} && raw === ${scriptSafeJson(ruffleSupportUrl)}) return raw;
+    if (${ruffleSupportAllowed ? "true" : "false"} && ${scriptSafeJson(ruffleSupportUrls)}.includes(raw)) return raw;
     const found = lookup(raw);
     return found === undefined ? undefined : dataUrl(found.resource);
   };

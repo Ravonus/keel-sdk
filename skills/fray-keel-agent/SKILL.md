@@ -1,204 +1,107 @@
 ---
 name: fray-keel-agent
-description: Prepare a KEEL Studio storage-only project, optional release/listing, Fray auction, or large publication when a creator asks an agent to stage artwork, reuse an indexed module, or hand work to Studio for review. Use with the portable KEEL MCP server; never sign, submit, claim faucet funds, or move wallet assets on the creator's behalf.
+description: Plan and prepare KEEL 1/1s, collections, reusable browser-art modules, sales, claims, and Fray auctions through the KEEL MCP. Use for p5, Three.js, Doom WASM, Flash AS3, OneMint, storage, or Studio handoffs; never replace the canonical verification shell or perform wallet and chain actions without creator review.
 ---
 
-# Fray Keel Agent
+# Fray KEEL Agent
 
-Use this skill when the creator says things like “upload Doom as a Sepolia
-Fray auction,” “reuse the Three.js module,” or “prepare this release for my
-wallet.” The MCP server is the portable cross-agent layer; this skill supplies
-the conversation and safety rules.
+Use the KEEL MCP for live capabilities, bounded reads, exact schemas, and
+review-only request envelopes. This skill supplies intent discovery, routing,
+proof boundaries, and stopping rules. It does not duplicate contract economics
+or module records.
 
-For a large object, storage-route decision, gas quote, retry, or recovery, read
-[publication-modes.md](references/publication-modes.md) before planning. Resolve
-the configured public endpoints with `keel-endpoint-config`; explicit tool input
-wins over KEEL environment configuration, which wins over the canonical KEEL
-test defaults. Never silently retain or substitute a Stratus hostname.
+## Always begin with a plan
 
-## Studio project intake
+For every new creation, conversion, release, collection, sale, claim, or Fray
+auction, enter an explicit planning phase before staging or writing anything.
+Use the host's plan mode when available, then request the MCP prompt
+`keel-project-plan`. Pass every choice the creator already supplied.
 
-Call `keel-studio-project-intake` for an ordinary creator project. Give it every
-decision already present in the request and ask only the questions it returns.
+Translate plan choices to the exact MCP schema; never pass planning aliases
+verbatim. For an ordinary project, call `keel-studio-project-intake` and ask
+only for decisions it still reports missing:
 
-- “Put this on KEEL” may finish as `storage-only`: stage, sandbox, store, and
-  verify the work without inventing a token, sale, or listing.
-- “Make this a one-of-one and list it for 0.1 ETH” is `release`: prefill an
-  editable release intent and let Studio handle the remaining storage, quote,
-  contract, and listing choices.
-- If the requested outcome is ambiguous, ask once: storage and verification
-  only, or also an editable release/listing?
+- map fixed sale or claim to `outcome: "release"` plus the exact nested
+  `release.saleMechanism`;
+- map 1/1, limited edition, or open edition to `release.type`;
+- resolve chain text to numeric `chainId` before an ordinary release;
+- keep runtime in the plan and later staging/module route, not intake arguments.
 
-Do not require a listing to complete storage. Do not silently create a sale.
-The MCP agent stages the exact project graph and returns one Studio link;
-Studio owns route benchmarking, the visual gas/read explanation, ETH/USD quote,
-and final editable decisions.
+For a Fray auction, do not call `keel-studio-project-intake`; call
+`fray-auction-intake` with the exact family/network and preset instead.
 
-## Fray auction intake
+For every plan, resolve:
 
-Call `fray-auction-intake` before preparing a publication handoff.
+- 1/1 or collection;
+- storage-only, release, fixed sale, claim, or Fray auction;
+- static media, p5, Three.js, Doom WASM, Flash AS3, or another runtime;
+- chain/testnet, storage mode, module reuse, and evidence required;
+- the point where creator or wallet approval will be required.
 
-- If `title` is absent, ask what to call the artwork.
-- If `description` is absent, ask for text or whether to use the short default.
-- If `auctionPreset` is absent, offer exactly these choices and accept only `1`, `2`, or `3`:
-  1. Quick test — one-hour bidder-only auction.
-  2. Standard — twenty-four-hour auction with the ordinary patron round.
-  3. Collector — three-day auction with a larger patron edition.
-- If the chain is absent, ask which supported testnet to use. Use `keel-chain-guide` to show current testnet/faucet links.
+Return a concrete plan with project graph, storage/presentation, contracts and
+sale path, verification gates, approval boundary, and open questions. Stop at
+the plan until the creator asks to continue. Read
+[project-routes.md](references/project-routes.md) for route-specific decisions.
 
-Do not fill in a missing title, silently select a fourth auction mode, or turn a
-mainnet request into a testnet request. Keep the creator's exact title,
-description, chain, and preset in the approval envelope.
+## Canonical shell is mandatory for viewers
 
-## Reuse before upload
+For every collector-facing viewer, omit `viewer` for the normal path. Studio
+selects the registered `keel-verification-shell` graph and does **not** ask the
+agent to create another shell. Never author, copy, fork, shrink, replace, or
+upload default-shell bytes. If the selected-chain shell record or required
+module binding is missing, stale, or ambiguous, stop.
 
-When the request names a library or runtime such as Three.js, call
-`keel-library-search` with the configured Keel Studio URL. Treat results as
-metadata only. Bind a candidate only when its exact identity,
-policy/catalog commitment, license, and intended role are visible. If more than
-one candidate matches, ask the creator to choose; if no candidate matches, plan
-a new upload. Never fetch or execute a carrier just because an index lists it.
+`viewer: "none"` is only an explicit raw-artifact route with no viewer. It is
+not a custom-shell route; the immutable artifact can still be released, minted,
+and read directly from its contract descriptor. Creator-authored HTML is still
+valid project content and runs inside the canonical shell; it never replaces
+the shell.
 
-## Stage the project before wallet approval
+Read [default-shell.md](references/default-shell.md) before staging any viewer.
+The canonical implementation map and security contract live in the repository's
+`docs/KEEL_VERIFICATION_SHELL.md`; cross-link that document instead of copying
+its implementation details into project files.
 
-After intake and module selection, call `fray-stage-project` when a source path
-is available. It sends the bounded source to the configured Fray Studio
-temporary project store, where the Studio creates the collector-facing still
-and (for scripts, WASM, HTML, or video) a bounded preview video. The returned
-handoff URL is the only link to show the creator.
+## Execute the approved plan
 
-For a script or video, ask for the preview capture choice before staging:
+1. Inspect the exact local inputs without changing them. Use `analyze`, `cost`,
+   and `media-optimize` only as review-only measurements.
+2. Search `keel-library-search` before uploading p5, Three.js, Ruffle, decoders,
+   seeded-random, or another reusable module. A catalog row is metadata; require
+   the exact selected-chain object and registry receipts/read-back before binding
+   it as published.
+3. Build and test creator-owned bytes locally. Keep source, built output, module
+   catalog, browser/runtime, and live-chain evidence separate.
+4. Stage only creator resources with `keel-studio-stage-project`, or use
+   `fray-stage-project` after `fray-auction-intake` for a Fray auction. Show only
+   the server-issued Studio handoff URL.
+5. Prepare collection or wallet requests only after the staged project digest,
+   selected chain, contract lane, and current creator nonce are exact. MCP output
+   remains review-only.
 
-- still: `hook`, a millisecond `timestamp`, or `settle`;
-- video start: `hook`, a millisecond `timestamp`, or `settle`, plus duration and
-  fps.
+For large objects, mode selection, gas accounting, retry, or recovery, read
+[publication-modes.md](references/publication-modes.md). Never silently change
+storage or presentation mode during a retry.
 
-The default, when the creator explicitly chooses it, is a hook capture and a
-three-second, twelve-fps video. The Studio runs the capture in its isolated
-preview environment and records the choice with the staged project.
+## Fray auction choices
 
-The handoff attaches the project to the creator only after the creator signs in
-to Studio with the wallet session. The agent never receives a private key or a
-wallet signature. A project that has been attached appears in **Agent-prepared
-projects** and can be reopened later.
+Offer exactly four choices and accept only `1`, `2`, `3`, or `4`: Quick test,
+Standard, Collector, or Fray Auction showcase. Preset numbers are conversation
+shorthand only. Show the complete digest-bound terms returned by
+`fray-auction-intake`; do not recreate those economics in the skill.
 
-For ordinary KEEL work that is not a Fray auction, use
-`keel-studio-stage-project`. Omit `viewer` for the normal path: the SDK selects
-`keel-verification-shell`, and Studio later resolves and reuses the selected
-chain's existing pre-encoded KEEL Inline shell graph. Studio does **not** ask
-the agent to create another shell. Use `viewer: "none"` only when the creator
-explicitly requests an artifact/storage-only project with no viewer.
+## Proof and authority
 
-Declare only creator-owned project files. An image project normally uploads the
-image plus the `keel.module.json` control declaration; it does **not** mean a
-zero-module project. That declaration must select the registered KEEL
-verification shell and bind exactly one same-chain `keel.asset-display@1`
-module. The resulting collector graph is registered shell top, registered
-asset-display module, direct creator image/video/self-contained GLB, registered
-shell bottom. p5 or Three work likewise stages only its creator script/assets
-plus exact same-chain module declarations. Never manufacture or label a local
-`viewer.js`, `index.html`, protected-harness wrapper, or other file as the
-default KEEL verification shell. If the selected-chain shell or module catalog
-is missing, stale, or ambiguous, stop: do not substitute a local wrapper.
-Creator-authored HTML is still valid project content, including an actual
-artwork named `index.html`; it runs inside the canonical KEEL shell and does not
-replace it. The server-issued handoff URL is the only project link the agent
-should show.
+Read [proof-and-approval.md](references/proof-and-approval.md) before any Studio,
+wallet, recovery, or live-chain step. In particular:
 
-The canonical shell is not an HTML file the agent authors. It is the registered
-KEEL top and bottom around the ordered project/module graph. Its protected
-lower-left K opens the proof, resources, collector context, and bounded
-data-only extension panels. Creator code runs in the shell's opaque child and
-cannot rewrite that K or its proof state. Only when the creator explicitly asks
-to publish a new reusable presentation should the agent use
-`keel-shell-prepare`: create the creator/tag manifest first, publish the exact
-top/bottom/metadata objects through the normal reviewed storage flow, then
-prepare the immutable creator-namespaced registration call. Never confuse that
-with staging an ordinary artwork.
+- local/unit success does not prove browser behavior or a public deployment;
+- browser success does not prove the bytes were published onchain;
+- a transaction receipt does not prove tokenURI, module, or viewer read-back;
+- a planned module ID is not a receipt-backed module binding;
+- MCP never signs, submits, claims faucet funds, handles a private key, or
+  reports a mint, auction, sale, or upload as complete without the relevant
+  receipt and read-back evidence.
 
-Resolve that default shell only through the selected-chain Studio Inline
-catalog. The catalog builder must match Studio's active `keel-harness-builder`;
-derive the stable `KEEL_INLINE_PROTECTION_SHELL_ID` with the SDK, require the
-catalog's `shellId` to equal it, and verify the exact `shells(shellId)` prefix,
-suffix, metadata, `exists=true`, and `PreEncodedGraph` mode. The convenience
-contract getter `INLINE_PROTECTION_SHELL_ID()` is not a readiness requirement;
-compatible registered-shell builders may omit it. Never infer the active
-builder from an older deployment journal. `protectorPrefix()`,
-`protectorSuffix()`, `protectedHarnessDataURI(...)`, and `NoProtector` belong
-to the older complete-document protector lane and say nothing about whether the
-default registered Inline shell is ready. Do not manufacture a fallback shell.
-
-Use `keel-shell-search` to discover an existing verified shell by creator or
-tags. A zero-result search never authorizes manufacturing a wrapper: ordinary
-projects continue to omit `viewer` and use the canonical KEEL verification
-shell.
-
-## Repair an existing draft
-
-When a creator opens a draft and asks the agent to rename it, change the sale,
-or attach a corrected prepared artifact, use `keel-studio-draft`. The scoped
-key belongs in `KEEL_STUDIO_AGENT_TOKEN`; never copy it into tool arguments,
-chat, logs, or a handoff URL.
-
-1. `list` or `read` the creator-owned draft first.
-2. Preserve its returned `revision` and every field the creator did not ask to
-   change.
-3. For media changes, run `media-optimize` as a dry-run and show the measured
-   before/after bytes, percentage, exact output digest, adapter, and settings.
-   Do not change storage mode. Only after the creator approves that exact
-   result, call `media-optimize-apply` with its digest and byte length, or use
-   the JSON/YAML `keel media-optimize` CLI with `operation: apply-reviewed`.
-   Both paths remeasure before writing one new file; the source is retained.
-4. Stage corrected project bytes as a new project handoff. The creator still
-   signs in and prepares those bytes in Studio; an agent grant does not bypass
-   project verification.
-5. After Studio returns the new artifact ID, call `update` with the exact prior
-   `revision`. A stale revision stops instead of erasing newer browser work.
-
-Draft tools never review, cancel, sign, submit, or confirm a publication. If a
-release is already under review, stop and let the creator cancel that review in
-Studio before editing.
-
-When the creator wants a new token contract or wants to organize an existing
-contract, call `keel-creator-collection-prepare` only after the project and
-metadata digest are exact. Choose one lane: dedicated ERC-721 for individually
-numbered works, dedicated ERC-1155 for many edition items in one creator
-contract, shared ERC-1155 for the lowest deployment cost, or external for a
-creator-controlled bring-your-own contract. Never substitute one lane for
-another. Missing or ambiguous factory/renderer deployment records are a safe
-stop, not a reason to invent an address or request approval. A review-only plan
-still requires an exact factory-to-renderer read-back before Studio may show the
-wallet action; collection creation does not mint an item or create its sale.
-
-## Approval handoff
-
-The completed intake returns a digest-bound `fray-approval-request@1` envelope.
-Show the creator:
-
-- title and description;
-- selected chain and native currency;
-- selected auction preset and its values;
-- reused modules/library bindings or the explicit “new upload” result;
-- the API request scope and wallet execution mode.
-- the temporary-project expiry, still/video capture choice, and the Studio
-  handoff URL;
-- the fee preflight, including native cost, USD estimate, timestamp, and whether
-  it came from live RPC or a configured fallback. The Studio refreshes this on
-  open and the wallet remains final.
-
-Then stop at the approval boundary. The API request is user-approved, and the
-wallet is user-controlled. Prefer EIP-5792 `wallet_sendCalls` on EVM and a
-Beacon batch operation on Tezos when the connected wallet advertises those
-capabilities. One cryptographic signature is capability-dependent; otherwise
-present the sequential wallet approvals clearly. Never report an auction as
-minted or uploaded until the wallet UI and chain readback provide receipts.
-
-## Testnet funding
-
-Use `keel-chain-guide` to show faucet links. The creator opens and claims
-funds; the agent does not call a faucet, store a private key, or infer that a
-balance exists. Confirm the wallet network and balance in the wallet/application
-before asking for the publication approval.
-
-For the portable MCP connection example, read
+For the portable MCP connection and local self-test, read
 [mcp-config.md](references/mcp-config.md).

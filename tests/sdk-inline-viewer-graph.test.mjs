@@ -210,6 +210,19 @@ test("Gzip Inline graph reuses shell and p5 fragments and publishes only creator
     }),
     /must be percent-escaped/u,
   );
+  await assert.rejects(
+    buildKeelPreparedOneOfOneTokenURI({
+      graph: tokenGraph,
+      chainId,
+      collection: `0x${"ab".repeat(20)}`,
+      collectionName: "No Web3 image in Inline",
+      description: "Inline keeps marketplace media self-contained",
+      imageURI: `web3://0x${"cd".repeat(20)}:${chainId}/haulObject/0x${"ef".repeat(32)}?mime.type=image%2Fwebp`,
+      manifestURI: `web3://0x${"cd".repeat(20)}:${chainId}/haulObject/0x${"ef".repeat(32)}?mime.type=application%2Fjson`,
+      manifestDigest: `0x${"12".repeat(32)}`,
+    }),
+    /prepared Inline token image must be a self-contained data URI/u,
+  );
 });
 
 test("canonical Inline publication has one shell top, ordered middle, and one shell bottom", async () => {

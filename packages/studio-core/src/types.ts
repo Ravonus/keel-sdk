@@ -98,9 +98,12 @@ export interface StudioFlashRuntime {
   readonly ruffleMainPath: string;
   readonly ruffleModernCorePath: string;
   readonly ruffleLegacyCorePath: string;
-  /** Optional MVP/vanilla WASM. Unsupported browsers may upload it locally. */
+  /** Optional extensions-enabled WASM. */
   readonly ruffleModernWasmPath?: string;
+  /** MVP/vanilla WASM. Unsupported browsers may upload it locally. */
   readonly ruffleLegacyWasmPath: string;
+  /** Select one extensions-enabled WASM path or retain the legacy upload flow. */
+  readonly ruffleWasmPolicy?: "modern-only" | "dual";
   /** SHA-256 commitment for the optional local MVP/vanilla upload. */
   readonly ruffleModernWasmSha256?: string;
   readonly ruffleModernWasmByteLength?: number;

@@ -60,6 +60,37 @@ export function keelPreEncodedTokenUriReadGasEstimate(input: {
 
 export type KeelPresentationMode = "inline" | "hybrid" | "ipfs";
 
+export interface KeelWeb3ObjectURIInput {
+  readonly chainId: number;
+  readonly storeAddress: `0x${string}`;
+  readonly objectId: `0x${string}`;
+  readonly mediaType: string;
+}
+
+/**
+ * Build the ERC-4804/6860 URL for the bytes returned by KeelHold.haulObject.
+ *
+ * `getObject`/`object` returns KEEL's descriptor, not the resource body. The
+ * web3 route must therefore call `haulObject(bytes32)` and declare the exact
+ * MIME type for ordinary image, metadata, and browser consumers.
+ */
+export function keelWeb3ObjectURI(input: KeelWeb3ObjectURIInput): string {
+  if (!Number.isSafeInteger(input.chainId) || input.chainId <= 0) {
+    throw new TypeError("A KEEL web3 object URI needs a positive safe chain ID.");
+  }
+  if (!/^0x[0-9a-f]{40}$/iu.test(input.storeAddress)) {
+    throw new TypeError("A KEEL web3 object URI needs a canonical EVM store address.");
+  }
+  if (!/^0x[0-9a-f]{64}$/iu.test(input.objectId)) {
+    throw new TypeError("A KEEL web3 object URI needs a canonical bytes32 object ID.");
+  }
+  const mediaType = input.mediaType.trim().toLowerCase();
+  if (!/^[a-z0-9][a-z0-9!#$&^_.+-]*\/[a-z0-9][a-z0-9!#$&^_.+-]*$/u.test(mediaType)) {
+    throw new TypeError("A KEEL web3 object URI needs one exact MIME type without parameters.");
+  }
+  return `web3://${input.storeAddress.toLowerCase()}:${input.chainId}/haulObject/${input.objectId.toLowerCase()}?mime.type=${encodeURIComponent(mediaType)}`;
+}
+
 export const KEEL_PRESENTATION_TERMS = Object.freeze({
   bootShell: "Small, uncompressed HTML that starts the verified viewer.",
   resourceGraph: "Digest-bound scripts, modules, assets, and data used by the viewer. Child resources may be compressed.",

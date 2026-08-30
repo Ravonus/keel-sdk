@@ -19,6 +19,7 @@
 
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 import { brotliCompress, brotliDecompress, constants as zlibConstants, deflate, gzip } from "node:zlib";
 import { build } from "esbuild";
@@ -147,59 +148,32 @@ async function loadVaultVerificationChrome(
 ): Promise<{
   readonly css: string;
   readonly markup: string;
-  readonly javascript: string;
+  readonly modulePath: string;
   readonly presentation: KeelVerificationPresentationManifest;
   readonly sourceBytes: Uint8Array;
   readonly sourceDigest: Hex;
 }> {
-  const htmlPath = path.join(
-    repositoryRoot,
-    "examples/demos/vault-arcade/generated-attribute-proxy/vault-keel-viewer.html",
-  );
-  const javascriptPath = path.join(
-    repositoryRoot,
-    "examples/demos/vault-arcade/generated-attribute-proxy/vault-keel-viewer.js",
-  );
-  const [htmlBytes, javascriptBytes] = await Promise.all([readFile(htmlPath), readFile(javascriptPath)]);
-  const html = htmlBytes.toString("utf8");
-  const javascript = javascriptBytes.toString("utf8");
-  const styles = [...html.matchAll(/<style(?:\s[^>]*)?>([\s\S]*?)<\/style>/gu)].map((match) => match[1] ?? "");
-  const primaryStyle = styles.find((style) => style.includes(".verify-corner{") && style.includes(".verify-alert{"));
-  const detailStyle = styles.find((style) => style.includes(".verify-note{") && style.includes(".verify-trail-item"));
-  const presenceStyle = styles.find((style) => (
-    style.includes("data-verify-corner-active")
-    && style.includes("visibility:hidden")
-    && style.includes("pointer-events:none")
-  ));
-  const rootRule = primaryStyle?.match(/:root\{[^}]+\}/u)?.[0];
-  const verificationStyleOffset = primaryStyle?.indexOf(".verify-corner{") ?? -1;
-  if (!primaryStyle || !detailStyle || !presenceStyle || !rootRule || verificationStyleOffset < 0) {
-    throw new Error("Canonical Vault verification CSS could not be extracted.");
+  const modulePath = path.join(repositoryRoot, "packages/viewer/src/keel-verification-chrome.js");
+  const sourceBytes = new Uint8Array(await readFile(modulePath));
+  const chrome = await import(`${pathToFileURL(modulePath).href}?keel-shell-source=${Date.now()}`) as {
+    readonly KEEL_VERIFICATION_CSS?: unknown;
+    readonly KEEL_VERIFICATION_RESPONSIVE_DOCK_CSS?: unknown;
+    readonly KEEL_VERIFICATION_MARKUP?: unknown;
+  };
+  if (
+    typeof chrome.KEEL_VERIFICATION_CSS !== "string"
+    || typeof chrome.KEEL_VERIFICATION_RESPONSIVE_DOCK_CSS !== "string"
+    || typeof chrome.KEEL_VERIFICATION_MARKUP !== "string"
+  ) {
+    throw new Error("Canonical KEEL verification chrome exports are incomplete.");
   }
-  const chromeMarkup = html.match(/<div class="verify-corner"[^>]*>[\s\S]*?<section class="verify-alert"[\s\S]*?<\/section>/u)?.[0];
-  const presentationScript = html.match(/<script id="keel-verification-presentation" type="application\/json">[\s\S]*?<\/script>/u)?.[0];
-  if (!chromeMarkup || !presentationScript) throw new Error("Canonical Vault verification markup could not be extracted.");
   const presentation = createKeelVerificationPresentationManifest(presentationOverrides);
-  const replacedPresentationScript = presentationScript.replace(
-    /(<script id="keel-verification-presentation" type="application\/json">)[\s\S]*?(<\/script>)/u,
-    `$1${escapeScriptJson(presentation)}$2`,
-  );
-  const markup = `${replacedPresentationScript}${chromeMarkup}`;
-  const javascriptStart = javascript.indexOf("const KEEL_VERIFICATION_PRESENTATION_PROTOCOL =");
-  // The gallery presentation can select a lightweight no-op UI, so the
-  // declaration is no longer always a direct `mountVerificationUI` call.
-  const javascriptEnd = javascript.indexOf("const verificationUI =", javascriptStart);
-  if (javascriptStart < 0 || javascriptEnd < 0) {
-    throw new Error("Canonical Vault verification runtime could not be extracted.");
-  }
-  const extractedJavascript = javascript.slice(javascriptStart, javascriptEnd)
-    .replace("Changes which character parts are selected.", "Changes which committed objects are selected.");
-  const css = `${rootRule}\n${primaryStyle.slice(verificationStyleOffset)}\n${detailStyle}\n${presenceStyle}`;
-  const sourceBytes = utf8ToBytes(`${css}\n${markup}\n${extractedJavascript}`);
+  const markup = `<script id="keel-verification-presentation" type="application/json">${escapeScriptJson(presentation)}</script>${chrome.KEEL_VERIFICATION_MARKUP}`;
+  const css = `${chrome.KEEL_VERIFICATION_CSS}\n${chrome.KEEL_VERIFICATION_RESPONSIVE_DOCK_CSS}`;
   return {
     css,
     markup,
-    javascript: extractedJavascript,
+    modulePath,
     presentation,
     sourceBytes,
     sourceDigest: (await sha256Integrity(sourceBytes)).digest,
@@ -237,13 +211,14 @@ export async function buildStandaloneKeelViewer(input: {
     loadVaultVerificationChrome(input.repositoryRoot, input.verificationPresentation),
   ]);
   const wasmIntegrity = await sha256Integrity(wasm);
-  const runtimeWithVerificationChrome = runtimeSource.toString("utf8").replace(
+  const runtimeWithoutVerificationChromeMarker = runtimeSource.toString("utf8").replace(
     "/*__KEEL_VAULT_VERIFICATION_CHROME__*/",
-    verificationChrome.javascript,
+    "",
   );
-  if (runtimeWithVerificationChrome === runtimeSource.toString("utf8")) {
+  if (runtimeWithoutVerificationChromeMarker === runtimeSource.toString("utf8")) {
     throw new Error("Standalone verifier runtime is missing its Vault verification chrome marker.");
   }
+  const runtimeWithVerificationChrome = `import { mountVerificationUI } from ${JSON.stringify(verificationChrome.modulePath)};\n${runtimeWithoutVerificationChromeMarker}`;
   const bundled = await build({
     absWorkingDir: path.join(input.repositoryRoot, "apps/studio"),
     bundle: true,
@@ -298,8 +273,7 @@ export async function buildStandaloneKeelViewer(input: {
       ? { kind: "embedded", package: "brotli-dec-wasm@2.3.2", digest: wasmIntegrity.digest }
       : { kind: "disabled" },
     verificationChrome: {
-      html: "examples/demos/vault-arcade/generated-attribute-proxy/vault-keel-viewer.html",
-      javascript: "examples/demos/vault-arcade/generated-attribute-proxy/vault-keel-viewer.js",
+      module: "packages/viewer/src/keel-verification-chrome.js",
       digest: verificationChrome.sourceDigest,
       presentation: verificationChrome.presentation,
     },

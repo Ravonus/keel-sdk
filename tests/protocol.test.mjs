@@ -4,15 +4,20 @@ import {
   KEEL_CANONICALIZATION,
   KEEL_MANIFEST_SCHEMA,
   assertValidKeelIPControlExtension,
+  assertDataUriMediaType,
   canonicalJson,
   chunkUtf8,
   createIntegrity,
+  escapeJsonForScript,
   evaluateProjectRevision,
   packUint48Ids,
   parseArtifactManifest,
   projectComponentCommitment,
   projectStackCommitments,
   normalizeKeelAttributions,
+  serializeScriptJSON,
+  toDataUrl,
+  toPercentDataUrl,
   unpackUint48Ids,
   validateManifest,
 } from "../packages/protocol/dist/index.js";
@@ -44,6 +49,27 @@ test("UTF-8 chunking is byte accurate", () => {
   const chunks = chunkUtf8("🔥".repeat(20), 13);
   assert.ok(chunks.every((chunk) => chunk.length <= 13));
   assert.equal(chunks.reduce((total, chunk) => total + chunk.length, 0), 80);
+});
+
+test("data URI and script encoders escape parser delimiters at the shared protocol boundary", () => {
+  const source = "</script>|&<>#?\\\u0000\u2028\u2029 snow 雪";
+  const percent = toPercentDataUrl("text/html;charset=utf-8", source);
+  assert.equal(percent.startsWith("data:text/html;charset=utf-8,"), true);
+  const payload = percent.slice(percent.indexOf(",") + 1);
+  assert.doesNotMatch(payload, /[|&<>#?\\\u0000\u2028\u2029]/u);
+  assert.equal(decodeURIComponent(payload), source);
+
+  const base64 = toDataUrl("text/html", new TextEncoder().encode(source));
+  assert.match(base64, /^data:text\/html;base64,[A-Za-z0-9+/]+=*$/u);
+  assert.equal(Buffer.from(base64.slice(base64.indexOf(",") + 1), "base64").toString("utf8"), source);
+
+  const serialized = serializeScriptJSON({ source, html: "</script><div>& >" });
+  assert.doesNotMatch(serialized, /[&<>\u2028\u2029]/u);
+  assert.deepEqual(JSON.parse(serialized), { source, html: "</script><div>& >" });
+  assert.equal(escapeJsonForScript('{"x":"|&<>"}'), '{"x":"|\\u0026\\u003c\\u003e"}');
+  assert.equal(assertDataUriMediaType("application/vnd.keel.token-uri-base64-fragment"), "application/vnd.keel.token-uri-base64-fragment");
+  assert.throws(() => assertDataUriMediaType("text/html\n<script>"), /Invalid data URI media type/u);
+  assert.throws(() => assertDataUriMediaType("text/html;base64"), /Invalid data URI media type parameter/u);
 });
 
 test("manifest validation catches missing resource references", async () => {

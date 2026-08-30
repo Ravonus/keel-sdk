@@ -17,6 +17,12 @@ test("the registered default shell bundles the one canonical protected K chrome 
   assert.doesNotMatch(suffix, /"glyph":"S"/u);
   assert.match(suffix, /keel-shell-plugin@1/u);
   assert.match(suffix, /__KEEL_SHELL_API__/u);
+  assert.match(suffix, /data-keel-panel-placement/u);
+  assert.match(suffix, /translateY\(102%\)/u);
+  assert.match(suffix, /body\.verify-open\[data-keel-panel-placement=.{0,8}right/u);
+  assert.match(suffix, /#keel-stage\{position:absolute/u);
+  assert.match(suffix, /#keel-stage\{right:var\(--keel-panel-width[^}]+width:auto!important/u);
+  assert.match(suffix, /style\.setProperty\(["']--keel-panel-width["']/u);
   assert.match(suffix, /mediaType/u);
   assert.match(suffix, /byteLength/u);
   assert.match(suffix, /__KEEL_CONTENT__/u);

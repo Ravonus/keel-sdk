@@ -55,7 +55,7 @@ const plan = await buildKeelImmutableThreeScenePublicationPlan({
   hold,
   deadline: 4_102_444_800n,
   scene: {
-    id: "vault-of-the-fallen-one-of-one",
+    id: "test-three-one-of-one",
     name: configuration.name,
     description: "One immutable Three.js scene verified by the default KEEL viewer and sandbox.",
     bytes: decodedScene,
@@ -69,8 +69,8 @@ const plan = await buildKeelImmutableThreeScenePublicationPlan({
     factory,
     index,
     publicationJobDeployed: false,
-    name: "Vault Of The Fallen",
-    symbol: "KEEL1",
+    name: "Test Three One of One",
+    symbol: "TEST1",
   },
 });
 

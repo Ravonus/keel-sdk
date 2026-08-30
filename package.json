@@ -13,6 +13,7 @@
     "build": "node scripts/build.mjs",
     "test": "node scripts/test.mjs",
     "test:conformance": "KEEL_REQUIRE_SIBLINGS=1 node scripts/test.mjs",
+    "test:browser": "node scripts/test-browser.mjs",
     "check": "node scripts/check.mjs",
     "verify": "node scripts/verify.mjs",
     "verify:doom-managed-local": "node scripts/verify-doom-managed-publication.mjs",

@@ -13,6 +13,7 @@ import {
   keelInlineReadGasLimit,
   keelInlineTokenUriReadGasEstimate,
   keelPreEncodedTokenUriReadGasEstimate,
+  keelWeb3ObjectURI,
 } from "../packages/sdk/dist/presentation.js";
 
 test("codec policy keeps the shell plain and shared Brotli decoder explicit", () => {
@@ -29,6 +30,27 @@ test("presentation vocabulary separates Inline, Hybrid, IPFS, storage, and compr
   assert.match(KEEL_PRESENTATION_TERMS.hybrid, /remains fully onchain/iu);
   assert.match(KEEL_PRESENTATION_TERMS.resourceGraph, /Child resources may be compressed/iu);
   assert.match(KEEL_PRESENTATION_TERMS.browserDecoder, /browser or WASM decoder/iu);
+});
+
+test("web3 object URLs call haulObject and carry the exact MIME type", () => {
+  assert.equal(keelWeb3ObjectURI({
+    chainId: 11_155_111,
+    storeAddress: `0x${"AB".repeat(20)}`,
+    objectId: `0x${"CD".repeat(32)}`,
+    mediaType: " Image/WebP ",
+  }), `web3://0x${"ab".repeat(20)}:11155111/haulObject/0x${"cd".repeat(32)}?mime.type=image%2Fwebp`);
+  assert.throws(() => keelWeb3ObjectURI({
+    chainId: 0,
+    storeAddress: `0x${"ab".repeat(20)}`,
+    objectId: `0x${"cd".repeat(32)}`,
+    mediaType: "image/webp",
+  }), /positive safe chain ID/u);
+  assert.throws(() => keelWeb3ObjectURI({
+    chainId: 1,
+    storeAddress: `0x${"ab".repeat(20)}`,
+    objectId: `0x${"cd".repeat(32)}`,
+    mediaType: "image/webp; charset=binary",
+  }), /exact MIME type/u);
 });
 
 test("Inline accepts a plain boot shell and does not forbid compressed child resources", () => {

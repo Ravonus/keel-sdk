@@ -111,7 +111,7 @@ test("Creative Lab release contract keeps preview controls separate from tracked
   assert.match(lab, /JSON\.stringify\(candidate\.attributes\) === JSON\.stringify\(attributes\)/u);
 });
 
-test("Standalone Viewer Builder commits recursive and ordered URL delivery without route magic", async () => {
+test("Standalone Viewer Builder permits inline or recursive RPC delivery without hosted URL fallbacks", async () => {
   const [builder, runtime, seeder, readme, gatewayRoute] = await Promise.all([
     readFile(new URL("../../../../packages/sdk/src/verification-shell.ts", import.meta.url), "utf8"),
     source("keel-verifier-runtime.js"),
@@ -121,13 +121,13 @@ test("Standalone Viewer Builder commits recursive and ordered URL delivery witho
   ]);
   const studioBuilder = await readFile(new URL("../../../../../keel-site/apps/studio/scripts/keel-viewer-builder.ts", import.meta.url), "utf8");
   assert.match(studioBuilder, /@keel\/sdk\/verification-shell/u);
-  assert.match(builder, /deliveryProfile: "onchain-recursive" \| "ordered-url"/u);
-  assert.match(builder, /Every ordered URL viewer item requires at least one committed source/u);
+  assert.match(builder, /deliveryProfile: "onchain-recursive" \| "embedded-assembled"/u);
+  assert.doesNotMatch(builder, /ordered-url/u);
+  assert.doesNotMatch(runtime, /readUrlItem|source\.uri|fetch\(source/u);
   assert.match(builder, /brotli-dec-wasm@2\.3\.2/u);
   assert.match(builder, /compressedHtml/u);
-  assert.match(runtime, /source\.storedIntegrity/u);
-  assert.match(runtime, /for \(const source of item\.sources\)/u);
-  assert.match(runtime, /throw lastError/u);
+  assert.match(runtime, /item\.onchain\?\.storedIntegrity/u);
+  assert.match(runtime, /rpcUrls/u);
   assert.match(runtime, /readOnchainObject/u);
   assert.match(runtime, /keel-child-runtime@1/u);
   assert.match(runtime, /new URLSearchParams\(location\.search\)/u);

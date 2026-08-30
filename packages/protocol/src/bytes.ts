@@ -78,6 +78,83 @@ export function encodeBase64(value: Uint8Array): string {
   return globalThis.btoa(bytesToBinaryString(value));
 }
 
+// RFC 7230's token alphabet is deliberately used for data URI media types.
+// A media type is inserted into the URI header (not the encoded payload), so
+// accepting whitespace, quotes, commas, or controls here would let a caller
+// create a second URI header or a parser delimiter.
+const MEDIA_TYPE_TOKEN = /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/u;
+
+/**
+ * Validate a media type before it is placed in a data URI header.
+ *
+ * The helper accepts the normal `type/subtype;parameter=value` form but does
+ * not accept a `;base64` flag: {@link toDataUrl} adds that flag itself.
+ */
+export function assertDataUriMediaType(mediaType: string): string {
+  if (typeof mediaType !== "string" || mediaType.length === 0 || mediaType.length > 255) {
+    throw new TypeError("A data URI media type must be a non-empty value of at most 255 characters.");
+  }
+  const parts = mediaType.split(";");
+  const type = parts.shift() ?? "";
+  const slash = type.indexOf("/");
+  if (slash <= 0 || slash !== type.lastIndexOf("/") || !MEDIA_TYPE_TOKEN.test(type.slice(0, slash)) || !MEDIA_TYPE_TOKEN.test(type.slice(slash + 1))) {
+    throw new TypeError(`Invalid data URI media type: ${mediaType}`);
+  }
+  for (const parameter of parts) {
+    const equals = parameter.indexOf("=");
+    if (equals <= 0 || equals === parameter.length - 1 || parameter.toLowerCase() === "base64") {
+      throw new TypeError(`Invalid data URI media type parameter: ${mediaType}`);
+    }
+    if (!MEDIA_TYPE_TOKEN.test(parameter.slice(0, equals)) || !MEDIA_TYPE_TOKEN.test(parameter.slice(equals + 1))) {
+      throw new TypeError(`Invalid data URI media type parameter: ${mediaType}`);
+    }
+  }
+  return mediaType;
+}
+
+const RFC3986_UNRESERVED = (byte: number): boolean =>
+  (byte >= 0x41 && byte <= 0x5a)
+  || (byte >= 0x61 && byte <= 0x7a)
+  || (byte >= 0x30 && byte <= 0x39)
+  || byte === 0x2d || byte === 0x2e || byte === 0x5f || byte === 0x7e;
+
+/** Percent-escape every non-RFC3986-unreserved UTF-8 payload byte. */
+export function toPercentDataUrl(mediaType: string, value: Uint8Array | string): string {
+  assertDataUriMediaType(mediaType);
+  const bytes = typeof value === "string" ? utf8ToBytes(value) : value;
+  if (!(bytes instanceof Uint8Array)) throw new TypeError("A data URI payload must be text or Uint8Array bytes.");
+  let payload = "";
+  for (const byte of bytes) {
+    payload += RFC3986_UNRESERVED(byte)
+      ? String.fromCharCode(byte)
+      : `%${byte.toString(16).toUpperCase().padStart(2, "0")}`;
+  }
+  return `data:${mediaType},${payload}`;
+}
+
+/**
+ * Escape JSON before placing it in an HTML script or JavaScript expression.
+ * JSON.stringify already handles quotes, backslashes, and controls; these
+ * additional escapes prevent HTML entity/parser delimiters and line
+ * separators from being interpreted by a surrounding document.
+ */
+export function escapeJsonForScript(serialized: string): string {
+  if (typeof serialized !== "string") throw new TypeError("Script JSON must be a serialized string.");
+  return serialized
+    .replaceAll("&", "\\u0026")
+    .replaceAll("<", "\\u003c")
+    .replaceAll(">", "\\u003e")
+    .replaceAll("\u2028", "\\u2028")
+    .replaceAll("\u2029", "\\u2029");
+}
+
+/** Serialize JSON for a script text node or inline JavaScript expression. */
+export function serializeScriptJSON(value: unknown): string {
+  const serialized = JSON.stringify(value);
+  if (serialized === undefined) throw new TypeError("Script data is not JSON serializable.");
+  return escapeJsonForScript(serialized);
+}
+
 // Z85, as used by the original Keel `de85` decoder. The alphabet is chosen
 // so every character survives a JavaScript string literal unescaped.
 const BASE85_ALPHABET =
@@ -193,6 +270,8 @@ export function decodeText(value: string, encoding: TextEncoding): Uint8Array {
 }
 
 export function toDataUrl(mediaType: string, value: Uint8Array): string {
+  assertDataUriMediaType(mediaType);
+  if (!(value instanceof Uint8Array)) throw new TypeError("A data URI payload must be Uint8Array bytes.");
   return `data:${mediaType};base64,${encodeBase64(value)}`;
 }
 

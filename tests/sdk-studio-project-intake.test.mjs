@@ -40,5 +40,32 @@ test("an explicit one-of-one release produces an editable immediate listing inte
 test("a release without chain or price stops for missing input", () => {
   const result = prepareKeelStudioProjectIntake({ title: "Seed Current", description: "A p5 work.", outcome: "release" });
   assert.equal(result.status, "needs-input");
-  assert.deepEqual(result.questions.map(({ field }) => field), ["chainId", "priceEth"]);
+  assert.deepEqual(result.questions.map(({ field }) => field), ["chainId", "releaseType", "saleMechanism", "priceEth"]);
+});
+
+test("a release never defaults its type or sale mechanism", () => {
+  const result = prepareKeelStudioProjectIntake({
+    title: "Seed Current",
+    description: "A p5 work.",
+    outcome: "release",
+    chainId: 11_155_111,
+    release: { priceEth: "0.1" },
+  });
+  assert.equal(result.status, "needs-input");
+  assert.deepEqual(result.questions.map(({ field }) => field), ["releaseType", "saleMechanism"]);
+});
+
+test("invalid or contradictory release routing fails closed", () => {
+  assert.throws(
+    () => prepareKeelStudioProjectIntake({ title: "Bad", description: "Bad route.", outcome: "release", release: { type: "series", saleMechanism: "fixed-price", priceEth: "0.1" } }),
+    /release\.type must be one-of-one, open-edition, or limited-edition/u,
+  );
+  assert.throws(
+    () => prepareKeelStudioProjectIntake({ title: "Bad", description: "Bad route.", outcome: "release", release: { type: "one-of-one", saleMechanism: "fray-auction", priceEth: "0.1" } }),
+    /release\.saleMechanism must be fixed-price, auction, or claim/u,
+  );
+  assert.throws(
+    () => prepareKeelStudioProjectIntake({ title: "Bad", description: "Bad route.", outcome: "storage-only", release: { type: "one-of-one", saleMechanism: "fixed-price", priceEth: "0.1" } }),
+    /release must be omitted for a storage-only project/u,
+  );
 });

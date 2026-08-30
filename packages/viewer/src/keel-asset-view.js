@@ -35,9 +35,32 @@ export function detectAssetKind(bytes) {
   return { kind: "unknown", mime: "application/octet-stream" };
 }
 
+const MEDIA_TYPE_TOKEN = /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/u;
+
+function assertDataUriMediaType(mime) {
+  if (typeof mime !== "string" || mime.length === 0 || mime.length > 255) {
+    throw new TypeError("A data URI media type must be a non-empty value of at most 255 characters.");
+  }
+  const parts = mime.split(";");
+  const type = parts.shift() ?? "";
+  const slash = type.indexOf("/");
+  if (slash <= 0 || slash !== type.lastIndexOf("/") || !MEDIA_TYPE_TOKEN.test(type.slice(0, slash)) || !MEDIA_TYPE_TOKEN.test(type.slice(slash + 1))) {
+    throw new TypeError(`Invalid data URI media type: ${mime}`);
+  }
+  for (const parameter of parts) {
+    const equals = parameter.indexOf("=");
+    if (equals <= 0 || equals === parameter.length - 1 || !MEDIA_TYPE_TOKEN.test(parameter.slice(0, equals)) || !MEDIA_TYPE_TOKEN.test(parameter.slice(equals + 1))) {
+      throw new TypeError(`Invalid data URI media type parameter: ${mime}`);
+    }
+  }
+}
+
 function toDataUri(bytes, mime) {
+  assertDataUriMediaType(mime);
   let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
+  for (let offset = 0; offset < bytes.byteLength; offset += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + 0x8000, bytes.byteLength)));
+  }
   return `data:${mime};base64,${btoa(binary)}`;
 }
 
@@ -134,10 +157,8 @@ export function mountAsset({ target, bytes, upscale = false, onRect } = {}) {
 /* A frame drawn around the element box is a frame around the letterboxing.   */
 /* A frame drawn around the painted rect is closer, but still wrong for the   */
 /* very common case where the artwork carries its own backdrop with rounded   */
-/* corners — a BAYC ape is a 631×631 PNG whose orange field is a rounded rect */
-/* of radius 21 with transparent corners. Squaring that off cuts the artwork's */
-/* own shape. So: read the pixels, find where the backdrop actually ends, and  */
-/* measure how curved it is.                                                  */
+/* corners. Squaring that off cuts the artwork's own shape. So: read the      */
+/* pixels, find where the backdrop actually ends, and measure the curve.       */
 /* ------------------------------------------------------------------------- */
 
 // Working resolution for the probe. High enough that a typical avatar — a few

@@ -7,7 +7,7 @@ import { root } from "./run.mjs";
 export const EIP170_MAX_RUNTIME_BYTES = 24_576;
 export const SOLIDITY_COMPILER_SETTINGS = Object.freeze({
   evmVersion: "prague",
-  optimizerRuns: 200,
+  optimizerRuns: 50,
   viaIR: true,
   bytecodeHash: "none",
   appendCBOR: false,

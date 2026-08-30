@@ -81,7 +81,11 @@ export interface StageKeelStudioProjectInput {
   readonly description?: string;
   readonly storageStrategy: "local" | "onchain" | "hybrid";
   readonly marketplaceExportMode?: "recursive" | "packed" | "hybrid" | "onchfs";
-  /** Defaults to Studio's canonical KEEL Inline graph selector. `none` is storage-only. */
+  /**
+   * Defaults to Studio's canonical KEEL Inline graph selector. `none` removes
+   * only the shell: the artifact may still be stored, released, minted, and
+   * read directly from its immutable contract source.
+   */
   readonly viewer?: "keel-verification-shell" | "none";
   readonly files: readonly KeelStudioStagedProjectFile[];
   readonly reusableModule?: {
@@ -224,7 +228,7 @@ export async function stageKeelStudioProject(
   const viewer = input.viewer ?? KEEL_VERIFICATION_SHELL;
   if (viewer !== KEEL_VERIFICATION_SHELL && viewer !== "none") throw new TypeError("viewer must be keel-verification-shell or none.");
   if (viewer === "none" && input.publicationIntent !== undefined) {
-    throw new TypeError("A storage-only project cannot also require the KEEL verification shell.");
+    throw new TypeError("An artifact-only project cannot also require the KEEL verification shell.");
   }
 
   const paths = input.files.map((file) => safeProjectPath(file.path));

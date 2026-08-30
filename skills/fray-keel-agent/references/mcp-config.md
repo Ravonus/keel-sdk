@@ -3,6 +3,34 @@
 Use the built `@keel/mcp` CLI from the repository or an installed package. A
 Claude/Codex client can connect over stdio with a configuration equivalent to:
 
+```bash
+pnpm --filter @keel/mcp build
+node packages/mcp/dist/cli.js --self-test --workspace /path/to/artwork-workspace
+```
+
+The self-test checks initialization, discovery, the plan prompt, and the
+project-routes resource without writing files, starting a wallet request, or
+changing chain state.
+
+For Codex, add the built local server and verify discovery:
+
+```bash
+codex mcp add keel -- node /absolute/path/to/keel-sdk/packages/mcp/dist/cli.js \
+  --workspace /absolute/path/to/artwork-workspace
+codex mcp list
+```
+
+To keep configuration repository-scoped, put the equivalent entry in
+`.codex/config.toml` instead:
+
+```toml
+[mcp_servers.keel]
+command = "node"
+args = ["/absolute/path/to/keel-sdk/packages/mcp/dist/cli.js", "--workspace", "/absolute/path/to/artwork-workspace"]
+```
+
+Other MCP clients can use the generic JSON configuration below.
+
 ```json
 {
   "mcpServers": {
@@ -35,3 +63,7 @@ The MCP server reads only bounded JSON metadata from `/api/library` and
 selected bounded source to the Studio temporary project endpoint. It requires
 the separate `FRAY_STUDIO_AGENT_TOKEN`, never accepts a wallet key, and never
 signs or submits a wallet request.
+
+Installing or discovering this skill does not install, start, authenticate, or
+connect the MCP. Build and configure the MCP separately, then confirm its
+self-test before using connected tools.

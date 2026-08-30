@@ -3,6 +3,8 @@ import test from "node:test";
 
 import {
   assertKeelCreatorSubmissionAllowed,
+  buildKeelCreatorAdminMintCall,
+  buildKeelCreatorAdminMintToggleCall,
   buildKeelCreator1155ItemBindingPlan,
   buildKeelCreatorBYORegistrationCall,
   buildKeelCreatorCollectionWalletBatch,
@@ -28,6 +30,7 @@ const creator = "0x1111111111111111111111111111111111111111";
 const factory = "0x3333333333333333333333333333333333333333";
 const renderer = "0x4444444444444444444444444444444444444444";
 const token = "0x5555555555555555555555555555555555555555";
+const registry = "0x6666666666666666666666666666666666666666";
 const digest = `0x${"aa".repeat(32)}`;
 const deployment = { chainId: 31337, instance: "local", factoryAddress: factory, rendererAddress: renderer };
 const base = { chainId: 31337, creator, factoryAddress: factory };
@@ -146,6 +149,56 @@ test("item binding keeps metadata announcement behind exact item read-back or in
   assert.equal(shared.announcement.phase, "same-wallet-batch-when-token-id-is-prechecked");
   const announcement = buildKeelCreatorMetadataAnnouncementCall({ chainId: 31337, creator, collectionAddress: token, tokenId: 3 });
   assert.equal(announcement.call.data.slice(0, 10), "0x996effbe");
+});
+
+test("creator admin mint plans are explicit opt-in calls and never sign or submit", () => {
+  const enabled = buildKeelCreatorAdminMintToggleCall({
+    chainId: 31337,
+    creator,
+    routeRegistryAddress: registry,
+    routeId: 7,
+    enabled: true,
+  });
+  assert.equal(enabled.action, "set-enabled");
+  assert.equal(enabled.routeId, "7");
+  assert.equal(enabled.call.to, registry);
+  assert.equal(enabled.call.data.slice(0, 10), "0xc5dd66cf");
+  assert.equal(enabled.signing, "not-performed");
+  assert.equal(enabled.submission, "not-performed");
+
+  const mint = buildKeelCreatorAdminMintCall({
+    chainId: 31337,
+    creator,
+    routeRegistryAddress: registry,
+    routeId: 7,
+    recipient: token,
+    quantity: 3,
+    data: "0x1234",
+  });
+  assert.equal(mint.action, "mint");
+  assert.equal(mint.call.data.slice(0, 10), "0x9daa7dc1");
+  assert.match(mint.consequence, /3 token unit/u);
+  assert.throws(
+    () => buildKeelCreatorAdminMintCall({
+      chainId: 31337,
+      creator,
+      routeRegistryAddress: registry,
+      routeId: 0,
+      recipient: token,
+    }),
+    /routeId/u,
+  );
+  assert.throws(
+    () => buildKeelCreatorAdminMintCall({
+      chainId: 31337,
+      creator,
+      routeRegistryAddress: registry,
+      routeId: 7,
+      recipient: token,
+      data: "0x1",
+    }),
+    /whole hexadecimal bytes/u,
+  );
 });
 
 test("timeout is reconciled and locks the operation against duplicate wallet approval", () => {

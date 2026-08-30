@@ -92,6 +92,13 @@ const RESOURCE_TEXT: Readonly<Record<string, string>> = {
       next: ["keel-studio-stage-project", "keel-creator-collection-prepare"],
       note: "Choose dedicated ERC-721, dedicated ERC-1155, shared ERC-1155, or external explicitly; never substitute a lane.",
     }, {
+      id: "one-mint-drop",
+      classification: "contract release behavior, not a storage or upload mode",
+      sdkBuilder: "buildOneMintDrop",
+      contractEvidence: ["OneMintController", "OneMintCreatorCollections"],
+      requiredChecks: ["registered mint route and authority", "reserved collection capacity", "stage schedule", "access and replay rules", "wallet limits", "payment asset and amount", "pause and close behavior"],
+      note: "MCP may plan and stage the release but does not create the drop, mint a token, or submit a wallet request. Require sibling Forge evidence and a separate creator-reviewed wallet flow.",
+    }, {
       id: "fixed-price-or-claim",
       intake: { outcome: "release", saleMechanisms: ["fixed-price", "claim"] },
       next: ["keel-studio-stage-project", "keel-studio-draft"],

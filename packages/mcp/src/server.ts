@@ -1,5 +1,5 @@
 import { createWorkspace } from "./paths.js";
-import { getFrayAuctionReviewPrompt, getKeelAssetReviewPrompt, getKeelDraftRepairPrompt, PROMPT_DEFINITIONS } from "./prompts.js";
+import { getFrayAuctionReviewPrompt, getKeelAssetReviewPrompt, getKeelDraftRepairPrompt, getKeelProjectPlanPrompt, PROMPT_DEFINITIONS } from "./prompts.js";
 import { getMcpResource, McpResourceNotFoundError, RESOURCE_DEFINITIONS } from "./resources.js";
 import { toolByName, TOOL_DEFINITIONS } from "./tools.js";
 import {
@@ -117,7 +117,7 @@ export async function createMcpServer(options: { readonly workspaceRoot?: string
           protocolVersion: MCP_PROTOCOL_VERSION,
           capabilities: { tools: { listChanged: false }, prompts: { listChanged: false }, resources: { subscribe: false, listChanged: false } },
           serverInfo: { name: MCP_SERVER_NAME, version: MCP_SERVER_VERSION },
-          instructions: "Keel/Keel preparation and review tools. Local planning is offline; the optional Keel index search only fetches bounded JSON metadata from an explicitly configured HTTPS Studio URL. No wallet signing, faucet claim, chain submission, or carrier-byte fetch is performed.",
+          instructions: "For a new KEEL work, begin with keel-project-plan and resolve creator intent before staging. Every collector-facing viewer uses the registered canonical KEEL verification shell; never author or replace it. Keep storage mode explicit and keep local, browser, receipt, and live-chain proof separate. Tools do not sign, submit, claim faucet funds, or silently change storage. Optional Studio access is bounded to configured metadata and staging endpoints.",
         });
       }
       if (stopped) return rpcError(request.id, -32000, "MCP server is stopped.");
@@ -181,7 +181,9 @@ export async function createMcpServer(options: { readonly workspaceRoot?: string
           if (params._meta !== undefined) object(params._meta, "prompts/get params._meta");
           if (typeof params.name !== "string" || params.name.length === 0 || params.name.length > 128) throw new TypeError("prompts/get params.name is invalid.");
           return response(request.id,
-            params.name === "fray-auction-review"
+            params.name === "keel-project-plan"
+              ? getKeelProjectPlanPrompt(params.name, params.arguments)
+              : params.name === "fray-auction-review"
               ? getFrayAuctionReviewPrompt(params.name, params.arguments)
               : params.name === "keel-draft-repair"
                 ? getKeelDraftRepairPrompt(params.name, params.arguments)

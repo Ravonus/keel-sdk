@@ -26,7 +26,12 @@ The caller must be one of:
 - the target's `owner()` or OpenZeppelin-style `DEFAULT_ADMIN_ROLE`;
 - an account accepted by the target's optional `IOCACampaignAuthorizer.isCampaignCreator` hook.
 
-`KEEL721` exposes `CAMPAIGN_CREATOR_ROLE` through that hook, allowing campaign setup delegation without every collection-admin capability. Merely granting the manager `MINTER_ROLE` does not let arbitrary users create mint phases against the collection.
+`KEEL721` recognizes accounts granted the documented `CAMPAIGN_CREATOR_ROLE`
+identifier through that hook, allowing campaign setup delegation without every
+collection-admin capability. The SDK exports the identifier as
+`KEEL721_CAMPAIGN_CREATOR_ROLE`; the contract does not spend runtime bytes on a
+duplicate constant getter. Merely granting the manager `MINTER_ROLE` does not
+let arbitrary users create mint phases against the collection.
 
 ## Access gates
 

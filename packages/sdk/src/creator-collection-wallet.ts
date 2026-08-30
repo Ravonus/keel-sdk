@@ -28,6 +28,7 @@ import { normalizedAddress, uint, UINT128_MAX } from "./validation.js";
 export const KEEL_CREATOR_COLLECTION_WALLET_PROTOCOL = "keel.creator-collection-wallet@1" as const;
 export const KEEL_CREATOR_OPERATION_PROTOCOL = "keel.creator-operation@1" as const;
 export const KEEL_CREATOR_ITEM_WALLET_PROTOCOL = "keel.creator-item-wallet@1" as const;
+export const KEEL_CREATOR_ADMIN_MINT_WALLET_PROTOCOL = "keel.creator-admin-mint-wallet@1" as const;
 
 const ZERO = ZERO_ADDRESS as Address;
 const BYTES32 = /^0x[0-9a-f]{64}$/u;
@@ -53,6 +54,11 @@ const SHARED_1155_ABI = parseAbi([
   "function announceMetadataURI(uint256 tokenId)",
 ]);
 
+const CREATOR_ADMIN_MINT_ABI = parseAbi([
+  "function setCreatorAdminMintingEnabled(uint256 routeId,bool enabled)",
+  "function creatorAdminMint(uint256 routeId,address recipient,uint256 quantity,bytes data) returns (bytes32 allocationId)",
+]);
+
 type CollectionCall = ReturnType<typeof buildKeelCreatorCollectionCall>;
 
 export type KeelCreatorFactoryCollectionCall = CollectionCall & {
@@ -67,6 +73,21 @@ export interface KeelCreatorWalletCall {
   readonly data: Hex;
   /** EIP-5792 hex quantity. Creator collection calls never transfer ETH. */
   readonly value: Hex;
+}
+
+export interface KeelCreatorAdminMintWalletCall {
+  readonly schema: typeof KEEL_CREATOR_ADMIN_MINT_WALLET_PROTOCOL;
+  readonly status: "review-only";
+  readonly action: "set-enabled" | "mint";
+  readonly chainId: number;
+  readonly from: Address;
+  readonly routeRegistryAddress: Address;
+  readonly routeId: string;
+  readonly call: KeelCreatorWalletCall;
+  readonly walletApproval: "one-wallet-approval";
+  readonly signing: "not-performed";
+  readonly submission: "not-performed";
+  readonly consequence: string;
 }
 
 export interface KeelCreatorWalletSendCalls {
@@ -151,6 +172,12 @@ function decimal(value: bigint | number | string, label: string): string {
   return result.toString();
 }
 
+function positiveUint(value: bigint | number | string, label: string): bigint {
+  const result = uint(BigInt(decimal(value, label)), 0n, label);
+  if (result == 0n) throw new RangeError(`${label} must be positive.`);
+  return result;
+}
+
 function boundedUint128(value: bigint | number | string, label: string): bigint {
   const canonical = decimal(value, label);
   return uint(BigInt(canonical), 0n, label, UINT128_MAX);
@@ -206,6 +233,80 @@ export function buildKeelCreatorFactoryCall(input: KeelCreatorFactoryCallInput):
 
 function freezeCalls(calls: readonly KeelCreatorWalletCall[]): readonly KeelCreatorWalletCall[] {
   return Object.freeze(calls.map((call) => Object.freeze({ ...call })));
+}
+
+/** Builds the creator-owned opt-in/out call for one exact ERC-721 or ERC-1155 route. */
+export function buildKeelCreatorAdminMintToggleCall(input: {
+  readonly chainId: number;
+  readonly creator: Address;
+  readonly routeRegistryAddress: Address;
+  readonly routeId: bigint | number | string;
+  readonly enabled: boolean;
+}): KeelCreatorAdminMintWalletCall {
+  const chainId = positiveChainId(input.chainId);
+  const from = address(input.creator, "creator");
+  const to = address(input.routeRegistryAddress, "routeRegistryAddress");
+  const routeId = positiveUint(input.routeId, "routeId");
+  const data = encodeFunctionData({
+    abi: CREATOR_ADMIN_MINT_ABI,
+    functionName: "setCreatorAdminMintingEnabled",
+    args: [routeId, input.enabled],
+  });
+  return Object.freeze({
+    schema: KEEL_CREATOR_ADMIN_MINT_WALLET_PROTOCOL,
+    status: "review-only",
+    action: "set-enabled",
+    chainId,
+    from,
+    routeRegistryAddress: to,
+    routeId: routeId.toString(),
+    call: Object.freeze({ to, data, value: "0x0" }),
+    walletApproval: "one-wallet-approval",
+    signing: "not-performed",
+    submission: "not-performed",
+    consequence: input.enabled
+      ? "Enables creator-admin minting for this exact registered route; it does not mint a token."
+      : "Disables future creator-admin minting for this exact registered route.",
+  });
+}
+
+/** Builds one creator-admin mint through the route's normal hook and capacity accounting. */
+export function buildKeelCreatorAdminMintCall(input: {
+  readonly chainId: number;
+  readonly creator: Address;
+  readonly routeRegistryAddress: Address;
+  readonly routeId: bigint | number | string;
+  readonly recipient: Address;
+  readonly quantity?: bigint | number | string;
+  readonly data?: Hex;
+}): KeelCreatorAdminMintWalletCall {
+  const chainId = positiveChainId(input.chainId);
+  const from = address(input.creator, "creator");
+  const to = address(input.routeRegistryAddress, "routeRegistryAddress");
+  const recipient = address(input.recipient, "recipient");
+  const routeId = positiveUint(input.routeId, "routeId");
+  const quantity = positiveUint(input.quantity ?? 1, "quantity");
+  const mintData = input.data ?? "0x";
+  if (!/^0x(?:[0-9a-fA-F]{2})*$/u.test(mintData)) throw new TypeError("data must be whole hexadecimal bytes.");
+  const data = encodeFunctionData({
+    abi: CREATOR_ADMIN_MINT_ABI,
+    functionName: "creatorAdminMint",
+    args: [routeId, recipient, quantity, mintData],
+  });
+  return Object.freeze({
+    schema: KEEL_CREATOR_ADMIN_MINT_WALLET_PROTOCOL,
+    status: "review-only",
+    action: "mint",
+    chainId,
+    from,
+    routeRegistryAddress: to,
+    routeId: routeId.toString(),
+    call: Object.freeze({ to, data, value: "0x0" }),
+    walletApproval: "one-wallet-approval",
+    signing: "not-performed",
+    submission: "not-performed",
+    consequence: `Mints ${quantity.toString()} token unit(s) through the enabled creator-admin route to ${recipient}.`,
+  });
 }
 
 function creatorCollectionPlan(input: {

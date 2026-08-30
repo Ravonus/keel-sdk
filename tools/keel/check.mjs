@@ -42,6 +42,7 @@ for (const m of MODULES) {
     if (!onDisk.has(c)) errors.push(`coverage: ${m.id} claims ${c}, which is not on disk`);
   }
 }
+
 for (const f of onDisk) if (!claimed.has(f)) errors.push(`coverage: ${f} is not owned by any module`);
 
 // 2. acyclic

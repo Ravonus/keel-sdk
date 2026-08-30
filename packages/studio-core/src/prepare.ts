@@ -169,10 +169,17 @@ function resolveFlashRuntime(runtime: StudioFlashRuntime, assets: readonly Norma
   const ruffleMain = required(runtime.ruffleMainPath, "Ruffle main", "text/javascript");
   const ruffleModernCore = required(runtime.ruffleModernCorePath, "Ruffle modern core", "text/javascript");
   const ruffleLegacyCore = required(runtime.ruffleLegacyCorePath, "Ruffle legacy core", "text/javascript");
+  const ruffleWasmPolicy = runtime.ruffleWasmPolicy ?? "dual";
+  if (ruffleWasmPolicy !== "modern-only" && ruffleWasmPolicy !== "dual") {
+    throw new TypeError("Flash ruffleWasmPolicy must be modern-only or dual.");
+  }
   const ruffleModernWasm = runtime.ruffleModernWasmPath === undefined
     ? undefined
-    : required(runtime.ruffleModernWasmPath, "Ruffle MVP WASM", "application/wasm");
+    : required(runtime.ruffleModernWasmPath, "Ruffle extensions-enabled WASM", "application/wasm");
   const ruffleLegacyWasm = required(runtime.ruffleLegacyWasmPath, "Ruffle legacy WASM", "application/wasm");
+  if (ruffleWasmPolicy === "modern-only" && ruffleModernWasm === undefined) {
+    throw new Error("Modern-only Flash runtime requires a verified modern Ruffle WASM resource.");
+  }
   const fallbackWasmSha256 = runtime.ruffleModernWasmSha256;
   const fallbackWasmByteLength = runtime.ruffleModernWasmByteLength;
   if (ruffleModernWasm === undefined &&
@@ -194,6 +201,7 @@ function resolveFlashRuntime(runtime: StudioFlashRuntime, assets: readonly Norma
     ruffleLegacyCore: ruffleLegacyCore.id,
     ...(ruffleModernWasm === undefined ? {} : { ruffleModernWasm: ruffleModernWasm.id }),
     ruffleLegacyWasm: ruffleLegacyWasm.id,
+    ruffleWasmPolicy,
     ...(runtime.ruffleModernWasmSha256 === undefined ? {} : { ruffleModernWasmSha256: runtime.ruffleModernWasmSha256.toLowerCase() }),
     ...(runtime.ruffleModernWasmByteLength === undefined ? {} : { ruffleModernWasmByteLength: runtime.ruffleModernWasmByteLength }),
     ...(runtime.ruffleModernWasmFileName === undefined ? {} : { ruffleModernWasmFileName: runtime.ruffleModernWasmFileName }),
@@ -213,7 +221,8 @@ function resolveFlashRuntime(runtime: StudioFlashRuntime, assets: readonly Norma
         ...(ruffleModernWasm === undefined ? {} : { modernWasm: ruffleModernWasm.id }),
         legacyWasm: ruffleLegacyWasm.id,
       },
-      ...(ruffleModernWasm === undefined ? {
+      ruffleWasmPolicy,
+      ...(ruffleWasmPolicy === "dual" && ruffleModernWasm === undefined ? {
         fallback: {
           mode: "local-upload",
           fileName: runtime.ruffleModernWasmFileName ?? "a71cef02d58dcec6f55f.wasm",

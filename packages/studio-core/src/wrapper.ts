@@ -1,3 +1,4 @@
+import { serializeScriptJSON } from "@keel/protocol";
 import type { EntrypointMode } from "@keel/protocol";
 import type { WrapperInput } from "./types.js";
 
@@ -10,9 +11,12 @@ export interface FlashWrapperResources {
   readonly ruffleMain: string;
   readonly ruffleModernCore: string;
   readonly ruffleLegacyCore: string;
-  /** Optional MVP/vanilla WASM. Unsupported browsers can upload it locally. */
+  /** Optional extensions-enabled WASM. */
   readonly ruffleModernWasm?: string;
+  /** MVP/vanilla WASM. Unsupported browsers can upload it locally. */
   readonly ruffleLegacyWasm: string;
+  /** Modern-only binds one extensions-enabled WASM resource and emits no upload fallback. */
+  readonly ruffleWasmPolicy?: "modern-only" | "dual";
   readonly ruffleModernWasmSha256?: string;
   readonly ruffleModernWasmByteLength?: number;
   readonly ruffleModernWasmFileName?: string;
@@ -29,7 +33,7 @@ function escapeAttribute(value: string): string {
 }
 
 function scriptString(value: string): string {
-  return JSON.stringify(value).replaceAll("<", "\\u003c").replaceAll("\u2028", "\\u2028").replaceAll("\u2029", "\\u2029");
+  return serializeScriptJSON(value);
 }
 
 function flashPresentation(resources: FlashWrapperResources, name: string): string {
@@ -38,9 +42,13 @@ function flashPresentation(resources: FlashWrapperResources, name: string): stri
   }
   const seed = resources.previewRootSeed ?? `0x${"0".repeat(64)}`;
   if (!/^0x[0-9a-f]{64}$/iu.test(seed)) throw new TypeError("Flash previewRootSeed must be a canonical bytes32 value.");
+  const modernOnly = resources.ruffleWasmPolicy === "modern-only";
+  if (modernOnly && resources.ruffleModernWasm === undefined) {
+    throw new TypeError("Modern-only Flash runtime requires the verified modern Ruffle WASM resource.");
+  }
   const fallbackWasmSha256 = resources.ruffleModernWasmSha256;
   const fallbackWasmByteLength = resources.ruffleModernWasmByteLength;
-  if (resources.ruffleModernWasm === undefined &&
+  if (!modernOnly && resources.ruffleModernWasm === undefined &&
       (!/^0x[0-9a-f]{64}$/iu.test(fallbackWasmSha256 ?? "") ||
        typeof fallbackWasmByteLength !== "number" || !Number.isSafeInteger(fallbackWasmByteLength) || fallbackWasmByteLength <= 0)) {
     throw new TypeError("Flash fallback WASM requires a canonical SHA-256 digest and byte length.");
@@ -50,31 +58,8 @@ function flashPresentation(resources: FlashWrapperResources, name: string): stri
   const fallbackDescriptor = resources.ruffleModernWasm === undefined
     ? `{fileName:${id(resources.ruffleModernWasmFileName ?? "a71cef02d58dcec6f55f.wasm")},sha256:${id(resources.ruffleModernWasmSha256 ?? "")},byteLength:${resources.ruffleModernWasmByteLength}}`
     : "null";
-  return `<div class="flash-stage" data-keel-flash-runtime="ruffle"><div class="flash-player" id="keel-flash-player" aria-label="${escapeAttribute(name)}"></div><p class="flash-status" id="keel-flash-status">VERIFYING RUFFLE RESOURCES</p><div class="flash-fallback" id="keel-flash-fallback" hidden></div></div><script type="module">
-const content = globalThis.__KEEL_CONTENT__;
-const context = globalThis.__KEEL_CONTEXT__ ?? {};
-const maxToken = ${resources.collectionSize};
-const tokenId = typeof context.tokenId === "string" && /^[0-9]+$/.test(context.tokenId) && BigInt(context.tokenId) >= 1n && BigInt(context.tokenId) <= BigInt(maxToken) ? context.tokenId : "1";
-const safeToken = Number(tokenId);
-const status = document.querySelector("#keel-flash-status");
-const setStatus = (value, failed = false) => { if (status) { status.textContent = value; status.classList.toggle("error", failed); } };
-const loadModule = async (resourceId) => {
-  if (content === undefined || typeof content.url !== "function") throw new Error("Verified Keel content reader is unavailable.");
-  const url = content.url(resourceId);
-  if (typeof url !== "string" || url.length === 0) throw new Error("Missing verified Flash module resource: " + resourceId);
-  return import(url);
-};
-const [{ createRuffleLoader, supportsRuffleWasmExtensions }, { createSeededRandom, randomInt }, { deriveFlashEdition, deriveTokenSeed }] = await Promise.all([
-  loadModule(${id(resources.loader)}),
-  loadModule(${id(resources.seededRandom)}),
-  loadModule(${id(resources.edition)})
-]);
-const randomModule = { createSeededRandom, randomInt };
-const contextSeed = [context.derivedTokenSeed, context.tokenSeed, context.seed].find((value) => typeof value === "string" && /^0x[0-9a-f]{64}$/i.test(value));
-const tokenSeed = contextSeed === undefined ? deriveTokenSeed(${scriptString(seed)}, safeToken, randomModule) : contextSeed.toLowerCase();
-const traits = deriveFlashEdition(tokenSeed, safeToken, randomModule);
-setStatus((contextSeed === undefined ? "PREVIEW" : "CHAIN SEED") + " · TOKEN " + tokenId + " · SEED " + tokenSeed.slice(-8) + " · PALETTE " + traits.paletteIndex);
-const fallback = ${fallbackDescriptor};
+  const fallbackMarkup = modernOnly ? "" : `<div class="flash-fallback" id="keel-flash-fallback" hidden></div>`;
+  const fallbackCode = modernOnly ? "" : `const fallback = ${fallbackDescriptor};
 const requestFallbackWasm = () => {
   if (fallback === null) return Promise.reject(new Error("This browser needs Ruffle's MVP WASM, but no local fallback is declared."));
   const host = document.querySelector("#keel-flash-fallback");
@@ -102,9 +87,35 @@ const requestFallbackWasm = () => {
       })().catch(reject);
     }, { once: true });
   });
+};`;
+  const fallbackArgument = modernOnly ? "" : "fallbackWasmUrl,";
+  return `<div class="flash-stage" data-keel-flash-runtime="ruffle"><div class="flash-player" id="keel-flash-player" aria-label="${escapeAttribute(name)}"></div><p class="flash-status" id="keel-flash-status">VERIFYING RUFFLE RESOURCES</p>${fallbackMarkup}</div><script type="module">
+const content = globalThis.__KEEL_CONTENT__;
+const context = globalThis.__KEEL_CONTEXT__ ?? {};
+const maxToken = ${resources.collectionSize};
+const tokenId = typeof context.tokenId === "string" && /^[0-9]+$/.test(context.tokenId) && BigInt(context.tokenId) >= 1n && BigInt(context.tokenId) <= BigInt(maxToken) ? context.tokenId : "1";
+const safeToken = Number(tokenId);
+const status = document.querySelector("#keel-flash-status");
+const setStatus = (value, failed = false) => { if (status) { status.textContent = value; status.classList.toggle("error", failed); } };
+const loadModule = async (resourceId) => {
+  if (content === undefined || typeof content.url !== "function") throw new Error("Verified Keel content reader is unavailable.");
+  const url = content.url(resourceId);
+  if (typeof url !== "string" || url.length === 0) throw new Error("Missing verified Flash module resource: " + resourceId);
+  return import(url);
 };
+const [{ createRuffleLoader, supportsRuffleWasmExtensions }, { createSeededRandom, randomInt }, { deriveFlashEdition, deriveTokenSeed }] = await Promise.all([
+  loadModule(${id(resources.loader)}),
+  loadModule(${id(resources.seededRandom)}),
+  loadModule(${id(resources.edition)})
+]);
+const randomModule = { createSeededRandom, randomInt };
+const contextSeed = [context.derivedTokenSeed, context.tokenSeed, context.seed].find((value) => typeof value === "string" && /^0x[0-9a-f]{64}$/i.test(value));
+const tokenSeed = contextSeed === undefined ? deriveTokenSeed(${scriptString(seed)}, safeToken, randomModule) : contextSeed.toLowerCase();
+const traits = deriveFlashEdition(tokenSeed, safeToken, randomModule);
+setStatus((contextSeed === undefined ? "PREVIEW" : "CHAIN SEED") + " · TOKEN " + tokenId + " · SEED " + tokenSeed.slice(-8) + " · PALETTE " + traits.paletteIndex);
+${fallbackCode}
 try {
-  const fallbackWasmUrl = supportsRuffleWasmExtensions() ? undefined : await requestFallbackWasm();
+  ${modernOnly ? "" : "const fallbackWasmUrl = supportsRuffleWasmExtensions() ? undefined : await requestFallbackWasm();"}
   const loader = createRuffleLoader({
     window,
     document,
@@ -116,7 +127,7 @@ try {
       ${modernWasmAsset}
       legacyWasm: ${id(resources.ruffleLegacyWasm)}
     },
-    fallbackWasmUrl,
+    ${fallbackArgument}
     autoplay: "on",
     unmuteOverlay: "hidden",
     publicPath: "keel://ruffle/"

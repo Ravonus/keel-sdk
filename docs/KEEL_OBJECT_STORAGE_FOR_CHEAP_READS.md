@@ -106,7 +106,8 @@ belongs in `animation_url`, where the viewer document carries it.
 
 ## What this adds up to
 
-Reading one preserved Bored Ape, over the course of applying the rules above:
+Reading the original 631px benchmark fixture, over the course of applying the
+rules above:
 
 | | read gas |
 | --- | --- |

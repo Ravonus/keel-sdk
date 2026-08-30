@@ -26,12 +26,28 @@ import {
   uploadKeelStudioArtifact,
 } from "../packages/sdk/dist/index.js";
 import { ABIS as crossChainMintAbis } from "../packages/sdk/dist/abis/keel-cross-chain-mint.generated.js";
+import { selectDoomInput } from "../scripts/verify-doom-managed-publication.mjs";
 
 const address = (byte) => `0x${byte.repeat(40)}`;
 const digest = (byte) => `0x${byte.repeat(64)}`;
 
 const owner = address("1");
 const executor = address("2");
+
+test("Doom managed verification requires an explicit local container or Doom-specific source RPC", () => {
+  assert.deepEqual(selectDoomInput({ KEEL_DOOM_STORED_INPUT_PATH: "/tmp/doom.bin.br" }), {
+    kind: "stored-file",
+    path: "/tmp/doom.bin.br",
+  });
+  assert.deepEqual(selectDoomInput({ KEEL_DOOM_SOURCE_RPC_URL: "https://doom-source.example" }), {
+    kind: "source-rpc",
+    url: "https://doom-source.example",
+  });
+  assert.throws(
+    () => selectDoomInput({ KEEL_SEPOLIA_READ_RPC_URL: "https://ambient.example" }),
+    /KEEL_DOOM_STORED_INPUT_PATH.*KEEL_DOOM_SOURCE_RPC_URL/u,
+  );
+});
 
 function candidate(jobId, nextChunk, nextOperation, overrides = {}) {
   return {

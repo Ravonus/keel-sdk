@@ -1,7 +1,7 @@
 import {
-  KEEL_APPS,
-  KEEL_DEPLOYMENTS,
-  KEEL_MODULES,
+  KEEL_APPS as GENERATED_KEEL_APPS,
+  KEEL_DEPLOYMENTS as GENERATED_KEEL_DEPLOYMENTS,
+  KEEL_MODULES as GENERATED_KEEL_MODULES,
   type KeelAppId,
   type KeelDeployment,
   type KeelModule,
@@ -9,8 +9,23 @@ import {
   type KeelUnitId,
 } from "./modules.generated.js";
 
-export { KEEL_APPS, KEEL_DEPLOYMENTS, KEEL_MODULES };
 export type { KeelAppId, KeelDeployment, KeelModule, KeelModuleId, KeelUnitId };
+
+function immutableModule(module: KeelModule): KeelModule {
+  return Object.freeze({
+    ...module,
+    deps: Object.freeze([...module.deps]),
+    contracts: Object.freeze([...module.contracts]),
+    deployable: Object.freeze([...module.deployable]),
+  });
+}
+
+/** Runtime-immutable views of the generated catalog; `readonly` also holds for plain JavaScript consumers. */
+export const KEEL_MODULES: readonly KeelModule[] = Object.freeze(GENERATED_KEEL_MODULES.map(immutableModule));
+export const KEEL_APPS: readonly KeelModule[] = Object.freeze(GENERATED_KEEL_APPS.map(immutableModule));
+export const KEEL_DEPLOYMENTS: readonly KeelDeployment[] = Object.freeze(
+  GENERATED_KEEL_DEPLOYMENTS.map((deployment) => Object.freeze({ ...deployment })),
+);
 
 const BY_ID = new Map<string, KeelModule>([...KEEL_MODULES, ...KEEL_APPS].map((m) => [m.id, m]));
 

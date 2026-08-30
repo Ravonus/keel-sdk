@@ -10,7 +10,7 @@ import { promisify } from "node:util";
 import { gunzip, inflate } from "node:zlib";
 import { encodeAbiParameters, getAddress, keccak256, stringToHex } from "viem";
 
-import { KEEL_INLINE_MAX_TOKEN_URI_BYTES } from "./presentation.js";
+import { KEEL_INLINE_MAX_TOKEN_URI_BYTES, keelWeb3ObjectURI } from "./presentation.js";
 import {
   KEEL_ASSET_DISPLAY_MEDIA_TYPES,
   KEEL_ASSET_DISPLAY_MODULE_ID,
@@ -1027,7 +1027,12 @@ export async function buildKeelPreparedOneOfOneTokenURI(input: {
       digest,
       byte_length: input.artifact.byteLength,
       media_type: mediaType,
-      uri: `web3://${store.toLowerCase()}:${input.chainId}/haulObject/${objectId}?mime.type=${encodeURIComponent(mediaType)}`,
+      uri: keelWeb3ObjectURI({
+        chainId: input.chainId,
+        storeAddress: store,
+        objectId,
+        mediaType,
+      }),
     });
   })();
   const tokenId = input.tokenId ?? 1;
@@ -1057,6 +1062,9 @@ export async function buildKeelPreparedOneOfOneTokenURI(input: {
   });
   const contextBytes = encoder.encode(contextJSON);
   const contextDigest = (await createIntegrity(contextBytes)).digest as Hex;
+  if (!input.imageURI.startsWith("data:")) {
+    throw new TypeError("A prepared Inline token image must be a self-contained data URI; use Hybrid for web3, IPFS, or gateway image resolution.");
+  }
   assertMarketplaceSafeDataURI(input.imageURI, "Prepared token image");
   const prefixHead = [
     `{"name":${JSON.stringify(`${input.collectionName} #1`)}`,

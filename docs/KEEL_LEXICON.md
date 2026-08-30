@@ -84,7 +84,7 @@ process they are:
 | `forgeArtifact` (+`For`, `WithRevisionPolicy`) | Register one complete work above the bytes. | `KeelArtifactRegistry` |
 | `appendArtifactRevision` / `freezeArtifact` | Move a work's lineage forward, or seal it forever. | `KeelArtifactRegistry` |
 | `forgeHarness` / `forkHarnessForToken` / `effectiveHarness` | Pin what runs, fork it per token, resolve what's live. | `KeelHarnessRegistry` |
-| `harnessHTML` / `protectedHarnessDataURI` | Rebuild the sealed runtime from chain bytes. | `KeelHarnessBuilder` |
+| `harnessHTML` / `shellDataURI` | Rebuild the sealed runtime from chain bytes. | `KeelHarnessBuilder` |
 | `castDie` / `castDieFor` / `predictDieAddress` | Deploy an artist's Die at a known address. Event: `DieCast`. | `KeelFactory` |
 | `strikeFromManager` / `adminStrike` / `reserveStrikeCapacity` | The Die strikes tokens; capacity lives on the die itself. | `KEEL721` |
 | `driveAnchor` / `stampNative` / `setAnchor` / `grip` | Drive a copy into another chain; sight it; set it; count the chains that hold it. | `keel-anchors` |

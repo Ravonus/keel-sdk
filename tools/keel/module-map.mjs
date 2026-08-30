@@ -104,7 +104,7 @@ export const MODULES = [
     summary: "Compact creator-owned ERC-721/ERC-1155 collections, a shared multi-creator ERC-1155, renderer boundaries, and factories that organize them.",
     deps: ["keel-kernel", "keel-harness", "keel-presentation", "keel-artifacts"],
     devDeps: ["keel-hold"],
-    contracts: ["KEEL721.sol", "KEEL721Deployer.sol", "KeelFactory.sol", "KeelFactorySepolia.sol", "KeelCreator721.sol", "KeelCreator1155.sol", "KeelShared1155.sol", "KeelCreatorFactory.sol", "KeelArtifactTokenRenderer.sol", "interfaces/IKeelMintable.sol", "interfaces/IKeelMintCapacity.sol", "interfaces/IKeelCampaignAuthorizer.sol", "interfaces/IKeelItemMintTarget.sol", "interfaces/IKeelTokenRenderer.sol", "interfaces/IKeelCreatorDirectory.sol"],
+    contracts: ["KEEL721.sol", "KeelMintSeeded721.sol", "KeelMintSeeded721A.sol", "KEEL721Deployer.sol", "KeelFactory.sol", "KeelFactorySepolia.sol", "KeelCreator721.sol", "KeelCreator721A.sol", "KeelCreator1155.sol", "KeelShared1155.sol", "KeelCreatorFactory.sol", "KeelArtifactTokenRenderer.sol", "interfaces/IKeelMintable.sol", "interfaces/IKeelMintDataSource.sol", "interfaces/IKeelMintCapacity.sol", "interfaces/IKeelCampaignAuthorizer.sol", "interfaces/IKeelItemMintTarget.sol", "interfaces/IKeelTokenRenderer.sol", "interfaces/IKeelCreatorDirectory.sol"],
   },
   {
     id: "keel-creator-identity",
@@ -121,10 +121,10 @@ export const MODULES = [
     kind: "module",
     group: "token",
     title: "Mint access",
-    summary: "Campaign-based mint authorization for ERC-721 collections and exact ERC-1155 items, with ordered shared-allocation stages.",
-    deps: ["keel-die", "keel-creator-identity"],
+    summary: "Shared creator-registered mint routes and custom hooks for every KEEL-controlled minter, plus campaign, OneMint, and Fray Auction controllers.",
+    deps: ["keel-kernel", "keel-die", "keel-creator-identity"],
     devDeps: [],
-    contracts: ["KeelMintGate.sol", "OneMintController.sol", "OpenOneMintController.sol", "interfaces/IKeelAccessGate.sol", "interfaces/IKeelMintAdapter.sol"],
+    contracts: ["FrayAuctionIssuer.sol", "KeelMintGate.sol", "KeelMintRouteRegistry.sol", "OneMintController.sol", "OpenOneMintController.sol", "interfaces/IKeelAccessGate.sol", "interfaces/IKeelMintAdapter.sol", "interfaces/IKeelMintHook.sol", "interfaces/IKeelMintRouteRegistry.sol"],
   },
   {
     id: "keel-equipment",
@@ -133,7 +133,7 @@ export const MODULES = [
     title: "Equipment",
     summary: "Token-owned equipment: inventory custody, distribution lanes, reservations, and one-use duplication.",
     deps: ["keel-kernel", "keel-artifacts", "keel-hold"],
-    devDeps: ["keel-die", "vault-runner"],
+    devDeps: ["keel-die"],
     contracts: ["KeelEquipmentInventory.sol", "KeelEquipmentDistributor.sol", "KeelEquipmentReservationEngine.sol", "KeelEquipmentDescriptorValidator.sol", "KeelEquipmentInventoryReader.sol", "KeelOneUseDuplicator.sol", "interfaces/IKeelERC1155EquipmentDescriptor.sol", "interfaces/IKeelReservableMint1155.sol", "libraries/KeelMintBoundEquipmentProvision.sol"],
   },
   {
@@ -202,8 +202,8 @@ export const MODULES = [
     group: "token",
     title: "Cross-chain mint",
     summary: "Bridged mint intents and the batcher that carries them between chains.",
-    deps: ["keel-kernel", "keel-die"],
-    devDeps: ["keel-anchors", "keel-artifacts", "keel-hold"],
+    deps: ["keel-kernel", "keel-mint-access"],
+    devDeps: ["keel-die", "keel-anchors", "keel-artifacts", "keel-hold"],
     contracts: ["KeelCrossChainMintBridge.sol", "KeelCarrierBatcher.sol", "KeelHistoryPublicationJob.sol", "KeelPublicationJob.sol"],
   },
   {

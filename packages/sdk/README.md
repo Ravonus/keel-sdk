@@ -314,6 +314,13 @@ a `KeelCreatorFactory` call. Both builders validate UTF-8 bounds, metadata
 digests, royalties, and integer widths. Shared ERC-1155 token ids are
 deterministic:
 
+Factory deployment is a separate release step: deploy the ERC-721A, standard
+ERC-721, and ERC-1155 implementations first, then pass those addresses with the
+mint manager and renderer to the factory constructor. The generated
+`KeelCreatorFactory` ABI contains that exact five-address constructor. Collection
+wallet builders call an already deployed, read-back-verified factory; they do
+not deploy or choose its implementations.
+
 ```ts
 import {
   keelSharedCollectionIdOf,

@@ -18,7 +18,7 @@ export type KeelStudioProjectIntakeResult =
   | {
       readonly status: "needs-input";
       readonly questions: readonly {
-        readonly field: "title" | "description" | "outcome" | "chainId" | "priceEth";
+        readonly field: "title" | "description" | "outcome" | "chainId" | "releaseType" | "saleMechanism" | "priceEth";
         readonly question: string;
       }[];
     }
@@ -58,14 +58,28 @@ function bounded(value: string | undefined, maximum: number): string | undefined
  * project. Storage-only is a complete result; a sale is never invented.
  */
 export function prepareKeelStudioProjectIntake(input: KeelStudioProjectIntakeInput): KeelStudioProjectIntakeResult {
+  if (input.outcome !== undefined && input.outcome !== "storage-only" && input.outcome !== "release") {
+    throw new TypeError("outcome must be storage-only or release.");
+  }
+  if (input.release?.type !== undefined && !["one-of-one", "open-edition", "limited-edition"].includes(input.release.type)) {
+    throw new TypeError("release.type must be one-of-one, open-edition, or limited-edition.");
+  }
+  if (input.release?.saleMechanism !== undefined && !["fixed-price", "auction", "claim"].includes(input.release.saleMechanism)) {
+    throw new TypeError("release.saleMechanism must be fixed-price, auction, or claim.");
+  }
+  if (input.outcome === "storage-only" && input.release !== undefined) {
+    throw new TypeError("release must be omitted for a storage-only project.");
+  }
   const title = bounded(input.title, 160);
   const description = bounded(input.description, 2_000);
-  const questions: Array<{ field: "title" | "description" | "outcome" | "chainId" | "priceEth"; question: string }> = [];
+  const questions: Array<{ field: "title" | "description" | "outcome" | "chainId" | "releaseType" | "saleMechanism" | "priceEth"; question: string }> = [];
   if (title === undefined) questions.push({ field: "title", question: "What should this work be called?" });
   if (description === undefined) questions.push({ field: "description", question: "How should this work be described to collectors?" });
   if (input.outcome === undefined) questions.push({ field: "outcome", question: "Should I only store and verify the work, or also prepare an editable release/listing?" });
   if (input.outcome === "release") {
     if (!Number.isSafeInteger(input.chainId) || Number(input.chainId) <= 0) questions.push({ field: "chainId", question: "Which chain should the editable release use?" });
+    if (input.release?.type === undefined) questions.push({ field: "releaseType", question: "Should this release be one-of-one, limited-edition, or open-edition?" });
+    if (input.release?.saleMechanism === undefined) questions.push({ field: "saleMechanism", question: "Should this release use fixed-price, auction, or claim access?" });
     if (bounded(input.release?.priceEth, 80) === undefined) questions.push({ field: "priceEth", question: "What price should I prefill? You can still change it in Studio." });
   }
   if (questions.length > 0) return Object.freeze({ status: "needs-input", questions: Object.freeze(questions) });
@@ -74,8 +88,8 @@ export function prepareKeelStudioProjectIntake(input: KeelStudioProjectIntakeInp
     return Object.freeze({ status: "ready", title: title!, description: description!, outcome: "storage-only" });
   }
 
-  const type = input.release?.type ?? "one-of-one";
-  const saleMechanism = input.release?.saleMechanism ?? "fixed-price";
+  const type = input.release!.type!;
+  const saleMechanism = input.release!.saleMechanism!;
   const priceEth = bounded(input.release?.priceEth, 80)!;
   if (!/^(?:0|[1-9]\d*)(?:\.\d{1,18})?$/u.test(priceEth)) throw new TypeError("priceEth must be a non-negative decimal ETH amount.");
   const supply = type === "one-of-one" ? "1" : "0";

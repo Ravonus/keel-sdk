@@ -29,8 +29,7 @@ const outerResources = Object.freeze(envelope.items.map((item) => Object.freeze(
   digest: item.integrity.digest,
   sources: Object.freeze(item.store && item.objectId
     ? [{ kind: "onchain", chainId: item.chainId, objectId: item.objectId }]
-    : item.sources?.map((source) => ({ kind: "url", uri: source.uri }))
-      ?? [{ kind: "inline" }]),
+    : [{ kind: "inline" }]),
 })));
 Object.defineProperty(globalThis, "__KEEL_CONTENT__", {
   value: Object.freeze({ resources: () => outerResources }),
@@ -93,15 +92,27 @@ async function decompress(compression, bytes) {
   return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 
+const rpcUrls = Object.freeze(Array.isArray(envelope.rpcUrls) && envelope.rpcUrls.length > 0
+  ? envelope.rpcUrls
+  : typeof envelope.rpcUrl === "string" && envelope.rpcUrl.length > 0 ? [envelope.rpcUrl] : []);
+
 async function rpc(method, params) {
-  const response = await fetch(envelope.rpcUrl, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
-  });
-  const payload = await response.json();
-  if (!response.ok || payload.error) throw new Error(payload.error?.message ?? `RPC ${method} failed.`);
-  return payload.result;
+  let lastError;
+  for (const rpcUrl of rpcUrls) {
+    try {
+      const response = await fetch(rpcUrl, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+      });
+      const payload = await response.json();
+      if (!response.ok || payload.error) throw new Error(payload.error?.message ?? `RPC ${method} failed.`);
+      return payload.result;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError ?? new Error(`No governed RPC endpoint could serve ${method}.`);
 }
 
 async function ethCall(to, data) {
@@ -151,7 +162,8 @@ async function readOnchainObject(item, active = new Set()) {
       let offset = 0;
       for (const part of parts) { decoded.set(part, offset); offset += part.byteLength; }
     } else {
-      const pointers = decodeArray(await ethCall(item.store, `0x144658f2${item.objectId.slice(2)}${padWord(0)}${padWord(record.count)}`), true);
+      const pointerSelector = item.onchain?.storeKind === "stratus-chunk-store" ? "0x6e2250b1" : "0x144658f2";
+      const pointers = decodeArray(await ethCall(item.store, `${pointerSelector}${item.objectId.slice(2)}${padWord(0)}${padWord(record.count)}`), true);
       const carriers = await Promise.all(pointers.map(async (pointer) => {
         const code = bytesFromHex(await rpc("eth_getCode", [pointer, envelope.blockTag ?? "latest"]));
         if (code[0] !== 0) throw new Error(`Invalid immutable carrier ${pointer}.`);
@@ -169,23 +181,6 @@ async function readOnchainObject(item, active = new Set()) {
   }
 }
 
-async function readUrlItem(item) {
-  let lastError;
-  for (const source of item.sources) {
-    try {
-      const response = await fetch(source.uri, { cache: "no-store", redirect: "error" });
-      if (!response.ok) throw new Error(`HTTP ${response.status} for ${source.uri}.`);
-      const stored = new Uint8Array(await response.arrayBuffer());
-      if (source.storedIntegrity) await verify(stored, source.storedIntegrity, `${item.id} stored source`);
-      const decoded = await decompress(source.compression, stored);
-      return verify(decoded, item.integrity, item.id);
-    } catch (error) {
-      lastError = error;
-    }
-  }
-  throw lastError ?? new Error(`No URL source resolved for ${item.id}.`);
-}
-
 async function readEmbeddedItem(item) {
   if (!item.embedded || typeof item.embedded.storedBase64 !== "string") {
     throw new Error(`Missing embedded bytes for ${item.id}.`);
@@ -199,8 +194,12 @@ async function readEmbeddedItem(item) {
 }
 
 async function resolveItem(item) {
-  if (envelope.deliveryProfile === "onchain-recursive") return readOnchainObject(item);
-  if (envelope.deliveryProfile === "ordered-url") return readUrlItem(item);
+  if (envelope.deliveryProfile === "onchain-recursive") {
+    const stored = await readOnchainObject(item);
+    if (item.onchain?.storedIntegrity) await verify(stored, item.onchain.storedIntegrity, `${item.id} packed object`);
+    const decoded = await decompress(item.onchain?.compression ?? "none", stored);
+    return verify(decoded, item.integrity, item.id);
+  }
   if (envelope.deliveryProfile === "embedded-assembled") return readEmbeddedItem(item);
   throw new Error(`Unsupported delivery profile ${envelope.deliveryProfile}.`);
 }

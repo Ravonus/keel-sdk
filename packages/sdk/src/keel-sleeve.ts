@@ -1,3 +1,4 @@
+import { toDataUrl, utf8ToBytes } from "@keel/protocol";
 import type { Address } from "./types.js";
 import { normalizedAddress, uint } from "./validation.js";
 import { ZERO_ADDRESS } from "./types.js";
@@ -30,24 +31,6 @@ export function keelTokenJSONURI(input: KeelTokenJSONURIInput): string {
   return `web3://${contract}:${chainId.toString()}/tokenJSON/${tokenId.toString()}`;
 }
 
-const BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-function base64EncodeUTF8(value: string): string {
-  const bytes = new TextEncoder().encode(value);
-  let encoded = "";
-  for (let offset = 0; offset < bytes.length; offset += 3) {
-    const first = bytes[offset] ?? 0;
-    const second = bytes[offset + 1];
-    const third = bytes[offset + 2];
-    const packed = (first << 16) | ((second ?? 0) << 8) | (third ?? 0);
-    encoded += BASE64_ALPHABET[(packed >>> 18) & 63];
-    encoded += BASE64_ALPHABET[(packed >>> 12) & 63];
-    encoded += second === undefined ? "=" : BASE64_ALPHABET[(packed >>> 6) & 63];
-    encoded += third === undefined ? "=" : BASE64_ALPHABET[packed & 63];
-  }
-  return encoded;
-}
-
 /**
  * Preserve the legacy ERC-721 presentation for a raw `tokenJSON` response.
  * This is the client-side equivalent of the adapter's `tokenURI` method and
@@ -55,5 +38,5 @@ function base64EncodeUTF8(value: string): string {
  */
 export function keelTokenURIFromJSON(tokenJSON: string): string {
   if (typeof tokenJSON !== "string") throw new TypeError("tokenJSON must be a string.");
-  return `data:application/json;base64,${base64EncodeUTF8(tokenJSON)}`;
+  return toDataUrl("application/json", utf8ToBytes(tokenJSON));
 }

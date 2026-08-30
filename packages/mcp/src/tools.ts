@@ -606,6 +606,21 @@ async function moduleReviewPrepareTool(_context: ToolContext, value: unknown): P
 
 async function studioProjectIntakeTool(_context: ToolContext, value: unknown): Promise<unknown> {
   const input = record(value, ["title", "description", "outcome", "chainId", "release"], "Studio project intake arguments");
+  const outcome = optionalString(input, "outcome");
+  if (outcome !== undefined && outcome !== "storage-only" && outcome !== "release") {
+    throw new TypeError("outcome must be storage-only or release; fixed-price and claim belong in release.saleMechanism, and Fray auctions use fray-auction-intake.");
+  }
+  if (input.release !== undefined) {
+    const release = record(input.release, ["type", "saleMechanism", "priceEth", "startsAt", "endsAt"], "release");
+    const releaseType = optionalString(release, "type");
+    if (releaseType !== undefined && !["one-of-one", "open-edition", "limited-edition"].includes(releaseType)) {
+      throw new TypeError("release.type must be one-of-one, open-edition, or limited-edition.");
+    }
+    const saleMechanism = optionalString(release, "saleMechanism");
+    if (saleMechanism !== undefined && !["fixed-price", "auction", "claim"].includes(saleMechanism)) {
+      throw new TypeError("release.saleMechanism must be fixed-price, auction, or claim.");
+    }
+  }
   return prepareKeelStudioProjectIntake(input as Parameters<typeof prepareKeelStudioProjectIntake>[0]);
 }
 
@@ -806,7 +821,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
   tool("keel-studio-capabilities", "Inspect a Studio's supported chains, zero-spend sandbox, staging, authorization, and MSP readiness before any upload or wallet action.", TOOL_SCHEMAS.studioCapabilities, studioCapabilitiesTool),
   tool("keel-studio-project-intake", "Ask only for missing project decisions, then return either storage-only preparation or an editable release/listing intent. No upload, signature, wallet request, or transaction occurs.", TOOL_SCHEMAS.studioProjectIntake, studioProjectIntakeTool),
   tool("keel-studio-draft", "List, read, create, or revision-safely edit a creator's private Studio release draft through a scoped key. It cannot prepare, sign, submit, cancel, or publish a chain action.", TOOL_SCHEMAS.studioDraft, studioDraftTool),
-  tool("keel-studio-stage-project", "Stage bounded creator resources/modules and return the server-issued Studio handoff. Omitted viewer selects Studio's canonical KEEL Inline graph for later preparation; `none` is artifact/storage-only. A direct image, video, or self-contained GLB resolves to registered shell plus registered keel.asset-display@1 plus the creator media entry, never zero modules or a generated index.html. Resolve the active builder from the selected-chain Studio Inline catalog and verify its registered pre-encoded shell record; legacy protector getters and NoProtector do not determine default Inline readiness. Creator HTML is content, never a replacement shell, and agents must not upload a locally manufactured KEEL shell, protected-harness wrapper, or local wrapper when the catalog is incomplete. Studio must fail closed for an incomplete selected-chain catalog during preparation. The scoped agent key remains in the MCP environment; no wallet signature or chain action occurs.", TOOL_SCHEMAS.studioStageProject, studioStageProjectTool),
+  tool("keel-studio-stage-project", "Stage bounded creator resources/modules and return the server-issued Studio handoff. Omitted viewer selects Studio's canonical KEEL Inline graph for later preparation; `none` is the explicit raw-artifact route with no viewer and does not prevent a later release or mint. A direct image, video, or self-contained GLB resolves to registered shell plus registered keel.asset-display@1 plus the creator media entry, never zero modules or a generated index.html. Resolve the active builder from the selected-chain Studio Inline catalog and verify its registered pre-encoded shell record; legacy protector getters and NoProtector do not determine default Inline readiness. Creator HTML is content, never a replacement shell, and agents must not upload a locally manufactured KEEL shell, protected-harness wrapper, or local wrapper when the catalog is incomplete. Studio must fail closed for an incomplete selected-chain catalog during preparation. The scoped agent key remains in the MCP environment; no wallet signature or chain action occurs.", TOOL_SCHEMAS.studioStageProject, studioStageProjectTool),
   tool("keel-creator-collection-prepare", "Prepare one exact EIP-5792 KeelCreatorFactory batch plus its durable recovery envelope. This never signs or submits. Missing or ambiguous factory/renderer deployments stop before any wallet approval.", TOOL_SCHEMAS.creatorCollectionPrepare, creatorCollectionPrepareTool),
   tool("keel-shell-search", "Search the read-back-verified shell catalogue by creator, name, version, or tags. Returns top/bottom object pointers and metadata only; it never fetches carrier bytes, signs, or submits.", TOOL_SCHEMAS.shellSearch, shellSearchTool),
   tool("keel-shell-prepare", "Create canonical creator/tag shell metadata or prepare an immutable creator-namespaced shell registration call. A shell is one reusable top and bottom around the work graph; this tool never signs, submits, or invents a replacement default shell.", TOOL_SCHEMAS.shellPrepare, shellPrepareTool),

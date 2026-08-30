@@ -28,7 +28,7 @@ function render(time) {
   renderer.render(scene, camera);
   proof.frames += 1;
   proof.renderCalls = renderer.info.render.calls;
-  if (proof.frames === 2) {
+  if (proof.frames === 1) {
     const result = document.createElement("output");
     result.id = "keel-three-r180-proof";
     result.hidden = true;
@@ -37,4 +37,4 @@ function render(time) {
   }
   requestAnimationFrame(render);
 }
-requestAnimationFrame(render);
+render(0);

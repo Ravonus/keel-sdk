@@ -201,6 +201,10 @@ test("MCP initializes, lists strict tools, and returns JSON-RPC parameter errors
     assert.equal(projectRoutes.shell.default, "keel-verification-shell");
     assert.match(projectRoutes.shell.selection, /Omit viewer/iu);
     assert.deepEqual(projectRoutes.creationRoutes.find((route) => route.id === "fray-auction").presets, [1, 2, 3, 4]);
+    const oneMintRoute = projectRoutes.creationRoutes.find((route) => route.id === "one-mint-drop");
+    assert.equal(oneMintRoute.sdkBuilder, "buildOneMintDrop");
+    assert.match(oneMintRoute.classification, /not a storage or upload mode/iu);
+    assert.match(oneMintRoute.note, /does not create the drop, mint a token, or submit a wallet request/iu);
     assert.deepEqual(projectRoutes.runtimeRoutes.map((route) => route.id), ["static-media", "p5", "three", "doom-wasm", "flash-as3"]);
     assert.deepEqual(projectRoutes.proofLayers, ["sdk-unit", "forge-contract", "module-catalog", "browser-runtime", "live-chain-receipt-and-readback"]);
     const publicationModesRead = await server.handle({ jsonrpc: "2.0", id: 29, method: "resources/read", params: { uri: "keel://mcp/publication-modes" } });

@@ -1,7 +1,7 @@
 interface:
-  display_name: "Fray Keel Agent"
-  short_description: "Prepare Fray auctions with Keel reuse and wallet review"
-  default_prompt: "Use $fray-keel-agent to prepare this Fray auction, reuse verified Keel modules, and stop at my approval."
+  display_name: "Fray KEEL Agent"
+  short_description: "Plan KEEL works, collections, and Fray auctions"
+  default_prompt: "Use $fray-keel-agent to plan this KEEL project, identify the right modules and tests, and stop at each approval boundary."
   brand_color: "#0F766E"
 policy:
   allow_implicit_invocation: true

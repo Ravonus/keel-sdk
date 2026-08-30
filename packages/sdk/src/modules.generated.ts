@@ -232,15 +232,19 @@ export const KEEL_MODULES: readonly KeelModule[] = [
     ],
     "contracts": [
       "KEEL721.sol",
+      "KeelMintSeeded721.sol",
+      "KeelMintSeeded721A.sol",
       "KEEL721Deployer.sol",
       "KeelFactory.sol",
       "KeelFactorySepolia.sol",
       "KeelCreator721.sol",
+      "KeelCreator721A.sol",
       "KeelCreator1155.sol",
       "KeelShared1155.sol",
       "KeelCreatorFactory.sol",
       "KeelArtifactTokenRenderer.sol",
       "interfaces/IKeelMintable.sol",
+      "interfaces/IKeelMintDataSource.sol",
       "interfaces/IKeelMintCapacity.sol",
       "interfaces/IKeelCampaignAuthorizer.sol",
       "interfaces/IKeelItemMintTarget.sol",
@@ -253,6 +257,7 @@ export const KEEL_MODULES: readonly KeelModule[] = [
       "KeelArtifactTokenRenderer",
       "KeelCreator1155",
       "KeelCreator721",
+      "KeelCreator721A",
       "KeelCreatorFactory",
       "KeelFactory",
       "KeelFactorySepolia",
@@ -289,22 +294,29 @@ export const KEEL_MODULES: readonly KeelModule[] = [
     "title": "Mint access",
     "group": "token",
     "visibility": "private",
-    "summary": "Campaign-based mint authorization for ERC-721 collections and exact ERC-1155 items, with ordered shared-allocation stages.",
+    "summary": "Shared creator-registered mint routes and custom hooks for every KEEL-controlled minter, plus campaign, OneMint, and Fray Auction controllers.",
     "version": "0.3.0",
     "repo": "keel-web3/keel-mint-access",
     "deps": [
+      "keel-kernel",
       "keel-die",
       "keel-creator-identity"
     ],
     "contracts": [
+      "FrayAuctionIssuer.sol",
       "KeelMintGate.sol",
+      "KeelMintRouteRegistry.sol",
       "OneMintController.sol",
       "OpenOneMintController.sol",
       "interfaces/IKeelAccessGate.sol",
-      "interfaces/IKeelMintAdapter.sol"
+      "interfaces/IKeelMintAdapter.sol",
+      "interfaces/IKeelMintHook.sol",
+      "interfaces/IKeelMintRouteRegistry.sol"
     ],
     "deployable": [
+      "FrayAuctionIssuer",
       "KeelMintGate",
+      "KeelMintRouteRegistry",
       "OneMintController",
       "OpenOneMintController"
     ]
@@ -527,7 +539,7 @@ export const KEEL_MODULES: readonly KeelModule[] = [
     "repo": "keel-web3/keel-cross-chain-mint",
     "deps": [
       "keel-kernel",
-      "keel-die"
+      "keel-mint-access"
     ],
     "contracts": [
       "KeelCrossChainMintBridge.sol",

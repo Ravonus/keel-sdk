@@ -10,6 +10,20 @@
       "seededRandom": {
         "store": "0x0a4f31d5ab08029e4c68f6f3227d9fa3a2d66267",
         "objectId": "0x274113efe02d13b9b41d30fa025647a8f83f422745079d2fda3094fc27b9fd62"
+      },
+      "assetDisplay": {
+        "store": "0x0a4f31d5ab08029e4c68f6f3227d9fa3a2d66267",
+        "objectId": "0x08d628e53cc139c67a093ef0b24cdc1a6327010f8b6150ebc113c0310e23748c"
+      },
+      "threeR180": {
+        "main": {
+          "store": "0x0a4f31d5ab08029e4c68f6f3227d9fa3a2d66267",
+          "objectId": "0xea1952794b32a0b3b18c096958e0960fcbfb2183fde5209e180f6da642d5d1e6"
+        },
+        "core": {
+          "store": "0x0a4f31d5ab08029e4c68f6f3227d9fa3a2d66267",
+          "objectId": "0xd4cfea0ad865253e58f40eb2ab65373fccd9e56d30fa7187e50b126072cf5429"
+        }
       }
     }
   }

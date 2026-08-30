@@ -1,14 +1,13 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import path from "node:path";
 import test from "node:test";
 
 import { p5ProjectBindings } from "../deployments.mjs";
 
-const demo = path.resolve("examples/demos/p5-flowfield");
+const demo = new URL("../../demos/p5-flowfield/", import.meta.url);
 
 test("agent p5 project publishes only the creator script without embedding a shell or shared modules", async () => {
-  const sketch = await readFile(path.join(demo, "sketch.js"), "utf8");
+  const sketch = await readFile(new URL("sketch.js", demo), "utf8");
   assert.match(sketch, /import \{ createSeededRandom \} from "\/content\/seeded-random\.js";/u);
   assert.match(sketch, /const PALETTE = PALETTES\[SEED % PALETTES\.length\]/u);
   assert.match(sketch, /const SPEED = 0\.9 \+ \(\(SEED >>> 8\) & 0xff\) \/ 255 \* 1\.25/u);

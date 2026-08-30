@@ -286,8 +286,9 @@ read files, execute the tools, fetch carriers, sign, or submit.
 `resources/list` advertises four fixed machine-readable resources:
 `keel://mcp/workflow` describes the offline analyze-to-review sequence and
 `keel://mcp/limits` records the bounded frame, file, planner, and no-network
-limits. `keel://mcp/project-routes` maps creation scope, sale/auction outcome,
-and p5/Three/Doom/Flash runtimes to existing tools and examples.
+limits. `keel://mcp/project-routes` maps creation scope, OneMint,
+sale/auction outcome, and p5/Three/Doom/Flash runtimes to existing tools, SDK
+builders, contract evidence, and examples.
 `keel://mcp/publication-modes` defines storage, compression, recovery, and proof
 boundaries. `resources/read` serves those constant JSON documents only; unknown
 URIs and extra parameters fail closed, and no workspace or network access occurs.

@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
-import { existsSync } from "node:fs";
 import { mkdtemp, mkdir, readFile, readdir, rm, stat, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -13,9 +12,7 @@ const SDK_ROOT = path.join(ROOT, "packages", "sdk");
 const SDK_MANIFEST = path.join(SDK_ROOT, "package.json");
 const ABI_DIST = path.join(SDK_ROOT, "dist", "abi.js");
 const demoRequire = createRequire(new URL("../apps/demo/package.json", import.meta.url));
-const coolSManifest = fileURLToPath(new URL("../../cool-s-onchain/package.json", import.meta.url));
-const viteRequire = existsSync(coolSManifest) ? createRequire(coolSManifest) : demoRequire;
-const viteBin = path.join(path.dirname(viteRequire.resolve("vite/package.json")), "bin", "vite.js");
+const viteBin = path.join(path.dirname(demoRequire.resolve("vite/package.json")), "bin", "vite.js");
 
 async function filesUnder(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -47,7 +44,8 @@ nodeTest("@keel/sdk publishes the ABI facade as a direct subpath", async () => {
 
   await stat(ABI_DIST);
   const abi = await import(pathToFileURL(ABI_DIST).href);
-  assert.equal(typeof abi.coolSLine721Abi, "object");
+  assert.equal(typeof abi.keelHoldAbi, "object");
+  assert.equal(typeof abi.keelMintRouteRegistryAbi, "object");
   assert.equal(typeof abi.oneMintControllerAbi, "object");
   assert.ok(
     abi.keelFactoryAbi.includes(
@@ -68,8 +66,8 @@ nodeTest("a Vite browser consumer of @keel/sdk/abi stays clear of Node-only exte
     await writeFile(
       path.join(fixtureRoot, "entry.js"),
       [
-        'import { coolSLine721Abi, oneMintControllerAbi } from "@keel/sdk/abi";',
-        "globalThis.__keelAbiCount = coolSLine721Abi.length + oneMintControllerAbi.length;",
+        'import { keelHoldAbi, keelMintRouteRegistryAbi, oneMintControllerAbi } from "@keel/sdk/abi";',
+        "globalThis.__keelAbiCount = keelHoldAbi.length + keelMintRouteRegistryAbi.length + oneMintControllerAbi.length;",
       ].join("\n"),
     );
     const configPath = path.join(fixtureRoot, "vite.config.mjs");

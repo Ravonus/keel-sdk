@@ -179,12 +179,21 @@ test("creator deployment resolution requires one exact factory and renderer inst
 test("published module ABIs expose creator collections and exact item drops", async () => {
   assert.deepEqual(
     moduleAbiContracts("keel-die").filter((name) => name.startsWith("KeelCreator") || name === "KeelArtifactTokenRenderer" || name === "KeelShared1155"),
-    ["KeelArtifactTokenRenderer", "KeelCreator1155", "KeelCreator721", "KeelCreatorFactory", "KeelShared1155"],
+    ["KeelArtifactTokenRenderer", "KeelCreator1155", "KeelCreator721", "KeelCreator721A", "KeelCreatorFactory", "KeelShared1155"],
   );
   const factoryAbi = await moduleAbi("keel-die", "KeelCreatorFactory");
   const rendererAbi = await moduleAbi("keel-die", "KeelArtifactTokenRenderer");
   const controllerAbi = await moduleAbi("keel-mint-access", "OneMintController");
+  const factoryConstructor = factoryAbi.find((entry) => entry.type === "constructor");
+  assert.deepEqual(factoryConstructor?.inputs.map(({ name, type }) => ({ name, type })), [
+    { name: "mintManager_", type: "address" },
+    { name: "renderer_", type: "address" },
+    { name: "implementation721_", type: "address" },
+    { name: "implementationStandard721_", type: "address" },
+    { name: "implementation1155_", type: "address" },
+  ]);
   assert.ok(factoryAbi.some((entry) => entry.type === "function" && entry.name === "createERC721"));
+  assert.ok(factoryAbi.some((entry) => entry.type === "function" && entry.name === "createStandardERC721"));
   assert.ok(factoryAbi.some((entry) => entry.type === "function" && entry.name === "createSharedERC1155"));
   assert.ok(rendererAbi.some((entry) => entry.type === "function" && entry.name === "bindTokenPresentation"));
   assert.ok(rendererAbi.some((entry) => entry.type === "function" && entry.name === "tokenURI"));

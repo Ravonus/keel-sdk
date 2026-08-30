@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { brotliDecompressSync } from "node:zlib";
 
 import {
@@ -25,6 +26,8 @@ import { buildKeelCarrierDispatchPlan, buildKeelPublicationJobManifest } from ".
 
 const JOB_ADDRESS = getAddress("0x29e5D1E7FEED7507a8F70A4D381C1cFE8fb70a24");
 const JOB_ID = 3n;
+const CHUNK_BYTES = 23_000;
+const CHUNKS_PER_BATCH = 3;
 const STORED_SHA256 = "4be5020e1ae73329f429e2a50721ffef4c8dd077da400ebe45e92aa4fbde3f73";
 const DECODED_SHA256 = "e0af21417cb1a10649a5ba200c96e3758218c567900463376c1cca0774cb713b";
 const OWNER_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
@@ -68,6 +71,46 @@ async function exactDoom(client) {
   return { batches, payloads, stored, decoded };
 }
 
+function doomFromStoredBytes(stored) {
+  assert.equal(stored.byteLength, 1_392_172, "Doom stored input length drifted");
+  assert.equal(sha256(stored), STORED_SHA256, "Doom stored input digest drifted");
+  const decoded = brotliDecompressSync(stored);
+  assert.equal(decoded.byteLength, 4_662_352, "Doom decoded input length drifted");
+  assert.equal(sha256(decoded), DECODED_SHA256, "Doom decoded input digest drifted");
+  assert.equal(decoded.subarray(0, 8).toString("ascii"), "FRAYDOOM", "Doom container header drifted");
+
+  const payloads = [];
+  for (let offset = 0; offset < stored.byteLength; offset += CHUNK_BYTES) {
+    payloads.push(toHex(stored.subarray(offset, Math.min(offset + CHUNK_BYTES, stored.byteLength))));
+  }
+  assert.equal(payloads.length, 61);
+  const batches = [];
+  for (let offset = 0; offset < payloads.length; offset += CHUNKS_PER_BATCH) {
+    batches.push(payloads.slice(offset, offset + CHUNKS_PER_BATCH));
+  }
+  assert.equal(batches.length, 21);
+  return { batches, payloads, stored, decoded };
+}
+
+export function selectDoomInput(environment = process.env) {
+  if (environment.KEEL_DOOM_STORED_INPUT_PATH) {
+    return Object.freeze({ kind: "stored-file", path: environment.KEEL_DOOM_STORED_INPUT_PATH });
+  }
+  if (environment.KEEL_DOOM_SOURCE_RPC_URL) {
+    return Object.freeze({ kind: "source-rpc", url: environment.KEEL_DOOM_SOURCE_RPC_URL });
+  }
+  throw new Error(
+    "Set KEEL_DOOM_STORED_INPUT_PATH to the exact 1,392,172-byte Brotli FRAYDOOM container. "
+    + "Remote reconstruction is available only when KEEL_DOOM_SOURCE_RPC_URL is explicitly set.",
+  );
+}
+
+export async function loadDoomInput(environment = process.env) {
+  const source = selectDoomInput(environment);
+  if (source.kind === "stored-file") return doomFromStoredBytes(await readFile(source.path));
+  return exactDoom(createPublicClient({ transport: http(source.url) }));
+}
+
 async function wait(client, hash) {
   return client.waitForTransactionReceipt({ hash, timeout: 30_000 });
 }
@@ -84,7 +127,7 @@ async function main() {
   const contractsRoot = process.env.KEEL_CONTRACTS_ROOT ?? path.resolve("../keel-contracts");
   const owner = privateKeyToAccount(process.env.KEEL_LOCAL_OWNER_KEY ?? OWNER_KEY);
   const executor = privateKeyToAccount(process.env.KEEL_LOCAL_EXECUTOR_KEY ?? EXECUTOR_KEY);
-  const doom = await exactDoom(createPublicClient({ transport: http(process.env.KEEL_SEPOLIA_READ_RPC_URL ?? "https://ethereum-sepolia-rpc.publicnode.com") }));
+  const doom = await loadDoomInput();
   if (process.env.KEEL_DOOM_DECODED_OUTPUT_PATH) {
     await writeFile(process.env.KEEL_DOOM_DECODED_OUTPUT_PATH, doom.decoded);
   }
@@ -223,4 +266,6 @@ async function main() {
   }, null, 2)}\n`);
 }
 
-await main();
+if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  await main();
+}
